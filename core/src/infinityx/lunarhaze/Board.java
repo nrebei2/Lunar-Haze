@@ -29,17 +29,17 @@ public class Board {
     }
 
     /**
-     * Returns the tile state for the given position (INTERNAL USE ONLY)
+     * Returns the tile for the given position (INTERNAL USE ONLY)
      *
      * Returns null if that position is out of bounds.
      *
-     * @return the tile state for the given position
+     * @return the tile for the given position
      */
-    private Tile.TileType getTileState(int x, int y) {
+    private Tile getTileState(int x, int y) {
         if (!inBounds(x, y)) {
             return null;
         }
-        return tiles[x * height + y].type;
+        return tiles[x * height + y];
     }
 
     /**
