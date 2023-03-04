@@ -16,8 +16,13 @@ public class GameMode implements Screen {
      * Track the current state of the game for the update loop.
      */
     public enum GameState {
-        // TODO
+        // TODO add states
         // Game Over, Win, etc.
+    }
+
+    public GameMode(int level) {
+        // Creates and holds LevelContainer through LevelParser
+        // Initializes controllers
     }
 
     /**
@@ -35,7 +40,7 @@ public class GameMode implements Screen {
      * @param delta The time in seconds since the last render.
      */
     public void render(float delta) {
-
+        // Render order: Board tiles -> (players, enemeies, scene objects) sorted by depth (y coordinate)
     }
 
     /**

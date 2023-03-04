@@ -7,7 +7,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
  * Represents a background tile in the scene
  */
 public class Tile {
-    private enum TileType {
+    public enum TileType {
         Grass, Road, Dirt,
         // TODO: Add more types
     }
@@ -41,9 +41,9 @@ public class Tile {
     }
 
     /**
-     * Used for collision detection (player/enemies should not be able to walk on this tile!)
+     * Used for collision detection (player/enemies should not be able to walk on this tile!
      *
-     * Should be set to
+     * Should be set to false only when there is an object on this tile
      *
      * @return true if the tile can be walked over
      */

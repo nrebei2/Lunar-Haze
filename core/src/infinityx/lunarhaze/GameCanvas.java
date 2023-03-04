@@ -423,7 +423,11 @@ public class GameCanvas {
     public void draw(Texture image, Color tint, float x, float y, float width, float height) {
         if (active != DrawPass.STANDARD) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
-            return;
+            return
+    // COORDINATE TRANSFORMS
+    // The methods are used by the physics engine to coordinate the
+    // Ships and Photons with the board. You should not need them.
+;
         }
 
         // Unlike Lab 1, we can shortcut without a master drawing method
