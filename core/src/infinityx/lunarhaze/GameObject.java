@@ -49,7 +49,7 @@ public abstract class GameObject {
 	}
 	
 	// Attributes for all game objects
-	/** Object position (centered on the texture middle) */
+	/** Object world position (centered on the texture middle) */
 	protected Vector2 position;
 	/** Object velocity vector */
 	protected Vector2 velocity;

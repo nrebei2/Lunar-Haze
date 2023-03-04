@@ -20,9 +20,10 @@ public class GameMode implements Screen {
         // Game Over, Win, etc.
     }
 
-    public GameMode(int level) {
-        // Creates and holds LevelContainer through LevelParser
-        // Initializes controllers
+    // Creates and holds LevelContainer through LevelParser
+    // Initializes controllers
+
+    public GameMode() {
     }
 
     /**
@@ -40,7 +41,6 @@ public class GameMode implements Screen {
      * @param delta The time in seconds since the last render.
      */
     public void render(float delta) {
-        // Render order: Board tiles -> (players, enemeies, scene objects) sorted by depth (y coordinate)
     }
 
     /**
@@ -77,6 +77,7 @@ public class GameMode implements Screen {
      * Called when this screen should release all resources.
      */
     public void dispose() {
-
+        // TODO: save player stats to json for persistence?
+        // Though definitely save levels completed
     }
 }
