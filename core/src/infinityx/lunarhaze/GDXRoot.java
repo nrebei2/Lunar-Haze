@@ -43,7 +43,7 @@ public class GDXRoot extends Game implements ScreenObserver {
 		canvas  = new GameCanvas();
 
 		// Initialize each screen
-		loading = new LoadingMode();
+		loading = new LoadingMode("assets.json", canvas, 1);
 		game = new GameMode();
 		menu = new MenuMode();
 

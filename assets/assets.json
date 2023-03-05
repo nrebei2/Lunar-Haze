@@ -1,0 +1,45 @@
+{
+	"textures": {
+      "tiles": {
+        "land1": {
+          "lit": "tiles/land1-lit.png",
+          "unlit": "tiles/land1-unlit.png"
+        },
+        "land2": {
+          "lit": "tiles/land2-lit.png",
+          "unlit": "tiles/land2-unlit.png"
+        },
+        "land3": {
+          "lit": "tiles/land3-lit.png",
+          "unlit": "tiles/land3-unlit.png"
+        },
+        "land4": {
+          "lit": "tiles/land4-lit.png",
+          "unlit": "tiles/land4-unlit.png"
+        },
+        "land5": {
+          "lit": "tiles/land5-lit.png",
+          "unlit": "tiles/land5-unlit.png"
+        },
+        "land6": {
+          "lit": "tiles/land6-lit.png",
+          "unlit": "tiles/land6-unlit.png"
+        }
+      },
+      "objects": {
+
+      },
+      "player": {
+
+      }
+    },
+    "jsons"  : {
+
+    },
+    "sounds" : {
+
+    },
+    "fonts": {
+
+    }
+}

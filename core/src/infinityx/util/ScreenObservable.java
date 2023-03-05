@@ -5,7 +5,7 @@ package infinityx.util;
  */
 public abstract class ScreenObservable {
     /** Should always be a Game class */
-    private ScreenObserver observer;
+    protected ScreenObserver observer;
 
     /**
      * Sets the ScreenObserver for this object.
