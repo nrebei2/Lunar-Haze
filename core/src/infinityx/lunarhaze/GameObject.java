@@ -55,21 +55,21 @@ public abstract class GameObject {
 	protected Vector2 velocity;
 	/** Reference to texture origin */
 	protected Vector2 origin;
-	/** Radius of the object (used for collisions) */
+	/** Radius of the object shadow (used for collisions) */
 	protected float radius;
 	/** Whether or not the object should be removed at next timestep. */
 	protected boolean destroyed;
-//	/** CURRENT image for this object. May change over time. */
-//	protected FilmStrip animator;
-	
-	// ACCESSORS
-	public void setTexture(Texture texture) {
-		throw new NotImplementedException();
+	/** CURRENT image for this object.  */
+	// TODO: Change to FilmStrip to support animations easier
+	protected Texture texture;
+	//protected FilmStrip animator;
 
+	public void setTexture(Texture texture) {
+		this.texture = texture;
 	}
 	
 	public Texture getTexture() {
-		throw new NotImplementedException();
+		return texture;
 	}
 
 	/**
@@ -213,8 +213,7 @@ public abstract class GameObject {
 	 *
 	 * @return the type of this object.
 	 */
-	public abstract ObjectType getType(
-	);
+	public abstract ObjectType getType();
 
 	/**
 	 * Constructs a trivial game object
@@ -244,9 +243,6 @@ public abstract class GameObject {
 
 	/**
 	 * Draws this object to the canvas
-	 *
-	 * There is only one drawing pass in this application, so you can draw the objects 
-	 * in any order.
 	 *
 	 * @param canvas The drawing context
 	 */
