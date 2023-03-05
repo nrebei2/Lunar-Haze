@@ -1,10 +1,11 @@
 package infinityx.lunarhaze;
 
 import com.badlogic.gdx.Screen;
+import infinityx.util.ScreenObservable;
 
 // Represents the main menu
 // Level select, etc.
-public class MenuMode implements Screen {
+public class MenuMode extends ScreenObservable implements Screen {
     /**
      * Called when this screen becomes the current screen for a {@link Game}.
      */

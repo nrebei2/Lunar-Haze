@@ -2,6 +2,7 @@ package infinityx.lunarhaze;
 
 
 import com.badlogic.gdx.Screen;
+import infinityx.util.ScreenObservable;
 
 
 /**
@@ -10,7 +11,7 @@ import com.badlogic.gdx.Screen;
  * of the other classes in the game and hooks them together.  It also provides the
  * basic game loop (update-draw).
  */
-public class GameMode implements Screen {
+public class GameMode extends ScreenObservable implements Screen {
 
     /**
      * Track the current state of the game for the update loop.
@@ -20,17 +21,15 @@ public class GameMode implements Screen {
         // Game Over, Win, etc.
     }
 
-    // Creates and holds LevelContainer through LevelParser
-    // Initializes controllers
+    // Initialize controllers
 
-    public GameMode() {
-    }
+    public GameMode() {  }
 
     /**
      * Called when this screen becomes the current screen for a {@link Game}.
      */
     public void show() {
-
+        // TODO: Create and hold LevelContainer through LevelParser
     }
 
     /**
