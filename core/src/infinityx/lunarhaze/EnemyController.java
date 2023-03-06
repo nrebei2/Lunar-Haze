@@ -9,13 +9,19 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import java.util.ArrayList;
 
 public class EnemyController implements InputController{
+    private static final float DETECT_DIST = 2;
+    private static final float CHASE_DIST = 4;
+    private static final int ATTACK_DIST = 1;
+
     /**
      * Enumeration to encode the finite state machine.
      */
     public enum FSMState {
         /** The enemy just spawned */
         SPAWN,
-        /** The enemy is patrolling around where the target was last seen */
+        /** The enemy is patrolling around a set path */
+        PATROL,
+        /** The enemy is wandering around where target is last seen*/
         WANDER,
         /** The enemy has a target, but must get closer */
         CHASE,
@@ -31,6 +37,15 @@ public class EnemyController implements InputController{
         /** The enemy can  detect the player in an area line*/
         AREA,
 
+    }
+    /**
+     * Enumeration to describe what direction the enemy is facing
+     */
+    private enum Direction{
+        NORTH,
+        EAST,
+        SOUTH,
+        WEST
     }
 
 
@@ -53,8 +68,14 @@ public class EnemyController implements InputController{
 
     /** The enemy next action (may include firing). */
     private int move; // A ControlCode
+
+    /** The direction the enemy is facing*/
+    private Direction direction;
+
     /** The number of ticks since we started this controller */
     private long ticks;
+
+
 
 
     /**
@@ -64,15 +85,29 @@ public class EnemyController implements InputController{
      * @param board The game board (for pathfinding)
      * @param enemies The list of enemies (for detection)
      */
-    public EnemyController( int id, ArrayList<Enemy> enemies, Board board){
+    public EnemyController( int id, Werewolf target, ArrayList<Enemy> enemies, Board board){
         this.enemy = enemies.get(id);
         this.board = board;
-        this.target = null;
+        this.target = target;
         this.state = FSMState.SPAWN;
         this.allEnemies = enemies;
         this.detection = Detection.LINE;
-    }
 
+    }
+    /**
+     * Returns the distance between two board coordinates given two world coordinates
+     *
+     * @param x x-coord in screen coord of first ship
+     * @param y y-coord in screen coord of first ship
+     * @param tx x-coord in screen coord of second ship
+     * @param tx  y-coord in screen coord of second ship
+     * @return
+     */
+    private float worldToBoardDistance (float x, float y, float tx, float ty){
+        int dx = board.worldToBoard(tx) - board.worldToBoard(x);
+        int dy = board.worldToBoard(ty) - board.worldToBoard(y);
+        return (float) Math.sqrt(Math.pow(dx, 2) + Math.pow(dy,2));
+    }
 
     /**
      * Returns true if we detected the player (when the player walks in line of sight)
@@ -80,7 +115,24 @@ public class EnemyController implements InputController{
      * @return true if we can both fire and hit our target
      */
     private boolean detectedPlayer(){
-        return this.target != null;
+        boolean inLine;
+        switch (direction){
+            case NORTH:
+                 inLine = (target.getX() == enemy.getX()) && (target.getY() > enemy.getY());
+                break;
+            case SOUTH:
+                inLine = (target.getX() == enemy.getX()) && (target.getY() < enemy.getY());
+                break;
+            case EAST:
+                inLine = (target.getX() > enemy.getX()) && (target.getY() == enemy.getY());
+                break;
+            case WEST:
+                inLine = (target.getX() < enemy.getX()) && (target.getY() == enemy.getY());
+                break;
+            default:
+                throw new NotImplementedException();
+        }
+        return (worldToBoardDistance(enemy.getX(), enemy.getY(), target.getX(), target.getY()) <= DETECT_DIST && inLine );
     }
 
     /**
@@ -100,7 +152,17 @@ public class EnemyController implements InputController{
      * @return true if we can hit a target from here.
      */
     private boolean canHitTargetFrom(int x, int y) {
-        throw new NotImplementedException();
+        if (!board.isWalkable(x,y) || target == null){
+            return false;
+        }
+        int dx = board.worldToBoard(target.getX()) - x;
+        int dy = board.worldToBoard(target.getY()) - y;
+
+        if ((dx == 0 && dy <= ATTACK_DIST ) || (dy == 0 && dx <= ATTACK_DIST)){
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -112,7 +174,16 @@ public class EnemyController implements InputController{
      * @return true if we can both fire and hit our target
      */
     private boolean canHitTarget() {
-        throw new NotImplementedException();
+        if (canHitTargetFrom(board.worldToBoard(enemy.getX()), board.worldToBoard(enemy.getY()))){
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean canChase(){
+        return  (worldToBoardDistance(enemy.getX(), enemy.getY(), target.getX(), target.getY()) <= CHASE_DIST );
+
     }
 
 
@@ -161,7 +232,28 @@ public class EnemyController implements InputController{
      * target gets out of range.
      */
     private void changeStateIfApplicable() {
-        throw new NotImplementedException();
+        switch (state){
+            case SPAWN:
+                state = FSMState.PATROL;
+                break;
+            case PATROL:
+                if (detectedPlayer()){
+                    state = FSMState.CHASE;
+                }
+                break;
+            case CHASE:
+                if (canHitTarget()){
+                    state = FSMState.ATTACK;
+                }
+                if (!canChase()){
+                    state = FSMState.WANDER;
+                }
+                break;
+            case ATTACK:
+                if (!canHitTarget()){
+                    state = FSMState.CHASE;
+                }
+        }
     }
 
     private void markGoalTiles() {
@@ -184,7 +276,7 @@ public class EnemyController implements InputController{
                 }
                 break;
             case CHASE:
-                if (target != null) {
+                if (detectedPlayer()) {
                     board.setGoal(board.worldToBoard(target.getX()), board.worldToBoard(target.getY()));
                 }
                 break;
