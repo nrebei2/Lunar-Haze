@@ -41,12 +41,6 @@ public class EnemyController implements InputController{
     /**
      * Enumeration to describe what direction the enemy is facing
      */
-    private enum Direction{
-        NORTH,
-        EAST,
-        SOUTH,
-        WEST
-    }
 
 
     // Instance Attributes
@@ -70,7 +64,6 @@ public class EnemyController implements InputController{
     private int move; // A ControlCode
 
     /** The direction the enemy is facing*/
-    private Direction direction;
 
     /** The number of ticks since we started this controller */
     private long ticks;
@@ -115,6 +108,10 @@ public class EnemyController implements InputController{
      * @return true if we can both fire and hit our target
      */
     private boolean detectedPlayer(){
+        Enemy.Direction direction = enemy.getDirection();
+        if (direction == null){
+            return false;
+        }
         boolean inLine;
         switch (direction){
             case NORTH:

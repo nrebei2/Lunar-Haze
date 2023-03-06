@@ -30,6 +30,16 @@ public class Enemy extends GameObject{
     /** points (in Tile index) in the enemy's patrolPath */
     private ArrayList<Vector2> patrolPath;
 
+    private Direction direction;
+
+    public enum Direction{
+        NORTH,
+        SOUTH,
+        WEST,
+        EAST
+    }
+
+
     /**
      * Returns the type of this object.
      *
@@ -47,6 +57,10 @@ public class Enemy extends GameObject{
      */
     public Boolean getIsAlerted() {
         return isAlerted;
+    }
+
+    public Direction getDirection(){
+        return this.direction;
     }
 
     /**
@@ -68,6 +82,7 @@ public class Enemy extends GameObject{
         this.patrolPath = patrolPath;
         animeframe = 0.0f;
         isAlerted = false;
+        direction = Direction.NORTH;
     }
     /** get the next patrol point of the enemy */
     public Vector2  getNextPatrol() {
