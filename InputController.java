@@ -1,0 +1,115 @@
+package infinityx.lunarhaze;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Input.Keys;
+
+/**
+ * Device-independent input manager.
+ *
+ * This class supports keyboard controller.
+ */
+public class InputController {
+    /** How much did we move horizontally? */
+    private float horizontal;
+    /** How much did we move vertically? */
+    private float vertical;
+    /** Did we press the attack button? */
+    private boolean attackPressed;
+    /** Whether the collect button was pressed. */
+    private boolean collectPressed;
+    /** Whether the use button was pressed. */
+    private boolean usePressed;
+    /** Whether the reset button was pressed. */
+    private boolean resetPressed;
+
+    /**
+     * Returns the amount of sideways movement.
+     *
+     * -1 = left, 1 = right, 0 = still
+     *
+     * @return the amount of sideways movement.
+     */
+    public float getHorizontal() {
+        return horizontal;
+    }
+
+    /**
+     * Returns the amount of vertical movement.
+     *
+     * -1 = down, 1 = up, 0 = still
+     *
+     * @return the amount of vertical movement.
+     */
+    public float getVertical() {
+        return vertical;
+    }
+
+    /**
+     * Returns true if the reset button was pressed.
+     *
+     * @return true if the reset button was pressed.
+     */
+    public boolean didReset() {
+        return resetPressed;
+    }
+
+    /**
+     * Returns true if the attack button was pressed.
+     *
+     * @return true if the attack button was pressed.
+     */
+    public boolean didAttack() {
+        return attackPressed;
+    }
+
+    /**
+     * Returns true if the collect button was pressed.
+     *
+     * @return true if the collect button was pressed.
+     */
+    public boolean didCollect() {
+        return collectPressed;
+    }
+
+    /**
+     * Returns true if the use button was pressed.
+     *
+     * @return true if the use button was pressed.
+     */
+    public boolean didUse() {
+        return usePressed;
+    }
+
+    /**
+     * Reads input from the keyboard.
+     *
+     * This controller reads from the keyboard.
+     *
+     */
+    private void readKeyboard() {
+        resetPressed = (resetPressed) || (Gdx.input.isKeyPressed(Input.Keys.R));
+        attackPressed = (attackPressed) || (Gdx.input.isKeyPressed(Keys.SPACE));
+        collectPressed = (collectPressed) || (Gdx.input.isKeyPressed(Input.Keys.E));
+        usePressed  = (usePressed) || (Gdx.input.isKeyPressed(Input.Keys.F));
+
+        // Directional controls
+        horizontal = horizontal;
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            horizontal += 1.0f;
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+            horizontal -= 1.0f;
+        }
+        vertical = vertical;
+        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+            vertical += 1.0f;
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+            vertical -= 1.0f;
+        }
+
+    }
+
+
+}
