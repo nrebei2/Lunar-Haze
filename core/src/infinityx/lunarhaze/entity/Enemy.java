@@ -137,7 +137,6 @@ public class Enemy extends GameObject{
         throw new NotImplementedException();
     }
 
-    @Override
     public void draw(GameCanvas canvas) {
         throw new NotImplementedException();
     }

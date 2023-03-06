@@ -6,16 +6,13 @@ package infinityx.lunarhaze;
  * the instructions.  All objects in this game are treated as circles,
  * and a collision happens when circles intersect.
  *
- * This controller is EXTREMELY ineffecient.  To improve its performance,
- * you will need to use collision cells, as described in the instructions.
- * You should not need to modify any method other than the constructor
- * and processCollisions.  However, you will need to add your own methods.
+ * Three main methods are used here to check for collisions:
+ * -processBounds: checks whether a game object walks out of the game window
+ * -processCollisions: checks whether collision occurs between two game objects' shadows
+ * -processTiles: checks whether a game object's shadow attempts to walk on a non-walkable tile
  *
- * This is the only file that you need to modify as the first part of
- * the lab.
- *
- * Author: Walker M. White
- * Based on original Optimization Lab by Don Holden, 2007
+ * Author: Sicheng A. Ma
+ * Based on Optimization Lab by Walker M. White, 2023
  * LibGDX version, 2/2/2015
  */
 
@@ -33,7 +30,8 @@ import java.util.Objects;
  * how to make it more efficient.
  */
 public class CollisionController {
-
+    /** Storage space for level details, used to detect collision on walkable/non-walkable tiles. */
+    private LevelContainer curr_level;
     // 'Bounciness' constants
     /** Restitution for colliding with the (hard coded) box */
     protected static final float BOX_COEFF_REST   = 0.95f;
@@ -43,18 +41,13 @@ public class CollisionController {
     protected static final float DAMPENING_FACTOR = 0.95f;
 
     // Geometry of the background image
-    /** (Scaled) distance of the floor ledge from bottom */
-    protected static final float BOTTOM_OFFSET    = 0.075f;
     /** (Scaled) position of the box center */
     protected static final float BOX_X_POSITION   = 0.141f;
     /** (Scaled) position of half the box width */
     protected static final float BOX_HALF_WIDTH   = 0.133f;
     /** (Scaled) position of the box height from bottom of screen */
     protected static final float BOX_FULL_HEIGHT  = 0.2f;
-    /** (Scaled) position of the bump center */
-    protected static final float BUMP_X_POSITION  = 0.734f;
-    /** (Scaled) position of the bump radius */
-    protected static final float BUMP_RADIUS      = 0.11f;
+
 
     // These cannot be modified after the controller is constructed.
     // If these change, make a new constructor.
@@ -92,18 +85,6 @@ public class CollisionController {
     }
 
     /**
-     * Returns the height of the floor ledge.
-     *
-     * The floor ledge supports the player ship, and is what all of the shells
-     * bounce off of.  It is raised slightly higher than the bottom of the screen.
-     *
-     * @return the height of the floor ledge.
-     */
-    public float getFloorLedge() {
-        return BOTTOM_OFFSET*height;
-    }
-
-    /**
      * Returns x-coordinate of the center of the square box in the background image.
      *
      * @return x-coordinate of the center of the square bo
@@ -132,14 +113,6 @@ public class CollisionController {
         return BOX_FULL_HEIGHT * height;
     }
 
-    /**
-     * Returns x-coordinate of the center of the semicircular bump in the background image
-     *
-     * @return x-coordinate of the center of the semicircular bump
-     */
-    protected float getBumpX() {
-        return BUMP_X_POSITION * width;
-    }
 
     /**
      * Returns radius of the semicircular bump in the background image
@@ -287,13 +260,13 @@ public class CollisionController {
 
     /**
      * Check an enemy for being out-of-bounds.
+     * TODO Probably unnecessary
      *
      * Obviously an enemy off-screen is out of bounds.
      *
      * @param em     Shell to check
      */
     private void handleBounds(Enemy em) {
-        //TODO
         // Check if off right side
         if (em.getX() > getWidth() - em.getRadius()) {
             // Set within bounds on right and prevents from moving out of bounds
@@ -308,14 +281,20 @@ public class CollisionController {
         }
 
         // Check for in bounds on bottom
-        if (em.getY()-em.getRadius() < getFloorLedge()) {
+        if (em.getY() < em.getRadius()) {
             // Set within bounds on bottom and swap velocity
-            em.setY(getFloorLedge()+em.getRadius());
-            em.setVY(-em.getVY());
-
-            //TODO Constrict velocity
-            //sh.setVY((float)Math.max(sh.getMinVY(), sh.getVY() * sh.getFriction()));
+            em.setY(2 * em.getRadius() - em.getY());
+            em.setVY(0);
         }
+
+        // Check for in bounds on bottom
+        else if (em.getY() > getHeight() - em.getRadius()) {
+            // Set within bounds on bottom and swap velocity
+            em.setY(2 * (getHeight() - em.getRadius()) - em.getY());
+            em.setVY(0);
+        }
+        //TODO Constrict velocity
+        //sh.setVY((float)Math.max(sh.getMinVY(), sh.getVY() * sh.getFriction()));
     }
 
 
@@ -327,7 +306,6 @@ public class CollisionController {
      * @param ww     Werewolf to check
      */
     private void handleBounds(Werewolf ww) {
-        //TODO
         // Check if off right side
         if (ww.getX() > getWidth() - ww.getRadius()) {
             // Set within bounds on right and prevents from moving out of bounds
@@ -342,24 +320,18 @@ public class CollisionController {
         }
 
         // Check for in bounds on bottom
-        if (ww.getY()-ww.getRadius() < getFloorLedge()) {
+        if (ww.getY() < ww.getRadius()) {
             // Set within bounds on bottom and swap velocity
-            ww.setY(getFloorLedge()+ww.getRadius());
-            ww.setVY(-ww.getVY());
-
-            //TODO Constrict velocity
-            //sh.setVY((float)Math.max(sh.getMinVY(), sh.getVY() * sh.getFriction()));
+            ww.setY(2 * ww.getRadius() - ww.getY());
+            ww.setVY(0);
         }
-    }
 
-    /**
-     * Check a object for being on a walkable tile.
-     *
-     *
-     * @param ww     Werewolf to check
-     */
-    private void checkWalkable(Werewolf ww) {
-        //TODO
+        // Check for in bounds on bottom
+        else if (ww.getY() > getHeight() - ww.getRadius()) {
+            // Set within bounds on bottom and swap velocity
+            ww.setY(2 * (getHeight() - ww.getRadius()) - ww.getY());
+            ww.setVY(0);
+        }
     }
 
 
@@ -385,31 +357,9 @@ public class CollisionController {
         }
     }
 
-    //TODO Not sure whether we need this method but still just gonna keep it here
-    /**
-     * Detect collision with semicircular bump in the terrain.
-     *
-     * @param o Object to check
-     * @param x Offset of the bump
-     */
-    public void hitBump(GameObject o, float x) {
-        // Make sure to not just change the velocity but also move the
-        // object so that it no longer penetrates the terrain.
-        float dx = o.getX() - x;
-        float dy = o.getY() - getFloorLedge();
-        float dist = (float)Math.sqrt(dx * dx + dy * dy);
-        if (dist < 0.1f * width) {
-            float norm_x = dx / dist;
-            float norm_y = Math.abs(dy / dist);
-            float tmp = (o.getVX() * norm_x + o.getVY() * norm_y)*BUMP_COEFF_REST;
-            o.getVelocity().sub(norm_x * tmp, norm_y * tmp);
-            o.setY(getFloorLedge() + norm_y * getBumpRadius());
-        }
-    }
-
 
     /**
-     * Detect and resolve collisions between two game objects
+     * Detect and resolve collisions between two game objects' shadows
      *
      * @param o1 First object
      * @param o2 Second object
@@ -459,7 +409,7 @@ public class CollisionController {
         }
 
         // Find the axis of "collision"
-        temp1.set(e1.getPosition()).sub(e2.getPosition());
+        temp1.set(e1.getShadowposition()).sub(e2.getShadowposition());
         float dist = temp1.len();
 
         // Too far away
@@ -505,7 +455,7 @@ public class CollisionController {
         }
 
         // Find the axis of "collision"
-        temp1.set(en.getPosition()).sub(ww.getPosition());
+        temp1.set(en.getShadowposition()).sub(ww.getShadowposition());
         float dist = temp1.len();
 
         // Too far away
@@ -550,6 +500,68 @@ public class CollisionController {
         //Does Nothing. There is only one werewolf!
     }
 
+    /**
+     * Check if a GameObject is out of walkable tiles and take action.
+     *
+     *
+     * @param o      Object to check
+     */
+    private void processTiles(GameObject o) {
+        // Dispatch the appropriate helper for each type
+        switch (o.getType()) {
+            case ENEMY:
+                handleTiles((Enemy)o);
+                break;
+            case WEREWOLF:
+                handleTiles((Werewolf)o);
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * Check if a Werewolf is out of walkable tiles and take action.
+     *
+     *
+     * @param ww      Werewolf to check
+     */
+    private void handleTiles(Werewolf ww) {
+        if (ww.isDestroyed()) {
+            return;
+        }
+        //get the tile info for current object position
+        int tile_x = curr_level.getBoard().worldToBoard(ww.getShadowposition().x);
+        int tile_y = curr_level.getBoard().worldToBoard(ww.getShadowposition().y);
+        Vector2 tile_position = curr_level.getBoard().getTilePosition(tile_x,tile_y);
+
+        //checks whether the tile is walkable; if it is, do nothing
+        if (curr_level.getBoard().isWalkable(tile_x,tile_y)){
+            return;
+        } else {
+            // Find the axis of "collision"
+            temp1.set(ww.getShadowposition()).sub(tile_position);
+            float dist = temp1.len();
+            // Push the enemies out so that they do not collide
+            float distToPush = 0.01f + (curr_level.getBoard().getRadius() + ww.getRadius() - dist) / 2;
+            temp1.nor();
+            temp1.scl(distToPush);
+            ww.getPosition().add(temp1);
+            // Set the werewolf velocity back to 0
+            ww.setVX(0);
+            ww.setVY(0);
+        }
+    }
+
+    /**
+     * Check if an Enemy is out of walkable tiles and take action.
+     *
+     *
+     * @param en      Enemy to check
+     */
+    private void handleTiles(Enemy en) {
+        //TODO
+    }
 
     //#endregion
 }
