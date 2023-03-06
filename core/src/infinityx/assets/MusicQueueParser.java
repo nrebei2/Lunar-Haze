@@ -12,7 +12,7 @@ package infinityx.assets;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
-import edu.cornell.gdiac.audio.MusicQueue;
+import infinityx.audio.MusicQueue;
 
 /**
  * This class parses a JSON entry into a {@link MusicQueue}.
