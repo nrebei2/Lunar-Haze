@@ -8,14 +8,26 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class Werewolf extends GameObject{
 
+    /** Move speed **/
+    private static final float WEREWOLF_SPEED = 4.0f;
+
+    /** How fast we change frames (one frame per 4 calls to update) */
+    private static final float ANIMATION_SPEED = 0.25f;
+
     /** Initial hp of the werewolf is 100 **/
     private static final float INITIAL_HP = 100;
 
-    /** Movement of the werewolf **/
-    private float movement = 0.0f;
+    /** The right/left movement of the werewolf **/
+    private float movementH = 0.0f;
+
+    /** The up/down movement of the werewolf **/
+    private float movementV = 0.0f;
 
     /** Whether the  player stands on a moonlight tile**/
     private Boolean moonlight;
+
+    /** Number of moonlight tiles collected **/
+    private int moonlightCollected;
 
     /** Current animation frame for this werewolf */
     private float animeframe;
@@ -39,8 +51,17 @@ public class Werewolf extends GameObject{
      *
      * @return the current player movement input.
      */
-    public float getMovement() {
-        return movement;
+    public float getMovementH() {
+        return movementH;
+    }
+
+    /**
+     * Returns the current player (up/down) movement input.
+     *
+     * @return the current player movement input.
+     */
+    public float getMovementV() {
+        return movementV;
     }
 
     /**
@@ -48,15 +69,24 @@ public class Werewolf extends GameObject{
      *
      * @param value the current player movement input.
      */
-    public void setMovement(float value) {
-        movement = value;
+    public void setMovementH(float value) {
+        movementH = value;
+    }
+
+    /**
+     * Sets the current player (uo/down) movement input.
+     *
+     * @param value the current player movement input.
+     */
+    public void setMovementV(float value) {
+        movementV = value;
     }
 
     /**
      * Returns the current hp of the werewolf.
      */
     public float getHp() {
-        return movement;
+        return hp;
     }
 
     /**
@@ -79,6 +109,7 @@ public class Werewolf extends GameObject{
 
     public void setOnMoonlight(Boolean b) {
         moonlight = b;
+        if(b) moonlightCollected++;
     }
 
     /**
@@ -103,7 +134,16 @@ public class Werewolf extends GameObject{
         // Call superclass's update
         super.update(delta);
 
-        throw new NotImplementedException();
+        if (movementH != 0.0f) {
+            animeframe += ANIMATION_SPEED;
+            position.x += movementH * WEREWOLF_SPEED;
+        }
+
+        if (movementV != 0.0f) {
+            animeframe += ANIMATION_SPEED;
+            position.x += movementV * WEREWOLF_SPEED;
+        }
+
     }
 
     /**
