@@ -84,7 +84,8 @@ public class Werewolf extends GameObject{
     /**
      * Initialize a werewolf not standing on moonlight tile.
      */
-    public Werewolf() {
+    public Werewolf(float x, float y) {
+        super(x, y);
         animeframe = 0.0f;
         moonlight = false;
         hp = INITIAL_HP;
