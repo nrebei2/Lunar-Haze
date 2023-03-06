@@ -10,11 +10,15 @@ public class LevelParser {
      * Creates a level given a json value.
      * Json value formatted as in assets/levels.json.
      *
-     * @param json 
+     * @param json
      */
     public LevelContainer loadData(JsonValue json, int level) {
-        JsonValue
+        JsonValue levelContents = json.get(String.valueOf(level));
+        JsonValue scene = levelContents.get("scene");
+
+
         LevelContainer levelContainer = new LevelContainer(json.);
+        levelContainer.
         json.get();
         return null;
     }
