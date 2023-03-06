@@ -2,8 +2,11 @@ package infinityx.lunarhaze;
 
 import com.badlogic.gdx.utils.Array;
 import infinityx.lunarhaze.entity.Enemy;
+import infinityx.lunarhaze.entity.EnemyList;
 import infinityx.lunarhaze.entity.Werewolf;
+import infinityx.util.Drawable;
 
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -33,37 +36,38 @@ import java.util.List;
  *  GameCanvas should be doing any transformations
  */
 public class LevelContainer {
-    // TODO: At this point I do not feel a need for a memory pool or garbage collection
-    // since we will not have more than a few enemies or scene objects for each level
-    private Array<Enemy> enemies;
+    private EnemyList enemies;
     private Array<SceneObject> sceneObjects;
     private Werewolf player;
     private Board board;
 
+    /** Holds references to all drawable entities on the level (i.e. sceneObjects, player, enemies) */
+    private Array<Drawable> drawables;
+    private DrawableCompare drawComp = new DrawableCompare();
+
     /**
      * Creates a new LevelContainer with no active elements.
+     * @param numEnemies Number of enemies this level contains (at start)
      */
-    public LevelContainer() {
+    public LevelContainer(int numEnemies) {
         player = null;
         board = null;
-        enemies = new Array<>(true, 5);
+        enemies = new EnemyList(numEnemies);
         sceneObjects = new Array<>(true, 5);
+
+        // Add all entities to drawables
+        drawables.addAll(sceneObjects);
+        drawables.add(player);
+        for (Enemy enemy : enemies) {
+            drawables.add(enemy);
+        }
     }
 
     /**
-     * ID is just position in enemy list
-     *
-     * @return Corresponding enemy given ID
+     * @return All enemies in level. Note EnemyList contains dead ones too.
      */
-    public Enemy getEnemyByID(int ID) {
-        return enemies.get(ID);
-    }
-
-    /**
-     * @param enemy Enemy to add to scene
-     */
-    public void addEnemy(Enemy enemy) {
-        enemies.add(enemy);
+    public EnemyList getEnemies() {
+        return enemies;
     }
 
     /**
@@ -103,13 +107,29 @@ public class LevelContainer {
      */
     public void addSceneObject(SceneObject obj) {
         sceneObjects.add(obj);
+        drawables.add(obj);
     }
 
-    /** Draws the entire scene to the canvas
+    /**
+     * Draws the entire scene to the canvas
      *
      * @param canvas The drawing context
      */
     public void drawLevel(GameCanvas canvas) {
-        // Render order: Board tiles -> (players, enemeies, scene objects) sorted by depth (y coordinate)
+        // Render order: Board tiles -> (players, enemies, scene objects) sorted by depth (y coordinate)
+        board.draw(canvas);
+
+        // Uses timsort, so O(n) if already sorted, which is nice since it usually will be
+        drawables.sort(drawComp);
+        for (Drawable d: drawables) {
+            d.draw(canvas);
+        }
+    }
+}
+
+class DrawableCompare implements Comparator<Drawable> {
+    @Override
+    public int compare(Drawable d1, Drawable d2) {
+        return (int)Math.signum(d1.getY() - d2.getY());
     }
 }

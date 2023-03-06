@@ -2,6 +2,7 @@ package infinityx.lunarhaze;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
+import infinityx.util.Drawable;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
@@ -9,17 +10,10 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
  * Buildings, trees, large rocks etc.
  * This class is just for drawing, collisions should be handled through Board.
  */
-public class SceneObject {
+public class SceneObject extends Drawable {
 
-    // We can switch to FilmStrip later if we want animations
+    // TODO: We can switch to FilmStrip later if we want animations
     private Texture ObjectTexture;
-/**
-	 * Creates a new GameplayController with no active elements.
-	 */
-    /**
-     * Object world position (positioned on bottom left corner of sprite)
-     */
-    private Vector2 position;
 
     /**
      *
@@ -29,11 +23,7 @@ public class SceneObject {
         ObjectTexture = texture;
     }
 
-    /**
-     * Draws this obstacle to the canvas
-     *
-     * @param canvas The drawing context
-     */
+    @Override
     public void draw(GameCanvas canvas) {
         throw new NotImplementedException();
     }

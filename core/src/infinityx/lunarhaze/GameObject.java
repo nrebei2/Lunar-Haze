@@ -26,12 +26,13 @@ package infinityx.lunarhaze;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
+import infinityx.util.Drawable;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * Base class for all Model objects in the game.
  */
-public abstract class GameObject {
+public abstract class GameObject extends Drawable {
 	
 	/**
 	 * Enum specifying the type of this game object.
@@ -49,8 +50,6 @@ public abstract class GameObject {
 	}
 	
 	// Attributes for all game objects
-	/** Object world position (centered on the texture middle) */
-	protected Vector2 position;
 	/** Object velocity vector */
 	protected Vector2 velocity;
 	/** Reference to texture origin */
@@ -73,7 +72,7 @@ public abstract class GameObject {
 	}
 
 	/**
-	 * Returns the position of this object (e.g. location of the center pixel)
+	 * Returns the world position of this object (e.g. location of the bottom left pixel)
 	 *
 	 * The value returned is a reference to the position vector, which may be
 	 * modified freely.
@@ -82,6 +81,16 @@ public abstract class GameObject {
 	 */
 	public Vector2 getPosition() {
 		return position;
+	}
+
+	/**
+	 * Returns the centered world position of this object (e.g. location of the center pixel)
+	 *
+	 * @return the position of this object
+	 */
+	public Vector2 getCenteredPosition() {
+		// TODO
+		throw new NotImplementedException();
 	}
 
 	/**
@@ -152,8 +161,6 @@ public abstract class GameObject {
 
 	/**
 	 * Sets the y-coordinate of the object velocity.
-	 *
-	 * @param value the y-coordinate of the object velocity.
 	 */
 	public float getVY() {
 		return velocity.y;
@@ -241,14 +248,6 @@ public abstract class GameObject {
 		position.add(velocity);
 	}
 
-	/**
-	 * Draws this object to the canvas
-	 *
-	 * @param canvas The drawing context
-	 */
-	public void draw(GameCanvas canvas) {
-		throw new NotImplementedException();
 
-	}
 	
 }
