@@ -32,7 +32,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 /**
  * Base class for all Model objects in the game.
  */
-public abstract class GameObject extends Drawable {
+public abstract class GameObject implements Drawable {
 	
 	/**
 	 * Enum specifying the type of this game object.
@@ -50,6 +50,8 @@ public abstract class GameObject extends Drawable {
 	}
 	
 	// Attributes for all game objects
+	/** Object world position (center) */
+	protected Vector2 position;
 	/** Object velocity vector */
 	protected Vector2 velocity;
 	/** Reference to texture origin */
@@ -72,7 +74,7 @@ public abstract class GameObject extends Drawable {
 	}
 
 	/**
-	 * Returns the world position of this object (e.g. location of the bottom left pixel)
+	 * Returns the center world position of this object
 	 *
 	 * The value returned is a reference to the position vector, which may be
 	 * modified freely.
@@ -81,16 +83,6 @@ public abstract class GameObject extends Drawable {
 	 */
 	public Vector2 getPosition() {
 		return position;
-	}
-
-	/**
-	 * Returns the centered world position of this object (e.g. location of the center pixel)
-	 *
-	 * @return the position of this object
-	 */
-	public Vector2 getCenteredPosition() {
-		// TODO
-		throw new NotImplementedException();
 	}
 
 	/**
@@ -248,6 +240,8 @@ public abstract class GameObject extends Drawable {
 		position.add(velocity);
 	}
 
-
-	
+	@Override
+	public float getDepth() {
+		throw new NotImplementedException();
+	}
 }

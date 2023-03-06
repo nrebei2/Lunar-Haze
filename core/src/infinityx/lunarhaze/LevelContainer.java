@@ -130,6 +130,6 @@ public class LevelContainer {
 class DrawableCompare implements Comparator<Drawable> {
     @Override
     public int compare(Drawable d1, Drawable d2) {
-        return (int)Math.signum(d1.getY() - d2.getY());
+        return (int)Math.signum(d1.getDepth() - d2.getDepth());
     }
 }
