@@ -1,6 +1,7 @@
 package infinityx.lunarhaze.entity;
 
 import com.badlogic.gdx.math.Vector2;
+import infinityx.lunarhaze.GameCanvas;
 
 import java.util.ArrayList;
 import java.util.Iterator;
