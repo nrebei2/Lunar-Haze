@@ -3,6 +3,7 @@ package infinityx.lunarhaze;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Queue;
 import infinityx.lunarhaze.entity.Enemy;
+import infinityx.lunarhaze.entity.EnemyList;
 import infinityx.lunarhaze.entity.Werewolf;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -50,14 +51,14 @@ public class EnemyController implements InputController{
     private Detection detection;
 
     /** The other enemies; used to find targets */
-    private ArrayList<Enemy> allEnemies;
+    private EnemyList enemies;
 
     /** The game board; used for pathfinding */
     private Board board;
     /** The ship's current state in the FSM */
     private FSMState state;
     /** The target ship (to chase or attack). */
-    private Werewolf target = null;
+    private Werewolf target;
 
 
     /** The enemy next action (may include firing). */
@@ -78,12 +79,12 @@ public class EnemyController implements InputController{
      * @param board The game board (for pathfinding)
      * @param enemies The list of enemies (for detection)
      */
-    public EnemyController( int id, Werewolf target, ArrayList<Enemy> enemies, Board board){
+    public EnemyController( int id, Werewolf target, EnemyList enemies, Board board){
         this.enemy = enemies.get(id);
         this.board = board;
         this.target = target;
         this.state = FSMState.SPAWN;
-        this.allEnemies = enemies;
+        this.enemies = enemies;
         this.detection = Detection.LINE;
 
     }
@@ -131,14 +132,7 @@ public class EnemyController implements InputController{
         }
         return (worldToBoardDistance(enemy.getX(), enemy.getY(), target.getX(), target.getY()) <= DETECT_DIST && inLine );
     }
-
-    /**
-     * Acquire a target to attack (and put it in field target).
-     */
-    private void selectTarget() {
-        throw new NotImplementedException();
-
-    }
+    
 
     /**
      * Returns true if we can hit a target from here.
