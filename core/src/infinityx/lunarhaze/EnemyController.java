@@ -9,7 +9,23 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
 
-public class EnemyController implements InputController{
+public class EnemyController {
+
+    // Constants for the control codes
+    // We would normally use an enum here, but Java enums do not bitmask nicely
+    /** Do not do anything */
+    public static final int CONTROL_NO_ACTION  = 0x00;
+    /** Move the ship to the left */
+    public static final int CONTROL_MOVE_LEFT  = 0x01;
+    /** Move the ship to the right */
+    public static final int CONTROL_MOVE_RIGHT = 0x02;
+    /** Move the ship to the up */
+    public static final int CONTROL_MOVE_UP    = 0x04;
+    /** Move the ship to the down */
+    public static final int CONTROL_MOVE_DOWN  = 0x08;
+    /** Fire the ship weapon */
+    public static final int CONTROL_ATTACK 	   = 0x10;
+    
     private static final float DETECT_DIST = 2;
     private static final float CHASE_DIST = 4;
     private static final int ATTACK_DIST = 1;
@@ -132,7 +148,7 @@ public class EnemyController implements InputController{
         }
         return (worldToBoardDistance(enemy.getX(), enemy.getY(), target.getX(), target.getY()) <= DETECT_DIST && inLine );
     }
-    
+
 
     /**
      * Returns true if we can hit a target from here.
@@ -240,6 +256,10 @@ public class EnemyController implements InputController{
                     state = FSMState.WANDER;
                 }
                 break;
+            case WANDER:
+                if (Math.random() <= (double) (1/10)) {
+                    state = FSMState.RETURN;
+                }
             case ATTACK:
                 if (!canHitTarget()){
                     state = FSMState.CHASE;
