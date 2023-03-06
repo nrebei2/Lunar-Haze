@@ -170,7 +170,14 @@ public class Board {
      * @param y The y index for the Tile cell
      */
     private void drawTile(int x, int y, GameCanvas canvas) {
-        // TODO
+        Tile tile = getTile(x, y);
+
+        // Compute drawing coordinates
+        float sx = boardToWorld(x);
+        float sy = boardToWorld(y);
+
+        // Draw
+        canvas.draw(getTileTexture(x, y), sx, sy);
     }
 
     /**
