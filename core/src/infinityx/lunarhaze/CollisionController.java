@@ -560,7 +560,30 @@ public class CollisionController {
      * @param en      Enemy to check
      */
     private void handleTiles(Enemy en) {
-        //TODO
+        if (en.isDestroyed()) {
+            return;
+        }
+        //get the tile info for current object position
+        int tile_x = curr_level.getBoard().worldToBoard(en.getShadowposition().x);
+        int tile_y = curr_level.getBoard().worldToBoard(en.getShadowposition().y);
+        Vector2 tile_position = curr_level.getBoard().getTilePosition(tile_x,tile_y);
+
+        //checks whether the tile is walkable; if it is, do nothing
+        if (curr_level.getBoard().isWalkable(tile_x,tile_y)){
+            return;
+        } else {
+            // Find the axis of "collision"
+            temp1.set(en.getShadowposition()).sub(tile_position);
+            float dist = temp1.len();
+            // Push the enemies out so that they do not collide
+            float distToPush = 0.01f + (curr_level.getBoard().getRadius() + en.getRadius() - dist) / 2;
+            temp1.nor();
+            temp1.scl(distToPush);
+            en.getPosition().add(temp1);
+            // Set the werewolf velocity back to 0
+            en.setVX(0);
+            en.setVY(0);
+        }
     }
 
     //#endregion
