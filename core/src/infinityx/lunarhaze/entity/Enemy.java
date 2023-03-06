@@ -7,7 +7,13 @@ import com.badlogic.gdx.graphics.*;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class Enemy extends GameObject{
-
+// Instance Attributes
+    /** A unique identifier; used to decouple classes. */
+    private int id;
+    /** Ship position */
+    private Vector2 position;
+    /** Ship velocity */
+    private Vector2 velocity;
     /** Movement of the enemy **/
     private float movement;
 
@@ -17,6 +23,9 @@ public class Enemy extends GameObject{
     /** Whether the enemy is alerted. Once alerted,
      * the enemy start chasing werewolf */
     private Boolean isAlerted;
+
+    /** Whether the enemy is alive. */
+    private boolean isAlive;
 
     /**
      * Returns the type of this object.
@@ -29,23 +38,6 @@ public class Enemy extends GameObject{
         return ObjectType.ENEMY;
     }
 
-    /**
-     * Returns the enemy (left/right) movement input.
-     *
-     * @return the enemy movement input.
-     */
-    public float getMovement() {
-        return movement;
-    }
-
-    /**
-     * Sets the enemy movement input.
-     *
-     * @param value the enemy movement input.
-     */
-    public void setMovement(float value) {
-        movement = value;
-    }
 
     /**
      * Returns whether the enemy is alerted.
@@ -64,11 +56,38 @@ public class Enemy extends GameObject{
     /**
      * Initialize an enemy not alerted.
      */
-    public Enemy() {
+    public Enemy(int id, float x, float y) {
+        super(x,y);
+        this.id = id;
+        isAlive = true;
+
         animeframe = 0.0f;
         isAlerted = false;
     }
 
+    /**
+     * Returns whether or not the ship is alive.
+     *
+     * A ship is dead once it has fallen past MAX_FALL_AMOUNT. A dead ship cannot be
+     * targeted, involved in collisions, or drawn.  For all intents and purposes, it
+     * does not exist.
+     *
+     * @return whether or not the ship is alive
+     */
+    public boolean isAlive() {
+        return isAlive;
+    }
+
+    /**
+     * Returns whether or not the ship is active.
+     *
+     * An inactive ship is one that is either dead or dying.  A ship that has started
+     * to fall, but has not fallen past MAX_FALL_AMOUNT is inactive but not dead.
+     * Inactive ships are drawn but cannot be targeted or involved in collisions.
+     * They are just eye-candy at that point.
+     *
+     * @return whether or not the ship is active
+     */
     public void setTexture(Texture texture) {
         throw new NotImplementedException();
     }
@@ -99,5 +118,9 @@ public class Enemy extends GameObject{
      */
     public void draw(GameCanvas canvas) {
         throw new NotImplementedException();
+    }
+
+    public int getId() {
+        return this.id;
     }
 }

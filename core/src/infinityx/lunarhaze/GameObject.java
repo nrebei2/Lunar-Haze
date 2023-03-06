@@ -220,8 +220,8 @@ public abstract class GameObject {
 	 *
 	 * The created object has no position or size.  These should be set by the subclasses.
 	 */
-	public GameObject() {
-		position = new Vector2(0.0f, 0.0f);
+	public GameObject(float x, float y) {
+		position = new Vector2(x, y);
 		velocity = new Vector2(0.0f, 0.0f);
 		radius = 0.0f;
 		destroyed = false;
