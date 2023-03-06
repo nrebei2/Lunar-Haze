@@ -135,10 +135,6 @@ public class Enemy extends GameObject{
         super.update(delta);
     }
 
-    public void draw(GameCanvas canvas) {
-
-    }
-
     public int getId() {
         return this.id;
     }

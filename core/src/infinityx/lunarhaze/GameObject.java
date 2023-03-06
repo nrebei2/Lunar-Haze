@@ -321,4 +321,8 @@ public abstract class GameObject implements Drawable{
 	public float getDepth() {
 		throw new NotImplementedException();
 	}
+
+	public void draw(GameCanvas canvas) {
+		canvas.draw(getTexture(), getPosition().x, getPosition().y);
+	}
 }
