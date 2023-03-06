@@ -1,5 +1,8 @@
 package infinityx.lunarhaze.entity;
 
+import com.badlogic.gdx.math.Vector2;
+
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -21,7 +24,7 @@ public class EnemyList implements Iterable<Enemy> {
     public EnemyList(int size) {
         enemies = new Enemy[size];
         for (int ii = 0; ii < size; ii++) {
-            enemies[ii] = new Enemy(ii, 0,0);
+            enemies[ii] = new Enemy(ii, 0,0, new ArrayList<Vector2>());
         }
     }
 
