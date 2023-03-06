@@ -7,7 +7,7 @@ import infinityx.lunarhaze.entity.Werewolf;
 import infinityx.assets.AssetDirectory;
 
 public class GameplayController {
-    //TODO!!!!!!
+
     /** Texture for werewolf */
     private Texture werewolfTexture;
     /** Texture for all villagers, as they look the same */
@@ -19,10 +19,12 @@ public class GameplayController {
     /** The currently active object */
     private Array<GameObject> objects;
 
+    public Board board;
+
     public GameplayController() {
         player = null;
+        board = null;
     }
-
 
     /**
      * Populates this mode from the given the directory.
@@ -83,13 +85,16 @@ public class GameplayController {
      * @param x Starting x-position for the player
      * @param y Starting y-position for the player
      */
-    public void start(float x, float y) {
+    public void start(float x, float y, Board b) {
         // Create the player's ship
         player = new Werewolf(x, y);
         player.setTexture(werewolfTexture);
 
         // Player must be in object list.
         objects.add(player);
+
+        // Create the board
+        board = b;
     }
 
     /**
@@ -112,6 +117,7 @@ public class GameplayController {
         // Process the player
         if (player != null ) {
             resolvePlayer(input,delta);
+            resolveMoonlight();
         }
         // Process the other (non-ship) objects.
         for (GameObject o : objects) {
@@ -132,6 +138,14 @@ public class GameplayController {
         player.setMovementH(input.getHorizontal());
         player.setMovementV(input.getVertical());
         player.update(delta);
+    }
+
+    public void resolveMoonlight() {
+        int px = Math.round(player.position.x / board.getTileSize());
+        int py = Math.round(player.position.y / board.getTileSize());
+        if(board.isLit(px, py)) {
+            player.setOnMoonlight(true);
+        } else player.setOnMoonlight(false);
     }
 
 }

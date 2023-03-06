@@ -26,6 +26,9 @@ public class Werewolf extends GameObject{
     /** Whether the  player stands on a moonlight tile**/
     private Boolean moonlight;
 
+    /** Number of moonlight tiles collected **/
+    private int moonlightCollected;
+
     /** Current animation frame for this werewolf */
     private float animeframe;
 
@@ -106,6 +109,7 @@ public class Werewolf extends GameObject{
 
     public void setOnMoonlight(Boolean b) {
         moonlight = b;
+        if(b) moonlightCollected++;
     }
 
     /**
