@@ -36,16 +36,7 @@ import infinityx.util.ScreenObservable;
 
 /**
  * Class that provides a loading screen for the state of the game.
- *
- * You still DO NOT need to understand this class for this lab.  We will talk about this
- * class much later in the course.  This class provides a basic template for a loading
- * screen to be used at the start of the game or between levels.  Feel free to adopt
- * this to your needs.
- *
- * You will note that this mode has some textures that are not loaded by the AssetManager.
- * You are never required to load through the AssetManager.  But doing this will block
- * the application.  That is why we try to have as few resources as possible for this
- * loading screen.
+ * TODO: Make screen fade in and out
  */
 public class LoadingMode extends ScreenObservable implements Screen, InputProcessor {
     // There are TWO asset managers.  One to load the loading screen.  The other to load the assets
@@ -56,8 +47,6 @@ public class LoadingMode extends ScreenObservable implements Screen, InputProces
 
     /** Background texture for start-up */
     private Texture background;
-    /** Play button to display when done */
-    private Texture playButton;
     /** Texture atlas to support a progress bar */
     private final Texture statusBar;
 
@@ -85,8 +74,6 @@ public class LoadingMode extends ScreenObservable implements Screen, InputProces
     private static float BAR_WIDTH_RATIO  = 0.66f;
     /** Ration of the bar height to the screen */
     private static float BAR_HEIGHT_RATIO = 0.25f;
-    /** Height of the progress bar */
-    private static float BUTTON_SCALE  = 0.75f;
 
     /** Reference to GameCanvas created by the root */
     private GameCanvas canvas;
@@ -105,8 +92,6 @@ public class LoadingMode extends ScreenObservable implements Screen, InputProces
 
     /** Current progress (0 to 1) of the asset manager */
     private float progress;
-    /** The current state of the play button */
-    private int   pressState;
     /** The amount of time to devote to loading assets (as opposed to on screen hints, etc.) */
     private int   budget;
 
@@ -139,15 +124,6 @@ public class LoadingMode extends ScreenObservable implements Screen, InputProces
      */
     public void setBudget(int millis) {
         budget = millis;
-    }
-
-    /**
-     * Returns true if all assets are loaded and the player is ready to go.
-     *
-     * @return true if the player is ready to go
-     */
-    public boolean isReady() {
-        return pressState == 2;
     }
 
     /**
@@ -198,7 +174,6 @@ public class LoadingMode extends ScreenObservable implements Screen, InputProces
         internal.finishLoading();
 
         // Load the next two images immediately.
-        playButton = null;
         background = internal.getEntry( "background", Texture.class );
         background.setFilter( TextureFilter.Linear, TextureFilter.Linear );
         statusBar = internal.getEntry( "progress", Texture.class );
@@ -214,7 +189,6 @@ public class LoadingMode extends ScreenObservable implements Screen, InputProces
 
         // No progress so far.
         progress = 0;
-        pressState = 0;
 
         Gdx.input.setInputProcessor( this );
 
@@ -242,12 +216,11 @@ public class LoadingMode extends ScreenObservable implements Screen, InputProces
      * @param delta Number of seconds since last animation frame
      */
     private void update(float delta) {
-        if (playButton == null) {
+        if (progress < 1.0f) {
             assets.update(budget);
             this.progress = assets.getProgress();
             if (progress >= 1.0f) {
                 this.progress = 1.0f;
-                playButton = internal.getEntry("play",Texture.class);
             }
         }
     }
@@ -262,13 +235,7 @@ public class LoadingMode extends ScreenObservable implements Screen, InputProces
     private void draw() {
         canvas.begin();
         canvas.draw(background, 0, 0);
-        if (playButton == null) {
-            drawProgress(canvas);
-        } else {
-            Color tint = (pressState == 1 ? Color.GRAY: Color.WHITE);
-            canvas.draw(playButton, tint, playButton.getWidth()/2, playButton.getHeight()/2,
-                    centerX, centerY, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
-        }
+        drawProgress(canvas);
         canvas.end();
     }
 
@@ -317,9 +284,7 @@ public class LoadingMode extends ScreenObservable implements Screen, InputProces
         if (active) {
             update(delta);
             draw();
-
-            // We are are ready, notify our listener
-            if (isReady() && observer != null) {
+            if (progress >= 1.0f) {
                 observer.exitScreen(this, 0);
             }
         }
@@ -387,32 +352,12 @@ public class LoadingMode extends ScreenObservable implements Screen, InputProces
     /**
      * Called when the screen was touched or a mouse button was pressed.
      *
-     * This method checks to see if the play button is available and if the click
-     * is in the bounds of the play button.  If so, it signals the that the button
-     * has been pressed and is currently down. Any mouse button is accepted.
-     *
      * @param screenX the x-coordinate of the mouse on the screen
      * @param screenY the y-coordinate of the mouse on the screen
      * @param pointer the button or touch finger number
      * @return whether to hand the event to other listeners.
      */
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        if (playButton == null || pressState == 2) {
-            return true;
-        }
-
-        // Flip to match graphics coordinates
-        screenY = heightY-screenY;
-
-        // TODO: Fix scaling
-        // Play button is a circle.
-        float radius = BUTTON_SCALE*scale*playButton.getWidth()/2.0f;
-        float dist = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
-        if (dist < radius*radius) {
-            pressState = 1;
-        }
-        return false;
-    }
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) { return true; }
 
     /**
      * Called when a finger was lifted or a mouse button was released.
@@ -425,13 +370,7 @@ public class LoadingMode extends ScreenObservable implements Screen, InputProces
      * @param pointer the button or touch finger number
      * @return whether to hand the event to other listeners.
      */
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        if (pressState == 1) {
-            pressState = 2;
-            return false;
-        }
-        return true;
-    }
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) { return true; }
 
     // UNSUPPORTED METHODS FROM InputProcessor
 
@@ -499,6 +438,4 @@ public class LoadingMode extends ScreenObservable implements Screen, InputProces
     public boolean touchDragged(int screenX, int screenY, int pointer) {
         return true;
     }
-
-
 }

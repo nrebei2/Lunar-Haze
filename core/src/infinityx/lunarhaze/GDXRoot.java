@@ -7,6 +7,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
+import infinityx.assets.AssetDirectory;
 import infinityx.util.ScreenObserver;
 
 import java.util.Observable;
@@ -18,7 +19,7 @@ public class GDXRoot extends Game implements ScreenObserver {
 	// Multiple Modes/Screens (GameMode, LoadingMode, etc.) with GDXRoot handling switching the scenes
 
 	/** AssetManager to load game assets (textures, sounds, etc.) */
-	//AssetDirectory directory;
+	AssetDirectory directory;
 	/** Drawing context to display graphics */
 	private GameCanvas canvas;
 	/** Asset loading screen */
@@ -44,8 +45,8 @@ public class GDXRoot extends Game implements ScreenObserver {
 
 		// Initialize each screen
 		loading = new LoadingMode("assets.json", canvas, 1);
-		game = new GameMode();
-		menu = new MenuMode();
+		game = new GameMode(canvas);
+		menu = new MenuMode(canvas);
 
 		loading.setObserver(this);
 		setScreen(loading);
@@ -67,11 +68,11 @@ public class GDXRoot extends Game implements ScreenObserver {
 		canvas = null;
 
 		// Unload all of the resources
-		//if (directory != null) {
-		//	directory.unloadAssets();
-		//	directory.dispose();
-		//	directory = null;
-		//}
+		if (directory != null) {
+			directory.unloadAssets();
+			directory.dispose();
+			directory = null;
+		}
 		super.dispose();
 	}
 
@@ -98,11 +99,18 @@ public class GDXRoot extends Game implements ScreenObserver {
 	 * @param exitCode The state of the screen upon exit
 	 */
 	public void exitScreen(Screen screen, int exitCode) {
-		// TODO: Can think of this as a FSM with nodes as screens and the code determining the edges
+		// Can think of this as a FSM with nodes as screens and the code determining the edges
 		if (screen == loading) {
+			directory = loading.getAssets();
+			menu.gatherAssets(directory);
+			setScreen(menu);
 
-		} else if (screen == game) {
-
+			loading.dispose();
+			loading = null;
+		} else if (screen == menu) {
+			// TODO: exitCode is the level?
+			game.setupLevel(directory, exitCode);
+			setScreen(game);
 		} else {
 
 		}

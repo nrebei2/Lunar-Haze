@@ -2,6 +2,8 @@ package infinityx.lunarhaze;
 
 
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.utils.JsonValue;
+import infinityx.assets.AssetDirectory;
 import infinityx.util.ScreenObservable;
 
 
@@ -21,9 +23,39 @@ public class GameMode extends ScreenObservable implements Screen {
         // Game Over, Win, etc.
     }
 
-    // Initialize controllers
+    /** Owns the GameplayController */
+    private GameplayController gameplayController;
+    private GameCanvas canvas;
 
-    public GameMode() {  }
+    /** Both may be null, requires assets retrieved from AssetManager */
+    private JsonValue levelLayout;
+    private LevelContainer levelContainer;
+
+    // TODO: Maybe change to enum if there are not that many levels
+    private int level;
+
+    public GameMode(GameCanvas canvas) {
+        this.canvas = canvas;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+    /**
+     * Gather the required assets for the given level.
+     *
+     * This method extracts the asset variables from the given asset directory. It
+     * should only be called after the asset directory is completed.
+     *
+     * Creates the level container
+     *
+     * @param directory	Reference to global asset manager.
+     * @param level the level to load
+     */
+    public void setupLevel(AssetDirectory directory, int level) {
+
+    }
 
     /**
      * Called when this screen becomes the current screen for a {@link Game}.
