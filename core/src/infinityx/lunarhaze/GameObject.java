@@ -32,7 +32,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 /**
  * Base class for all Model objects in the game.
  */
-public abstract class GameObject {
+public abstract class GameObject implements Drawable{
 
 	/**
 	 * Enum specifying the type of this game object.
