@@ -6,6 +6,8 @@ import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.util.*;
+
 public class Enemy extends GameObject{
 // Instance Attributes
     /** A unique identifier; used to decouple classes. */
@@ -24,6 +26,9 @@ public class Enemy extends GameObject{
 
     /** Whether the enemy is alive. */
     private boolean isAlive;
+
+    /** points (in Tile index) in the enemy's patrolPath */
+    private ArrayList<Vector2> patrolPath;
 
     /**
      * Returns the type of this object.
@@ -51,16 +56,27 @@ public class Enemy extends GameObject{
         isAlerted = value;
     }
 
+    private int currentWayPoint;
+
     /**
      * Initialize an enemy not alerted.
      */
-    public Enemy(int id, float x, float y) {
+    public Enemy(int id, float x, float y, ArrayList<Vector2> patrolPath) {
         super(x,y);
         this.id = id;
         isAlive = true;
-
+        this.patrolPath = patrolPath;
         animeframe = 0.0f;
         isAlerted = false;
+    }
+    /** get the next patrol point of the enemy */
+    public Vector2  getNextPatrol() {
+        if (currentWayPoint > patrolPath.size()){
+            currentWayPoint = 0;
+        }
+        Vector2 next =  patrolPath.get(currentWayPoint);
+        currentWayPoint++;
+        return next;
     }
 
     /**

@@ -262,6 +262,9 @@ public class EnemyController implements InputController{
         switch (state){
             case SPAWN:
                 break;
+            case PATROL:
+                Vector2 pos = enemy.getNextPatrol();
+                board.setGoal((int)pos.x, (int)pos.y);
             case WANDER:
                 int x = board.worldToBoard(enemy.getX());
                 int y = board.worldToBoard(enemy.getY());
@@ -276,7 +279,7 @@ public class EnemyController implements InputController{
                 }
                 break;
             case CHASE:
-                if (detectedPlayer()) {
+                if (target != null) {
                     board.setGoal(board.worldToBoard(target.getX()), board.worldToBoard(target.getY()));
                 }
                 break;
