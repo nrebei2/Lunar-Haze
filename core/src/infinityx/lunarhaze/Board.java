@@ -2,6 +2,7 @@ package infinityx.lunarhaze;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Vector2;
 
 /**
  * Class represents a 2D grid of tiles.
@@ -13,6 +14,8 @@ public class Board {
     private int width;
     /** The board height (in number of tiles) */
     private int height;
+    /** Height/width of the tiles, in pixels */
+    private float radius;
     /** The tile grid (with above dimensions) */
     private Tile[] tiles;
 
@@ -374,6 +377,41 @@ public class Board {
             return;
         }
         getTile(x, y).setGoal(true);
+    }
+
+    /** Returns the radius (height or width, should be the same) of
+     * the tiles, in pixels
+     *
+     * @return the radius of tiles
+     */
+    public float getRadius() {
+        return radius;
+    }
+
+    /** Sets the radius (height or width, should be the same) of
+     * the tiles, in pixels
+     *
+     * @param radius the value to set
+     */
+    public void setRadius(float radius) {
+        this.radius = radius;
+    }
+
+    /**
+     * Returns the position of the given tile (center pixel)
+     *
+     * Returns null if that position is out of bounds.
+     *
+     * @param x x info for the tile
+     * @param y y info for the tile
+     *
+     * @return the position of the given tile
+     */
+    public Vector2 getTilePosition(int x, int y) {
+        if (!inBounds(x, y)) {
+            return null;
+        }
+        return getTile(x,y).getPosition();
     }
 
     /**

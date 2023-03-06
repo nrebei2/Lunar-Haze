@@ -9,6 +9,10 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import java.util.*;
 
 public class Enemy extends GameObject{
+
+    private static final float MOVE_SPEED = 6.5f;
+    private static final float TURN_SPEED = 15.0f;
+    private static final float SPEED_DAMPNING = 0.75f;
 // Instance Attributes
     /** A unique identifier; used to decouple classes. */
     private int id;
@@ -124,22 +128,11 @@ public class Enemy extends GameObject{
     /**
      * Updates the animation frame and position of this enemy.
      *
-     * Notice how little this method does.  It does not actively fire the weapon.  It
-     * only manages the cooldown and indicates whether the weapon is currently firing.
-     * The result of weapon fire is managed by the GameplayController.
-     *
      * @param delta Number of seconds since last animation frame
      */
     public void update(float delta) {
         // Call superclass's update
         super.update(delta);
-
-        throw new NotImplementedException();
-    }
-
-    @Override
-    public void draw(GameCanvas canvas) {
-        throw new NotImplementedException();
     }
 
     public int getId() {

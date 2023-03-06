@@ -7,8 +7,6 @@ import infinityx.lunarhaze.entity.EnemyList;
 import infinityx.lunarhaze.entity.Werewolf;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.util.ArrayList;
-
 public class EnemyController {
 
     // Constants for the control codes
@@ -25,7 +23,7 @@ public class EnemyController {
     public static final int CONTROL_MOVE_DOWN  = 0x08;
     /** Fire the ship weapon */
     public static final int CONTROL_ATTACK 	   = 0x10;
-    
+
     private static final float DETECT_DIST = 2;
     private static final float CHASE_DIST = 4;
     private static final int ATTACK_DIST = 1;

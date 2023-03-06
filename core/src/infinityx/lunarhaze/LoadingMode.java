@@ -93,7 +93,7 @@ public class LoadingMode extends ScreenObservable implements Screen, InputProces
     /** Current progress (0 to 1) of the asset manager */
     private float progress;
     /** The amount of time to devote to loading assets (as opposed to on screen hints, etc.) */
-    private int   budget;
+    private int budget;
 
     /** Whether or not this player mode is still active */
     private boolean active;

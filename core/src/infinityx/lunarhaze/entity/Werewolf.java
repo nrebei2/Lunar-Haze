@@ -2,20 +2,49 @@ package infinityx.lunarhaze.entity;
 
 import infinityx.lunarhaze.*;
 
+
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
+import infinityx.util.FilmStrip;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import com.badlogic.gdx.math.*;
+import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.physics.box2d.*;
+
+import com.badlogic.gdx.utils.JsonValue;
+
 public class Werewolf extends GameObject{
+
+    /** The frame number for a ship that is not turning */
+    public static final int SHIP_IMG_FLAT = 9;
+
+    /** Move speed **/
+    private static final float WEREWOLF_SPEED = 4.0f;
+
+    /** How fast we change frames (one frame per 4 calls to update) */
+    private static final float ANIMATION_SPEED = 0.25f;
 
     /** Initial hp of the werewolf is 100 **/
     private static final float INITIAL_HP = 100;
 
-    /** Movement of the werewolf **/
-    private float movement = 0.0f;
+    /** Reference to werewolf's sprite for drawing */
+    private FilmStrip werewolfSprite;
+
+    /** The right/left movement of the werewolf **/
+    private float movementH = 0.0f;
+
+    /** The up/down movement of the werewolf **/
+    private float movementV = 0.0f;
 
     /** Whether the  player stands on a moonlight tile**/
     private Boolean moonlight;
+
+    /** Whether the  player face right or not**/
+    private Boolean faceRight;
+
+    /** Number of moonlight tiles collected **/
+    private int moonlightCollected;
 
     /** Current animation frame for this werewolf */
     private float animeframe;
@@ -23,6 +52,31 @@ public class Werewolf extends GameObject{
     /** Health point (hp) of the werewolf */
     private float hp;
 
+    /**
+     * Returns the image filmstrip for this ship
+     *
+     * This value should be loaded by the GameMode and set there. However, we
+     * have to be prepared for this to be null at all times
+     *
+     * @return the image texture for this ship
+     */
+    public FilmStrip getFilmStrip() {
+        return werewolfSprite;
+    }
+
+
+    /**
+     * Sets the image texture for this ship
+     *
+     * This value should be loaded by the GameMode and set there. However, we
+     * have to be prepared for this to be null at all times
+     *
+     * param value the image texture for this ship
+     */
+    public void setFilmStrip(FilmStrip value) {
+        werewolfSprite = value;
+        werewolfSprite.setFrame(SHIP_IMG_FLAT);
+    }
     /**
      * Returns the type of this object.
      *
@@ -39,8 +93,17 @@ public class Werewolf extends GameObject{
      *
      * @return the current player movement input.
      */
-    public float getMovement() {
-        return movement;
+    public float getMovementH() {
+        return movementH;
+    }
+
+    /**
+     * Returns the current player (up/down) movement input.
+     *
+     * @return the current player movement input.
+     */
+    public float getMovementV() {
+        return movementV;
     }
 
     /**
@@ -48,15 +111,24 @@ public class Werewolf extends GameObject{
      *
      * @param value the current player movement input.
      */
-    public void setMovement(float value) {
-        movement = value;
+    public void setMovementH(float value) {
+        movementH = value;
+    }
+
+    /**
+     * Sets the current player (uo/down) movement input.
+     *
+     * @param value the current player movement input.
+     */
+    public void setMovementV(float value) {
+        movementV = value;
     }
 
     /**
      * Returns the current hp of the werewolf.
      */
     public float getHp() {
-        return movement;
+        return hp;
     }
 
     /**
@@ -79,6 +151,7 @@ public class Werewolf extends GameObject{
 
     public void setOnMoonlight(Boolean b) {
         moonlight = b;
+        if(b) moonlightCollected++;
     }
 
     /**
@@ -89,6 +162,7 @@ public class Werewolf extends GameObject{
         animeframe = 0.0f;
         moonlight = false;
         hp = INITIAL_HP;
+        moonlightCollected = 0;
     }
 
     public void setTexture(Texture texture) {
@@ -103,7 +177,16 @@ public class Werewolf extends GameObject{
         // Call superclass's update
         super.update(delta);
 
-        throw new NotImplementedException();
+        if (movementH != 0.0f) {
+            animeframe += ANIMATION_SPEED;
+            position.x += movementH * WEREWOLF_SPEED;
+        }
+
+        if (movementV != 0.0f) {
+            animeframe += ANIMATION_SPEED;
+            position.x += movementV * WEREWOLF_SPEED;
+        }
+
     }
 
     /**
@@ -115,6 +198,9 @@ public class Werewolf extends GameObject{
      * @param canvas The drawing context
      */
     public void draw(GameCanvas canvas) {
-        throw new NotImplementedException();
+        float effect = faceRight ? 1.0f : -1.0f;
+        float ox = 0.5f * werewolfSprite.getRegionWidth();
+        float oy = 0.5f * werewolfSprite.getRegionHeight();
+        canvas.draw(texture,Color.WHITE, ox, oy, position.x, position.y, 0.0f, effect , 1.f);
     }
 }

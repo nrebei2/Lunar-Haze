@@ -72,6 +72,7 @@ public class GameMode extends ScreenObservable implements Screen {
      * @param delta The time in seconds since the last render.
      */
     public void render(float delta) {
+        levelContainer.drawLevel(canvas);
     }
 
     /**
@@ -111,4 +112,5 @@ public class GameMode extends ScreenObservable implements Screen {
         // TODO: save player stats to json for persistence?
         // Though definitely save levels completed
     }
+
 }
