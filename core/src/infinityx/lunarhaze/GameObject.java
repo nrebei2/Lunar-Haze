@@ -72,7 +72,7 @@ public abstract class GameObject extends Drawable {
 	}
 
 	/**
-	 * Returns the position of this object (e.g. location of the center pixel)
+	 * Returns the world position of this object (e.g. location of the bottom left pixel)
 	 *
 	 * The value returned is a reference to the position vector, which may be
 	 * modified freely.
@@ -81,6 +81,16 @@ public abstract class GameObject extends Drawable {
 	 */
 	public Vector2 getPosition() {
 		return position;
+	}
+
+	/**
+	 * Returns the centered world position of this object (e.g. location of the center pixel)
+	 *
+	 * @return the position of this object
+	 */
+	public Vector2 getCenteredPosition() {
+		// TODO
+		throw new NotImplementedException();
 	}
 
 	/**
@@ -151,8 +161,6 @@ public abstract class GameObject extends Drawable {
 
 	/**
 	 * Sets the y-coordinate of the object velocity.
-	 *
-	 * @param value the y-coordinate of the object velocity.
 	 */
 	public float getVY() {
 		return velocity.y;
