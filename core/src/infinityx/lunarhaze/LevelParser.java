@@ -6,8 +6,16 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class LevelParser {
 
-    /** Creates a level given json */
-    public LevelContainer loadData(JsonValue json) {
-        throw new NotImplementedException();
+    /**
+     * Creates a level given a json value.
+     * Json value formatted as in assets/levels.json.
+     *
+     * @param json 
+     */
+    public LevelContainer loadData(JsonValue json, int level) {
+        JsonValue
+        LevelContainer levelContainer = new LevelContainer(json.);
+        json.get();
+        return null;
     }
 }

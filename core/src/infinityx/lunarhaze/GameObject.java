@@ -22,7 +22,6 @@
  * LibGDX version, 2/2/2015
  */
 package infinityx.lunarhaze;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
@@ -71,7 +70,8 @@ public abstract class GameObject implements Drawable{
 	/** CURRENT image for this object.  */
 	// TODO: Change to FilmStrip to support animations easier
 	protected Texture texture;
-	//protected FilmStrip animator;
+//	//protected FilmStrip animator;
+//	protected FilmStrip filmStrip;
 
 	public void setTexture(Texture texture) {
 		this.texture = texture;

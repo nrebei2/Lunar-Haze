@@ -111,6 +111,9 @@ public class GDXRoot extends Game implements ScreenObserver {
 			// TODO: exitCode is the level?
 			game.setupLevel(directory, exitCode);
 			setScreen(game);
+
+			//menu.dispose();
+			//menu = null;
 		} else {
 
 		}
