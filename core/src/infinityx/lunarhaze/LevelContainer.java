@@ -2,6 +2,7 @@ package infinityx.lunarhaze;
 
 import com.badlogic.gdx.utils.Array;
 import infinityx.lunarhaze.entity.Enemy;
+import infinityx.lunarhaze.entity.EnemyList;
 import infinityx.lunarhaze.entity.Werewolf;
 
 import java.util.List;
@@ -33,9 +34,7 @@ import java.util.List;
  *  GameCanvas should be doing any transformations
  */
 public class LevelContainer {
-    // TODO: At this point I do not feel a need for a memory pool or garbage collection
-    // since we will not have more than a few enemies or scene objects for each level
-    private Array<Enemy> enemies;
+    private EnemyList enemies;
     private Array<SceneObject> sceneObjects;
     private Werewolf player;
     private Board board;
@@ -43,10 +42,10 @@ public class LevelContainer {
     /**
      * Creates a new LevelContainer with no active elements.
      */
-    public LevelContainer() {
+    public LevelContainer(int numEnemies) {
         player = null;
         board = null;
-        enemies = new Array<>(true, 5);
+        enemies = new EnemyList(numEnemies);
         sceneObjects = new Array<>(true, 5);
     }
 
@@ -55,15 +54,8 @@ public class LevelContainer {
      *
      * @return Corresponding enemy given ID
      */
-    public Enemy getEnemyByID(int ID) {
-        return enemies.get(ID);
-    }
-
-    /**
-     * @param enemy Enemy to add to scene
-     */
-    public void addEnemy(Enemy enemy) {
-        enemies.add(enemy);
+    public EnemyList getEnemies() {
+        return enemies;
     }
 
     /**
@@ -111,5 +103,9 @@ public class LevelContainer {
      */
     public void drawLevel(GameCanvas canvas) {
         // Render order: Board tiles -> (players, enemeies, scene objects) sorted by depth (y coordinate)
+        board.draw(canvas);
+        player.draw(canvas);
+        sceneObjects.sort();
+
     }
 }

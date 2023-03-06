@@ -10,8 +10,6 @@ public class Enemy extends GameObject{
 // Instance Attributes
     /** A unique identifier; used to decouple classes. */
     private int id;
-    /** Ship position */
-    private Vector2 position;
     /** Ship velocity */
     private Vector2 velocity;
     /** Movement of the enemy **/
@@ -108,14 +106,7 @@ public class Enemy extends GameObject{
         throw new NotImplementedException();
     }
 
-    /**
-     * Draws this shell to the canvas
-     *
-     * There is only one drawing pass in this application, so you can draw the objects
-     * in any order.
-     *
-     * @param canvas The drawing context
-     */
+    @Override
     public void draw(GameCanvas canvas) {
         throw new NotImplementedException();
     }

@@ -26,12 +26,13 @@ package infinityx.lunarhaze;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
+import infinityx.util.Drawable;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * Base class for all Model objects in the game.
  */
-public abstract class GameObject {
+public abstract class GameObject extends Drawable {
 	
 	/**
 	 * Enum specifying the type of this game object.
@@ -49,8 +50,6 @@ public abstract class GameObject {
 	}
 	
 	// Attributes for all game objects
-	/** Object world position (centered on the texture middle) */
-	protected Vector2 position;
 	/** Object velocity vector */
 	protected Vector2 velocity;
 	/** Reference to texture origin */
@@ -241,14 +240,6 @@ public abstract class GameObject {
 		position.add(velocity);
 	}
 
-	/**
-	 * Draws this object to the canvas
-	 *
-	 * @param canvas The drawing context
-	 */
-	public void draw(GameCanvas canvas) {
-		throw new NotImplementedException();
 
-	}
 	
 }
