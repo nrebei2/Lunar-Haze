@@ -23,12 +23,11 @@ public class Board {
     /** The tile grid (with above dimensions) */
     private Tile[] tiles;
 
-    /** The world dimensions of a single tile
-     *  Every tile is 1 unit (meter)
-     *  Make sure player movement respects this length
-     */
+    // TODO: decouple world coordinates with screen coordinates
+    /** Tile Height/Width */
+    private static final float TILE_RATIO = 0.75f;
     private static final int TILE_WIDTH = 128;
-    private static final int TILE_HEIGHT = 96;
+    private static final int TILE_HEIGHT = (int)(TILE_WIDTH*TILE_RATIO);
 
     /**
      * Creates a new board of the given size
@@ -88,9 +87,9 @@ public class Board {
     }
 
     /**
-     * Returns the width of the tile.
+     * Returns the height of the tile.
      *
-     * @return the width of the tile.
+     * @return the height of the tile.
      */
     public int getTileHeight() {
         return TILE_HEIGHT;
@@ -191,46 +190,25 @@ public class Board {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 if (search(x,y,tinted_tiles)) {
-                    drawRedTile(x, y, canvas);
-                } else drawTile(x, y, canvas);
+                    drawTile(x, y, canvas, Color.RED);
+                } else drawTile(x, y, canvas, Color.WHITE);
             }
         }
     }
 
     /**
-     * Draws the board to the given canvas.
-     *
-     * This method draws all of the tiles in this board. It should be the first drawing
-     * pass in the GameEngine.
-     *
-     * @param canvas the drawing context
-     */
-    public void tint(int x, int y, GameCanvas canvas) {
-        drawRedTile(x, y, canvas);
-    }
-
-    /**
      * Draws the individual tile at position (x,y).
      *
      * @param x The x index for the Tile cell
      * @param y The y index for the Tile cell
      */
-    private void drawTile(int x, int y, GameCanvas canvas) {
-        Texture tiletexture = getTile(x,y).isLit() ? getTile(x,y).getTileTextureLit() : getTile(x,y).getTileTextureUnlit();
-        canvas.draw(tiletexture,Color.WHITE, TILE_WIDTH/2, TILE_HEIGHT/2, getTilePosition(x,y).x,getTilePosition(x, y).y, 0.0f, 1.0f, 1.0f);
-    }
-
-    /**
-     * Draws the individual tile at position (x,y).
-     *
-     * @param x The x index for the Tile cell
-     * @param y The y index for the Tile cell
-     */
-    private void drawRedTile(int x, int y, GameCanvas canvas) {
-        if(inBounds(x,y)) {
-            Texture tiletexture = getTile(x, y).isLit() ? getTile(x, y).getTileTextureLit() : getTile(x, y).getTileTextureUnlit();
-            canvas.draw(tiletexture, Color.RED, TILE_WIDTH / 2, TILE_HEIGHT / 2, getTilePosition(x, y).x, getTilePosition(x, y).y, 0.0f, 1.0f, 1.0f);
-        }
+    private void drawTile(int x, int y, GameCanvas canvas, Color tint) {
+        Texture tiletexture = getTileTexture(x, y);
+        canvas.draw(
+                tiletexture, tint, tiletexture.getWidth() / 2, tiletexture.getHeight() / 2,
+                getTilePosition(x,y).x,getTilePosition(x, y).y, 0.0f,
+                getTileWidth() / tiletexture.getWidth(), getTileHeight() / tiletexture.getHeight()
+        );
     }
 
     /**

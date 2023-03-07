@@ -1,5 +1,6 @@
 package infinityx.lunarhaze;
 
+import com.badlogic.gdx.assets.loaders.TextureLoader;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
@@ -27,12 +28,13 @@ public class LevelParser {
 
     public LevelContainer loadData(AssetDirectory directory, int level) {
         // Gets json data from directory
-        JsonValue json = directory.getEntry( "levels", JsonValue.class );
+        JsonValue json = directory.getEntry( "levels", JsonValue.class);
 
         // Get all textures
         Texture playerTexture = directory.getEntry("werewolf", Texture.class);
         Texture enemyTexture = directory.getEntry("villager", Texture.class);
-        /** tileTextures[2*x], tileTextures[2*x+1] are the unlit and lit textures for tile x respectively **/
+
+        /** tileTextures[2*x], tileTextures[2*x+1] are the unlit and lit textures for tile numbered (x+1) respectively **/
         Array<Texture> tileTextures = new Array<Texture>();
 
         for (int i = 1; i <= 6; i++) {
@@ -71,7 +73,7 @@ public class LevelParser {
         for (int y = 0; y < board.getHeight(); y++) {
             for (int x = 0; x < board.getWidth(); x++) {
                 int tileNum = tileData.get((board.getHeight() - y - 1)*board.getWidth() + x);
-                board.setTileTexture(x, y, tileTextures.get(tileNum*2), tileTextures.get(tileNum*2+1));
+                board.setTileTexture(x, y, tileTextures.get((tileNum-1)*2), tileTextures.get((tileNum-1)*2+1));
                 boolean moonInfo = (moonlightData.get((board.getHeight() - y - 1)*board.getWidth() + x)==1);
                 board.setLit(x, y, moonInfo);
                 board.setTileType(x, y, tileTypeFromNum(tileNum));

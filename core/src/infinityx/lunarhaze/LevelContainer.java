@@ -130,7 +130,7 @@ public class LevelContainer {
      */
     public void drawLevel(GameCanvas canvas) {
 
-//        Damn whats this ahhhhhh ok we are trying to tint enemy's line of sight into red
+        // TODO: add visible parameter to tile, move drawing logic into board, and enemycontroller should set tiles to visible
         ArrayList<Vector2> tint_tiles = new ArrayList<>();
         for (Enemy en: enemies) {
             Vector2 pos = board.worldToBoard(en.getPosition().x,en.getPosition().y);
