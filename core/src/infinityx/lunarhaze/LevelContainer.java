@@ -1,9 +1,17 @@
 package infinityx.lunarhaze;
 
+import box2dLight.Light;
+import box2dLight.RayHandler;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.EnemyList;
 import infinityx.lunarhaze.entity.Werewolf;
+import infinityx.lunarhaze.physics.ConeSource;
+import infinityx.lunarhaze.physics.LightSource;
 import infinityx.util.Drawable;
 import com.badlogic.gdx.math.*;
 
@@ -51,9 +59,20 @@ public class LevelContainer {
     private Array<Drawable> drawables;
     private DrawableCompare drawComp = new DrawableCompare();
 
+    /** Box2D world, for lighting */
+    protected World world;
+
+    /** Rayhandler for storing lights */
+    protected RayHandler rayHandler;
+
+    /** All light sources in level */
+    private Array<LightSource> lights = new Array<LightSource>();
+
+    /** The camera defining the RayHandler view; scale is in physics coordinates */
+    protected OrthographicCamera raycamera;
+
     /**
      * Creates a new LevelContainer with no active elements.
-     * @param numEnemies Number of enemies this level contains (at start)
      */
     public LevelContainer() {
         player = null;
@@ -62,6 +81,8 @@ public class LevelContainer {
         //sceneObjects = new Array<>(true, 5);
 
         drawables = new Array<Drawable>();
+
+        world = null;
     }
 
     /**
@@ -137,6 +158,32 @@ public class LevelContainer {
             d.draw(canvas);
         }
 
+    }
+
+    public void initLights(boolean gamma, boolean diffuse, int blur) {
+        // Initialize lighting system
+        world = new World(Vector2.Zero, false);
+
+        int width = 16;
+        int height = 12;
+
+        raycamera = new OrthographicCamera(width, height);
+        raycamera.position.set(width/2.0f, height/2.0f, 0);
+        raycamera.update();
+
+        RayHandler.setGammaCorrection(gamma);
+        RayHandler.useDiffuseLight(diffuse);
+        rayHandler = new RayHandler(world, Gdx.graphics.getWidth(), Gdx.graphics.getWidth());
+        rayHandler.setCombinedMatrix(raycamera);
+
+        rayHandler.setAmbientLight(Color.WHITE);
+        rayHandler.setBlur(blur > 0);
+        rayHandler.setBlurNum(blur);
+
+        // Create light for each enemy and attach
+        for(Enemy e : enemies) {
+            ConeSource cone = new ConeSource(rayHandler, 512);
+        }
     }
 }
 
