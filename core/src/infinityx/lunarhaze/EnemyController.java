@@ -1,11 +1,15 @@
 package infinityx.lunarhaze;
 
+import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Queue;
+import com.sun.org.apache.xerces.internal.impl.xs.identity.IdentityConstraint;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.EnemyList;
 import infinityx.lunarhaze.entity.Werewolf;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
+import javax.sound.sampled.Line;
 
 public class EnemyController {
 
@@ -25,7 +29,8 @@ public class EnemyController {
     public static final int CONTROL_ATTACK 	   = 0x10;
 
     private static final float DETECT_DIST = 2;
-    private static final float CHASE_DIST = 4;
+    private static final float DETECT_DIST_MOONLIGHT = 5;
+    private static final float CHASE_DIST = 3;
     private static final int ATTACK_DIST = 1;
 
     /**
@@ -51,6 +56,9 @@ public class EnemyController {
         LINE,
         /** The enemy can  detect the player in an area line*/
         AREA,
+        /** The enemy can  detect the player in a half circle*/
+        MOON
+
 
     }
     /**
@@ -112,9 +120,8 @@ public class EnemyController {
      * @return
      */
     private float worldToBoardDistance (float x, float y, float tx, float ty){
-        int dx = board.worldToBoard(tx) - board.worldToBoard(x);
-        int dy = board.worldToBoard(ty) - board.worldToBoard(y);
-        return (float) Math.sqrt(Math.pow(dx, 2) + Math.pow(dy,2));
+        Vector2 diff = board.worldToBoard(x,y).sub(board.worldToBoard(tx, ty));
+        return (float) Math.sqrt(Math.pow(diff.x, 2) + Math.pow(diff.y,2));
     }
 
     /**
@@ -128,23 +135,49 @@ public class EnemyController {
             return false;
         }
         boolean inLine;
-        switch (direction){
-            case NORTH:
-                 inLine = (target.getX() == enemy.getX()) && (target.getY() > enemy.getY());
-                break;
-            case SOUTH:
-                inLine = (target.getX() == enemy.getX()) && (target.getY() < enemy.getY());
-                break;
-            case EAST:
-                inLine = (target.getX() > enemy.getX()) && (target.getY() == enemy.getY());
-                break;
-            case WEST:
-                inLine = (target.getX() < enemy.getX()) && (target.getY() == enemy.getY());
-                break;
-            default:
-                throw new NotImplementedException();
+        boolean blind;
+        if (detection == Detection.LINE) {
+            switch (direction) {
+                case NORTH:
+                    inLine = (target.getX() == enemy.getX()) && (target.getY() > enemy.getY());
+                    break;
+                case SOUTH:
+                    inLine = (target.getX() == enemy.getX()) && (target.getY() < enemy.getY());
+                    break;
+                case EAST:
+                    inLine = (target.getX() > enemy.getX()) && (target.getY() == enemy.getY());
+                    break;
+                case WEST:
+                    inLine = (target.getX() < enemy.getX()) && (target.getY() == enemy.getY());
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+            return worldToBoardDistance(enemy.getX(), enemy.getY(), target.getX(),
+                    target.getY()) <= DETECT_DIST && inLine;
         }
-        return (worldToBoardDistance(enemy.getX(), enemy.getY(), target.getX(), target.getY()) <= DETECT_DIST && inLine );
+        else if (detection == Detection.MOON){
+            switch (direction) {
+                case NORTH:
+                    blind = target.getY() < enemy.getY();
+                    break;
+                case SOUTH:
+                    blind = target.getY() > enemy.getY();
+                    break;
+                case EAST:
+                    blind = target.getX() < enemy.getX();
+                    break;
+                case WEST:
+                    blind = target.getX() > enemy.getX();
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+            return worldToBoardDistance(enemy.getX(), enemy.getY(), target.getX(),
+                    target.getY()) <= DETECT_DIST_MOONLIGHT && !blind;
+        } else {
+            return false;
+        }
     }
 
 
@@ -160,8 +193,9 @@ public class EnemyController {
         if (!board.isWalkable(x,y) || target == null){
             return false;
         }
-        int dx = board.worldToBoard(target.getX()) - x;
-        int dy = board.worldToBoard(target.getY()) - y;
+        Vector2 pos = board.worldToBoard(target.getX(), target.getY());
+        int dx = (int)pos.x - x;
+        int dy = (int)pos.y - y;
 
         if ((dx == 0 && dy <= ATTACK_DIST ) || (dy == 0 && dx <= ATTACK_DIST)){
             return true;
@@ -179,7 +213,9 @@ public class EnemyController {
      * @return true if we can both fire and hit our target
      */
     private boolean canHitTarget() {
-        if (canHitTargetFrom(board.worldToBoard(enemy.getX()), board.worldToBoard(enemy.getY()))){
+
+        Vector2 pos = board.worldToBoard(enemy.getX(), enemy.getY());
+        if (canHitTargetFrom((int)pos.x , (int)pos.y)){
             return true;
         }
 
@@ -188,9 +224,7 @@ public class EnemyController {
 
     private boolean canChase(){
         return  (worldToBoardDistance(enemy.getX(), enemy.getY(), target.getX(), target.getY()) <= CHASE_DIST );
-
     }
-
 
     /**
      * Returns the action selected by this InputController
@@ -205,27 +239,30 @@ public class EnemyController {
      *
      * @return the action selected by this InputController
      */
-    public int getAction(){
+    public int getAction() {
+        // Increment the number of ticks.
         ticks++;
+
+        // Do not need to rework ourselves every frame. Just every 10 ticks.
         if ((enemy.getId() + ticks) % 10 == 0) {
             // Process the FSM
             changeStateIfApplicable();
+            changeDetectionIfApplicable();
 
             // Pathfinding
             markGoalTiles();
             move = getMoveAlongPathToGoalTile();
-
         }
+
         int action = move;
 
-        if (state == FSMState.ATTACK) {
+        // If we're attacking someone and we can shoot him now, then do so.
+        if (state == FSMState.ATTACK && canHitTarget()) {
             action |= CONTROL_ATTACK;
         }
 
         return action;
     }
-
-    // FSM Code for Targeting (MODIFY ALL THE FOLLOWING METHODS)
 
     /**
      * Change the state of the enemy.
@@ -239,7 +276,7 @@ public class EnemyController {
     private void changeStateIfApplicable() {
         switch (state){
             case SPAWN:
-                state = FSMState.PATROL;
+                state = FSMState.WANDER;
                 break;
             case PATROL:
                 if (detectedPlayer()){
@@ -255,33 +292,56 @@ public class EnemyController {
                 }
                 break;
             case WANDER:
-                if (Math.random() <= (double) (1/10)) {
-                    state = FSMState.RETURN;
-                }
+                break;
             case ATTACK:
                 if (!canHitTarget()){
                     state = FSMState.CHASE;
                 }
+                break;
+            default:
+                // Unknown or unhandled state, should never get here
+                assert (false);
+                state = FSMState.WANDER; // If debugging is off
+                break;
+        }
+    }
+
+    private void changeDetectionIfApplicable() {
+        switch (detection){
+            case LINE:
+                if (target.isOnMoonlight()){
+                    detection = Detection.MOON;
+                }
+                break;
+            case MOON:
+                if (!target.isOnMoonlight()){
+                    detection = Detection.LINE;
+                }
+                break;
         }
     }
 
     private void markGoalTiles() {
+        System.out.println("EnemyController markGoalTile");
         board.clearMarks();
+        Vector2 pos;
         boolean setGoal = false; // Until we find a goal
         switch (state){
             case SPAWN:
                 break;
             case PATROL:
-                Vector2 pos = enemy.getNextPatrol();
+                pos = enemy.getNextPatrol();
                 board.setGoal((int)pos.x, (int)pos.y);
+                break;
             case WANDER:
-                int x = board.worldToBoard(enemy.getX());
-                int y = board.worldToBoard(enemy.getY());
+                pos = board.worldToBoard(enemy.getX(), enemy.getY());
+                int x = (int)pos.x;
+                int y = (int)pos.y;
                 //#endregion
                 for (int i = -1; i < 2; i++ ){
                     for (int j = -1 ; j <2 ; j++){
                         if (board.isWalkable(x+i, y+j) && Math.random() <= (double)(1/9) && !setGoal && board.inBounds(x +i, y+j) ){
-                            board.setGoal(board.worldToBoard(x+i), board.worldToBoard(y+j) );
+                            board.setGoal(x+i, y+j);
                             setGoal = true;
                         }
                     }
@@ -289,19 +349,22 @@ public class EnemyController {
                 break;
             case CHASE:
                 if (target != null) {
-                    board.setGoal(board.worldToBoard(target.getX()), board.worldToBoard(target.getY()));
+                    pos = board.worldToBoard(target.getX(), target.getY());
+
+                    board.setGoal((int)pos.x, (int)pos.y);
                 }
                 break;
             case ATTACK:
                 if (target != null) {
-                    int target_x = board.worldToBoard(target.getX());
-                    int target_y = board.worldToBoard(target.getY());
+                    pos = board.worldToBoard(target.getX(), target.getY());
+                    int target_x = (int)pos.x;
+                    int target_y = (int)pos.y;
                     //#endregion
                     for (int i = -4; i < 5; i++) {
                         for (int j = -4; j < 5; j++) {
                             if (board.isWalkable(target_x + i, target_y + j) && canHitTargetFrom(target_x + i, target_y + i)
                                     && board.inBounds(target_x +i, target_y+j)) {
-                                board.setGoal(board.worldToBoard(target_x + i), board.worldToBoard(target_y + j));
+                                board.setGoal(target_x + i, target_y + j);
                                 setGoal = true;
                             }
                         }
@@ -310,9 +373,8 @@ public class EnemyController {
                 }
         }
         if (!setGoal) {
-            int sx = board.worldToBoard(enemy.getX());
-            int sy = board.worldToBoard(enemy.getY());
-            board.setGoal(sx, sy);
+            Vector2 position = board.worldToBoard(enemy.getX(), enemy.getY());
+            board.setGoal((int)position.x, (int)position.y);
         }
     }
 
@@ -332,13 +394,91 @@ public class EnemyController {
      * @return a movement direction that moves towards a goal tile.
      */
     private int getMoveAlongPathToGoalTile() {
-        throw new NotImplementedException();
+        //#region PUT YOUR CODE HERE
+        Vector2 pos = board.worldToBoard(enemy.getX(),enemy.getY());
+        int x = (int)pos.x;//board.worldToBoard(enemy.getX());
+        int y = (int)pos.y;//board.worldToBoard(enemy.getY());
+        if (board.isGoal(x,y)) {
+            return CONTROL_NO_ACTION;
+        }
+
+        Queue<TileData> queue = new Queue<>();
+
+
+        board.setVisited(x, y);
+        queue.addLast(new TileData(x,y));
+        while (!queue.isEmpty()){
+            TileData head = queue.first();
+            queue.removeFirst();
+            if (board.isGoal(head.x, head.y)){
+                return getDirection(head);
+            }
+            for (int[] direction : directions){
+                if(!board.isVisited(head.x + direction[0], head.y + direction[1]) && board.isWalkable(head.x + direction[0], head.y + direction[1]))
+                {
+                    TileData next = new TileData(head.x + direction[0], head.y + direction[1]);
+                    board.setVisited(next.getX(), next.getY());
+                    next.setPrevDirection(new int[]{direction[0], direction[1]});
+                    next.setPrev(head);
+                    queue.addLast(next);
+                }
+            }
+        }
+        return CONTROL_NO_ACTION;
+        //#endregion
     }
 
+    private int getDirection(TileData t){
+        while (t.prev.prev != null){
+            t = t.prev;
+        }
+        if (t.prevDirection[0] == -1){
+            return CONTROL_MOVE_LEFT;
+        }
+        else if (t.prevDirection[0] == 1){
+            return CONTROL_MOVE_RIGHT;
+        }
+        else if (t.prevDirection[1] == -1){
+            return CONTROL_MOVE_UP;
+        }
+        else if (t.prevDirection[1] == 1) {
+            return CONTROL_MOVE_DOWN;
+        }
+        return CONTROL_NO_ACTION;
+    }
 
+    // Add any auxiliary methods or data structures here
+    //#region PUT YOUR CODE HERE
 
+    private class TileData{
+        private final int x ;
+        private final int y;
 
+        public int[] prevDirection = null;
 
+        public TileData prev = null;
 
+        private TileData(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        public int getX() {
+            return x;
+        }
+
+        public int getY() {
+            return y;
+        }
+
+        public void setPrevDirection(int[] prev_direction) {
+            this.prevDirection = prev_direction;
+        }
+
+        public void setPrev(TileData prev) {
+            this.prev = prev;
+        }
+    }
+    public final int[][] directions = new int[][]{{1,0}, {-1,0}, {0,1}, {0,-1}};
 
 }

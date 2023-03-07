@@ -1,5 +1,6 @@
 package infinityx.lunarhaze.entity;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import infinityx.lunarhaze.*;
 
 import com.badlogic.gdx.math.*;
@@ -12,10 +13,12 @@ public class Enemy extends GameObject{
 // Instance Attributes
     /** A unique identifier; used to decouple classes. */
     private int id;
-    /** Ship velocity */
-    private Vector2 velocity;
+    private static final float MOVE_SPEED = 6.5f;
+
     /** Movement of the enemy **/
     private float movement;
+
+    private Boolean faceRight;
 
     /** Current animation frame for this werewolf */
     private float animeframe;
@@ -86,7 +89,7 @@ public class Enemy extends GameObject{
     }
     /** get the next patrol point of the enemy */
     public Vector2  getNextPatrol() {
-        if (currentWayPoint > patrolPath.size()){
+        if (currentWayPoint > patrolPath.size() - 1){
             currentWayPoint = 0;
         }
         Vector2 next =  patrolPath.get(currentWayPoint);
@@ -118,7 +121,7 @@ public class Enemy extends GameObject{
      * @return whether or not the ship is active
      */
     public void setTexture(Texture texture) {
-        throw new NotImplementedException();
+        super.setTexture(texture);
     }
 
     /**
@@ -128,17 +131,40 @@ public class Enemy extends GameObject{
      * only manages the cooldown and indicates whether the weapon is currently firing.
      * The result of weapon fire is managed by the GameplayController.
      *
-     * @param delta Number of seconds since last animation frame
      */
-    public void update(float delta) {
-        // Call superclass's update
-        super.update(delta);
+    public void update(int controlCode) {
+        boolean movingLeft  = (controlCode & EnemyController.CONTROL_MOVE_LEFT) != 0;
+        boolean movingRight = (controlCode & EnemyController.CONTROL_MOVE_RIGHT) != 0;
+        boolean movingUp    = (controlCode & EnemyController.CONTROL_MOVE_UP) != 0;
+        boolean movingDown  = (controlCode & EnemyController.CONTROL_MOVE_DOWN) != 0;
 
-        throw new NotImplementedException();
+        // Process movement command.
+        if (movingLeft) {
+            velocity.x = -MOVE_SPEED;
+            velocity.y = 0;
+        } else if (movingRight) {
+            velocity.x = MOVE_SPEED;
+            velocity.y = 0;
+        } else if (movingUp) {
+            velocity.y = -MOVE_SPEED;
+            velocity.x = 0;
+        } else if (movingDown) {
+            velocity.y = MOVE_SPEED;
+            velocity.x = 0;
+        } else {
+            // NOT MOVING, SO SLOW DOWN
+            velocity.x = 0;
+            velocity.y = 0;
+        }
+        position = position.add(velocity);
     }
 
     public void draw(GameCanvas canvas) {
-        throw new NotImplementedException();
+//        float effect = faceRight ? 1.0f : -1.0f;
+//        float ox = 0.5f * texture.getRegionWidth();
+//        float oy = 0.5f * werewolfSprite.getRegionHeight()
+//        TODO 1.0f is NOT OKAY
+        canvas.draw(texture,Color.WHITE, position.x, position.y, position.x, position.y, 0.0f, 1.0f , 1.0f);
     }
 
     public int getId() {

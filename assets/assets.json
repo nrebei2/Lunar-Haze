@@ -2,41 +2,26 @@
 	"textures": {
       "background": "shared/menu_bg.png",
       "play": "shared/play.png",
-      "tiles": {
-        "land1": {
-          "lit": "tiles/land1-lit.png",
-          "unlit": "tiles/land1-unlit.png"
-        },
-        "land2": {
-          "lit": "tiles/land2-lit.png",
-          "unlit": "tiles/land2-unlit.png"
-        },
-        "land3": {
-          "lit": "tiles/land3-lit.png",
-          "unlit": "tiles/land3-unlit.png"
-        },
-        "land4": {
-          "lit": "tiles/land4-lit.png",
-          "unlit": "tiles/land4-unlit.png"
-        },
-        "land5": {
-          "lit": "tiles/land5-lit.png",
-          "unlit": "tiles/land5-unlit.png"
-        },
-        "land6": {
-          "lit": "tiles/land6-lit.png",
-          "unlit": "tiles/land6-unlit.png"
-        }
-      },
-      "objects": {
+      "land1-lit": "tiles/land1-lit.png",
+      "land1-unlit": "tiles/land1-unlit.png",
+      "land2-lit": "tiles/land2-lit.png",
+      "land2-unlit": "tiles/land2-unlit.png",
+      "land3-lit": "tiles/land3-lit.png",
+      "land3-unlit": "tiles/land3-unlit.png",
+      "land4-lit": "tiles/land4-lit.png",
+      "land4-unlit": "tiles/land4-unlit.png",
+      "land5-lit": "tiles/land5-lit.png",
+      "land5-unlit": "tiles/land5-unlit.png",
+      "land6-lit": "tiles/land6-lit.png",
+      "land6-unlit": "tiles/land6-unlit.png",
+      "werewolf": "images/werewolf.png",
+      "villager" : "images/villager.png"
+    },
+    "objects": {
 
-      },
-      "player": {
-
-      }
     },
     "jsons"  : {
-
+      "levels": "levels.json"
     },
     "sounds" : {
 

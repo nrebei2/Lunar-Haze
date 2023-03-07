@@ -83,7 +83,9 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
     /**
      * Called when this screen should release all resources.
      */
-    public void dispose() {  }
+    public void dispose() {
+
+    }
 
     /**
      * Update the status of this menu.
@@ -124,7 +126,7 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
 
             // We are are ready, notify our listener
             if (isReady() && observer != null) {
-                observer.exitScreen(this, 0);
+                observer.exitScreen(this, 1);
             }
         }
     }

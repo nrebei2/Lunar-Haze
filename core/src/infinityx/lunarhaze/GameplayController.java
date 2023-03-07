@@ -3,8 +3,11 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
+import infinityx.lunarhaze.entity.Enemy;
+import infinityx.lunarhaze.entity.EnemyList;
 import infinityx.lunarhaze.entity.Werewolf;
 import infinityx.assets.AssetDirectory;
+import infinityx.util.FilmStrip;
 
 public class GameplayController {
 
@@ -16,29 +19,35 @@ public class GameplayController {
     /** Reference to player (need to change to allow multiple players) */
     private Werewolf player;
 
+    private EnemyList enemies;
+
     /** The currently active object */
     private Array<GameObject> objects;
+
+    private EnemyController[] controls;
 
     public Board board;
 
     public GameplayController() {
         player = null;
+        enemies = null;
         board = null;
+        objects = new Array<GameObject>();
     }
-
-    /**
-     * Populates this mode from the given the directory.
-     *
-     * The asset directory is a dictionary that maps string keys to assets.
-     * Assets can include images, sounds, and fonts (and more). This
-     * method delegates to the gameplay controller
-     *
-     * @param directory 	Reference to the asset directory.
-     */
-    public void populate(AssetDirectory directory) {
-        werewolfTexture = directory.getEntry("werewolf", Texture.class);
-        villagerTexture = directory.getEntry("villager", Texture.class);
-    }
+//
+//    /**
+//     * Populates this mode from the given the directory.
+//     *
+//     * The asset directory is a dictionary that maps string keys to assets.
+//     * Assets can include images, sounds, and fonts (and more). This
+//     * method delegates to the gameplay controller
+//     *
+//     * @param directory 	Reference to the asset directory.
+//     */
+//    public void populate(AssetDirectory directory) {
+//        werewolfTexture = directory.getEntry("werewolf", Texture.class);
+//        villagerTexture = directory.getEntry("villager", Texture.class);
+//    }
 
 
     /**
@@ -81,20 +90,21 @@ public class GameplayController {
      * Starts a new game.
      *
      * This method creates a single player, but does nothing else.
-     *
-     * @param x Starting x-position for the player
-     * @param y Starting y-position for the player
      */
-    public void start(float x, float y, Board b) {
+    public void start(LevelContainer levelContainer) {
         // Create the player's ship
-        player = new Werewolf(x, y);
-        player.setTexture(werewolfTexture);
-
+        player = levelContainer.getPlayer();
+        enemies = levelContainer.getEnemies();
         // Player must be in object list.
         objects.add(player);
-
         // Create the board
-        board = b;
+        board = levelContainer.getBoard();
+        controls = new EnemyController[enemies.size()];
+        for(int ii = 0; ii < enemies.size(); ii++) {
+            controls[ii] = new EnemyController(ii,player,enemies, board);
+            objects.add(enemies.get(ii));
+        }
+
     }
 
     /**
@@ -119,10 +129,11 @@ public class GameplayController {
             resolvePlayer(input,delta);
             resolveMoonlight();
         }
+        resolveEnemies();
         // Process the other (non-ship) objects.
-        for (GameObject o : objects) {
-            o.update(delta);
-        }
+//        for (GameObject o : objects) {
+//            o.update(delta);
+//        }
     }
 
     /**
@@ -141,11 +152,58 @@ public class GameplayController {
     }
 
     public void resolveMoonlight() {
-        int px = Math.round(player.position.x / board.getTileSize());
-        int py = Math.round(player.position.y / board.getTileSize());
+        int px = Math.round(player.position.x / board.getTileWidth());
+        int py = Math.round(player.position.y / board.getTileHeight());
         if(board.isLit(px, py)) {
             player.setOnMoonlight(true);
         } else player.setOnMoonlight(false);
     }
+
+    public void resolveEnemies(){
+        for (Enemy en: enemies){
+            if (controls[en.getId()] != null) {
+                int action = controls[en.getId()].getAction();
+//                boolean attacking = (action & EnemyController.CONTROL_ATTACK) != 0;
+                en.update(action);
+//                if (attacking &&) {
+//                    fireWeapon(s);
+//                } else {
+//                    s.coolDown(true);
+//                }
+
+            } else {
+
+                en.update(EnemyController.CONTROL_NO_ACTION);
+            }
+        }
+
+    }
+
+    /**
+     * Garbage collects all deleted objects.
+     *
+     * This method works on the principle that it is always cheaper to copy live objects
+     * than to delete dead ones.  Deletion restructures the list and is O(n^2) if the
+     * number of deletions is high.  Since Add() is O(1), copying is O(n).
+     *
+    public void garbageCollect() {
+        // INVARIANT: backing and objects are disjoint
+        for (GameObject o : objects) {
+            if (o.isDestroyed()) {
+                destroy(o);
+            } else {
+                backing.add(o);
+            }
+        }
+
+        // Swap the backing store and the objects.
+        // This is essentially stop-and-copy garbage collection
+        Array<GameObject> tmp = backing;
+        backing = objects;
+        objects = tmp;
+        backing.clear();
+    }
+*/
+
 
 }
