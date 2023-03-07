@@ -20,7 +20,7 @@ public class Werewolf extends GameObject{
     public static final int SHIP_IMG_FLAT = 9;
 
     /** Move speed **/
-    private static final float WEREWOLF_SPEED = 4.0f;
+    private static final float WEREWOLF_SPEED = 1.5f;
 
     /** How fast we change frames (one frame per 4 calls to update) */
     private static final float ANIMATION_SPEED = 0.25f;
@@ -29,7 +29,7 @@ public class Werewolf extends GameObject{
     private static final float INITIAL_HP = 100;
 
     /** Reference to werewolf's sprite for drawing */
-    private FilmStrip werewolfSprite;
+    //private FilmStrip werewolfSprite;
 
     /** The right/left movement of the werewolf **/
     private float movementH = 0.0f;
@@ -52,17 +52,17 @@ public class Werewolf extends GameObject{
     /** Health point (hp) of the werewolf */
     private float hp;
 
-    /**
-     * Returns the image filmstrip for this ship
-     *
-     * This value should be loaded by the GameMode and set there. However, we
-     * have to be prepared for this to be null at all times
-     *
-     * @return the image texture for this ship
-     */
-    public FilmStrip getFilmStrip() {
-        return werewolfSprite;
-    }
+//    /**
+//     * Returns the image filmstrip for this ship
+//     *
+//     * This value should be loaded by the GameMode and set there. However, we
+//     * have to be prepared for this to be null at all times
+//     *
+//     * @return the image texture for this ship
+//     */
+//    public FilmStrip getFilmStrip() {
+//        return werewolfSprite;
+//    }
 
 
     /**
@@ -73,10 +73,10 @@ public class Werewolf extends GameObject{
      *
      * param value the image texture for this ship
      */
-    public void setFilmStrip(FilmStrip value) {
+    /*public void setFilmStrip(FilmStrip value) {
         werewolfSprite = value;
         werewolfSprite.setFrame(SHIP_IMG_FLAT);
-    }
+    }*/
     /**
      * Returns the type of this object.
      *
@@ -158,15 +158,12 @@ public class Werewolf extends GameObject{
      * Initialize a werewolf not standing on moonlight tile.
      */
     public Werewolf(float x, float y) {
+
         super(x, y);
         animeframe = 0.0f;
         moonlight = false;
         hp = INITIAL_HP;
         moonlightCollected = 0;
-    }
-
-    public void setTexture(Texture texture) {
-        throw new NotImplementedException();
     }
 
     /**
@@ -175,16 +172,12 @@ public class Werewolf extends GameObject{
      */
     public void update(float delta) {
         // Call superclass's update
-        super.update(delta);
-
         if (movementH != 0.0f) {
-            animeframe += ANIMATION_SPEED;
             position.x += movementH * WEREWOLF_SPEED;
         }
 
         if (movementV != 0.0f) {
-            animeframe += ANIMATION_SPEED;
-            position.x += movementV * WEREWOLF_SPEED;
+            position.y += movementV * WEREWOLF_SPEED;
         }
 
     }
@@ -198,9 +191,11 @@ public class Werewolf extends GameObject{
      * @param canvas The drawing context
      */
     public void draw(GameCanvas canvas) {
-        float effect = faceRight ? 1.0f : -1.0f;
-        float ox = 0.5f * werewolfSprite.getRegionWidth();
-        float oy = 0.5f * werewolfSprite.getRegionHeight();
-        canvas.draw(texture,Color.WHITE, ox, oy, position.x, position.y, 0.0f, effect , 1.f);
+        // TODO
+        /** For animation */
+//        float effect = true ? 1.0f : -1.0f;
+//        float ox = 0.5f * werewolfSprite.getRegionWidth();
+//        float oy = 0.5f * werewolfSprite.getRegionHeight();
+        canvas.draw(super.getTexture(),Color.WHITE, origin.x, origin.y, position.x, position.y, 0.0f, 1.0f , 1.f);
     }
 }

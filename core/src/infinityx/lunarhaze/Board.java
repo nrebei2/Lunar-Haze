@@ -1,8 +1,10 @@
 package infinityx.lunarhaze;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
+
 
 /**
  * Class represents a 2D grid of tiles.
@@ -23,7 +25,8 @@ public class Board {
      *  Every tile is 1 unit (meter)
      *  Make sure player movement respects this length
      */
-    private static final int TILE_WIDTH = 1;
+    private static final int TILE_WIDTH = 128;
+    private static final int TILE_HEIGHT = 96;
 
     /**
      * Creates a new board of the given size
@@ -37,6 +40,7 @@ public class Board {
         tiles = new Tile[width * height];
         for (int ii = 0; ii < tiles.length; ii++) {
             tiles[ii] = new Tile();
+
         }
     }
 
@@ -73,13 +77,24 @@ public class Board {
     }
 
     /**
-     * Returns the size of the tile.
+     * Returns the width of the tile.
      *
-     * @return the size of the tile.
+     * @return the width of the tile.
      */
-    public int getTileSize() {
+    public int getTileWidth() {
         return TILE_WIDTH;
     }
+
+    /**
+     * Returns the width of the tile.
+     *
+     * @return the width of the tile.
+     */
+    public int getTileHeight() {
+        return TILE_HEIGHT;
+    }
+
+
 
     // Drawing information
     /**
@@ -111,7 +126,7 @@ public class Board {
      * @param y The y index for the Tile cell
      *
      */
-    public void setTileMesh(int x, int y, Texture unlitTex, Texture litTex) {
+    public void setTileTexture(int x, int y, Texture unlitTex, Texture litTex) {
         Tile tile = getTile(x, y);
         if (tile == null) {
             return;
@@ -128,12 +143,11 @@ public class Board {
      * method to convert an x coordinate or a y coordinate to
      * a cell index.
      *
-     * @param f Screen position coordinate
      *
      * @return the board cell index for a screen position.
      */
-    public int worldToBoard(float f) {
-        return (int)(f / getTileSize());
+    public Vector2 worldToBoard(float x, float y) {
+        return new Vector2(x / TILE_WIDTH, y / TILE_HEIGHT);
     }
 
     /**
@@ -145,9 +159,8 @@ public class Board {
      * @return true if a world location is safe
      */
     public boolean isBoundsAtWorld(float x, float y) {
-        int bx = worldToBoard(x);
-        int by = worldToBoard(y);
-        return inBounds(bx, by);
+        Vector2 boardPos = worldToBoard(x, y);
+        return inBounds(Math.round(boardPos.x), Math.round(boardPos.y));
     }
 
     /**
@@ -159,6 +172,7 @@ public class Board {
      * @param canvas the drawing context
      */
     public void draw(GameCanvas canvas) {
+
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 drawTile(x, y, canvas);
@@ -173,14 +187,8 @@ public class Board {
      * @param y The y index for the Tile cell
      */
     private void drawTile(int x, int y, GameCanvas canvas) {
-        Tile tile = getTile(x, y);
-
-        // Compute drawing coordinates
-        float sx = boardToWorld(x);
-        float sy = boardToWorld(y);
-
-        // Draw
-        canvas.draw(getTileTexture(x, y), sx, sy);
+        Texture tiletexture = getTile(x,y).isLit() ? getTile(x,y).getTileTextureLit() : getTile(x,y).getTileTextureUnlit();
+        canvas.draw(tiletexture,Color.WHITE, TILE_WIDTH/2, TILE_HEIGHT/2, getTilePosition(x,y).x,getTilePosition(x, y).y, 0.0f, 4.0f, 4.0f);
     }
 
     /**
@@ -193,12 +201,11 @@ public class Board {
      * method to convert an x coordinate or a y coordinate to
      * a cell index.
      *
-     * @param n Tile cell index
      *
      * @return the screen position coordinate for a board cell index.
      */
-    public float boardToWorld(int n) {
-        return (float) (n * getTileSize());
+    public Vector2 boardToWorld(int x, int y) {
+        return new Vector2(x * TILE_WIDTH, y * TILE_HEIGHT);
     }
 
     /**
@@ -411,7 +418,7 @@ public class Board {
         if (!inBounds(x, y)) {
             return null;
         }
-        return getTile(x,y).getPosition();
+        return new Vector2((x + 0.5f) * getTileWidth(), (y + 0.5f) * getTileHeight());
     }
 
     /**

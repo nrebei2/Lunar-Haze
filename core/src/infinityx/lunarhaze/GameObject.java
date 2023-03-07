@@ -31,7 +31,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 /**
  * Base class for all Model objects in the game.
  */
-public abstract class GameObject implements Drawable{
+public abstract class GameObject implements Drawable {
 
 	/**
 	 * Enum specifying the type of this game object.
@@ -74,7 +74,11 @@ public abstract class GameObject implements Drawable{
 //	protected FilmStrip filmStrip;
 
 	public void setTexture(Texture texture) {
+
 		this.texture = texture;
+		this.origin = new Vector2();
+		this.origin.set(texture.getWidth()/2.0f, texture.getHeight()/2.0f);
+
 	}
 
 	public Texture getTexture() {
@@ -302,6 +306,7 @@ public abstract class GameObject implements Drawable{
 		velocity = new Vector2(0.0f, 0.0f);
 		radius = 0.0f;
 		destroyed = false;
+		shadowposition = new Vector2(x, y);
 	}
 
 	/**
@@ -319,7 +324,14 @@ public abstract class GameObject implements Drawable{
 	}
 
 	public float getDepth() {
-		throw new NotImplementedException();
+		// TODO
+		return this.getY() - this.radius;
+	}
+
+	@Override
+	public void draw(GameCanvas canvas) {
+		canvas.draw(texture, Color.WHITE, origin.x, origin.y,
+				position.x, position.y, 0.0f, 1.0f, 1.f);
 	}
 
 	public void draw(GameCanvas canvas) {
