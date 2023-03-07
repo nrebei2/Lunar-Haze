@@ -2,18 +2,66 @@
 	"textures": {
       "background": "shared/menu_bg.png",
       "play": "shared/play.png",
-      "land1-lit": "tiles/land1-lit.png",
-      "land1-unlit": "tiles/land1-unlit.png",
-      "land2-lit": "tiles/land2-lit.png",
-      "land2-unlit": "tiles/land2-unlit.png",
-      "land3-lit": "tiles/land3-lit.png",
-      "land3-unlit": "tiles/land3-unlit.png",
-      "land4-lit": "tiles/land4-lit.png",
-      "land4-unlit": "tiles/land4-unlit.png",
-      "land5-lit": "tiles/land5-lit.png",
-      "land5-unlit": "tiles/land5-unlit.png",
-      "land6-lit": "tiles/land6-lit.png",
-      "land6-unlit": "tiles/land6-unlit.png",
+      "land1-lit": {
+        "file": "tiles/land1-lit.png",
+        "minFilter": "nearest",
+        "magFilter": "nearest"
+      },
+      "land1-unlit": {
+        "file": "tiles/land1-unlit.png",
+        "minFilter": "nearest",
+        "magFilter": "nearest"
+      },
+      "land2-lit": {
+        "file": "tiles/land2-lit.png",
+        "minFilter": "nearest",
+        "magFilter": "nearest"
+      },
+      "land2-unlit": {
+        "file": "tiles/land2-unlit.png",
+        "minFilter": "nearest",
+        "magFilter": "nearest"
+      },
+      "land3-lit": {
+        "file": "tiles/land3-lit.png",
+        "minFilter": "nearest",
+        "magFilter": "nearest"
+      },
+      "land3-unlit": {
+        "file": "tiles/land3-unlit.png",
+        "minFilter": "nearest",
+        "magFilter": "nearest"
+      },
+      "land4-lit": {
+        "file": "tiles/land4-lit.png",
+        "minFilter": "nearest",
+        "magFilter": "nearest"
+      },
+      "land4-unlit": {
+        "file": "tiles/land4-unlit.png",
+        "minFilter": "nearest",
+        "magFilter": "nearest"
+      },
+      "land5-lit": {
+        "file": "tiles/land5-lit.png",
+        "minFilter": "nearest",
+        "magFilter": "nearest"
+      },
+      "land5-unlit": {
+        "file": "tiles/land5-unlit.png",
+        "minFilter": "nearest",
+        "magFilter": "nearest"
+      },
+      "land6-lit": {
+        "file": "tiles/land6-lit.png",
+        "minFilter": "nearest",
+        "magFilter": "nearest"
+      },
+      "land6-unlit": {
+        "file": "tiles/land6-unlit.png",
+        "minFilter": "nearest",
+        "magFilter": "nearest"
+      },
       "werewolf": "images/werewolf.png",
       "villager" : "images/villager.png"
     },

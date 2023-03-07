@@ -58,12 +58,10 @@ public class GameMode extends ScreenObservable implements Screen {
     public GameMode(GameCanvas canvas) {
         this.canvas = canvas;
         active = false;
-        // Null out all pointers, 0 out all ints, etc.
         gameState = GameState.INTRO;
         // Create the controllers.
         inputController = new InputController();
         gameplayController = new GameplayController();
-        // YOU WILL NEED TO MODIFY THIS NEXT LINE
         physicsController = new CollisionController(canvas.getWidth(), canvas.getHeight(),levelContainer);
     }
 
@@ -85,7 +83,6 @@ public class GameMode extends ScreenObservable implements Screen {
     public void setupLevel(AssetDirectory directory, int level) {
         LevelParser ps = new LevelParser();
         levelContainer = ps.loadData(directory, level);
-        // Null out all pointers, 0 out all ints, etc.
         gameState = GameState.INTRO;
     }
 
