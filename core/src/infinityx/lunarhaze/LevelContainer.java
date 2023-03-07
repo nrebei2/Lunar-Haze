@@ -36,9 +36,13 @@ import java.util.List;
  *  GameCanvas should be doing any transformations
  */
 public class LevelContainer {
+    /** Stores Enemies*/
     private EnemyList enemies;
+    /** Stores SceneObjects*/
     private Array<SceneObject> sceneObjects;
+    /** Stores Werewolf*/
     private Werewolf player;
+    /** Stores Board*/
     private Board board;
 
     /** Holds references to all drawable entities on the level (i.e. sceneObjects, player, enemies) */
@@ -49,18 +53,13 @@ public class LevelContainer {
      * Creates a new LevelContainer with no active elements.
      * @param numEnemies Number of enemies this level contains (at start)
      */
-    public LevelContainer(int numEnemies) {
+    public LevelContainer() {
         player = null;
         board = null;
-        enemies = new EnemyList(numEnemies);
-        sceneObjects = new Array<>(true, 5);
+        enemies = new EnemyList();
+        //sceneObjects = new Array<>(true, 5);
 
-        // Add all entities to drawables
-        drawables.addAll(sceneObjects);
-        drawables.add(player);
-        for (Enemy enemy : enemies) {
-            drawables.add(enemy);
-        }
+        drawables = new Array<Drawable>();
     }
 
     /**
@@ -69,6 +68,17 @@ public class LevelContainer {
     public EnemyList getEnemies() {
         return enemies;
     }
+
+    /**
+     * @param enemy Enemy to append to enemy list
+     * @return id of the added enemy
+     */
+    public int addEnemy(Enemy enemy) {
+        enemies.addEnemy(enemy);
+        drawables.add(enemy);
+        return enemies.size() - 1;
+    }
+
 
     /**
      * Returns a reference to the currently active player.
@@ -85,6 +95,7 @@ public class LevelContainer {
      * @param player
      */
     public void setPlayer(Werewolf player) {
+        drawables.add(player);
         this.player = player;
     }
 
@@ -127,6 +138,9 @@ public class LevelContainer {
     }
 }
 
+/**
+ * Depth comparison function used for drawing
+ */
 class DrawableCompare implements Comparator<Drawable> {
     @Override
     public int compare(Drawable d1, Drawable d2) {

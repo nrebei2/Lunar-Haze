@@ -1,7 +1,7 @@
 package infinityx.lunarhaze.entity;
 
 import com.badlogic.gdx.math.Vector2;
-import infinityx.lunarhaze.GameCanvas;
+import com.badlogic.gdx.utils.Array;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -11,22 +11,15 @@ public class EnemyList implements Iterable<Enemy> {
     /**
      * The list of enemies managed by this object.
      */
-    private Enemy[] enemies;
+    private Array<Enemy> enemies;
 
     private float time;
-    private EnemyIterator iterator = new EnemyIterator();
-
 
     /**
-     * Create a new EnemyList with the given number of ships.
-     *
-     * @param size The number of ships to allocate
+     * Create a new EnemyList
      */
-    public EnemyList(int size) {
-        enemies = new Enemy[size];
-        for (int ii = 0; ii < size; ii++) {
-            enemies[ii] = new Enemy(ii, 0,0, new ArrayList<Vector2>());
-        }
+    public EnemyList() {
+        enemies = new Array<>(false, 5);
     }
 
 
@@ -38,9 +31,7 @@ public class EnemyList implements Iterable<Enemy> {
      * @return a ship iterator.
      */
     public Iterator<Enemy> iterator() {
-        // Take a snapshot of the current state and return iterator.
-        iterator.pos = 0;
-        return iterator;
+        return enemies.iterator();
     }
 
     /**
@@ -49,7 +40,7 @@ public class EnemyList implements Iterable<Enemy> {
      * @return the number of enemies in this list
      */
     public int size() {
-        return enemies.length;
+        return enemies.size;
     }
 
     /**
@@ -60,7 +51,17 @@ public class EnemyList implements Iterable<Enemy> {
      * @return the ship for the given id
      */
     public Enemy get(int id) {
-        return enemies[id];
+        return enemies.get(id);
+    }
+
+    /**
+     * @param enemy Enemy to append to enemy list
+     * @return id of the added enemy
+     */
+    public int addEnemy(Enemy enemy) {
+        System.out.println("EnemyList addEnemy");
+        enemies.add(enemy);
+        return enemies.size - 1;
     }
 
     /**
@@ -77,33 +78,4 @@ public class EnemyList implements Iterable<Enemy> {
 //        }
 //        return enemiesActive;
 //    }
-
-
-    /**
-     * Implementation of a custom iterator.
-     * <p>
-     * Iterators are notorious for making new objects all the time.  We make
-     * a custom iterator to cut down on memory allocation.
-     */
-    private class EnemyIterator implements Iterator<Enemy> {
-
-        public int pos = 0;
-
-        public boolean hasNext() {
-            return pos < enemies.length;
-        }
-
-
-        public Enemy next() {
-            if (pos >= enemies.length) {
-                throw new NoSuchElementException();
-            }
-            int idx = pos;
-            do {
-                pos++;
-            } while (pos < enemies.length && !enemies[pos].isAlive());
-            return enemies[idx];
-        }
-
-    }
 }

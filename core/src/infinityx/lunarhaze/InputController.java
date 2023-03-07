@@ -26,6 +26,8 @@ public class InputController {
     /** Whether the reset button was pressed. */
     private boolean resetPressed;
 
+    private boolean exitPressed;
+
     /**
      * Returns the amount of sideways movement.
      *
@@ -76,6 +78,15 @@ public class InputController {
     }
 
     /**
+     * Returns true if the exit button was pressed.
+     *
+     * @return true if the exit button was pressed.
+     */
+    public boolean didExit() {
+        return exitPressed;
+    }
+
+    /**
      * Returns true if the use button was pressed.
      *
      * @return true if the use button was pressed.
@@ -90,21 +101,27 @@ public class InputController {
      * This controller reads from the keyboard.
      *
      */
-    private void readKeyboard() {
-        resetPressed = (resetPressed) || (Gdx.input.isKeyPressed(Input.Keys.R));
-        attackPressed = (attackPressed) || (Gdx.input.isKeyPressed(Keys.SPACE));
-        collectPressed = (collectPressed) || (Gdx.input.isKeyPressed(Input.Keys.E));
-        usePressed  = (usePressed) || (Gdx.input.isKeyPressed(Input.Keys.F));
+    public void readKeyboard() {
+//        resetPressed = (resetPressed) || (Gdx.input.isKeyPressed(Input.Keys.R));
+//        attackPressed = (attackPressed) || (Gdx.input.isKeyPressed(Keys.SPACE));
+//        collectPressed = (collectPressed) || (Gdx.input.isKeyPressed(Input.Keys.E));
+//        usePressed  = (usePressed) || (Gdx.input.isKeyPressed(Input.Keys.F));
+//        exitPressed = (exitPressed) || (Gdx.input.isKeyPressed(Keys.ESCAPE));
+        resetPressed = Gdx.input.isKeyPressed(Input.Keys.R);
+        attackPressed = Gdx.input.isKeyPressed(Keys.SPACE);
+        collectPressed = Gdx.input.isKeyPressed(Input.Keys.E);
+        usePressed  = Gdx.input.isKeyPressed(Input.Keys.F);
+        exitPressed = Gdx.input.isKeyPressed(Keys.ESCAPE);
 
         // Directional controls
-        horizontal = horizontal;
+        horizontal = 0.0f;
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             horizontal += 1.0f;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             horizontal -= 1.0f;
         }
-        vertical = vertical;
+        vertical = 0.0f;
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
             vertical += 1.0f;
         }

@@ -131,9 +131,10 @@ public class CollisionController {
      * @param width   Width of the screen
      * @param height  Height of the screen
      */
-    public CollisionController(float width, float height) {
+    public CollisionController(float width, float height, LevelContainer lvl) {
         this.width = width;
         this.height = height;
+        this.curr_level = lvl;
 
         // Initialize cache objects
         temp1 = new Vector2();
@@ -144,9 +145,8 @@ public class CollisionController {
      * This method assign objects currently on the screen into cells.
      *
      * @param objects List of live objects to check
-     * @param offset  Offset of the box and bump
      */
-    public void AssignCells(Array<GameObject> objects, int offset) {
+    public void AssignCells(Array<GameObject> objects) {
         // For each shell, check for collisions with the special terrain elements
         float width_divider = this.getWidth()/parameter;
         float height_divider = this.getWidth()/parameter;
@@ -190,46 +190,24 @@ public class CollisionController {
      * This is the main (incredibly unoptimized) collision detetection method.
      *
      * @param objects List of live objects to check
-     * @param offset  Offset of the box and bump
      */
-    public void processCollisions(Array<GameObject> objects, int offset) {
-        AssignCells(objects,offset);
-        for (int ii = 0; ii < cells.size(); ii++){
-            //System.out.println("2");
-            for (int jj = 0; jj < cells.get(ii).size(); jj++){
-                //System.out.println("3");
-                for (GameObject o : cells.get(ii).get(jj)) {
-                    //System.out.println("4");
-                    for (int kk = 0; kk < cells.get(ii).get(jj).size(); kk++) {
-                        //System.out.println("5");
-                        if (cells.get(ii).get(jj).get(kk) != o) {
-                            //System.out.println("6");
-                            processCollision(o,cells.get(ii).get(jj).get(kk));
-                        }
-                    }
-                    if (ii != 0){
-                        for (int kk = 0; kk < cells.get(ii - 1).get(jj).size(); kk++) {
-                            processCollision(o,cells.get(ii - 1).get(jj).get(kk));
-                        }
-                    }
-                    if (ii != parameter-1){
-                        for (int kk = 0; kk < cells.get(ii + 1).get(jj).size(); kk++) {
-                            processCollision(o,cells.get(ii + 1).get(jj).get(kk));
-                        }
-                    }
-                    if (jj != 0){
-                        for (int kk = 0; kk < cells.get(ii).get(jj - 1).size(); kk++) {
-                            processCollision(o,cells.get(ii).get(jj - 1).get(kk));
-                        }
-                    }
-                    if (jj != parameter-1){
-                        for (int kk = 0; kk < cells.get(ii).get(jj + 1).size(); kk++) {
-                            processCollision(o,cells.get(ii).get(jj + 1).get(kk));
-                        }
-                    }
-                }
+    public void processCollisions(Array<GameObject> objects) {
+        for (GameObject o : objects) {
+        // Make sure object is in bounds.
+        // For shells, this handles the box and bump.
+        processBounds(o);
+        //TODO FIX THIS
+        //processTiles(o);
+
+        //#region REPLACE THIS CODE
+        /* This is the slow code that must be replaced. */
+        for (int ii = 0; ii < objects.size; ii++) {
+            if (objects.get(ii) != o) {
+                processCollision(o,objects.get(ii));
             }
         }
+        //#endregion
+    }
     }
 
     //#endregion
@@ -272,12 +250,14 @@ public class CollisionController {
             // Set within bounds on right and prevents from moving out of bounds
             em.setX(2 * (getWidth() - em.getRadius()) - em.getX());
             em.setVX(0);
+            System.out.println("----------------Enemy hits bounds. NOT GOOD!");
         }
         // Check if off left side
         else if (em.getX() < em.getRadius()) {
             // Set within bounds on left and prevents from moving out of bounds
             em.setX(2 * em.getRadius() - em.getX());
             em.setVX(0);
+            System.out.println("----------------Enemy hits bounds. NOT GOOD!");
         }
 
         // Check for in bounds on bottom
@@ -285,6 +265,7 @@ public class CollisionController {
             // Set within bounds on bottom and swap velocity
             em.setY(2 * em.getRadius() - em.getY());
             em.setVY(0);
+            System.out.println("----------------Enemy hits bounds. NOT GOOD!");
         }
 
         // Check for in bounds on bottom
@@ -292,6 +273,7 @@ public class CollisionController {
             // Set within bounds on bottom and swap velocity
             em.setY(2 * (getHeight() - em.getRadius()) - em.getY());
             em.setVY(0);
+            System.out.println("----------------Enemy hits bounds. NOT GOOD!");
         }
         //TODO Constrict velocity
         //sh.setVY((float)Math.max(sh.getMinVY(), sh.getVY() * sh.getFriction()));
@@ -309,28 +291,32 @@ public class CollisionController {
         // Check if off right side
         if (ww.getX() > getWidth() - ww.getRadius()) {
             // Set within bounds on right and prevents from moving out of bounds
-            ww.setX(2 * (getWidth() - ww.getRadius()) - ww.getX());
+            ww.setX(2 * (getWidth() - ww.getRadius()) - ww.getX() - ww.getRadius());
             ww.setVX(0);
+            System.out.println("----------------Werewolf hits bounds. NOT GOOD!");
         }
         // Check if off left side
         else if (ww.getX() < ww.getRadius()) {
             // Set within bounds on left and prevents from moving out of bounds
-            ww.setX(2 * ww.getRadius() - ww.getX());
+            ww.setX(2 * ww.getRadius() - ww.getX() + ww.getRadius());
             ww.setVX(0);
+            System.out.println("----------------Werewolf hits bounds. NOT GOOD!");
         }
 
         // Check for in bounds on bottom
         if (ww.getY() < ww.getRadius()) {
             // Set within bounds on bottom and swap velocity
-            ww.setY(2 * ww.getRadius() - ww.getY());
+            ww.setY(2 * ww.getRadius() - ww.getY() + ww.getRadius());
             ww.setVY(0);
+            System.out.println("----------------Werewolf hits bounds. NOT GOOD!");
         }
 
         // Check for in bounds on bottom
-        else if (ww.getY() > getHeight() - ww.getRadius()) {
+        else if (ww.getY() > getHeight() - 2 * ww.getRadius()) {
             // Set within bounds on bottom and swap velocity
-            ww.setY(2 * (getHeight() - ww.getRadius()) - ww.getY());
+            ww.setY(2 * (getHeight() - ww.getRadius()) - ww.getY()- ww.getRadius());
             ww.setVY(0);
+            System.out.println("----------------Werewolf hits bounds. NOT GOOD!");
         }
     }
 
@@ -417,6 +403,7 @@ public class CollisionController {
             return;
         }
 
+        System.out.println("----------------Enemy collides with enemy. NOT GOOD!");
         // Push the enemies out so that they do not collide
         float distToPush = 0.01f + (e1.getRadius() + e2.getRadius() - dist) / 2;
         temp1.nor();
@@ -455,6 +442,7 @@ public class CollisionController {
         }
 
         // Find the axis of "collision"
+        //TODO POSITION -> SHADOWPOSITION
         temp1.set(en.getShadowposition()).sub(ww.getShadowposition());
         float dist = temp1.len();
 
@@ -463,6 +451,7 @@ public class CollisionController {
             return;
         }
 
+        System.out.println("----------------Enemy collides with Werewolf. NOT GOOD!");
         // Push the enemies out so that they do not collide
         float distToPush = 0.01f + (en.getRadius() + ww.getRadius() - dist) / 2;
         temp1.nor();
@@ -531,14 +520,16 @@ public class CollisionController {
             return;
         }
         //get the tile info for current object position
-        int tile_x = curr_level.getBoard().worldToBoard(ww.getShadowposition().x);
-        int tile_y = curr_level.getBoard().worldToBoard(ww.getShadowposition().y);
-        Vector2 tile_position = curr_level.getBoard().getTilePosition(tile_x,tile_y);
+        Vector2 tile_position = curr_level.getBoard().worldToBoard(ww.getShadowposition().x,ww.getShadowposition().y);
+        //int tile_x = curr_level.getBoard().worldToBoard(ww.getShadowposition().x);
+        //int tile_y = curr_level.getBoard().worldToBoard(ww.getShadowposition().y);
+       // Vector2 tile_position = curr_level.getBoard().getTilePosition(tile_x,tile_y);
 
         //checks whether the tile is walkable; if it is, do nothing
-        if (curr_level.getBoard().isWalkable(tile_x,tile_y)){
+        if (curr_level.getBoard().isWalkable((int)tile_position.x,(int)tile_position.y)){
             return;
         } else {
+            System.out.println("----------------Werewolf hits unwalkable tiles. NOT GOOD!");
             // Find the axis of "collision"
             temp1.set(ww.getShadowposition()).sub(tile_position);
             float dist = temp1.len();
@@ -564,14 +555,15 @@ public class CollisionController {
             return;
         }
         //get the tile info for current object position
-        int tile_x = curr_level.getBoard().worldToBoard(en.getShadowposition().x);
-        int tile_y = curr_level.getBoard().worldToBoard(en.getShadowposition().y);
-        Vector2 tile_position = curr_level.getBoard().getTilePosition(tile_x,tile_y);
+        Vector2 tile_position = curr_level.getBoard().worldToBoard(en.getShadowposition().x,en.getShadowposition().y);
+        //int tile_y = curr_level.getBoard().worldToBoard(en.getShadowposition().y);
+        //Vector2 tile_position = curr_level.getBoard().getTilePosition(tile_x,tile_y);
 
         //checks whether the tile is walkable; if it is, do nothing
-        if (curr_level.getBoard().isWalkable(tile_x,tile_y)){
+        if (curr_level.getBoard().isWalkable((int)tile_position.x,(int)tile_position.y)){
             return;
         } else {
+            System.out.println("----------------Enemy hits unwalkable tiles. NOT GOOD!");
             // Find the axis of "collision"
             temp1.set(en.getShadowposition()).sub(tile_position);
             float dist = temp1.len();

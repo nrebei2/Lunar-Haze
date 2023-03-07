@@ -21,8 +21,6 @@ public class Tile {
     private boolean visited = false;
     /** Is there moonlight on this tile? */
     private boolean lit = false;
-    /** Tile world position (centered on the texture middle) */
-    protected Vector2 position;
 
     /** Texture of tile (Lit/Unlit from moonlight) **/
     private Texture TileTextureUnlit;
@@ -82,9 +80,9 @@ public class Tile {
         this.lit = lit;
     }
 
-    public Vector2 getPosition() {
-        return position;
-    }
+//    public Vector2 getPosition() {
+//        return position;
+//    }
 
     /**
      * Returns the unlit image texture for the tile. Will be drawn if lit is false.

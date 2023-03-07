@@ -103,19 +103,21 @@ public class GDXRoot extends Game implements ScreenObserver {
 		if (screen == loading) {
 			directory = loading.getAssets();
 			menu.gatherAssets(directory);
+			menu.setObserver(this);
 			setScreen(menu);
 
 			loading.dispose();
 			loading = null;
 		} else if (screen == menu) {
 			// TODO: exitCode is the level?
+			game.setObserver(this);
 			game.setupLevel(directory, exitCode);
 			setScreen(game);
+			System.out.println("set game screen");
 
-			//menu.dispose();
-			//menu = null;
+			menu.dispose();
 		} else {
-
+			Gdx.app.exit();
 		}
 	}
 
