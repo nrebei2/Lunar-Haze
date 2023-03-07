@@ -281,8 +281,6 @@ public abstract class GameObject implements Drawable{
 		return shadowheight;
 	}
 
-
-
 	/**
 	 * Returns the type of this object.
 	 *
