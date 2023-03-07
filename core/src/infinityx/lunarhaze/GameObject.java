@@ -78,6 +78,7 @@ public abstract class GameObject implements Drawable {
 		this.texture = texture;
 		this.origin = new Vector2();
 		this.origin.set(texture.getWidth()/2.0f, texture.getHeight()/2.0f);
+		this.radius = texture.getWidth()/2.0f;
 
 	}
 

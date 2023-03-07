@@ -30,7 +30,7 @@ public class EnemyController {
 
     private static final float DETECT_DIST = 2;
     private static final float DETECT_DIST_MOONLIGHT = 5;
-    private static final float CHASE_DIST = 3;
+    private static final float CHASE_DIST = 2.5f;
     private static final int ATTACK_DIST = 1;
 
     /**
@@ -136,19 +136,24 @@ public class EnemyController {
         }
         boolean inLine;
         boolean blind;
+        Vector2 target_pos = board.worldToBoard(target.getX(), target.getY());
+
+        Vector2 enemy_pos = board.worldToBoard(enemy.getX(), enemy.getY());
+
+
         if (detection == Detection.LINE) {
             switch (direction) {
                 case NORTH:
-                    inLine = (target.getX() == enemy.getX()) && (target.getY() > enemy.getY());
+                    inLine = (target_pos.x == enemy_pos.x) && (target_pos.y > enemy_pos.y);
                     break;
                 case SOUTH:
-                    inLine = (target.getX() == enemy.getX()) && (target.getY() < enemy.getY());
+                    inLine = (target_pos.x == enemy_pos.x) && (target_pos.y < enemy_pos.y);
                     break;
                 case EAST:
-                    inLine = (target.getX() > enemy.getX()) && (target.getY() == enemy.getY());
+                    inLine = (target_pos.x > enemy_pos.x) && (target_pos.y == enemy_pos.y);
                     break;
                 case WEST:
-                    inLine = (target.getX() < enemy.getX()) && (target.getY() == enemy.getY());
+                    inLine = (target_pos.x < enemy_pos.x) && (target_pos.y == enemy_pos.y);
                     break;
                 default:
                     throw new NotImplementedException();
@@ -157,22 +162,26 @@ public class EnemyController {
                     target.getY()) <= DETECT_DIST && inLine;
         }
         else if (detection == Detection.MOON){
-            switch (direction) {
-                case NORTH:
-                    blind = target.getY() < enemy.getY();
-                    break;
-                case SOUTH:
-                    blind = target.getY() > enemy.getY();
-                    break;
-                case EAST:
-                    blind = target.getX() < enemy.getX();
-                    break;
-                case WEST:
-                    blind = target.getX() > enemy.getX();
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
+            System.out.println("detection moon");
+//            switch (direction) {
+//                case NORTH:
+//                    blind = target.getY() < enemy.getY();
+//                    break;
+//                case SOUTH:
+//                    blind = target.getY() > enemy.getY();
+//                    break;
+//                case EAST:
+//                    blind = target.getX() < enemy.getX();
+//                    break;
+//                case WEST:
+//                    blind = target.getX() > enemy.getX();
+//                    break;
+//                default:
+//                    throw new NotImplementedException();
+//            }
+            System.out.println(worldToBoardDistance(enemy.getX(), enemy.getY(), target.getX(),
+                    target.getY()) <= DETECT_DIST_MOONLIGHT);
+            System.out.println("current state is: " + detection);
             return worldToBoardDistance(enemy.getX(), enemy.getY(), target.getX(),
                     target.getY()) <= DETECT_DIST_MOONLIGHT;
         } else {
@@ -255,7 +264,6 @@ public class EnemyController {
         }
 
         int action = move;
-        System.out.println(move);
 
         // If we're attacking someone and we can shoot him now, then do so.
         if (state == FSMState.ATTACK && canHitTarget()) {
@@ -285,10 +293,10 @@ public class EnemyController {
                 }
                 break;
             case CHASE:
-                if (canHitTarget()){
-                    state = FSMState.ATTACK;
-                }
-                if (!canChase()){
+//                if (canHitTarget()){
+//                    state = FSMState.ATTACK;
+//                }
+                if (!canChase() && !target.isOnMoonlight()){
                     state = FSMState.PATROL;
                 }
                 break;
@@ -308,22 +316,18 @@ public class EnemyController {
     }
 
     private void changeDetectionIfApplicable() {
-        switch (detection){
-            case LINE:
-                if (target.isOnMoonlight()){
-                    detection = Detection.MOON;
-                }
-                break;
-            case MOON:
-                if (!target.isOnMoonlight()){
-                    detection = Detection.LINE;
-                }
-                break;
+        if (target.isOnMoonlight()){
+            System.out.println("on moon");
+            detection = Detection.MOON;
         }
+        else {
+            detection = Detection.LINE;
+        }
+
+
     }
 
     private void markGoalTiles() {
-        System.out.println("EnemyController markGoalTile in state " + state);
         board.clearMarks();
         Vector2 pos;
         boolean setGoal = false; // Until we find a goal
@@ -375,6 +379,7 @@ public class EnemyController {
                     }
 
                 }
+                break;
         }
         if (!setGoal) {
             Vector2 position = board.worldToBoard(enemy.getX(), enemy.getY());
@@ -428,7 +433,6 @@ public class EnemyController {
                 }
             }
         }
-        System.out.println("We should have action!");
         return CONTROL_NO_ACTION;
         //#endregion
     }

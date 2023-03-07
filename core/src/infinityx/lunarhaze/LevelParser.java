@@ -43,6 +43,7 @@ public class LevelParser {
         // LevelContainer empty at this point
         LevelContainer levelContainer = new LevelContainer();
         JsonValue levelContents = json.get(String.valueOf(level));
+
         // Generate board
         JsonValue tiles = levelContents.get("tiles");
         JsonValue scene = levelContents.get("scene");
@@ -71,7 +72,7 @@ public class LevelParser {
             for (int x = 0; x < board.getWidth(); x++) {
                 int tileNum = tileData.get((board.getHeight() - y - 1)*board.getWidth() + x);
                 board.setTileTexture(x, y, tileTextures.get(tileNum*2), tileTextures.get(tileNum*2+1));
-                boolean moonInfo = moonlightData.get((board.getHeight() - y - 1)*board.getWidth() + x)==1? true:false;
+                boolean moonInfo = (moonlightData.get((board.getHeight() - y - 1)*board.getWidth() + x)==1);
                 board.setLit(x, y, moonInfo);
                 board.setTileType(x, y, tileTypeFromNum(tileNum));
                 board.setWalkable(x, y, true);

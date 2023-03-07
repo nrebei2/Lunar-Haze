@@ -291,7 +291,7 @@ public class CollisionController {
         // Check if off right side
         if (ww.getX() > getWidth() - ww.getRadius()) {
             // Set within bounds on right and prevents from moving out of bounds
-            ww.setX(2 * (getWidth() - ww.getRadius()) - ww.getX() - ww.getRadius());
+            ww.setX(2 * (getWidth() - ww.getRadius()) - ww.getX());
             ww.setVX(0);
             System.out.println("----------------Werewolf hits bounds. NOT GOOD!");
         }
@@ -312,7 +312,7 @@ public class CollisionController {
         }
 
         // Check for in bounds on bottom
-        else if (ww.getY() > getHeight() - 2 * ww.getRadius()) {
+        else if (ww.getY() > getHeight() - ww.getRadius()) {
             // Set within bounds on bottom and swap velocity
             ww.setY(2 * (getHeight() - ww.getRadius()) - ww.getY()- ww.getRadius());
             ww.setVY(0);
@@ -582,7 +582,6 @@ public class CollisionController {
         if (curr_level.getBoard().isWalkable((int)tile_position.x,(int)tile_position.y)){
             return;
         } else {
-            System.out.println("----------------Werewolf hits unwalkable tiles. NOT GOOD!");
             // Find the axis of "collision"
             temp1.set(ww.getShadowposition()).sub(tile_position);
             float dist = temp1.len();
