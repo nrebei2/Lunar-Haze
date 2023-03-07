@@ -138,6 +138,8 @@ public class Enemy extends GameObject{
         boolean movingUp    = (controlCode & EnemyController.CONTROL_MOVE_UP) != 0;
         boolean movingDown  = (controlCode & EnemyController.CONTROL_MOVE_DOWN) != 0;
 
+        System.out.println(movingRight);
+
         // Process movement command.
         if (movingLeft) {
             velocity.x = -MOVE_SPEED;
@@ -157,6 +159,7 @@ public class Enemy extends GameObject{
             velocity.y = 0;
         }
         position = position.add(velocity);
+        System.out.println(position);
     }
 
     public void draw(GameCanvas canvas) {
