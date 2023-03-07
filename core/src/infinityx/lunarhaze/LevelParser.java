@@ -89,6 +89,7 @@ public class LevelParser {
 
             JsonValue enemyPos = enemy.get("position");
             Vector2 enemyWorldPos = getWorldPosition(board, enemyPos);
+            System.out.println("enemyPos: " + enemyPos.toString());
 
             ArrayList<Vector2> patrol = new ArrayList<>();
             for (JsonValue patrolPos : enemy.get("patrol")) {
