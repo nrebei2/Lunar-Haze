@@ -437,13 +437,13 @@ public class CollisionController {
      * @param ww The werewolf
      */
     private void handleCollision(Enemy en, Werewolf ww) {
+        // Prevent them from moving into each other
         if (en.isDestroyed() || ww.isDestroyed()) {
             return;
         }
 
         // Find the axis of "collision"
-        //TODO POSITION -> SHADOWPOSITION
-        temp1.set(en.getShadowposition()).sub(ww.getShadowposition());
+        temp1.set(en.getPosition()).sub(ww.getPosition());
         float dist = temp1.len();
 
         // Too far away
@@ -451,31 +451,84 @@ public class CollisionController {
             return;
         }
 
-        System.out.println("----------------Enemy collides with Werewolf. NOT GOOD!");
-        // Push the enemies out so that they do not collide
+        // Push the ships out so that they do not collide
         float distToPush = 0.01f + (en.getRadius() + ww.getRadius() - dist) / 2;
         temp1.nor();
         temp1.scl(distToPush);
         en.getPosition().add(temp1);
         ww.getPosition().sub(temp1);
 
-        // TODO Compute the new velocities->not necessary, just set them back to 0
-        //temp1.set(e2.getPosition()).sub(e1.getPosition()).nor(); // Unit vector for w1
-        //temp2.set(e1.getPosition()).sub(e2.getPosition()).nor(); // Unit vector for w2
+        // Compute the new velocities
+        temp1.set(ww.getPosition()).sub(en.getPosition()).nor(); // Unit vector for w1
+        temp2.set(en.getPosition()).sub(ww.getPosition()).nor(); // Unit vector for w2
 
-        //temp1.scl(temp1.dot(e1.getVelocity())); // Scaled to w1
-        //temp2.scl(temp2.dot(e2.getVelocity())); // Scaled to w2
-
-        // You can remove this to add friction.  We find friction has nasty feedback.
-        //temp1.scl(s1.getFriction());
-        //temp2.scl(s2.getFriction());
+        temp1.scl(temp1.dot(en.getVelocity())); // Scaled to w1
+        temp2.scl(temp2.dot(ww.getVelocity())); // Scaled to w2
 
         // Apply to the objects
-        // Vector2 zero_velocity = new Vector2(0,0);
-        en.setVX(0);
-        en.setVY(0);
-        ww.setVX(0);
-        ww.setVY(0);
+        en.getVelocity().sub(temp1).add(temp2);
+        ww.getVelocity().sub(temp2).add(temp1);
+//        if (en.isDestroyed() || ww.isDestroyed()) {
+//            return;
+//        }
+//
+//        // Find the axis of "collision"
+//        temp1.set(en.getShadowposition()).sub(ww.getShadowposition());
+//        float dist = temp1.len();
+//
+//        // Too far away
+//        if (dist > en.getRadius() + ww.getRadius()) {
+//            return;
+//        }
+//
+//        System.out.println("----------------Enemy collides with enemy. NOT GOOD!");
+//        // Push the enemies out so that they do not collide
+//        float distToPush = 0.01f + (en.getRadius() + ww.getRadius() - dist) / 2;
+//        temp1.nor();
+//        temp1.scl(distToPush);
+//        en.getPosition().add(temp1);
+//        ww.getPosition().sub(temp1);
+//
+//        en.setVX(0);
+//        en.setVY(0);
+//        ww.setVX(0);
+//        ww.setVY(0);
+
+        // Find the axis of "collision"
+        //TODO POSITION -> SHADOWPOSITION
+//        temp1.set(en.getShadowposition()).sub(ww.getShadowposition());
+//        float dist = temp1.len();
+//
+//        // Too far away
+//        if (dist > en.getRadius() + ww.getRadius()) {
+//            return;
+//        }
+//
+//        System.out.println("----------------Enemy collides with Werewolf. NOT GOOD!");
+//        // Push the enemies out so that they do not collide
+//        float distToPush = 0.01f + (en.getRadius() + ww.getRadius() - dist) / 2;
+//        temp1.nor();
+//        temp1.scl(distToPush);
+//        en.getPosition().add(temp1);
+//        ww.getPosition().sub(temp1);
+//
+//        // TODO Compute the new velocities->not necessary, just set them back to 0
+//        //temp1.set(e2.getPosition()).sub(e1.getPosition()).nor(); // Unit vector for w1
+//        //temp2.set(e1.getPosition()).sub(e2.getPosition()).nor(); // Unit vector for w2
+//
+//        //temp1.scl(temp1.dot(e1.getVelocity())); // Scaled to w1
+//        //temp2.scl(temp2.dot(e2.getVelocity())); // Scaled to w2
+//
+//        // You can remove this to add friction.  We find friction has nasty feedback.
+//        //temp1.scl(s1.getFriction());
+//        //temp2.scl(s2.getFriction());
+//
+//        // Apply to the objects
+//        // Vector2 zero_velocity = new Vector2(0,0);
+//        en.setVX(0);
+//        en.setVY(0);
+//        ww.setVX(0);
+//        ww.setVY(0);
     }
 
 

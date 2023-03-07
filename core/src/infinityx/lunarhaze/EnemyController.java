@@ -289,11 +289,11 @@ public class EnemyController {
                     state = FSMState.ATTACK;
                 }
                 if (!canChase()){
-                    state = FSMState.WANDER;
+                    state = FSMState.PATROL;
                 }
                 break;
-            case WANDER:
-                break;
+//            case WANDER:
+//                break;
             case ATTACK:
                 if (!canHitTarget()){
                     state = FSMState.CHASE;
@@ -335,13 +335,11 @@ public class EnemyController {
                 board.setGoal((int)pos.x, (int)pos.y);
                 setGoal= true;
                 break;
-            case WANDER:
-
-                pos = board.worldToBoard(enemy.getX(), enemy.getY());
-                int x = (int)pos.x;
-                int y = (int)pos.y;
-                board.setGoal(x+1, y+1);
-                setGoal= true;
+//            case WANDER:
+//
+//                pos = board.worldToBoard(enemy.getX(), enemy.getY());
+//                int x = (int)pos.x;
+//                int y = (int)pos.y;
 //                //#endregion
 //                for (int i = -1; i < 2; i++ ){
 //                    for (int j = -1 ; j <2 ; j++){
@@ -351,7 +349,7 @@ public class EnemyController {
 //                        }
 //                    }
 //                }
-                break;
+//                break;
             case CHASE:
                 if (target != null) {
                     pos = board.worldToBoard(target.getX(), target.getY());
