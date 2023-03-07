@@ -1,5 +1,6 @@
 package infinityx.lunarhaze;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
@@ -152,11 +153,10 @@ public class GameplayController {
     }
 
     public void resolveMoonlight() {
-        int px = Math.round(player.position.x / board.getTileWidth());
-        int py = Math.round(player.position.y / board.getTileHeight());
-        if(board.isLit(px, py)) {
+        Vector2 pos = board.worldToBoard(player.position.x, player.position.y);
+        if(board.isLit((int) pos.x, (int) pos.y)) {
             player.setOnMoonlight(true);
-        } else player.setOnMoonlight(false);
+        } else {player.setOnMoonlight(false);}
     }
 
     public void resolveEnemies(){

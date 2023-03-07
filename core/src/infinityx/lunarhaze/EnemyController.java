@@ -174,7 +174,7 @@ public class EnemyController {
                     throw new NotImplementedException();
             }
             return worldToBoardDistance(enemy.getX(), enemy.getY(), target.getX(),
-                    target.getY()) <= DETECT_DIST_MOONLIGHT && !blind;
+                    target.getY()) <= DETECT_DIST_MOONLIGHT;
         } else {
             return false;
         }
