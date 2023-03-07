@@ -20,7 +20,7 @@ public class Werewolf extends GameObject{
     public static final int SHIP_IMG_FLAT = 9;
 
     /** Move speed **/
-    private static final float WEREWOLF_SPEED = 1.5f;
+    private static final float WEREWOLF_SPEED = 3f;
 
     /** How fast we change frames (one frame per 4 calls to update) */
     private static final float ANIMATION_SPEED = 0.25f;
