@@ -291,14 +291,14 @@ public class CollisionController {
         // Check if off right side
         if (ww.getX() > getWidth() - ww.getRadius()) {
             // Set within bounds on right and prevents from moving out of bounds
-            ww.setX(2 * (getWidth() - ww.getRadius()) - ww.getX() - 2 * ww.getRadius());
+            ww.setX(2 * (getWidth() - ww.getRadius()) - ww.getX() - ww.getRadius());
             ww.setVX(0);
             System.out.println("----------------Werewolf hits bounds. NOT GOOD!");
         }
         // Check if off left side
         else if (ww.getX() < ww.getRadius()) {
             // Set within bounds on left and prevents from moving out of bounds
-            ww.setX(2 * ww.getRadius() - ww.getX() + 2 * ww.getRadius());
+            ww.setX(2 * ww.getRadius() - ww.getX() + ww.getRadius());
             ww.setVX(0);
             System.out.println("----------------Werewolf hits bounds. NOT GOOD!");
         }
@@ -306,7 +306,7 @@ public class CollisionController {
         // Check for in bounds on bottom
         if (ww.getY() < ww.getRadius()) {
             // Set within bounds on bottom and swap velocity
-            ww.setY(2 * ww.getRadius() - ww.getY() + 2 * ww.getRadius());
+            ww.setY(2 * ww.getRadius() - ww.getY() + ww.getRadius());
             ww.setVY(0);
             System.out.println("----------------Werewolf hits bounds. NOT GOOD!");
         }

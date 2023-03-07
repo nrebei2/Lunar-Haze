@@ -255,6 +255,7 @@ public class EnemyController {
         }
 
         int action = move;
+        System.out.println(move);
 
         // If we're attacking someone and we can shoot him now, then do so.
         if (state == FSMState.ATTACK && canHitTarget()) {
@@ -276,7 +277,7 @@ public class EnemyController {
     private void changeStateIfApplicable() {
         switch (state){
             case SPAWN:
-                state = FSMState.WANDER;
+                state = FSMState.PATROL;
                 break;
             case PATROL:
                 if (detectedPlayer()){
@@ -332,26 +333,31 @@ public class EnemyController {
             case PATROL:
                 pos = enemy.getNextPatrol();
                 board.setGoal((int)pos.x, (int)pos.y);
+                setGoal= true;
                 break;
             case WANDER:
+
                 pos = board.worldToBoard(enemy.getX(), enemy.getY());
                 int x = (int)pos.x;
                 int y = (int)pos.y;
-                //#endregion
-                for (int i = -1; i < 2; i++ ){
-                    for (int j = -1 ; j <2 ; j++){
-                        if (board.isWalkable(x+i, y+j) && Math.random() <= (double)(1/9) && !setGoal && board.inBounds(x +i, y+j) ){
-                            board.setGoal(x+i, y+j);
-                            setGoal = true;
-                        }
-                    }
-                }
+                board.setGoal(x+1, y+1);
+                setGoal= true;
+//                //#endregion
+//                for (int i = -1; i < 2; i++ ){
+//                    for (int j = -1 ; j <2 ; j++){
+//                        if (board.isWalkable(x+i, y+j) && Math.random() <= (double)(1/9) && !setGoal && board.inBounds(x +i, y+j) ){
+//                            board.setGoal(x+i, y+j);
+//                            setGoal = true;
+//                        }
+//                    }
+//                }
                 break;
             case CHASE:
                 if (target != null) {
                     pos = board.worldToBoard(target.getX(), target.getY());
 
                     board.setGoal((int)pos.x, (int)pos.y);
+                    setGoal= true;
                 }
                 break;
             case ATTACK:
@@ -396,8 +402,8 @@ public class EnemyController {
     private int getMoveAlongPathToGoalTile() {
         //#region PUT YOUR CODE HERE
         Vector2 pos = board.worldToBoard(enemy.getX(),enemy.getY());
-        int x = (int)pos.x;//board.worldToBoard(enemy.getX());
-        int y = (int)pos.y;//board.worldToBoard(enemy.getY());
+        int x = (int)pos.x;
+        int y = (int)pos.y;
         if (board.isGoal(x,y)) {
             return CONTROL_NO_ACTION;
         }
@@ -424,6 +430,7 @@ public class EnemyController {
                 }
             }
         }
+        System.out.println("We should have action!");
         return CONTROL_NO_ACTION;
         //#endregion
     }
