@@ -5,6 +5,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 
+import java.util.ArrayList;
+
 
 /**
  * Class represents a 2D grid of tiles.
@@ -145,7 +147,8 @@ public class Board {
      * @return the board cell index for a screen position.
      */
     public Vector2 worldToBoard(float x, float y) {
-        return new Vector2(x / TILE_WIDTH, y / TILE_HEIGHT);
+        //TODO TILE SHRINKING PROBLEM HERE
+        return new Vector2((int)(x / TILE_WIDTH), (int)(y / TILE_HEIGHT));
     }
 
     /**
@@ -162,6 +165,21 @@ public class Board {
     }
 
     /**
+     * Returns true if a world location is in bounds of the board
+     *
+     * @param x The x value in screen coordinates
+     * @param y The y value in screen coordinates
+     *
+     * @return true if a world location is safe
+     */
+    private boolean search(float x, float y, ArrayList<Vector2> tinted_tiles) {
+        for (Vector2 vec:tinted_tiles){
+            if (vec.x == x && vec.y == y) return true;
+        }
+        return false;
+    }
+
+    /**
      * Draws the board to the given canvas.
      *
      * This method draws all of the tiles in this board. It should be the first drawing
@@ -169,13 +187,26 @@ public class Board {
      *
      * @param canvas the drawing context
      */
-    public void draw(GameCanvas canvas) {
-
+    public void draw(GameCanvas canvas, ArrayList<Vector2> tinted_tiles) {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                drawTile(x, y, canvas);
+                if (search(x,y,tinted_tiles)) {
+                    drawRedTile(x, y, canvas);
+                } else drawTile(x, y, canvas);
             }
         }
+    }
+
+    /**
+     * Draws the board to the given canvas.
+     *
+     * This method draws all of the tiles in this board. It should be the first drawing
+     * pass in the GameEngine.
+     *
+     * @param canvas the drawing context
+     */
+    public void tint(int x, int y, GameCanvas canvas) {
+        drawRedTile(x, y, canvas);
     }
 
     /**
@@ -187,6 +218,19 @@ public class Board {
     private void drawTile(int x, int y, GameCanvas canvas) {
         Texture tiletexture = getTile(x,y).isLit() ? getTile(x,y).getTileTextureLit() : getTile(x,y).getTileTextureUnlit();
         canvas.draw(tiletexture,Color.WHITE, TILE_WIDTH/2, TILE_HEIGHT/2, getTilePosition(x,y).x,getTilePosition(x, y).y, 0.0f, 1.0f, 1.0f);
+    }
+
+    /**
+     * Draws the individual tile at position (x,y).
+     *
+     * @param x The x index for the Tile cell
+     * @param y The y index for the Tile cell
+     */
+    private void drawRedTile(int x, int y, GameCanvas canvas) {
+        if(inBounds(x,y)) {
+            Texture tiletexture = getTile(x, y).isLit() ? getTile(x, y).getTileTextureLit() : getTile(x, y).getTileTextureUnlit();
+            canvas.draw(tiletexture, Color.RED, TILE_WIDTH / 2, TILE_HEIGHT / 2, getTilePosition(x, y).x, getTilePosition(x, y).y, 0.0f, 1.0f, 1.0f);
+        }
     }
 
     /**

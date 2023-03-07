@@ -1,6 +1,7 @@
 package infinityx.lunarhaze.entity;
 
 import com.sun.org.apache.xpath.internal.operations.Bool;
+import infinityx.audio.EffectFactory;
 import infinityx.lunarhaze.*;
 
 import com.badlogic.gdx.math.*;
@@ -13,7 +14,7 @@ public class Enemy extends GameObject{
 // Instance Attributes
     /** A unique identifier; used to decouple classes. */
     private int id;
-    private static final float MOVE_SPEED = 6.5f;
+    private static final float MOVE_SPEED = 3.5f;
 
     /** Movement of the enemy **/
     private float movement;
@@ -138,28 +139,30 @@ public class Enemy extends GameObject{
         boolean movingUp    = (controlCode & EnemyController.CONTROL_MOVE_UP) != 0;
         boolean movingDown  = (controlCode & EnemyController.CONTROL_MOVE_DOWN) != 0;
 
-        System.out.println(movingRight);
-
         // Process movement command.
         if (movingLeft) {
             velocity.x = -MOVE_SPEED;
             velocity.y = 0;
+            direction = Direction.WEST;
         } else if (movingRight) {
             velocity.x = MOVE_SPEED;
             velocity.y = 0;
+            direction = Direction.EAST;
         } else if (movingUp) {
             velocity.y = -MOVE_SPEED;
             velocity.x = 0;
+            direction = Direction.NORTH;
         } else if (movingDown) {
             velocity.y = MOVE_SPEED;
             velocity.x = 0;
+            direction = Direction.SOUTH;
         } else {
             // NOT MOVING, SO SLOW DOWN
             velocity.x = 0;
             velocity.y = 0;
         }
+
         position = position.add(velocity);
-        System.out.println(position);
     }
 
     public void draw(GameCanvas canvas) {
