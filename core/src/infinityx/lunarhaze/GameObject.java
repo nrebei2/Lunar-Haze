@@ -324,7 +324,6 @@ public abstract class GameObject implements Drawable {
 	}
 
 	public float getDepth() {
-		// TODO
 		return this.getY() - this.radius;
 	}
 
@@ -332,9 +331,5 @@ public abstract class GameObject implements Drawable {
 	public void draw(GameCanvas canvas) {
 		canvas.draw(texture, Color.WHITE, origin.x, origin.y,
 				position.x, position.y, 0.0f, 1.0f, 1.f);
-	}
-
-	public void draw(GameCanvas canvas) {
-		canvas.draw(getTexture(), getPosition().x, getPosition().y);
 	}
 }

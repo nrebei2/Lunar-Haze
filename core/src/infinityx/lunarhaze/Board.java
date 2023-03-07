@@ -94,8 +94,6 @@ public class Board {
         return TILE_HEIGHT;
     }
 
-
-
     // Drawing information
     /**
      * Returns the textured mesh for a tile.
