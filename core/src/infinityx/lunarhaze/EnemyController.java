@@ -199,12 +199,12 @@ public class EnemyController {
         int y = (int) pos.y;
         switch (enemy.getDirection()){
             case NORTH:
-                board.setVisible(x, y+1, true);
-                board.setVisible(x, y+2, true);
-                break;
-            case SOUTH:
                 board.setVisible(x, y-1, true);
                 board.setVisible(x, y-2, true);
+                break;
+            case SOUTH:
+                board.setVisible(x, y+1, true);
+                board.setVisible(x, y+2, true);
                 break;
             case WEST:
                 board.setVisible(x-1, y, true);
