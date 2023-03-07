@@ -92,12 +92,9 @@ public class GameplayController {
      * This method creates a single player, but does nothing else.
      */
     public void start(LevelContainer levelContainer) {
-        // Create the player's ship
         player = levelContainer.getPlayer();
         enemies = levelContainer.getEnemies();
-        // Player must be in object list.
         objects.add(player);
-        // Create the board
         board = levelContainer.getBoard();
         controls = new EnemyController[enemies.size()];
         for(int ii = 0; ii < enemies.size(); ii++) {
@@ -160,9 +157,12 @@ public class GameplayController {
     }
 
     public void resolveEnemies(){
+        board.clearVisibility();
         for (Enemy en: enemies){
             if (controls[en.getId()] != null) {
-                int action = controls[en.getId()].getAction();
+                EnemyController curEnemyController = controls[en.getId()];
+                int action = curEnemyController.getAction();
+                curEnemyController.setVisibleTiles();
 //                boolean attacking = (action & EnemyController.CONTROL_ATTACK) != 0;
                 en.update(action);
 //                if (attacking &&) {

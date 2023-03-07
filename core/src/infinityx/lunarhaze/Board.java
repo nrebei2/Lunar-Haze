@@ -186,12 +186,10 @@ public class Board {
      *
      * @param canvas the drawing context
      */
-    public void draw(GameCanvas canvas, ArrayList<Vector2> tinted_tiles) {
+    public void draw(GameCanvas canvas) {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                if (search(x,y,tinted_tiles)) {
-                    drawTile(x, y, canvas, Color.RED);
-                } else drawTile(x, y, canvas, Color.WHITE);
+                drawTile(x, y, canvas, Color.RED);
             }
         }
     }
@@ -205,7 +203,7 @@ public class Board {
     private void drawTile(int x, int y, GameCanvas canvas, Color tint) {
         Texture tiletexture = getTileTexture(x, y);
         canvas.draw(
-                tiletexture, tint, tiletexture.getWidth() / 2, tiletexture.getHeight() / 2,
+                tiletexture, getTile(x, y).getVisible() ? Color.RED : Color.WHITE, tiletexture.getWidth() / 2, tiletexture.getHeight() / 2,
                 getTilePosition(x,y).x,getTilePosition(x, y).y, 0.0f,
                 getTileWidth() / tiletexture.getWidth(), getTileHeight() / tiletexture.getHeight()
         );
@@ -406,6 +404,21 @@ public class Board {
         getTile(x, y).setGoal(true);
     }
 
+    /**
+     * Sets a tile as visible or not.
+     *
+     * @param x The x index for the Tile cell
+     * @param y The y index for the Tile cell
+     * @param visible to be or not to be
+     */
+    public void setVisible(int x, int y, boolean visible) {
+        if (!inBounds(x,y)) {
+            Gdx.app.error("Board", "Illegal tile "+x+","+y, new IndexOutOfBoundsException());
+            return;
+        }
+        getTile(x, y).setVisible(visible);
+    }
+
     /** Returns the radius (height or width, should be the same) of
      * the tiles, in pixels
      *
@@ -452,6 +465,19 @@ public class Board {
                 Tile tile = getTile(x, y);
                 tile.setVisited(false);
                 tile.setGoal(false);
+            }
+        }
+    }
+
+    /**
+     * Sets all tiles on the board to not visible by enemies.
+     *
+     * This method should be done before setting tiles as visible every update.
+     */
+    public void clearVisibility() {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+               setVisible(x, y, false);
             }
         }
     }

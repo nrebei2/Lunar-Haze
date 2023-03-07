@@ -21,6 +21,8 @@ public class Tile {
     private boolean visited = false;
     /** Is there moonlight on this tile? */
     private boolean lit = false;
+    /** Can an enemy see this tile? */
+    private boolean visible = false;
 
     /** Texture of tile (Lit/Unlit from moonlight) **/
     private Texture TileTextureUnlit;
@@ -81,9 +83,9 @@ public class Tile {
         this.lit = lit;
     }
 
-//    public Vector2 getPosition() {
-//        return position;
-//    }
+    public boolean getVisible() { return visible; }
+
+    public void setVisible(boolean visible) { this.visible = visible; }
 
     /**
      * Returns the unlit image texture for the tile. Will be drawn if lit is false.

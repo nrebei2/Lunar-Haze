@@ -129,41 +129,14 @@ public class LevelContainer {
      * @param canvas The drawing context
      */
     public void drawLevel(GameCanvas canvas) {
-
-        // TODO: add visible parameter to tile, move drawing logic into board, and enemycontroller should set tiles to visible
-        ArrayList<Vector2> tint_tiles = new ArrayList<>();
-        for (Enemy en: enemies) {
-            Vector2 pos = board.worldToBoard(en.getPosition().x,en.getPosition().y);
-            int x = (int) pos.x;
-            int y = (int) pos.y;
-            switch (en.getDirection()){
-                case NORTH:
-                    tint_tiles.add(new Vector2(x,y+1));
-                    tint_tiles.add(new Vector2(x,y+2));
-                    break;
-                case SOUTH:
-                    tint_tiles.add(new Vector2(x,y-1));
-                    tint_tiles.add(new Vector2(x,y-2));
-                    break;
-                case WEST:
-                    tint_tiles.add(new Vector2(x-1,y));
-                    tint_tiles.add(new Vector2(x-2,y));
-                    break;
-                case EAST:
-                    tint_tiles.add(new Vector2(x+1,y));
-                    tint_tiles.add(new Vector2(x+2,y));
-                    break;
-                default:
-                    break;
-            }
-            // Render order: Board tiles -> (players, enemies, scene objects) sorted by depth (y coordinate)
-            board.draw(canvas,tint_tiles);
-            // Uses timsort, so O(n) if already sorted, which is nice since it usually will be
-            drawables.sort(drawComp);
-            for (Drawable d: drawables) {
-                d.draw(canvas);
-            }
+        // Render order: Board tiles -> (players, enemies, scene objects) sorted by depth (y coordinate)
+        board.draw(canvas);
+        // Uses timsort, so O(n) if already sorted, which is nice since it usually will be
+        drawables.sort(drawComp);
+        for (Drawable d: drawables) {
+            d.draw(canvas);
         }
+
     }
 }
 

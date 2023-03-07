@@ -11,6 +11,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.sound.sampled.Line;
 
+// TODO: move all this stuff into AI controller, EnemyController should hold other enemy actions
 public class EnemyController {
 
     // Constants for the control codes
@@ -58,8 +59,6 @@ public class EnemyController {
         AREA,
         /** The enemy can  detect the player in a half circle*/
         MOON
-
-
     }
     /**
      * Enumeration to describe what direction the enemy is facing
@@ -123,6 +122,8 @@ public class EnemyController {
         Vector2 diff = board.worldToBoard(x,y).sub(board.worldToBoard(tx, ty));
         return (float) Math.sqrt(Math.pow(diff.x, 2) + Math.pow(diff.y,2));
     }
+
+
 
     /**
      * Returns true if we detected the player (when the player walks in line of sight)
@@ -189,6 +190,34 @@ public class EnemyController {
         }
     }
 
+    /**
+     * Sets the tiles seen by this enemy's line of sight as visible.
+     */
+    public void setVisibleTiles() {
+        Vector2 pos = board.worldToBoard(enemy.getPosition().x, enemy.getPosition().y);
+        int x = (int) pos.x;
+        int y = (int) pos.y;
+        switch (enemy.getDirection()){
+            case NORTH:
+                board.setVisible(x, y+1, true);
+                board.setVisible(x, y+2, true);
+                break;
+            case SOUTH:
+                board.setVisible(x, y-1, true);
+                board.setVisible(x, y-2, true);
+                break;
+            case WEST:
+                board.setVisible(x-1, y, true);
+                board.setVisible(x-2, y, true);
+                break;
+            case EAST:
+                board.setVisible(x+1, y, true);
+                board.setVisible(x+2, y, true);
+                break;
+            default:
+                break;
+        }
+    }
 
     /**
      * Returns true if we can hit a target from here.
