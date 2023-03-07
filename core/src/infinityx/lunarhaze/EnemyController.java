@@ -323,7 +323,7 @@ public class EnemyController {
     }
 
     private void markGoalTiles() {
-        System.out.println("EnemyController markGoalTile");
+        System.out.println("EnemyController markGoalTile in state " + state);
         board.clearMarks();
         Vector2 pos;
         boolean setGoal = false; // Until we find a goal
