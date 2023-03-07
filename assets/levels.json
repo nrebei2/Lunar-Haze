@@ -15,8 +15,8 @@
       "player": [1, 2],
       "enemies": [
         {
-          "position": [3, 4],
-          "patrol": [[3, 4], [3, 5], [3, 6]]
+          "position": [3, 3],
+          "patrol": [[3, 4], [3, 5], [3, 6], [3,5]]
         }
       ],
       "objects": {

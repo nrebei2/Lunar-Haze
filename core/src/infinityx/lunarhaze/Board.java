@@ -188,7 +188,7 @@ public class Board {
      */
     private void drawTile(int x, int y, GameCanvas canvas) {
         Texture tiletexture = getTile(x,y).isLit() ? getTile(x,y).getTileTextureLit() : getTile(x,y).getTileTextureUnlit();
-        canvas.draw(tiletexture,Color.WHITE, TILE_WIDTH/2, TILE_HEIGHT/2, getTilePosition(x,y).x,getTilePosition(x, y).y, 0.0f, 4.0f, 4.0f);
+        canvas.draw(tiletexture,Color.WHITE, TILE_WIDTH/2, TILE_HEIGHT/2, getTilePosition(x,y).x,getTilePosition(x, y).y, 0.0f, 1.0f, 1.0f);
     }
 
     /**
