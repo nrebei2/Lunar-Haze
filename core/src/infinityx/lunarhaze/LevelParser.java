@@ -45,12 +45,22 @@ public class LevelParser {
         JsonValue levelContents = json.get(String.valueOf(level));
         // Generate board
         JsonValue tiles = levelContents.get("tiles");
+        JsonValue scene = levelContents.get("scene");
+
         IntArray tileData = new IntArray();
         int numRows = 0;
 
         for (JsonValue row : tiles) {
             tileData.addAll(row.asIntArray());
             numRows++;
+        }
+        //Initializes moonlight info
+        int numRows2 = 0;
+        JsonValue moonlight = scene.get("moonlight");
+        IntArray moonlightData = new IntArray();
+        for (JsonValue lit : moonlight) {
+            moonlightData.addAll(lit.asIntArray());
+            numRows2++;
         }
 
         // TODO: change if we do not want to assume board is square
@@ -61,7 +71,8 @@ public class LevelParser {
             for (int x = 0; x < board.getWidth(); x++) {
                 int tileNum = tileData.get((board.getHeight() - y - 1)*board.getWidth() + x);
                 board.setTileTexture(x, y, tileTextures.get(tileNum*2), tileTextures.get(tileNum*2+1));
-                board.setLit(x, y, true);
+                boolean moonInfo = moonlightData.get((board.getHeight() - y - 1)*board.getWidth() + x)==1? true:false;
+                board.setLit(x, y, moonInfo);
                 board.setTileType(x, y, tileTypeFromNum(tileNum));
                 board.setWalkable(x, y, true);
             }
@@ -69,7 +80,7 @@ public class LevelParser {
 
         levelContainer.setBoard(board);
 
-        JsonValue scene = levelContents.get("scene");
+
 
         // Generate player
         JsonValue player = scene.get("player");
