@@ -16,7 +16,7 @@ public class Enemy extends GameObject{
 // Instance Attributes
     /** A unique identifier; used to decouple classes. */
     private int id;
-    private static final float MOVE_SPEED = 3.5f;
+    private static final float MOVE_SPEED = 200f;
 
     /** Movement of the enemy **/
     private float movement;
@@ -77,6 +77,8 @@ public class Enemy extends GameObject{
     }
 
     private int currentWayPoint;
+
+    public Body body;
 
     /**
      * Initialize an enemy not alerted.
@@ -141,7 +143,7 @@ public class Enemy extends GameObject{
         boolean movingUp    = (controlCode & EnemyController.CONTROL_MOVE_UP) != 0;
         boolean movingDown  = (controlCode & EnemyController.CONTROL_MOVE_DOWN) != 0;
 
-        // Process movement command.
+        /* Process movement command.
         if (movingLeft) {
             velocity.x = -MOVE_SPEED;
             velocity.y = 0;
@@ -164,7 +166,24 @@ public class Enemy extends GameObject{
             velocity.y = 0;
         }
 
-        position = position.add(velocity);
+        position = position.add(velocity);*/
+
+        float xVelocity = 0.0f;
+        float yVelocity = 0.0f;
+        if (movingLeft) {
+            xVelocity = -MOVE_SPEED;
+        } else if (movingRight) {
+            xVelocity = MOVE_SPEED;
+        }
+        if (movingUp) {
+            yVelocity = -MOVE_SPEED;
+        } else if (movingDown) {
+            yVelocity = MOVE_SPEED;
+        }
+        body.setLinearVelocity(xVelocity, yVelocity);
+
+        // Update position based on Box2D body
+        position = body.getPosition();
     }
 
     public void draw(GameCanvas canvas) {
