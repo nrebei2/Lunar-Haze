@@ -12,6 +12,7 @@ import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.EnemyList;
 import infinityx.lunarhaze.entity.Werewolf;
 import infinityx.assets.AssetDirectory;
+import infinityx.lunarhaze.physics.MoonlightSource;
 import infinityx.util.FilmStrip;
 
 public class GameplayController {
@@ -150,12 +151,11 @@ public class GameplayController {
         }
 
         // Intialize lighting
-        lightingController = new LightingController(enemies);
+        lightingController = new LightingController(enemies, board.getMoonlightTiles(), board.getWidth(), board.getHeight());
         lightingController.initLights(true, true, 2, world);
 
-       /*PointLight light = new PointLight(getRayHandler(), 512, Color.WHITE, 2000f, 0, 0);
-        light.attachToBody(player.body);
-        light.setActive(true);*/
+        /*PointLight light = new PointLight(getRayHandler(), 512, new Color(0.5f, 0.5f, 1f, 0.3f), 2000f, 0, 0);
+        */
     }
 
     /**
@@ -210,8 +210,11 @@ public class GameplayController {
             if(timeOnMoonlight > MOONLIGHT_COLLECT_TIME) {
                 player.collectMoonlight();
                 remainingMoonlight--;
-                board.setLit(px, py, false);
                 timeOnMoonlight = 0;
+
+                board.setLit(px, py, false);
+                lightingController.removeLightAt(px, py);
+
                 // Check if game is won here
                 if(remainingMoonlight == 0) gameWon = true;
             }

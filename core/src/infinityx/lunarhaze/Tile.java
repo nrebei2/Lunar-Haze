@@ -1,5 +1,6 @@
 package infinityx.lunarhaze;
 
+import box2dLight.PointLight;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;

@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 /**
@@ -112,11 +113,13 @@ public class Board {
         if (tile == null) {
             return null;
         }
-        if (tile.isLit()) {
+        /*if (tile.isLit()) {
             return tile.getTileTextureLit();
-        } else {
-            return tile.getTileTextureUnlit();
-        }
+        }*/
+
+        // Commented the above out because we added ambient lighting. LMK if it should be changed back
+        return tile.getTileTextureUnlit();
+
     }
 
     /**
@@ -481,5 +484,19 @@ public class Board {
                setVisible(x, y, false);
             }
         }
+    }
+
+    /** Loops through moonlight tiles and returns an list of positions. Used for lighting controller */
+    public HashMap<Vector2, Vector2> getMoonlightTiles() {
+        HashMap<Vector2, Vector2> moonlightPositions = new HashMap<>();
+        for(int x = 0; x < getWidth(); x++) {
+            for(int y = 0; y < getHeight(); y++) {
+                if(getTile(x, y).isLit()) {
+                    moonlightPositions.put(new Vector2(x, y), boardToWorld(x, y).add(new Vector2(getTileWidth()/2.0f, getTileHeight()/2.0f)));
+                    System.out.println("Added " + boardToWorld(x,y).toString() + " to moonlightPositions");
+                }
+            }
+        }
+        return moonlightPositions;
     }
 }

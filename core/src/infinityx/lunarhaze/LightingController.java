@@ -14,6 +14,9 @@ import infinityx.lunarhaze.physics.ConeSource;
 import infinityx.lunarhaze.physics.LightSource;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class LightingController {
 
@@ -29,8 +32,18 @@ public class LightingController {
     /** List of enemies to attach to */
     private EnemyList enemies;
 
-    public LightingController(EnemyList e) {
+    private HashMap<Vector2, Vector2> moonlightPositions;
+
+    private PointLight[][] moonlight;
+
+    int width;
+    int height;
+
+    public LightingController(EnemyList e, HashMap<Vector2, Vector2> pos, int w, int h) {
         enemies = e;
+        moonlightPositions = pos;
+        width = w;
+        height = h;
     }
 
     public RayHandler getRayHandler() { return rayHandler; }
@@ -54,9 +67,22 @@ public class LightingController {
 
         // Create light for each enemy and attach
         for(Enemy e : enemies) {
-            e.setFlashlight(new ConeSource(rayHandler, 512, new Color(0.7f, 0.7f, 0.4f, 0.8f), 3500f, e.getX(), e.getY(), 90, 30));
+            e.setFlashlight(new ConeSource(rayHandler, 512, new Color(0.8f, 0.8f, 0.2f, 0.8f), 3500f, e.getX(), e.getY(), 90, 30));
             e.getFlashlight().attachToBody(e.body, 0, 0, e.getFlashlight().getDirection());
             e.getFlashlight().setActive(true);
         }
+
+        moonlight = new PointLight[width][height];
+        for(Map.Entry<Vector2, Vector2> pos : moonlightPositions.entrySet()) {
+            Vector2 boardPos = pos.getKey();
+            Vector2 worldPos = pos.getValue();
+            moonlight[(int) boardPos.x][(int) boardPos.y] = new PointLight(rayHandler, 512, new Color(0.7f, 0.7f, 1f, 0.6f), 200f, worldPos.x, worldPos.y);
+            moonlight[(int) boardPos.x][(int) boardPos.y].setActive(true);
+        }
     }
+
+    public void removeLightAt(int x, int y) {
+        moonlight[x][y].setActive(false);
+    }
+
 }
