@@ -1,6 +1,7 @@
 package infinityx.lunarhaze;
 
 
+import box2dLight.RayHandler;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
@@ -50,6 +51,8 @@ public class GameMode extends ScreenObservable implements Screen {
     private boolean active;
     /** Variable to track the game state (SIMPLE FIELDS) */
     private GameState gameState;
+
+    private RayHandler rayHandler;
 
 
     // TODO: Maybe change to enum if there are not that many levels
@@ -103,6 +106,7 @@ public class GameMode extends ScreenObservable implements Screen {
         switch (gameState) {
             case INTRO:
                 gameplayController.start(levelContainer);
+                rayHandler = gameplayController.getRayHandler();
                 gameState = GameState.PLAY;
                 break;
             case OVER:
@@ -183,6 +187,12 @@ public class GameMode extends ScreenObservable implements Screen {
         if (active) {
             update(delta);
             draw(delta);
+
+            // Draw the shadows
+            if (rayHandler != null) {
+                rayHandler.updateAndRender();
+            }
+
             if (inputController.didExit() && observer != null) {
                 observer.exitScreen(this, 0);
             }

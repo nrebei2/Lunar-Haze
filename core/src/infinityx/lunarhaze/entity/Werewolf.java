@@ -20,7 +20,7 @@ public class Werewolf extends GameObject{
     public static final int SHIP_IMG_FLAT = 9;
 
     /** Move speed **/
-    private static final float WEREWOLF_SPEED = 5f;
+    private static final float WEREWOLF_SPEED = 800f;
 
     /** How fast we change frames (one frame per 4 calls to update) */
     private static final float ANIMATION_SPEED = 0.25f;
@@ -37,7 +37,7 @@ public class Werewolf extends GameObject{
     /** The up/down movement of the werewolf **/
     private float movementV = 0.0f; // DEPRECATED
 
-    private Vector2 movement = new Vector2();
+    public Body body;
 
     /** Whether the  player stands on a moonlight tile**/
     private Boolean moonlight;
@@ -128,8 +128,6 @@ public class Werewolf extends GameObject{
         movementV = value;
     }
 
-    public void setMovement(float x, float y) { movement = new Vector2(x, y); }
-
     /**
      * Returns the current hp of the werewolf.
      */
@@ -180,15 +178,17 @@ public class Werewolf extends GameObject{
      * @param delta Number of seconds since last animation frame
      */
     public void update(float delta) {
-        // Call superclass's update
-        if (movementH != 0.0f) {
-            position.x += movementH * WEREWOLF_SPEED;
-        }
 
-        if (movementV != 0.0f) {
-            position.y += movementV * WEREWOLF_SPEED;
-        }
+        // get the current velocity of the player's Box2D body
+        Vector2 velocity = body.getLinearVelocity();
 
+        // update the velocity based on the input from the player
+        velocity.x = movementH * WEREWOLF_SPEED;
+        velocity.y = movementV * WEREWOLF_SPEED;
+
+        // set the updated velocity to the player's Box2D body
+        body.setLinearVelocity(velocity);
+        position = body.getPosition();
     }
 
     /**

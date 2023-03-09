@@ -1,9 +1,10 @@
 package infinityx.lunarhaze;
+import box2dLight.PointLight;
+import box2dLight.RayHandler;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
@@ -11,6 +12,7 @@ import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.EnemyList;
 import infinityx.lunarhaze.entity.Werewolf;
 import infinityx.assets.AssetDirectory;
+import infinityx.lunarhaze.physics.MoonlightSource;
 import infinityx.util.FilmStrip;
 
 public class GameplayController {
@@ -29,6 +31,8 @@ public class GameplayController {
     private Array<GameObject> objects;
 
     private EnemyController[] controls;
+
+    private LightingController lightingController;
 
     public Board board;
 
@@ -101,6 +105,7 @@ public class GameplayController {
         return player != null;
     }
 
+    public RayHandler getRayHandler() { return lightingController.getRayHandler(); };
 
     /**
      * Starts a new game.
@@ -108,20 +113,49 @@ public class GameplayController {
      * This method creates a single player, but does nothing else.
      */
     public void start(LevelContainer levelContainer) {
-        world = levelContainer.world;
         player = levelContainer.getPlayer();
         enemies = levelContainer.getEnemies();
         objects.add(player);
         board = levelContainer.getBoard();
         remainingMoonlight = levelContainer.getRemainingMoonlight();
         controls = new EnemyController[enemies.size()];
-        for(int ii = 0; ii < enemies.size(); ii++) {
-            controls[ii] = new EnemyController(ii,player,enemies, board);
-            objects.add(enemies.get(ii));
-        }
+
         gameWon = false;
         gameLost = false;
 
+        // BOX2D initialization
+        world = new World(new Vector2(0,0), true);
+        // create a body definition for the player
+        BodyDef playerDef = new BodyDef();
+        playerDef.type = BodyDef.BodyType.DynamicBody;
+        playerDef.position.set(player.position);
+
+        FixtureDef playerFixtureDef = new FixtureDef();
+        playerFixtureDef.shape = new CircleShape();
+
+        player.body = world.createBody(playerDef);
+        player.body.createFixture(playerFixtureDef);
+
+        for(int ii = 0; ii < enemies.size(); ii++) {
+            Enemy curr = enemies.get(ii);
+            BodyDef enemyDef = new BodyDef();
+            enemyDef.type = BodyDef.BodyType.DynamicBody;
+            enemyDef.position.set(curr.position);
+
+            FixtureDef enemyFixtureDef = new FixtureDef();
+            enemyFixtureDef.shape = new CircleShape();
+            curr.body = world.createBody(enemyDef);
+            curr.body.createFixture(enemyFixtureDef);
+            controls[ii] = new EnemyController(ii,player,enemies, board);
+            objects.add(enemies.get(ii));
+        }
+
+        // Intialize lighting
+        lightingController = new LightingController(enemies, board.getMoonlightTiles(), board.getWidth(), board.getHeight());
+        lightingController.initLights(true, true, 2, world);
+
+        /*PointLight light = new PointLight(getRayHandler(), 512, new Color(0.5f, 0.5f, 1f, 0.3f), 2000f, 0, 0);
+        */
     }
 
     /**
@@ -147,10 +181,7 @@ public class GameplayController {
             resolveMoonlight(delta);
         }
         resolveEnemies();
-        // Process the other (non-ship) objects.
-//        for (GameObject o : objects) {
-//            o.update(delta);
-//        }
+        world.step(delta, 6, 2);
     }
 
     /**
@@ -179,8 +210,11 @@ public class GameplayController {
             if(timeOnMoonlight > MOONLIGHT_COLLECT_TIME) {
                 player.collectMoonlight();
                 remainingMoonlight--;
-                board.setLit(px, py, false);
                 timeOnMoonlight = 0;
+
+                board.setLit(px, py, false);
+                lightingController.removeLightAt(px, py);
+
                 // Check if game is won here
                 if(remainingMoonlight == 0) gameWon = true;
             }
@@ -209,6 +243,7 @@ public class GameplayController {
 
                 en.update(EnemyController.CONTROL_NO_ACTION);
             }
+            en.changeFlashlightDirection();
         }
 
     }
