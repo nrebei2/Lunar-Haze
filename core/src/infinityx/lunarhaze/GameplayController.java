@@ -244,6 +244,7 @@ public class GameplayController {
                 en.update(EnemyController.CONTROL_NO_ACTION);
             }
             en.changeFlashlightDirection();
+
         }
 
     }

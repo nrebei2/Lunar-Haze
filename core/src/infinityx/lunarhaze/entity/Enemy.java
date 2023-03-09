@@ -135,7 +135,6 @@ public class Enemy extends GameObject{
     public ConeSource getFlashlight() { return flashlight; }
 
     public void changeFlashlightDirection() {
-        System.out.println(getDirection());
         switch(getDirection()) {
             case NORTH:
                 flashlight.setDirection(90f);
@@ -150,6 +149,7 @@ public class Enemy extends GameObject{
                 flashlight.setDirection(180f);
                 break;
         }
+        System.out.println("Flashlight direction: " + flashlight.getDirection());
         flashlight.update();
     }
 
@@ -166,31 +166,6 @@ public class Enemy extends GameObject{
         boolean movingRight = (controlCode & EnemyController.CONTROL_MOVE_RIGHT) != 0;
         boolean movingUp    = (controlCode & EnemyController.CONTROL_MOVE_UP) != 0;
         boolean movingDown  = (controlCode & EnemyController.CONTROL_MOVE_DOWN) != 0;
-
-        /* Process movement command.
-        if (movingLeft) {
-            velocity.x = -MOVE_SPEED;
-            velocity.y = 0;
-            direction = Direction.WEST;
-        } else if (movingRight) {
-            velocity.x = MOVE_SPEED;
-            velocity.y = 0;
-            direction = Direction.EAST;
-        } else if (movingUp) {
-            velocity.y = -MOVE_SPEED;
-            velocity.x = 0;
-            direction = Direction.NORTH;
-        } else if (movingDown) {
-            velocity.y = MOVE_SPEED;
-            velocity.x = 0;
-            direction = Direction.SOUTH;
-        } else {
-            // NOT MOVING, SO SLOW DOWN
-            velocity.x = 0;
-            velocity.y = 0;
-        }
-
-        position = position.add(velocity);*/
 
         float xVelocity = 0.0f;
         float yVelocity = 0.0f;
