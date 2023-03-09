@@ -60,14 +60,14 @@ public class LightingController {
         RayHandler.useDiffuseLight(diffuse);
         rayHandler = new RayHandler(world, Gdx.graphics.getWidth(), Gdx.graphics.getWidth());
         rayHandler.setCombinedMatrix(raycamera);
-        rayHandler.setAmbientLight(0.25f, 0.23f, 0.35f, 0.25f);
+        rayHandler.setAmbientLight(0.43f, 0.4f, 0.55f, 0.25f);
         rayHandler.setBlur(blur > 0);
         rayHandler.setBlurNum(blur);
         rayHandler.setShadows(true);
 
         // Create light for each enemy and attach
         for(Enemy e : enemies) {
-            e.setFlashlight(new ConeSource(rayHandler, 512, new Color(0.8f, 0.8f, 0.2f, 0.8f), 3500f, e.getX(), e.getY(), 90, 30));
+            e.setFlashlight(new ConeSource(rayHandler, 512, new Color(0.8f, 0.8f, 0.2f, 0.9f), 3500f, e.getX(), e.getY(), 90, 30));
             e.getFlashlight().attachToBody(e.body, 0, 0, e.getFlashlight().getDirection());
             e.getFlashlight().setActive(true);
         }
@@ -76,7 +76,7 @@ public class LightingController {
         for(Map.Entry<Vector2, Vector2> pos : moonlightPositions.entrySet()) {
             Vector2 boardPos = pos.getKey();
             Vector2 worldPos = pos.getValue();
-            moonlight[(int) boardPos.x][(int) boardPos.y] = new PointLight(rayHandler, 512, new Color(0.7f, 0.7f, 1f, 0.6f), 200f, worldPos.x, worldPos.y);
+            moonlight[(int) boardPos.x][(int) boardPos.y] = new PointLight(rayHandler, 512, new Color(0.7f, 0.7f, 0.9f, 0.7f), 200f, worldPos.x, worldPos.y);
             moonlight[(int) boardPos.x][(int) boardPos.y].setActive(true);
         }
     }
