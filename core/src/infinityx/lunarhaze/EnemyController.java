@@ -477,10 +477,10 @@ public class EnemyController {
             return CONTROL_MOVE_RIGHT;
         }
         else if (t.prevDirection[1] == -1){
-            return CONTROL_MOVE_UP;
+            return CONTROL_MOVE_DOWN;
         }
         else if (t.prevDirection[1] == 1) {
-            return CONTROL_MOVE_DOWN;
+            return CONTROL_MOVE_UP;
         }
         return CONTROL_NO_ACTION;
     }

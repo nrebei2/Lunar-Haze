@@ -6,6 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import infinityx.lunarhaze.entity.Enemy;
@@ -36,6 +37,8 @@ public class LightingController {
 
     private PointLight[][] moonlight;
 
+    private PointLight ambienceMoonlight;
+
     int width;
     int height;
 
@@ -60,14 +63,14 @@ public class LightingController {
         RayHandler.useDiffuseLight(diffuse);
         rayHandler = new RayHandler(world, Gdx.graphics.getWidth(), Gdx.graphics.getWidth());
         rayHandler.setCombinedMatrix(raycamera);
-        rayHandler.setAmbientLight(0.43f, 0.4f, 0.55f, 0.25f);
+        rayHandler.setAmbientLight(0.25f, 0.22f, 0.32f, 0.25f);
         rayHandler.setBlur(blur > 0);
-        rayHandler.setBlurNum(blur);
+        rayHandler.setBlurNum(20);
         rayHandler.setShadows(true);
 
         // Create light for each enemy and attach
         for(Enemy e : enemies) {
-            e.setFlashlight(new ConeSource(rayHandler, 512, new Color(0.8f, 0.8f, 0.2f, 0.9f), 3500f, e.getX(), e.getY(), 90, 30));
+            e.setFlashlight(new ConeSource(rayHandler, 512, new Color(0.8f, 0.6f, 0f, 0.9f), 3500f, e.getX(), e.getY(), 0f, 30));
             e.getFlashlight().attachToBody(e.body, 0, 0, e.getFlashlight().getDirection());
             e.getFlashlight().setActive(true);
         }
@@ -79,6 +82,10 @@ public class LightingController {
             moonlight[(int) boardPos.x][(int) boardPos.y] = new PointLight(rayHandler, 512, new Color(0.7f, 0.7f, 0.9f, 0.7f), 200f, worldPos.x, worldPos.y);
             moonlight[(int) boardPos.x][(int) boardPos.y].setActive(true);
         }
+
+        ambienceMoonlight = new PointLight(rayHandler, 512, new Color(0.65f, 0.6f, 0.77f, 0.6f), 4000f, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()/4.0f);
+        ambienceMoonlight.setXray(true);
+        ambienceMoonlight.setActive(true);
     }
 
     public void removeLightAt(int x, int y) {
