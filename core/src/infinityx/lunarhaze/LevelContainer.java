@@ -55,6 +55,8 @@ public class LevelContainer {
     /** Stores Board*/
     private Board board;
 
+    private int remainingMoonlight;
+
     /** Holds references to all drawable entities on the level (i.e. sceneObjects, player, enemies) */
     private Array<Drawable> drawables;
     private DrawableCompare drawComp = new DrawableCompare();
@@ -83,6 +85,7 @@ public class LevelContainer {
         drawables = new Array<Drawable>();
 
         world = null;
+        remainingMoonlight = 0;
     }
 
     /**
@@ -121,6 +124,10 @@ public class LevelContainer {
         drawables.add(player);
         this.player = player;
     }
+
+    public void addMoonlight() { remainingMoonlight++; }
+
+    public int getRemainingMoonlight() { return remainingMoonlight; }
 
     /**
      * @return Scene board holding all background tiles

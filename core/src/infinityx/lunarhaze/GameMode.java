@@ -138,9 +138,8 @@ public class GameMode extends ScreenObservable implements Screen {
         gameplayController.resolveActions(inputController,delta);
 
         // Check for collisions
-        totalTime += (delta*1000); // Seconds to milliseconds
+        totalTime += (delta * 1000); // Seconds to milliseconds
         physicsController.processCollisions(gameplayController.getObjects());
-
         // Clean up destroyed objects
        // gameplayController.garbageCollect();
     }
@@ -186,6 +185,12 @@ public class GameMode extends ScreenObservable implements Screen {
             draw(delta);
             if (inputController.didExit() && observer != null) {
                 observer.exitScreen(this, 0);
+            }
+            // Check if game is won
+            if(gameplayController.isGameWon() && observer != null) {
+                observer.exitScreen(this, 2);
+            } else if(gameplayController.isGameLost() && observer != null) {
+                observer.exitScreen(this, 3);
             }
         }
     }

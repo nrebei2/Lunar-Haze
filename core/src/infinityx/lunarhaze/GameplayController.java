@@ -1,6 +1,9 @@
 package infinityx.lunarhaze;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
@@ -29,11 +32,23 @@ public class GameplayController {
 
     public Board board;
 
+    private static final float MOONLIGHT_COLLECT_TIME = 1.5f;
+
+    private float timeOnMoonlight;
+
+    private int remainingMoonlight;
+    private boolean gameWon;
+
+    private boolean gameLost;
+
+    private World world;
+
     public GameplayController() {
         player = null;
         enemies = null;
         board = null;
         objects = new Array<GameObject>();
+        timeOnMoonlight = 0;
     }
 //
 //    /**
@@ -93,15 +108,19 @@ public class GameplayController {
      * This method creates a single player, but does nothing else.
      */
     public void start(LevelContainer levelContainer) {
+        world = levelContainer.world;
         player = levelContainer.getPlayer();
         enemies = levelContainer.getEnemies();
         objects.add(player);
         board = levelContainer.getBoard();
+        remainingMoonlight = levelContainer.getRemainingMoonlight();
         controls = new EnemyController[enemies.size()];
         for(int ii = 0; ii < enemies.size(); ii++) {
             controls[ii] = new EnemyController(ii,player,enemies, board);
             objects.add(enemies.get(ii));
         }
+        gameWon = false;
+        gameLost = false;
 
     }
 
@@ -123,9 +142,9 @@ public class GameplayController {
      */
     public void resolveActions(InputController input, float delta) {
         // Process the player
-        if (player != null ) {
+        if (player != null) {
             resolvePlayer(input,delta);
-            resolveMoonlight();
+            resolveMoonlight(delta);
         }
         resolveEnemies();
         // Process the other (non-ship) objects.
@@ -149,11 +168,26 @@ public class GameplayController {
         player.update(delta);
     }
 
-    public void resolveMoonlight() {
-        Vector2 pos = board.worldToBoard(player.position.x, player.position.y);
-        if(board.isLit((int) pos.x, (int) pos.y)) {
+    public void resolveMoonlight(float delta) {
+        Vector2 pos = board.worldToBoard(player.position.x, player.position.y - (player.texture.getHeight() / 3f));
+        int px = (int) pos.x;
+        int py = (int) pos.y;
+
+        if(board.isLit(px, py)) {
+            timeOnMoonlight += delta; // Increase variable by time
             player.setOnMoonlight(true);
-        } else {player.setOnMoonlight(false);}
+            if(timeOnMoonlight > MOONLIGHT_COLLECT_TIME) {
+                player.collectMoonlight();
+                remainingMoonlight--;
+                board.setLit(px, py, false);
+                timeOnMoonlight = 0;
+                // Check if game is won here
+                if(remainingMoonlight == 0) gameWon = true;
+            }
+        } else {
+            timeOnMoonlight = 0;
+            player.setOnMoonlight(false);
+        }
     }
 
     public void resolveEnemies(){
@@ -178,6 +212,10 @@ public class GameplayController {
         }
 
     }
+
+    public boolean isGameWon() { return gameWon; }
+    public boolean isGameLost() { return gameLost; }
+
 
     /**
      * Garbage collects all deleted objects.

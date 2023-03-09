@@ -29,6 +29,7 @@ public class Board {
     private static final int TILE_WIDTH = 128;
     private static final int TILE_HEIGHT = (int)(TILE_WIDTH*TILE_RATIO);
 
+
     /**
      * Creates a new board of the given size
      *

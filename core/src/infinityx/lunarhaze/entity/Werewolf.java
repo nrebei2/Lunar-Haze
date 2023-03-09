@@ -20,7 +20,7 @@ public class Werewolf extends GameObject{
     public static final int SHIP_IMG_FLAT = 9;
 
     /** Move speed **/
-    private static final float WEREWOLF_SPEED = 4f;
+    private static final float WEREWOLF_SPEED = 5f;
 
     /** How fast we change frames (one frame per 4 calls to update) */
     private static final float ANIMATION_SPEED = 0.25f;
@@ -32,10 +32,12 @@ public class Werewolf extends GameObject{
     //private FilmStrip werewolfSprite;
 
     /** The right/left movement of the werewolf **/
-    private float movementH = 0.0f;
+    private float movementH = 0.0f; //DEPRECATED
 
     /** The up/down movement of the werewolf **/
-    private float movementV = 0.0f;
+    private float movementV = 0.0f; // DEPRECATED
+
+    private Vector2 movement = new Vector2();
 
     /** Whether the  player stands on a moonlight tile**/
     private Boolean moonlight;
@@ -51,6 +53,8 @@ public class Werewolf extends GameObject{
 
     /** Health point (hp) of the werewolf */
     private float hp;
+
+    private Vector2 forceCache = new Vector2();
 
 //    /**
 //     * Returns the image filmstrip for this ship
@@ -124,6 +128,8 @@ public class Werewolf extends GameObject{
         movementV = value;
     }
 
+    public void setMovement(float x, float y) { movement = new Vector2(x, y); }
+
     /**
      * Returns the current hp of the werewolf.
      */
@@ -151,7 +157,10 @@ public class Werewolf extends GameObject{
 
     public void setOnMoonlight(Boolean b) {
         moonlight = b;
-        if(b) moonlightCollected++;
+    }
+
+    public void collectMoonlight() {
+        moonlightCollected++;
     }
 
     /**
