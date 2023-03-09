@@ -39,8 +39,7 @@ public class GameMode extends ScreenObservable implements Screen {
     private InputController inputController;
     /** Handle collision and physics (CONTROLLER CLASS) */
     private CollisionController physicsController;
-    /** Listener that will update the player mode when we are done */
-    private ScreenObserver observer;
+
     /** Both may be null, requires assets retrieved from AssetManager */
     private JsonValue levelLayout;
     /** Contains level details! */
@@ -233,15 +232,6 @@ public class GameMode extends ScreenObservable implements Screen {
      */
     public void hide() {
 
-    }
-
-    /**
-     * Sets the ScreenListener for this mode
-     *
-     * The ScreenListener will respond to requests to quit.
-     */
-    public void setScreenObservable(ScreenObserver observer) {
-        this.observer = observer;
     }
 
     /**

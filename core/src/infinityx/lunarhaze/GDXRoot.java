@@ -54,7 +54,12 @@ public class GDXRoot extends Game implements ScreenObserver {
 		menu = new MenuMode(canvas);
 		win = new WinMode(canvas);
 
+		// Set screen observer to this game
 		loading.setObserver(this);
+		game.setObserver(this);
+		menu.setObserver(this);
+		win.setObserver(this);
+
 		setScreen(loading);
 	}
 
@@ -109,14 +114,12 @@ public class GDXRoot extends Game implements ScreenObserver {
 		if (screen == loading) {
 			directory = loading.getAssets();
 			menu.gatherAssets(directory);
-			menu.setObserver(this);
 			setScreen(menu);
 
 			loading.dispose();
 			loading = null;
 		} else if (screen == menu) {
 			// TODO: exitCode is the level?
-			game.setScreenObservable(this);
 			game.setupLevel(directory, exitCode);
 			setScreen(game);
 			System.out.println("set game screen");
@@ -126,7 +129,6 @@ public class GDXRoot extends Game implements ScreenObserver {
 		} else if (screen == game && exitCode == 2) {
 			System.out.println("You win");
 			win.gatherAssets(directory);
-			win.setObserver(this);
 			setScreen(win);
 
 			game.dispose();
