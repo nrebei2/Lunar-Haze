@@ -75,6 +75,7 @@ public class LevelParser {
                 int tileNum = tileData.get((board.getHeight() - y - 1)*board.getWidth() + x);
                 board.setTileTexture(x, y, tileTextures.get((tileNum-1)*2), tileTextures.get((tileNum-1)*2+1));
                 boolean moonInfo = (moonlightData.get((board.getHeight() - y - 1)*board.getWidth() + x)==1);
+                if(moonInfo) levelContainer.addMoonlight();
                 board.setLit(x, y, moonInfo);
                 board.setTileType(x, y, tileTypeFromNum(tileNum));
                 board.setWalkable(x, y, true);

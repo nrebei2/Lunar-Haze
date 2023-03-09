@@ -28,6 +28,11 @@ public class GDXRoot extends Game implements ScreenObserver {
 	private GameMode game;
 	/** Menu Screen */
 	private MenuMode menu;
+	private WinMode win;
+
+	private static final int WON_GAME = 2;
+	private static final int LOST_GAME = 3;
+
 
 	/**
 	 * Creates a new game from the configuration settings.
@@ -47,6 +52,7 @@ public class GDXRoot extends Game implements ScreenObserver {
 		loading = new LoadingMode("assets.json", canvas, 1);
 		game = new GameMode(canvas);
 		menu = new MenuMode(canvas);
+		win = new WinMode(canvas);
 
 		loading.setObserver(this);
 		setScreen(loading);
@@ -110,12 +116,21 @@ public class GDXRoot extends Game implements ScreenObserver {
 			loading = null;
 		} else if (screen == menu) {
 			// TODO: exitCode is the level?
-			game.setObserver(this);
+			game.setScreenObservable(this);
 			game.setupLevel(directory, exitCode);
 			setScreen(game);
 			System.out.println("set game screen");
 
 			menu.dispose();
+			menu = null;
+		} else if (screen == game && exitCode == 2) {
+			System.out.println("You win");
+			win.gatherAssets(directory);
+			win.setObserver(this);
+			setScreen(win);
+
+			game.dispose();
+			game = null;
 		} else {
 			Gdx.app.exit();
 		}
