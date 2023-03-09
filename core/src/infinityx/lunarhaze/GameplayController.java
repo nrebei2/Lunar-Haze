@@ -1,5 +1,7 @@
 package infinityx.lunarhaze;
+import box2dLight.PointLight;
 import box2dLight.RayHandler;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -150,6 +152,10 @@ public class GameplayController {
         // Intialize lighting
         lightingController = new LightingController(enemies);
         lightingController.initLights(true, true, 2, world);
+
+       /*PointLight light = new PointLight(getRayHandler(), 512, Color.WHITE, 2000f, 0, 0);
+        light.attachToBody(player.body);
+        light.setActive(true);*/
     }
 
     /**
@@ -234,6 +240,7 @@ public class GameplayController {
 
                 en.update(EnemyController.CONTROL_NO_ACTION);
             }
+            en.changeFlashlightDirection();
         }
 
     }

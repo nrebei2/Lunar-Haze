@@ -167,11 +167,6 @@ public class GameMode extends ScreenObservable implements Screen {
         }
         // Flush information to the graphic buffer.
         canvas.end();
-
-        // Draw the shadows
-        if (rayHandler != null) {
-            rayHandler.render();
-        }
     }
 
     /**
@@ -192,6 +187,12 @@ public class GameMode extends ScreenObservable implements Screen {
         if (active) {
             update(delta);
             draw(delta);
+
+            // Draw the shadows
+            if (rayHandler != null) {
+                rayHandler.updateAndRender();
+            }
+
             if (inputController.didExit() && observer != null) {
                 observer.exitScreen(this, 0);
             }

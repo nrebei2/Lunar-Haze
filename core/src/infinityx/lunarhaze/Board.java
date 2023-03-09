@@ -190,7 +190,7 @@ public class Board {
     public void draw(GameCanvas canvas) {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                drawTile(x, y, canvas, Color.RED);
+                drawTile(x, y, canvas, Color.WHITE);
             }
         }
     }
@@ -204,7 +204,7 @@ public class Board {
     private void drawTile(int x, int y, GameCanvas canvas, Color tint) {
         Texture tiletexture = getTileTexture(x, y);
         canvas.draw(
-                tiletexture, getTile(x, y).getVisible() ? Color.RED : Color.WHITE, tiletexture.getWidth() / 2, tiletexture.getHeight() / 2,
+                tiletexture, Color.WHITE, tiletexture.getWidth() / 2, tiletexture.getHeight() / 2,
                 getTilePosition(x,y).x,getTilePosition(x, y).y, 0.0f,
                 getTileWidth() / tiletexture.getWidth(), getTileHeight() / tiletexture.getHeight()
         );
