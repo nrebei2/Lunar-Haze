@@ -134,25 +134,6 @@ public class Enemy extends GameObject{
     public void setFlashlight(ConeSource cone) { flashlight = cone; }
     public ConeSource getFlashlight() { return flashlight; }
 
-    public void changeFlashlightDirection() {
-        switch(getDirection()) {
-            case NORTH:
-                flashlight.setDirection(90f);
-                break;
-            case SOUTH:
-                flashlight.setDirection(270f);
-                break;
-            case EAST:
-                flashlight.setDirection(0f);
-                break;
-            case WEST:
-                flashlight.setDirection(180f);
-                break;
-        }
-        System.out.println("Flashlight direction: " + flashlight.getDirection());
-        flashlight.update();
-    }
-
     /**
      * Updates the animation frame and position of this enemy.
      *
@@ -164,8 +145,8 @@ public class Enemy extends GameObject{
     public void update(int controlCode) {
         boolean movingLeft  = (controlCode & EnemyController.CONTROL_MOVE_LEFT) != 0;
         boolean movingRight = (controlCode & EnemyController.CONTROL_MOVE_RIGHT) != 0;
-        boolean movingUp    = (controlCode & EnemyController.CONTROL_MOVE_UP) != 0;
-        boolean movingDown  = (controlCode & EnemyController.CONTROL_MOVE_DOWN) != 0;
+        boolean movingDown    = (controlCode & EnemyController.CONTROL_MOVE_DOWN) != 0;
+        boolean movingUp  = (controlCode & EnemyController.CONTROL_MOVE_UP) != 0;
 
         float xVelocity = 0.0f;
         float yVelocity = 0.0f;
@@ -176,17 +157,44 @@ public class Enemy extends GameObject{
             xVelocity = MOVE_SPEED;
             direction = Direction.EAST;
         }
-        if (movingUp) {
+        if (movingDown) {
             yVelocity = -MOVE_SPEED;
-            direction = Direction.NORTH;
-        } else if (movingDown) {
-            yVelocity = MOVE_SPEED;
             direction = Direction.SOUTH;
+        } else if (movingUp) {
+            yVelocity = MOVE_SPEED;
+            direction = Direction.NORTH;
+            System.out.println("moving up");
         }
         body.setLinearVelocity(xVelocity, yVelocity);
-
+        rotate(direction);
         // Update position based on Box2D body
         position = body.getPosition();
+    }
+
+    private void rotate(Direction direction) {
+        float ang = body.getAngle();
+        switch(direction) {
+            case NORTH:
+                if(ang > Math.PI/2f) body.setAngularVelocity(-4f);
+                else if(ang < Math.PI/2f) body.setAngularVelocity(4f);
+                else body.setAngularVelocity(0);
+                break;
+            case SOUTH:
+                if(ang > (3*Math.PI)/2f) body.setAngularVelocity(-4f);
+                else if(ang < (3*(Math.PI))/2f) body.setAngularVelocity(4f);
+                else body.setAngularVelocity(0);
+                break;
+            case WEST:
+                if(ang > Math.PI) body.setAngularVelocity(-4f);
+                else if(ang < Math.PI) body.setAngularVelocity(4f);
+                else body.setAngularVelocity(0);
+                break;
+            case EAST:
+                if(ang > (2*Math.PI)) body.setAngularVelocity(-4f);
+                else if(ang < (2*Math.PI)) body.setAngularVelocity(4f);
+                else body.setAngularVelocity(0);
+                break;
+        }
     }
 
     public void draw(GameCanvas canvas) {
