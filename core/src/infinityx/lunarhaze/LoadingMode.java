@@ -30,15 +30,23 @@ import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.ControllerMapping;
 
+import com.badlogic.gdx.math.Interpolation;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.GameCanvas;
 import infinityx.util.ScreenObservable;
 
 /**
  * Class that provides a loading screen for the state of the game.
- * TODO: Make screen fade in and out
  */
 public class LoadingMode extends ScreenObservable implements Screen, InputProcessor {
+
+    /**
+     * Track the current state of the loading screen.
+     */
+    private enum LoadingState {
+        FADE_IN, LOAD, FADE_OUT
+    }
+
     // There are TWO asset managers.  One to load the loading screen.  The other to load the assets
     /** Internal assets for this loading screen */
     private AssetDirectory internal;
@@ -97,6 +105,20 @@ public class LoadingMode extends ScreenObservable implements Screen, InputProces
 
     /** Whether or not this player mode is still active */
     private boolean active;
+
+    /** current time (in seconds) this screen has been alive */
+    private float elapsed;
+
+    /** time (in seconds) it should take this screen to fade-in and fade-out  */
+    private static final float FADE_TIME = 2.5f;
+
+    /** Easing in function, easing out is reversed */
+    private static final Interpolation EAS_FN = Interpolation.exp5Out;
+
+    /** alpha tint, rgb should be 1 as we are only changing transparency */
+    private Color alphaTint = new Color(1, 1, 1, 0);
+
+    private LoadingState loadingState;
 
     /**
      * Returns the budget for the asset loader.
@@ -196,6 +218,8 @@ public class LoadingMode extends ScreenObservable implements Screen, InputProces
         assets = new AssetDirectory( file );
         assets.loadAssets();
         active = true;
+
+        loadingState = LoadingState.FADE_IN;
     }
 
     /**
@@ -216,13 +240,38 @@ public class LoadingMode extends ScreenObservable implements Screen, InputProces
      * @param delta Number of seconds since last animation frame
      */
     private void update(float delta) {
-        if (progress < 1.0f) {
-            assets.update(budget);
-            this.progress = assets.getProgress();
-            if (progress >= 1.0f) {
-                this.progress = 1.0f;
-            }
+        switch (loadingState) {
+            case FADE_IN:
+                elapsed += delta;
+                // progress along fade-in
+                float inProg = Math.min(1f, elapsed/FADE_TIME);
+                alphaTint.a = EAS_FN.apply(inProg);
+                if (inProg == 1f) {
+                    loadingState = LoadingState.LOAD;
+                    elapsed = 0;
+                }
+                break;
+            case LOAD:
+                if (progress < 1.0f) {
+                    assets.update(budget);
+                    this.progress = assets.getProgress();
+                    if (progress >= 1.0f) {
+                        this.progress = 1.0f;
+                        loadingState = LoadingState.FADE_OUT;
+                    }
+                }
+                break;
+            case FADE_OUT:
+                elapsed += delta;
+                // progress along fade-out
+                float outProg = Math.min(1f, elapsed/FADE_TIME);
+                alphaTint.a = EAS_FN.apply(1-outProg);
+                if (outProg == 1f) {
+                    observer.exitScreen(this, 0);
+                }
+                break;
         }
+
     }
 
     /**
@@ -232,10 +281,20 @@ public class LoadingMode extends ScreenObservable implements Screen, InputProces
      * of using the single render() method that LibGDX does.  We will talk about why we
      * prefer this in lecture.
      */
-    private void draw() {
+    private void draw(float delta) {
+        canvas.clear(Color.BLACK);
         canvas.begin();
-        canvas.draw(background, 0, 0);
-        drawProgress(canvas);
+
+        switch (loadingState) {
+            case FADE_OUT:
+            case FADE_IN:
+                canvas.drawOverlay(background, alphaTint, true);
+                break;
+            case LOAD:
+                canvas.drawOverlay(background, alphaTint, true);
+                drawProgress(canvas);
+                break;
+        }
         canvas.end();
     }
 
@@ -283,10 +342,7 @@ public class LoadingMode extends ScreenObservable implements Screen, InputProces
     public void render(float delta) {
         if (active) {
             update(delta);
-            draw();
-            if (progress >= 1.0f) {
-                observer.exitScreen(this, 0);
-            }
+            draw(delta);
         }
     }
 
@@ -338,6 +394,7 @@ public class LoadingMode extends ScreenObservable implements Screen, InputProces
     public void show() {
         // Useless if called in outside animation loop
         active = true;
+        elapsed = 0f;
     }
 
     /**

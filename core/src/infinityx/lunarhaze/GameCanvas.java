@@ -320,7 +320,15 @@ public class GameCanvas {
      */
     public void clear() {
         // Clear the screen
-        Gdx.gl.glClearColor(0.39f, 0.58f, 0.93f, 1.0f);  // Homage to the XNA years
+        clear(Color.BLACK);
+    }
+
+    /**
+     * Clears the screen with the given color so we can start a new animation frame
+     */
+    public void clear(Color c) {
+        // Clear the screen
+        Gdx.gl.glClearColor(c.r, c.g, c.b, c.a);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
     }
 
@@ -379,10 +387,41 @@ public class GameCanvas {
     }
 
     /**
-     * Draws the tinted texture at the given position.
-     *
+     * Draw an stretched overlay image tinted by the given color.
+     * <p>
+     * An overlay image is one that is not scaled by the global transform
+     * This is ideal for backgrounds, foregrounds and uniform HUDs that do not
+     * track the camera.
+     * <p>
+     * The image will be drawn starting at the bottom right corner, and will
+     * be stretched to fill the whole screen if appropriate.
+     * <p>
      * The texture colors will be multiplied by the given color.  This will turn
      * any white into the given color.  Other colors will be similarly affected.
+     *
+     * @param image Texture to draw as an overlay
+     * @param tint  The color tint
+     * @param fill  Whether to stretch the image to fill the screen
+     */
+    public void drawOverlay(Texture image, Color tint, boolean fill) {
+        if (active != DrawPass.STANDARD) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+            return;
+        }
+        float w, h;
+        if (fill) {
+            w = getWidth();
+            h = getHeight();
+        } else {
+            w = image.getWidth();
+            h = image.getHeight();
+        }
+        spriteBatch.setColor(tint);
+        spriteBatch.draw(image, 0, 0, w, h);
+    }
+
+    /**
+     * Draws the texture at the given position.
      *
      * Unless otherwise transformed by the global transform (@see begin(Affine2)),
      * the texture will be unscaled.  The bottom left of the texture will be positioned
@@ -393,13 +432,32 @@ public class GameCanvas {
      * @param y 	The y-coordinate of the bottom left corner
      */
     public void draw(Texture image, float x, float y) {
+       draw(image, Color.WHITE, x, y);
+    }
+
+    /**
+     * Draws the tinted texture at the given position.
+     *
+     * The texture colors will be multiplied by the given color.  This will turn
+     * any white into the given color.  Other colors will be similarly affected.
+     *
+     * Unless otherwise transformed by the global transform (@see begin(Affine2)),
+     * the texture will be unscaled.  The bottom left of the texture will be positioned
+     * at the given coordinates.
+     *
+     * @param image The texture to draw
+     * @param tint  The color tint
+     * @param x 	The x-coordinate of the bottom left corner
+     * @param y 	The y-coordinate of the bottom left corner
+     */
+    public void draw(Texture image, Color tint, float x, float y) {
         if (active != DrawPass.STANDARD) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
             return;
         }
 
         // Unlike Lab 1, we can shortcut without a master drawing method
-        spriteBatch.setColor(Color.WHITE);
+        spriteBatch.setColor(tint);
         spriteBatch.draw(image, x,  y);
     }
 

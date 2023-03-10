@@ -176,6 +176,7 @@ public class GameMode extends ScreenObservable implements Screen {
      */
     public void show() {
         active = true;
+        gameState = GameState.INTRO;
     }
 
     /**
