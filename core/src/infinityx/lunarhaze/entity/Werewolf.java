@@ -1,9 +1,7 @@
 package infinityx.lunarhaze.entity;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-import infinityx.lunarhaze.GameCanvas;
 import infinityx.lunarhaze.GameObject;
 
 public class Werewolf extends GameObject {

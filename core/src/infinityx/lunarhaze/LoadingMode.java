@@ -44,6 +44,7 @@ public class LoadingMode extends ScreenObservable implements Screen, InputProces
     private enum LoadingState {
         FADE_IN, LOAD, FADE_OUT
     }
+
     private LoadingState loadingState;
 
     // There are TWO asset managers.  One to load the loading screen.  The other to load the assets

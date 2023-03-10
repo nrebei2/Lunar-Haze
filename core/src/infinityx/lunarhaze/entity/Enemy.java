@@ -1,11 +1,9 @@
 package infinityx.lunarhaze.entity;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import infinityx.lunarhaze.EnemyController;
-import infinityx.lunarhaze.GameCanvas;
 import infinityx.lunarhaze.GameObject;
 import infinityx.lunarhaze.physics.ConeSource;
 

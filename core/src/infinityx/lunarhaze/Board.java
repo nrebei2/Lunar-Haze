@@ -32,13 +32,17 @@ public class Board {
      */
     private final Tile[] tiles;
 
-    /** Tile height and width in world length (it is actually a square) */
+    /**
+     * Tile height and width in world length (it is actually a square)
+     */
     public static final float TILE_HEIGHT = 1;
     public static final float TILE_WIDTH = TILE_HEIGHT;
 
-    /** Tile height and width in screen (pixel) length */
-    public  static final int TILE_WIDTH_SCREEN = 128;
-    public static final int TILE_HEIGHT_SCREEN = TILE_WIDTH_SCREEN * 3/4;
+    /**
+     * Tile height and width in screen (pixel) length
+     */
+    public static final int TILE_WIDTH_SCREEN = 128;
+    public static final int TILE_HEIGHT_SCREEN = TILE_WIDTH_SCREEN * 3 / 4;
 
     /**
      * Creates a new board of the given size
@@ -195,7 +199,7 @@ public class Board {
         Texture tiletexture = getTileTexture(x, y);
         canvas.draw(
                 tiletexture, Color.WHITE, tiletexture.getWidth() / 2, tiletexture.getHeight() / 2,
-                canvas.WorldToScreenX(getTilePosition(x, y).x), canvas.WorldToScreenY(getTilePosition(x, y).y), 0.0f,
+                GameCanvas.WorldToScreenX(getTilePosition(x, y).x), GameCanvas.WorldToScreenY(getTilePosition(x, y).y), 0.0f,
                 TILE_WIDTH_SCREEN / tiletexture.getWidth(), TILE_HEIGHT_SCREEN / tiletexture.getHeight()
         );
     }

@@ -98,9 +98,8 @@ public abstract class GameObject implements Drawable {
         this.texture = texture;
         this.origin = new Vector2();
         this.origin.set(texture.getWidth() / 2.0f, 0);
-        // radius is a third of a tile
-        this.radius = Board.TILE_WIDTH/3;
-
+        // player takes half of a tile
+        this.radius = Board.TILE_WIDTH / 4;
     }
 
     public Texture getTexture() {
@@ -347,12 +346,12 @@ public abstract class GameObject implements Drawable {
     }
 
     public float getDepth() {
-        return this.getY() - this.radius;
+        return this.getY();
     }
 
     @Override
     public void draw(GameCanvas canvas) {
         canvas.draw(texture, Color.WHITE, origin.x, origin.y,
-                canvas.WorldToScreenX(position.x), canvas.WorldToScreenY(position.y), 0.0f, 1.0f, 1.f);
+                GameCanvas.WorldToScreenX(position.x), GameCanvas.WorldToScreenY(position.y), 0.0f, 1.0f, 1.f);
     }
 }

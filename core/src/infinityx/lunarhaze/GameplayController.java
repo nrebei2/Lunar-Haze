@@ -1,7 +1,6 @@
 package infinityx.lunarhaze;
 
 import box2dLight.RayHandler;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -97,6 +96,7 @@ public class GameplayController {
 
     /**
      * Returns true if the currently active player is alive.
+     *
      * @return true if the currently active player is alive.
      */
     public boolean isAlive() {

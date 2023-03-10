@@ -1,8 +1,6 @@
 package infinityx.lunarhaze;
 
 import com.badlogic.gdx.math.Affine2;
-import com.badlogic.gdx.math.Matrix3;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.EnemyList;
@@ -19,9 +17,9 @@ import java.util.Comparator;
  * This includes the Board, player, enemies, and scene objects.
  * <p>
  * World coordinates:
- * 1   1           (n, n) (board is nxn tiles)
+ * ------------------ (n, n) (board is nxn tiles)
  * +---+---+----------+
- * 1  |   |   |   ...    |
+ * |   |   |   ...    |
  * +-------+----------+
  * |   |   |   ...    |
  * | . | . |   ...    |
@@ -29,9 +27,9 @@ import java.util.Comparator;
  * | . | . |   ...    |
  * |   |   |   ...    |
  * +-------+----------+
- * 1  |   |   |   ...    |
+ * |   |   |   ...    |
  * +-------+----------+
- * 1  |   |   |   ...    |
+ * |   |   |   ...    |
  * +---+---+----------+
  * (0,0)
  * <p>
@@ -58,17 +56,16 @@ public class LevelContainer {
 
     private int remainingMoonlight;
 
-    /** Keeps player centered */
-    private Affine2 view = new Affine2();
+    /**
+     * Keeps player centered
+     */
+    private final Affine2 view = new Affine2();
 
     /**
      * Holds references to all drawable entities on the level (i.e. sceneObjects, player, enemies)
      */
     private final Array<Drawable> drawables;
     private final DrawableCompare drawComp = new DrawableCompare();
-
-
-
 
 
     /**
@@ -159,8 +156,7 @@ public class LevelContainer {
      */
     public void drawLevel(GameCanvas canvas) {
         // Puts player at center of canvas
-        //view.setToScaling();
-        view.setToTranslation(-canvas.WorldToScreenX( player.position.x) + canvas.getWidth()/2, -canvas.WorldToScreenY(player.position.y) + canvas.getHeight()/2);
+        view.setToTranslation(-GameCanvas.WorldToScreenX(player.position.x) + canvas.getWidth() / 2, -GameCanvas.WorldToScreenY(player.position.y) + canvas.getHeight() / 2);
         canvas.begin(view);
 
         System.out.printf("Player pos: (%f, %f)\n", player.position.x, player.position.y);
@@ -184,6 +180,6 @@ public class LevelContainer {
 class DrawableCompare implements Comparator<Drawable> {
     @Override
     public int compare(Drawable d1, Drawable d2) {
-        return (int) Math.signum(d1.getDepth() - d2.getDepth());
+        return (int) Math.signum(d2.getDepth() - d1.getDepth());
     }
 }
