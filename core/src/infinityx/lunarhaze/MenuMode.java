@@ -206,6 +206,7 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
     public void show() {
         // Useless if called in outside animation loop
         active = true;
+        pressState = 0;
     }
 
     /**

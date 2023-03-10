@@ -44,6 +44,7 @@ public class LoadingMode extends ScreenObservable implements Screen, InputProces
     private enum LoadingState {
         FADE_IN, LOAD, FADE_OUT
     }
+    private LoadingState loadingState;
 
     // There are TWO asset managers.  One to load the loading screen.  The other to load the assets
     /**
@@ -160,7 +161,7 @@ public class LoadingMode extends ScreenObservable implements Screen, InputProces
     /**
      * time (in seconds) it should take this screen to fade-in and fade-out
      */
-    private static final float FADE_TIME = 2.5f;
+    private static final float FADE_TIME = 1.75f;
 
     /**
      * Easing in function, easing out is reversed
@@ -172,7 +173,6 @@ public class LoadingMode extends ScreenObservable implements Screen, InputProces
      */
     private final Color alphaTint = new Color(1, 1, 1, 0);
 
-    private LoadingState loadingState;
 
     /**
      * Returns the budget for the asset loader.
