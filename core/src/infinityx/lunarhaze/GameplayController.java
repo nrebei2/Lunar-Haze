@@ -12,17 +12,11 @@ import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.EnemyList;
 import infinityx.lunarhaze.entity.Werewolf;
 
+
+/**
+ * Controller to handle gameplay interactions.
+ */
 public class GameplayController {
-
-    /**
-     * Texture for werewolf
-     */
-    private Texture werewolfTexture;
-    /**
-     * Texture for all villagers, as they look the same
-     */
-    private Texture villagerTexture;
-
     /**
      * Reference to player (need to change to allow multiple players)
      */
@@ -103,9 +97,6 @@ public class GameplayController {
 
     /**
      * Returns true if the currently active player is alive.
-     * <p>
-     * This property needs to be modified if you want multiple players.
-     *
      * @return true if the currently active player is alive.
      */
     public boolean isAlive() {

@@ -1,5 +1,6 @@
 package infinityx.lunarhaze;
 
+import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.utils.Array;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.EnemyList;
@@ -11,6 +12,7 @@ import java.util.Comparator;
 /**
  * Model class
  * <p>
+ * This controller also acts as the root class for all the models.
  * Holds a collection of model objects representing the game scene.
  * This includes the Board, player, enemies, and scene objects.
  * <p>
@@ -53,6 +55,9 @@ public class LevelContainer {
     private Board board;
 
     private int remainingMoonlight;
+
+    /** Keeps player centered */
+    private Affine2 view = new Affine2();
 
     /**
      * Holds references to all drawable entities on the level (i.e. sceneObjects, player, enemies)
@@ -147,6 +152,10 @@ public class LevelContainer {
      * @param canvas The drawing context
      */
     public void drawLevel(GameCanvas canvas) {
+        // Puts player at center of canvas
+        view.setToTranslation(-player.position.x + canvas.getWidth()/2, -player.position.y + canvas.getHeight()/2);
+        canvas.begin(view);
+
         // Render order: Board tiles -> (players, enemies, scene objects) sorted by depth (y coordinate)
         board.draw(canvas);
         // Uses timsort, so O(n) if already sorted, which is nice since it usually will be
@@ -155,6 +164,8 @@ public class LevelContainer {
             d.draw(canvas);
         }
 
+        // Flush information to the graphic buffer.
+        canvas.end();
     }
 }
 

@@ -216,11 +216,8 @@ public class GameMode extends ScreenObservable implements Screen {
     private void draw(float delta) {
         canvas.clear();
 
-        canvas.begin();
         // Draw the game objects
         levelContainer.drawLevel(canvas);
-        // Flush information to the graphic buffer.
-        canvas.end();
 
         switch (gameState) {
             case WIN:
