@@ -1,60 +1,74 @@
 package infinityx.lunarhaze.entity;
 
-import infinityx.lunarhaze.*;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import infinityx.lunarhaze.GameCanvas;
+import infinityx.lunarhaze.GameObject;
 
+public class Werewolf extends GameObject {
 
-import com.badlogic.gdx.math.*;
-import com.badlogic.gdx.graphics.*;
-import infinityx.util.FilmStrip;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
-import com.badlogic.gdx.math.*;
-import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.physics.box2d.*;
-
-import com.badlogic.gdx.utils.JsonValue;
-
-public class Werewolf extends GameObject{
-
-    /** The frame number for a ship that is not turning */
+    /**
+     * The frame number for a ship that is not turning
+     */
     public static final int SHIP_IMG_FLAT = 9;
 
-    /** Move speed **/
+    /**
+     * Move speed
+     **/
     private static final float WEREWOLF_SPEED = 800f;
 
-    /** How fast we change frames (one frame per 4 calls to update) */
+    /**
+     * How fast we change frames (one frame per 4 calls to update)
+     */
     private static final float ANIMATION_SPEED = 0.25f;
 
-    /** Initial hp of the werewolf is 100 **/
+    /**
+     * Initial hp of the werewolf is 100
+     **/
     private static final float INITIAL_HP = 100;
 
     /** Reference to werewolf's sprite for drawing */
     //private FilmStrip werewolfSprite;
 
-    /** The right/left movement of the werewolf **/
+    /**
+     * The right/left movement of the werewolf
+     **/
     private float movementH = 0.0f; //DEPRECATED
 
-    /** The up/down movement of the werewolf **/
+    /**
+     * The up/down movement of the werewolf
+     **/
     private float movementV = 0.0f; // DEPRECATED
 
     public Body body;
 
-    /** Whether the  player stands on a moonlight tile**/
+    /**
+     * Whether the  player stands on a moonlight tile
+     **/
     private Boolean moonlight;
 
-    /** Whether the  player face right or not**/
+    /**
+     * Whether the  player face right or not
+     **/
     private Boolean faceRight;
 
-    /** Number of moonlight tiles collected **/
+    /**
+     * Number of moonlight tiles collected
+     **/
     private int moonlightCollected;
 
-    /** Current animation frame for this werewolf */
-    private float animeframe;
+    /**
+     * Current animation frame for this werewolf
+     */
+    private final float animeframe;
 
-    /** Health point (hp) of the werewolf */
+    /**
+     * Health point (hp) of the werewolf
+     */
     private float hp;
 
-    private Vector2 forceCache = new Vector2();
+    private final Vector2 forceCache = new Vector2();
 
 //    /**
 //     * Returns the image filmstrip for this ship
@@ -81,9 +95,10 @@ public class Werewolf extends GameObject{
         werewolfSprite = value;
         werewolfSprite.setFrame(SHIP_IMG_FLAT);
     }*/
+
     /**
      * Returns the type of this object.
-     *
+     * <p>
      * We use this instead of runtime-typing for performance reasons.
      *
      * @return the type of this object.
@@ -175,6 +190,7 @@ public class Werewolf extends GameObject{
 
     /**
      * Updates the animation frame and position of this werewolf.
+     *
      * @param delta Number of seconds since last animation frame
      */
     public void update(float delta) {
@@ -193,7 +209,7 @@ public class Werewolf extends GameObject{
 
     /**
      * Draws this werewolof to the canvas
-     *
+     * <p>
      * There is only one drawing pass in this application, so you can draw the objects
      * in any order.
      *
@@ -205,6 +221,6 @@ public class Werewolf extends GameObject{
 //        float effect = true ? 1.0f : -1.0f;
 //        float ox = 0.5f * werewolfSprite.getRegionWidth();
 //        float oy = 0.5f * werewolfSprite.getRegionHeight();
-        canvas.draw(super.getTexture(),Color.WHITE, origin.x, origin.y, position.x, position.y, 0.0f, 1.0f , 1.f);
+        canvas.draw(super.getTexture(), Color.WHITE, origin.x, origin.y, position.x, position.y, 0.0f, 1.0f, 1.f);
     }
 }

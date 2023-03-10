@@ -1,9 +1,5 @@
 package infinityx.lunarhaze;
 
-import infinityx.lunarhaze.entity.Werewolf;
-import infinityx.lunarhaze.EnemyController.FSMState;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 //public class AIController implements InputController {
 //    Board board;
 //

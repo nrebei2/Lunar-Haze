@@ -1,9 +1,6 @@
 package infinityx.lunarhaze;
 
-import box2dLight.PointLight;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.Vector2;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * Represents a background tile in the scene
@@ -13,24 +10,38 @@ public class Tile {
         Grass, Road, Dirt,
         // TODO: Add more types
     }
+
     private TileType type;
-    /** Is there a scene object on this tile?  */
+    /**
+     * Is there a scene object on this tile?
+     */
     private boolean walkable = false;
-    /** Is this a goal tile? (used for AI) */
+    /**
+     * Is this a goal tile? (used for AI)
+     */
     private boolean goal = false;
-    /** Has this tile been visited (used for pathfinding AI)? */
+    /**
+     * Has this tile been visited (used for pathfinding AI)?
+     */
     private boolean visited = false;
-    /** Is there moonlight on this tile? */
+    /**
+     * Is there moonlight on this tile?
+     */
     private boolean lit = false;
-    /** Can an enemy see this tile? */
+    /**
+     * Can an enemy see this tile?
+     */
     private boolean visible = false;
 
-    /** Texture of tile (Lit/Unlit from moonlight) **/
+    /**
+     * Texture of tile (Lit/Unlit from moonlight)
+     **/
     private Texture TileTextureUnlit;
     private Texture TileTextureLit;
 
     // No need for constructor, levelContainer will set attributes of all tiles through Board
-    public Tile() {  }
+    public Tile() {
+    }
 
     /**
      * Type of tile should match with sprite texture
@@ -47,7 +58,7 @@ public class Tile {
 
     /**
      * Used for collision detection (player/enemies should not be able to walk on this tile!
-     *
+     * <p>
      * Should be set to false only when there is an object on this tile
      *
      * @return true if the tile can be walked over
@@ -84,13 +95,17 @@ public class Tile {
         this.lit = lit;
     }
 
-    public boolean getVisible() { return visible; }
+    public boolean getVisible() {
+        return visible;
+    }
 
-    public void setVisible(boolean visible) { this.visible = visible; }
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
 
     /**
      * Returns the unlit image texture for the tile. Will be drawn if lit is false.
-     *
+     * <p>
      * May be null, must be set before get
      *
      * @return the unit image texture for the tile
@@ -101,7 +116,7 @@ public class Tile {
 
     /**
      * Returns the lit image texture for the tile. Will be drawn if lit is true.
-     *
+     * <p>
      * May be null, must be set before get
      *
      * @return the lit image texture for the tile

@@ -15,17 +15,20 @@ public class SceneObject implements Drawable {
     // TODO: We can switch to FilmStrip later if we want animations
     private Texture ObjectTexture;
 
-    /** World position of bottom-left corner of object */
-    private Vector2 position;
+    /**
+     * World position of bottom-left corner of object
+     */
+    private final Vector2 position;
 
-    /** Position and texture of object should be known at creation */
+    /**
+     * Position and texture of object should be known at creation
+     */
     public SceneObject(Vector2 position, Texture texture) {
         this.position = position;
         setTexture(texture);
     }
 
     /**
-     *
      * @param texture The texture of the scene object
      */
     public void setTexture(Texture texture) {

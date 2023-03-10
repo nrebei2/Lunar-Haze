@@ -1,7 +1,11 @@
 package infinityx.lunarhaze;
 
 import box2dLight.RayHandler;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
 import infinityx.util.ScreenObservable;
@@ -14,44 +18,83 @@ import infinityx.util.ScreenObservable;
  */
 public class GameMode extends ScreenObservable implements Screen {
 
+    // Exit codes
+    /**
+     * User requested to go to menu
+     */
+    public final static int GO_MENU = 0;
+
     /**
      * Track the current state of the game for the update loop.
      */
     public enum GameState {
         // TODO add state
-            /** Before the game has started */
-            INTRO,
-            /** While we are playing the game */
-            PLAY,
-            /** The werewolf is dead */
-            OVER,
-            /** The werewolf has prevailed! */
-            WIN
+        /**
+         * Before the game has started
+         */
+        INTRO,
+        /**
+         * While we are playing the game
+         */
+        PLAY,
+        /**
+         * The werewolf is dead
+         */
+        OVER,
+        /**
+         * The werewolf has prevailed!
+         */
+        WIN
     }
 
-    /** Owns the GameplayController */
+    /**
+     * Owns the GameplayController
+     */
     private GameplayController gameplayController;
-    /** Reference to drawing context to display graphics (VIEW CLASS) */
+    /**
+     * Reference to drawing context to display graphics (VIEW CLASS)
+     */
     private GameCanvas canvas;
-    /** Reads input from keyboard or game pad (CONTROLLER CLASS) */
+    /**
+     * Reads input from keyboard or game pad (CONTROLLER CLASS)
+     */
     private InputController inputController;
-    /** Handle collision and physics (CONTROLLER CLASS) */
+    /**
+     * Handle collision and physics (CONTROLLER CLASS)
+     */
     private CollisionController physicsController;
-    /** Contains level details! May be null. */
+    /**
+     * Contains level details! May be null.
+     */
     private LevelContainer levelContainer;
-    /** Constants for level initialization */
+    /**
+     * Constants for level initialization
+     */
     private JsonValue constants;
-    /** Variable to track total time played in milliseconds (SIMPLE FIELDS) */
+    /**
+     * The font for giving messages to the player
+     */
+    protected BitmapFont displayFont;
+    /**
+     * Variable to track total time played in milliseconds (SIMPLE FIELDS)
+     */
     private float totalTime = 0;
-    /** Whether or not this player mode is still active */
+    /**
+     * Whether or not this player mode is still active
+     */
     private boolean active;
-    /** Variable to track the game state (SIMPLE FIELDS) */
+    /**
+     * Variable to track the game state (SIMPLE FIELDS)
+     */
     private GameState gameState;
 
     private RayHandler rayHandler;
 
 
     // TODO: Maybe change to enum if there are not that many levels, or string maybe?
+    /**
+     * Current level
+     */
     private int level;
 
     public GameMode(GameCanvas canvas) {
@@ -61,30 +104,38 @@ public class GameMode extends ScreenObservable implements Screen {
         // Create the controllers:
         inputController = new InputController();
         gameplayController = new GameplayController();
-        physicsController = new CollisionController(canvas.getWidth(), canvas.getHeight(),levelContainer);
+        physicsController = new CollisionController(canvas.getWidth(), canvas.getHeight(), levelContainer);
     }
 
+    /**
+     * Set the current level
+     *
+     * @param level
+     */
     public void setLevel(int level) {
         this.level = level;
+        // must reload level container and controllers
+        this.gameState = GameState.INTRO;
     }
 
     /**
      * Gather the required assets.
-     *
+     * <p>
      * This method extracts the asset variables from the given asset directory. It
      * should only be called after the asset directory is completed.
      *
-     * @param directory	Reference to global asset manager.
+     * @param directory Reference to global asset manager.
      */
     public void gatherAssets(AssetDirectory directory) {
         LevelParser ps = LevelParser.LevelParser();
         ps.loadTextures(directory);
-        constants = directory.getEntry( "levels", JsonValue.class );
+        constants = directory.getEntry("levels", JsonValue.class);
+        displayFont = directory.getEntry("retro", BitmapFont.class);
     }
 
     /**
      * Update the game state.
-     *
+     * <p>
      * We prefer to separate update and draw from one another as separate methods, instead
      * of using the single render() method that LibGDX does.  We will talk about why we
      * prefer this in lecture.
@@ -106,23 +157,28 @@ public class GameMode extends ScreenObservable implements Screen {
             case OVER:
             case WIN:
                 if (inputController.didReset()) {
-                    gameState = GameState.PLAY;
+                    gameState = GameState.INTRO;
                     gameplayController.reset();
-
-                    gameplayController.start(levelContainer);
                 } else {
                     play(delta);
                 }
                 break;
             case PLAY:
                 play(delta);
+                if (gameplayController.isGameWon()) {
+                    gameState = GameState.WIN;
+                } else if (gameplayController.isGameLost()) {
+                    gameState = GameState.OVER;
+                }
                 break;
             default:
                 break;
         }
     }
 
-    /** Initializes the levelContainer */
+    /**
+     * Initializes the levelContainer
+     */
     private void setupLevel() {
         LevelParser ps = LevelParser.LevelParser();
         levelContainer = ps.loadData(constants.get(String.valueOf(level)));
@@ -141,34 +197,44 @@ public class GameMode extends ScreenObservable implements Screen {
         }
 
         // Update objects.
-        gameplayController.resolveActions(inputController,delta);
+        gameplayController.resolveActions(inputController, delta);
 
         // Check for collisions
         totalTime += (delta * 1000); // Seconds to milliseconds
         physicsController.processCollisions(gameplayController.getObjects());
         // Clean up destroyed objects
-       // gameplayController.garbageCollect();
+        // gameplayController.garbageCollect();
     }
 
     /**
      * Draw the status of this player mode.
-     *
+     * <p>
      * We prefer to separate update and draw from one another as separate methods, instead
      * of using the single render() method that LibGDX does.  We will talk about why we
      * prefer this in lecture.
      */
     private void draw(float delta) {
         canvas.clear();
-        canvas.begin();
 
+        canvas.begin();
         // Draw the game objects
         levelContainer.drawLevel(canvas);
-
-        if (gameState == GameState.OVER) {
-            //TODO
-        }
         // Flush information to the graphic buffer.
         canvas.end();
+
+        switch (gameState) {
+            case WIN:
+                displayFont.setColor(Color.YELLOW);
+                canvas.begin();
+                canvas.drawTextCentered("VICTORY!", displayFont, 0.0f);
+                canvas.end();
+                break;
+            case OVER:
+                displayFont.setColor(Color.RED);
+                canvas.begin(); // DO NOT SCALE
+                canvas.drawTextCentered("FAILURE!", displayFont, 0.0f);
+                canvas.end();
+        }
     }
 
     /**
@@ -181,7 +247,7 @@ public class GameMode extends ScreenObservable implements Screen {
 
     /**
      * Called when the screen should render itself.
-     *
+     * <p>
      * The game loop called by libGDX
      *
      * @param delta The time in seconds since the last render.
@@ -197,13 +263,16 @@ public class GameMode extends ScreenObservable implements Screen {
             }
 
             if (inputController.didExit() && observer != null) {
-                observer.exitScreen(this, 0);
+                observer.exitScreen(this, GO_MENU);
             }
-            // Check if game is won
-            if(gameplayController.isGameWon() && observer != null) {
-                observer.exitScreen(this, 2);
-            } else if(gameplayController.isGameLost() && observer != null) {
-                observer.exitScreen(this, 3);
+
+            // for convenience
+            if (Gdx.input.isKeyPressed(Input.Keys.PERIOD)) {
+                gameState = GameState.WIN;
+            }
+
+            if (Gdx.input.isKeyPressed(Input.Keys.COMMA)) {
+                gameState = GameState.OVER;
             }
         }
     }
@@ -246,7 +315,7 @@ public class GameMode extends ScreenObservable implements Screen {
         // Though definitely save levels completed
         inputController = null;
         gameplayController = null;
-        physicsController  = null;
+        physicsController = null;
         canvas = null;
     }
 
