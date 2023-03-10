@@ -1,14 +1,10 @@
 package infinityx.lunarhaze;
 
-
 import box2dLight.RayHandler;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
 import infinityx.util.ScreenObservable;
-import infinityx.util.ScreenObserver;
-
-
 
 /**
  * The primary controller class for the game.
