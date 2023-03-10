@@ -27,8 +27,10 @@ public class GameMode extends ScreenObservable implements Screen {
             INTRO,
             /** While we are playing the game */
             PLAY,
-            /** When the werewolf is dead */
-            OVER
+            /** The werewolf is dead */
+            OVER,
+            /** The werewolf has prevailed! */
+            WIN
     }
 
     /** Owns the GameplayController */
@@ -39,11 +41,10 @@ public class GameMode extends ScreenObservable implements Screen {
     private InputController inputController;
     /** Handle collision and physics (CONTROLLER CLASS) */
     private CollisionController physicsController;
-
-    /** Both may be null, requires assets retrieved from AssetManager */
-    private JsonValue levelLayout;
-    /** Contains level details! */
+    /** Contains level details! May be null. */
     private LevelContainer levelContainer;
+    /** Constants for level initialization */
+    private JsonValue constants;
     /** Variable to track total time played in milliseconds (SIMPLE FIELDS) */
     private float totalTime = 0;
     /** Whether or not this player mode is still active */
@@ -54,14 +55,14 @@ public class GameMode extends ScreenObservable implements Screen {
     private RayHandler rayHandler;
 
 
-    // TODO: Maybe change to enum if there are not that many levels
+    // TODO: Maybe change to enum if there are not that many levels, or string maybe?
     private int level;
 
     public GameMode(GameCanvas canvas) {
         this.canvas = canvas;
         active = false;
         gameState = GameState.INTRO;
-        // Create the controllers.
+        // Create the controllers:
         inputController = new InputController();
         gameplayController = new GameplayController();
         physicsController = new CollisionController(canvas.getWidth(), canvas.getHeight(),levelContainer);
@@ -72,20 +73,17 @@ public class GameMode extends ScreenObservable implements Screen {
     }
 
     /**
-     * Gather the required assets for the given level.
+     * Gather the required assets.
      *
      * This method extracts the asset variables from the given asset directory. It
      * should only be called after the asset directory is completed.
      *
-     * Creates the level container
-     *
      * @param directory	Reference to global asset manager.
-     * @param level the level to load
      */
-    public void setupLevel(AssetDirectory directory, int level) {
-        LevelParser ps = new LevelParser();
-        levelContainer = ps.loadData(directory, level);
-        gameState = GameState.INTRO;
+    public void gatherAssets(AssetDirectory directory) {
+        LevelParser ps = LevelParser.LevelParser();
+        ps.loadTextures(directory);
+        constants = directory.getEntry( "levels", JsonValue.class );
     }
 
     /**
@@ -104,14 +102,17 @@ public class GameMode extends ScreenObservable implements Screen {
         // Test whether to reset the game.
         switch (gameState) {
             case INTRO:
+                setupLevel();
                 gameplayController.start(levelContainer);
                 rayHandler = gameplayController.getRayHandler();
                 gameState = GameState.PLAY;
                 break;
             case OVER:
+            case WIN:
                 if (inputController.didReset()) {
                     gameState = GameState.PLAY;
                     gameplayController.reset();
+
                     gameplayController.start(levelContainer);
                 } else {
                     play(delta);
@@ -123,6 +124,12 @@ public class GameMode extends ScreenObservable implements Screen {
             default:
                 break;
         }
+    }
+
+    /** Initializes the levelContainer */
+    private void setupLevel() {
+        LevelParser ps = LevelParser.LevelParser();
+        levelContainer = ps.loadData(constants.get(String.valueOf(level)));
     }
 
     /**

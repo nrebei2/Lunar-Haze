@@ -17,34 +17,58 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
 
+/**
+ * Controller class, parses jsons to create a level container
+ *
+ * Follows the singleton pattern, there is at most one instance of this class alive at any time
+ */
 public class LevelParser {
+
+    /** Singleton pattern */
+    private static LevelParser instance = null;
+
+    Texture playerTexture, enemyTexture;
+
+    /** tileTextures[2*x], tileTextures[2*x+1] are the unlit and lit textures for tile numbered (x+1) respectively **/
+    Array<Texture> tileTextures = new Array<Texture>();
+
+    /** private as not to conflict with singleton pattern */
+    private LevelParser() { }
+
+    /** Load instance of LevelParser class (Singleton) */
+    public static LevelParser LevelParser() {
+        if (instance == null) {
+            instance = new LevelParser();
+        }
+        return instance;
+    }
+
     /**
-     * Creates a level given a json value.
-     * Json value formatted as in assets/levels.json.
-     *
-     * @param json
+     * Caches all textures from directory.
+     * @param directory asset manager holding list of textures
      */
-
-
-    public LevelContainer loadData(AssetDirectory directory, int level) {
-        // Gets json data from directory
-        JsonValue json = directory.getEntry( "levels", JsonValue.class);
+    public void loadTextures(AssetDirectory directory) {
+        if (!directory.isFinished()) {
+            throw new RuntimeException("Directory has not finished loaded!!!");
+        }
 
         // Get all textures
-        Texture playerTexture = directory.getEntry("werewolf", Texture.class);
-        Texture enemyTexture = directory.getEntry("villager", Texture.class);
-
-        /** tileTextures[2*x], tileTextures[2*x+1] are the unlit and lit textures for tile numbered (x+1) respectively **/
-        Array<Texture> tileTextures = new Array<Texture>();
+        playerTexture = directory.getEntry("werewolf", Texture.class);
+        enemyTexture = directory.getEntry("villager", Texture.class);
 
         for (int i = 1; i <= 6; i++) {
             tileTextures.add(directory.getEntry("land"+i+"-unlit", Texture.class));
             tileTextures.add(directory.getEntry("land"+i+"-lit", Texture.class));
         }
+    }
 
+    /**
+     * Creates a level given an AssetDirectory and level.
+     * Json for level contents should be formatted as in assets/levels.json.
+     */
+    public LevelContainer loadData(JsonValue levelContents) {
         // LevelContainer empty at this point
         LevelContainer levelContainer = new LevelContainer();
-        JsonValue levelContents = json.get(String.valueOf(level));
 
         // Generate board
         JsonValue tiles = levelContents.get("tiles");
@@ -83,8 +107,6 @@ public class LevelParser {
         }
 
         levelContainer.setBoard(board);
-
-
 
         // Generate player
         JsonValue player = scene.get("player");
