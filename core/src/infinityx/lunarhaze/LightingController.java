@@ -83,7 +83,7 @@ public class LightingController {
             moonlight[(int) boardPos.x][(int) boardPos.y].setActive(true);
         }
 
-        ambienceMoonlight = new PointLight(rayHandler, 512, new Color(0.65f, 0.6f, 0.77f, 0.6f), 4000f, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()/4.0f);
+        ambienceMoonlight = new PointLight(rayHandler, 512, new Color(0.65f, 0.6f, 0.77f, 0.5f), 4000f, 0, Gdx.graphics.getHeight()*3/4.0f);
         ambienceMoonlight.setXray(true);
         ambienceMoonlight.setActive(true);
     }
