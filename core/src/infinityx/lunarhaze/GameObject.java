@@ -50,11 +50,11 @@ public abstract class GameObject implements Drawable {
 
     // Attributes for all game objects
     /**
-     * Object world position (center)
+     * Object world position (positioned at bottom center of sprite)
      */
     protected Vector2 position;
     /**
-     * Object shadow position (centered on the texture middle)
+     * Object shadow position (should be equal to position)
      */
     protected Vector2 shadowposition;
     /**
@@ -97,8 +97,9 @@ public abstract class GameObject implements Drawable {
 
         this.texture = texture;
         this.origin = new Vector2();
-        this.origin.set(texture.getWidth() / 2.0f, texture.getHeight() / 2.0f);
-        this.radius = texture.getWidth() / 2.0f;
+        this.origin.set(texture.getWidth() / 2.0f, 0);
+        // radius is a third of a tile
+        this.radius = Board.TILE_WIDTH/3;
 
     }
 
@@ -328,7 +329,7 @@ public abstract class GameObject implements Drawable {
         velocity = new Vector2(0.0f, 0.0f);
         radius = 0.0f;
         destroyed = false;
-        shadowposition = new Vector2(x, y);
+        shadowposition = position;
     }
 
     /**
@@ -352,6 +353,6 @@ public abstract class GameObject implements Drawable {
     @Override
     public void draw(GameCanvas canvas) {
         canvas.draw(texture, Color.WHITE, origin.x, origin.y,
-                position.x, position.y, 0.0f, 1.0f, 1.f);
+                canvas.WorldToScreenX(position.x), canvas.WorldToScreenY(position.y), 0.0f, 1.0f, 1.f);
     }
 }

@@ -133,6 +133,10 @@ public class GameCanvas {
      */
     private TextureRegion holder;
 
+    /** Both functions represent a linear map from world coordinates to screen coordinates */
+    public static float WorldToScreenX(float w_x) { return w_x * Board.TILE_WIDTH_SCREEN/Board.TILE_WIDTH; }
+    public static float WorldToScreenY(float w_y) { return w_y * Board.TILE_HEIGHT_SCREEN/Board.TILE_HEIGHT; }
+
     /**
      * Creates a new GameCanvas determined by the application configuration.
      * <p>

@@ -32,14 +32,13 @@ public class Board {
      */
     private final Tile[] tiles;
 
-    // TODO: decouple world coordinates with screen coordinates
-    /**
-     * Tile Height/Width
-     */
-    private static final float TILE_RATIO = 0.75f;
-    private static final int TILE_WIDTH = 128;
-    private static final int TILE_HEIGHT = (int) (TILE_WIDTH * TILE_RATIO);
+    /** Tile height and width in world length (it is actually a square) */
+    public static final float TILE_HEIGHT = 1;
+    public static final float TILE_WIDTH = TILE_HEIGHT;
 
+    /** Tile height and width in screen (pixel) length */
+    public  static final int TILE_WIDTH_SCREEN = 128;
+    public static final int TILE_HEIGHT_SCREEN = TILE_WIDTH_SCREEN * 3/4;
 
     /**
      * Creates a new board of the given size
@@ -87,24 +86,6 @@ public class Board {
      */
     public int getHeight() {
         return height;
-    }
-
-    /**
-     * Returns the width of the tile.
-     *
-     * @return the width of the tile.
-     */
-    public int getTileWidth() {
-        return TILE_WIDTH;
-    }
-
-    /**
-     * Returns the height of the tile.
-     *
-     * @return the height of the tile.
-     */
-    public int getTileHeight() {
-        return TILE_HEIGHT;
     }
 
     // Drawing information
@@ -214,8 +195,8 @@ public class Board {
         Texture tiletexture = getTileTexture(x, y);
         canvas.draw(
                 tiletexture, Color.WHITE, tiletexture.getWidth() / 2, tiletexture.getHeight() / 2,
-                getTilePosition(x, y).x, getTilePosition(x, y).y, 0.0f,
-                getTileWidth() / tiletexture.getWidth(), getTileHeight() / tiletexture.getHeight()
+                canvas.WorldToScreenX(getTilePosition(x, y).x), canvas.WorldToScreenY(getTilePosition(x, y).y), 0.0f,
+                TILE_WIDTH_SCREEN / tiletexture.getWidth(), TILE_HEIGHT_SCREEN / tiletexture.getHeight()
         );
     }
 
@@ -455,7 +436,7 @@ public class Board {
         if (!inBounds(x, y)) {
             return null;
         }
-        return new Vector2((x + 0.5f) * getTileWidth(), (y + 0.5f) * getTileHeight());
+        return new Vector2((x + 0.5f) * TILE_WIDTH, (y + 0.5f) * TILE_HEIGHT);
     }
 
     /**
@@ -494,7 +475,7 @@ public class Board {
         for (int x = 0; x < getWidth(); x++) {
             for (int y = 0; y < getHeight(); y++) {
                 if (getTile(x, y).isLit()) {
-                    moonlightPositions.put(new Vector2(x, y), boardToWorld(x, y).add(new Vector2(getTileWidth() / 2.0f, getTileHeight() / 2.0f)));
+                    moonlightPositions.put(new Vector2(x, y), boardToWorld(x, y).add(new Vector2(TILE_WIDTH / 2.0f, TILE_HEIGHT / 2.0f)));
                     System.out.println("Added " + boardToWorld(x, y).toString() + " to moonlightPositions");
                 }
             }

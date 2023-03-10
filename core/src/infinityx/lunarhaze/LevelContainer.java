@@ -1,6 +1,8 @@
 package infinityx.lunarhaze;
 
 import com.badlogic.gdx.math.Affine2;
+import com.badlogic.gdx.math.Matrix3;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.EnemyList;
@@ -64,6 +66,10 @@ public class LevelContainer {
      */
     private final Array<Drawable> drawables;
     private final DrawableCompare drawComp = new DrawableCompare();
+
+
+
+
 
     /**
      * Creates a new LevelContainer with no active elements.
@@ -153,8 +159,11 @@ public class LevelContainer {
      */
     public void drawLevel(GameCanvas canvas) {
         // Puts player at center of canvas
-        view.setToTranslation(-player.position.x + canvas.getWidth()/2, -player.position.y + canvas.getHeight()/2);
+        //view.setToScaling();
+        view.setToTranslation(-canvas.WorldToScreenX( player.position.x) + canvas.getWidth()/2, -canvas.WorldToScreenY(player.position.y) + canvas.getHeight()/2);
         canvas.begin(view);
+
+        System.out.printf("Player pos: (%f, %f)\n", player.position.x, player.position.y);
 
         // Render order: Board tiles -> (players, enemies, scene objects) sorted by depth (y coordinate)
         board.draw(canvas);

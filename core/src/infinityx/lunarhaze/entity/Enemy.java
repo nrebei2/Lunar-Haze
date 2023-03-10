@@ -215,14 +215,6 @@ public class Enemy extends GameObject {
         }
     }
 
-    public void draw(GameCanvas canvas) {
-//        float effect = faceRight ? 1.0f : -1.0f;
-//        float ox = 0.5f * texture.getRegionWidth();
-//        float oy = 0.5f * werewolfSprite.getRegionHeight()
-//        TODO 1.0f is NOT OKAY
-        canvas.draw(texture, Color.WHITE, origin.x, origin.y, position.x, position.y, 0.0f, 1.0f, 1.0f);
-    }
-
     public int getId() {
         return this.id;
     }

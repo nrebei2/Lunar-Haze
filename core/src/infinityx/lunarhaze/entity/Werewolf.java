@@ -16,7 +16,7 @@ public class Werewolf extends GameObject {
     /**
      * Move speed
      **/
-    private static final float WEREWOLF_SPEED = 800f;
+    private static final float WEREWOLF_SPEED = 2f;
 
     /**
      * How fast we change frames (one frame per 4 calls to update)
@@ -205,22 +205,5 @@ public class Werewolf extends GameObject {
         // set the updated velocity to the player's Box2D body
         body.setLinearVelocity(velocity);
         position = body.getPosition();
-    }
-
-    /**
-     * Draws this werewolof to the canvas
-     * <p>
-     * There is only one drawing pass in this application, so you can draw the objects
-     * in any order.
-     *
-     * @param canvas The drawing context
-     */
-    public void draw(GameCanvas canvas) {
-        // TODO
-        /** For animation */
-//        float effect = true ? 1.0f : -1.0f;
-//        float ox = 0.5f * werewolfSprite.getRegionWidth();
-//        float oy = 0.5f * werewolfSprite.getRegionHeight();
-        canvas.draw(super.getTexture(), Color.WHITE, origin.x, origin.y, position.x, position.y, 0.0f, 1.0f, 1.f);
     }
 }

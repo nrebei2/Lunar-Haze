@@ -201,7 +201,7 @@ public class GameMode extends ScreenObservable implements Screen {
 
         // Check for collisions
         totalTime += (delta * 1000); // Seconds to milliseconds
-        physicsController.processCollisions(gameplayController.getObjects());
+        //physicsController.processCollisions(gameplayController.getObjects());
         // Clean up destroyed objects
         // gameplayController.garbageCollect();
     }
