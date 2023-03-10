@@ -16,52 +16,70 @@ package infinityx.lunarhaze;
  * LibGDX version, 2/2/2015
  */
 
-import com.badlogic.gdx.utils.*;
-import com.badlogic.gdx.math.*;
-import infinityx.lunarhaze.entity.*;
-import java.util.*;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
+import infinityx.lunarhaze.entity.Enemy;
+import infinityx.lunarhaze.entity.Werewolf;
 
-import java.util.Objects;
+import java.util.ArrayList;
 
 /**
  * Controller implementing simple game physics.
- *
+ * <p>
  * This is a very inefficient physics engine.  Part of this lab is determining
  * how to make it more efficient.
  */
 public class CollisionController {
-    /** Storage space for level details, used to detect collision on walkable/non-walkable tiles. */
-    private LevelContainer curr_level;
+    /**
+     * Storage space for level details, used to detect collision on walkable/non-walkable tiles.
+     */
+    private final LevelContainer curr_level;
     // 'Bounciness' constants
-    /** Restitution for colliding with the (hard coded) box */
-    protected static final float BOX_COEFF_REST   = 0.95f;
-    /** Restitution for colliding with the (hard coded) bump */
-    protected static final float BUMP_COEFF_REST  = 1.95f;
-    /** Dampening factor when colliding with floor or shell */
+    /**
+     * Restitution for colliding with the (hard coded) box
+     */
+    protected static final float BOX_COEFF_REST = 0.95f;
+    /**
+     * Restitution for colliding with the (hard coded) bump
+     */
+    protected static final float BUMP_COEFF_REST = 1.95f;
+    /**
+     * Dampening factor when colliding with floor or shell
+     */
     protected static final float DAMPENING_FACTOR = 0.95f;
 
     // Geometry of the background image
-    /** (Scaled) position of the box center */
-    protected static final float BOX_X_POSITION   = 0.141f;
-    /** (Scaled) position of half the box width */
-    protected static final float BOX_HALF_WIDTH   = 0.133f;
-    /** (Scaled) position of the box height from bottom of screen */
-    protected static final float BOX_FULL_HEIGHT  = 0.2f;
+    /**
+     * (Scaled) position of the box center
+     */
+    protected static final float BOX_X_POSITION = 0.141f;
+    /**
+     * (Scaled) position of half the box width
+     */
+    protected static final float BOX_HALF_WIDTH = 0.133f;
+    /**
+     * (Scaled) position of the box height from bottom of screen
+     */
+    protected static final float BOX_FULL_HEIGHT = 0.2f;
 
 
     // These cannot be modified after the controller is constructed.
     // If these change, make a new constructor.
-    /** Width of the collision geometry */
-    private float width;
-    /** Height of the collision geometry */
-    private float height;
+    /**
+     * Width of the collision geometry
+     */
+    private final float width;
+    /**
+     * Height of the collision geometry
+     */
+    private final float height;
 
     // Cache objects for collision calculations
-    private Vector2 temp1;
-    private Vector2 temp2;
+    private final Vector2 temp1;
+    private final Vector2 temp2;
 
-    private int parameter = 36;
-    private ArrayList<ArrayList<ArrayList<GameObject>>> cells = new ArrayList<>();
+    private final int parameter = 36;
+    private final ArrayList<ArrayList<ArrayList<GameObject>>> cells = new ArrayList<>();
 
 
     /// ACCESSORS
@@ -95,7 +113,7 @@ public class CollisionController {
 
     /**
      * Returns half of the width of the square box in the background image.
-     *
+     * <p>
      * The box edges are x+/- this width.
      *
      * @return half of the width of the square box
@@ -106,7 +124,7 @@ public class CollisionController {
 
     /**
      * Returns height of the square box in the background image
-     *
+     * <p>
      * Height is measured from the bottom of the screen, not the ledge.
      */
     public float getBoxHeight() {
@@ -128,8 +146,8 @@ public class CollisionController {
     /**
      * Creates a CollisionController for the given screen dimensions.
      *
-     * @param width   Width of the screen
-     * @param height  Height of the screen
+     * @param width  Width of the screen
+     * @param height Height of the screen
      */
     public CollisionController(float width, float height, LevelContainer lvl) {
         this.width = width;
@@ -148,15 +166,15 @@ public class CollisionController {
      */
     public void AssignCells(Array<GameObject> objects) {
         // For each shell, check for collisions with the special terrain elements
-        float width_divider = this.getWidth()/parameter;
-        float height_divider = this.getWidth()/parameter;
+        float width_divider = this.getWidth() / parameter;
+        float height_divider = this.getWidth() / parameter;
 
         // Initializes cells
         cells.clear();
-        for (int ii = 0; ii < parameter; ii++){
+        for (int ii = 0; ii < parameter; ii++) {
             cells.add(new ArrayList<ArrayList<GameObject>>());
         }
-        for (int jj = 0; jj < cells.size(); jj++){
+        for (int jj = 0; jj < cells.size(); jj++) {
             for (int kk = 0; kk < parameter; kk++) {
                 cells.get(jj).add(new ArrayList<GameObject>());
             }
@@ -177,7 +195,7 @@ public class CollisionController {
 
             //sorts objects into different cells
             if (o.getX() >= 0 && o.getX() <= getWidth() && o.getY() >= 0 && o.getY() <= getHeight()) {
-                cells.get((int) Math.floor(o.getX() / width_divider)).get((int) Math.floor(o.getY()/height_divider)).add(o);
+                cells.get((int) Math.floor(o.getX() / width_divider)).get((int) Math.floor(o.getY() / height_divider)).add(o);
             }
 
             //#endregion
@@ -186,6 +204,7 @@ public class CollisionController {
     //#endregion
 
     //#region Cell Management (INSERT CODE HERE)
+
     /**
      * This is the main (incredibly unoptimized) collision detetection method.
      *
@@ -193,21 +212,21 @@ public class CollisionController {
      */
     public void processCollisions(Array<GameObject> objects) {
         for (GameObject o : objects) {
-        // Make sure object is in bounds.
-        // For shells, this handles the box and bump.
-        processBounds(o);
-        //TODO FIX THIS
-        //processTiles(o);
+            // Make sure object is in bounds.
+            // For shells, this handles the box and bump.
+            processBounds(o);
+            //TODO FIX THIS
+            //processTiles(o);
 
-        //#region REPLACE THIS CODE
-        /* This is the slow code that must be replaced. */
-        for (int ii = 0; ii < objects.size; ii++) {
-            if (objects.get(ii) != o) {
-                processCollision(o,objects.get(ii));
+            //#region REPLACE THIS CODE
+            /* This is the slow code that must be replaced. */
+            for (int ii = 0; ii < objects.size; ii++) {
+                if (objects.get(ii) != o) {
+                    processCollision(o, objects.get(ii));
+                }
             }
+            //#endregion
         }
-        //#endregion
-    }
     }
 
     //#endregion
@@ -216,20 +235,20 @@ public class CollisionController {
 
     /**
      * Check if a GameObject is out of bounds and take action.
-     *
+     * <p>
      * Obviously an object off-screen is out of bounds.  In the case of shells, the
      * box and bump are also out of bounds.
      *
-     * @param o      Object to check
+     * @param o Object to check
      */
     private void processBounds(GameObject o) {
         // Dispatch the appropriate helper for each type
         switch (o.getType()) {
             case ENEMY:
-                handleBounds((Enemy)o);
+                handleBounds((Enemy) o);
                 break;
             case WEREWOLF:
-                handleBounds((Werewolf)o);
+                handleBounds((Werewolf) o);
                 break;
             default:
                 break;
@@ -239,10 +258,10 @@ public class CollisionController {
     /**
      * Check an enemy for being out-of-bounds.
      * TODO Probably unnecessary
-     *
+     * <p>
      * Obviously an enemy off-screen is out of bounds.
      *
-     * @param em     Shell to check
+     * @param em Shell to check
      */
     private void handleBounds(Enemy em) {
         // Check if off right side
@@ -282,10 +301,10 @@ public class CollisionController {
 
     /**
      * Check a werewolf for being out-of-bounds.
-     *
+     * <p>
      * Obviously a werewolf off-screen is out of bounds.
      *
-     * @param ww     Werewolf to check
+     * @param ww Werewolf to check
      */
     private void handleBounds(Werewolf ww) {
         // Check if off right side
@@ -314,7 +333,7 @@ public class CollisionController {
         // Check for in bounds on bottom
         else if (ww.getY() > getHeight() - ww.getRadius()) {
             // Set within bounds on bottom and swap velocity
-            ww.setY(2 * (getHeight() - ww.getRadius()) - ww.getY()- ww.getRadius());
+            ww.setY(2 * (getHeight() - ww.getRadius()) - ww.getY() - ww.getRadius());
             ww.setVY(0);
             System.out.println("----------------Werewolf hits bounds. NOT GOOD!");
         }
@@ -322,6 +341,7 @@ public class CollisionController {
 
 
     //TODO Not sure whether we need this method but still just gonna keep it here
+
     /**
      * Detect collision with rectangle step in the terrain.
      *
@@ -330,15 +350,15 @@ public class CollisionController {
      */
     private void hitBox(GameObject o, float x) {
         if (Math.abs(o.getX() - x) < getBoxRadius() && o.getY() < getBoxHeight()) {
-            if (o.getX()+o.getRadius() > x+getBoxRadius()) {
-                o.setX(x+getBoxRadius()+o.getRadius());
+            if (o.getX() + o.getRadius() > x + getBoxRadius()) {
+                o.setX(x + getBoxRadius() + o.getRadius());
                 o.setVX(-o.getVX());
-            } else if (o.getX()-o.getRadius() < x-getBoxRadius()) {
-                o.setX(x-getBoxRadius()-o.getRadius());
+            } else if (o.getX() - o.getRadius() < x - getBoxRadius()) {
+                o.setX(x - getBoxRadius() - o.getRadius());
                 o.setVX(-o.getVX());
             } else {
                 o.setVY(-o.getVY() * BOX_COEFF_REST);
-                o.setY(getBoxHeight()+o.getRadius());
+                o.setY(getBoxHeight() + o.getRadius());
             }
         }
     }
@@ -356,10 +376,10 @@ public class CollisionController {
             case ENEMY:
                 switch (o2.getType()) {
                     case ENEMY:
-                        handleCollision((Enemy)o1, (Enemy)o2);
+                        handleCollision((Enemy) o1, (Enemy) o2);
                         break;
                     case WEREWOLF:
-                        handleCollision((Enemy)o1, (Werewolf)o2);
+                        handleCollision((Enemy) o1, (Werewolf) o2);
                         break;
                     default:
                         break;
@@ -369,10 +389,10 @@ public class CollisionController {
                 switch (o2.getType()) {
                     case ENEMY:
                         // Reuse shell helper
-                        handleCollision((Enemy)o2, (Werewolf)o1);
+                        handleCollision((Enemy) o2, (Werewolf) o1);
                         break;
                     case WEREWOLF:
-                        handleCollision((Werewolf)o1, (Werewolf)o2);
+                        handleCollision((Werewolf) o1, (Werewolf) o2);
                         break;
                     default:
                         break;
@@ -545,17 +565,16 @@ public class CollisionController {
     /**
      * Check if a GameObject is out of walkable tiles and take action.
      *
-     *
-     * @param o      Object to check
+     * @param o Object to check
      */
     private void processTiles(GameObject o) {
         // Dispatch the appropriate helper for each type
         switch (o.getType()) {
             case ENEMY:
-                handleTiles((Enemy)o);
+                handleTiles((Enemy) o);
                 break;
             case WEREWOLF:
-                handleTiles((Werewolf)o);
+                handleTiles((Werewolf) o);
                 break;
             default:
                 break;
@@ -565,22 +584,20 @@ public class CollisionController {
     /**
      * Check if a Werewolf is out of walkable tiles and take action.
      *
-     *
-     * @param ww      Werewolf to check
+     * @param ww Werewolf to check
      */
     private void handleTiles(Werewolf ww) {
         if (ww.isDestroyed()) {
             return;
         }
         //get the tile info for current object position
-        Vector2 tile_position = curr_level.getBoard().worldToBoard(ww.getShadowposition().x,ww.getShadowposition().y);
+        Vector2 tile_position = curr_level.getBoard().worldToBoard(ww.getShadowposition().x, ww.getShadowposition().y);
         //int tile_x = curr_level.getBoard().worldToBoard(ww.getShadowposition().x);
         //int tile_y = curr_level.getBoard().worldToBoard(ww.getShadowposition().y);
-       // Vector2 tile_position = curr_level.getBoard().getTilePosition(tile_x,tile_y);
+        // Vector2 tile_position = curr_level.getBoard().getTilePosition(tile_x,tile_y);
 
         //checks whether the tile is walkable; if it is, do nothing
-        if (curr_level.getBoard().isWalkable((int)tile_position.x,(int)tile_position.y)){
-            return;
+        if (curr_level.getBoard().isWalkable((int) tile_position.x, (int) tile_position.y)) {
         } else {
             // Find the axis of "collision"
             temp1.set(ww.getShadowposition()).sub(tile_position);
@@ -599,21 +616,19 @@ public class CollisionController {
     /**
      * Check if an Enemy is out of walkable tiles and take action.
      *
-     *
-     * @param en      Enemy to check
+     * @param en Enemy to check
      */
     private void handleTiles(Enemy en) {
         if (en.isDestroyed()) {
             return;
         }
         //get the tile info for current object position
-        Vector2 tile_position = curr_level.getBoard().worldToBoard(en.getShadowposition().x,en.getShadowposition().y);
+        Vector2 tile_position = curr_level.getBoard().worldToBoard(en.getShadowposition().x, en.getShadowposition().y);
         //int tile_y = curr_level.getBoard().worldToBoard(en.getShadowposition().y);
         //Vector2 tile_position = curr_level.getBoard().getTilePosition(tile_x,tile_y);
 
         //checks whether the tile is walkable; if it is, do nothing
-        if (curr_level.getBoard().isWalkable((int)tile_position.x,(int)tile_position.y)){
-            return;
+        if (curr_level.getBoard().isWalkable((int) tile_position.x, (int) tile_position.y)) {
         } else {
             System.out.println("----------------Enemy hits unwalkable tiles. NOT GOOD!");
             // Find the axis of "collision"
