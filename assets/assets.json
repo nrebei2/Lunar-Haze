@@ -3,6 +3,7 @@
     "background": "shared/menu_bg.png",
     "play": "shared/play.png",
     "won": "shared/win.png",
+
     "land1-lit": {
       "file": "tiles/land1-lit.png",
       "minFilter": "nearest",

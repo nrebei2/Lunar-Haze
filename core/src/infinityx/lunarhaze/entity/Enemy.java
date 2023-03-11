@@ -2,7 +2,6 @@ package infinityx.lunarhaze.entity;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
 import infinityx.lunarhaze.EnemyController;
 import infinityx.lunarhaze.GameObject;
 import infinityx.lunarhaze.physics.ConeSource;
@@ -15,7 +14,7 @@ public class Enemy extends GameObject {
      * A unique identifier; used to decouple classes.
      */
     private final int id;
-    private static final float MOVE_SPEED = 200f;
+    private static final float MOVE_SPEED = 1.5f;
 
     /**
      * Movement of the enemy
@@ -89,8 +88,6 @@ public class Enemy extends GameObject {
 
     private int currentWayPoint;
 
-    public Body body;
-
     /**
      * Initialize an enemy not alerted.
      */
@@ -143,12 +140,20 @@ public class Enemy extends GameObject {
         super.setTexture(texture);
     }
 
+    /**
+     * Attaches light to enemy as a flashlight
+     */
     public void setFlashlight(ConeSource cone) {
         flashlight = cone;
+        flashlight.attachToBody(getBody(), 0.2f, 0, flashlight.getDirection());
     }
 
-    public ConeSource getFlashlight() {
-        return flashlight;
+
+    /**
+     * @param on Whether to turn the flashlight on (true) or off (false)
+     */
+    public void setFlashlightOn(boolean on) {
+        flashlight.setActive(on);
     }
 
     /**
@@ -183,8 +188,6 @@ public class Enemy extends GameObject {
         }
         body.setLinearVelocity(xVelocity, yVelocity);
         rotate(direction);
-        // Update position based on Box2D body
-        position = body.getPosition();
     }
 
     private void rotate(Direction direction) {

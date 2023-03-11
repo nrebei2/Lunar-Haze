@@ -26,12 +26,14 @@ package infinityx.lunarhaze;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import infinityx.lunarhaze.physics.BoxObstacle;
 import infinityx.util.Drawable;
 
 /**
  * Base class for all Model objects in the game.
  */
-public abstract class GameObject implements Drawable {
+public abstract class GameObject extends BoxObstacle implements Drawable {
 
     /**
      * Enum specifying the type of this game object.
@@ -50,37 +52,13 @@ public abstract class GameObject implements Drawable {
 
     // Attributes for all game objects
     /**
-     * Object world position (positioned at bottom center of sprite)
-     */
-    protected Vector2 position;
-    /**
-     * Object shadow position (should be equal to position)
-     */
-    protected Vector2 shadowposition;
-    /**
-     * Object velocity vector
-     */
-    protected Vector2 velocity;
-    /**
      * Reference to texture origin
      */
     protected Vector2 origin;
     /**
-     * Reference to shadow origin
-     */
-    protected Vector2 shadoworigin;
-    /**
      * Radius of the object shadow (used for collisions)
      */
     protected float radius;
-    /**
-     * Width of the object shadow (used for collisions)
-     */
-    protected float shadowwidth;
-    /**
-     * Height of the object shadow (used for collisions)
-     */
-    protected float shadowheight;
     /**
      * Whether or not the object should be removed at next timestep.
      */
@@ -90,16 +68,36 @@ public abstract class GameObject implements Drawable {
      */
     // TODO: Change to FilmStrip to support animations easier
     protected Texture texture;
-//	//protected FilmStrip animator;
-//	protected FilmStrip filmStrip;
+
+    /**
+     * Creates game object at (0, 0)
+     */
+    public GameObject() {
+        super(0, 0);
+    }
+
+    /**
+     * Creates a new game object.
+     * <p>
+     * All units (position, velocity, etc.) are in world units.
+     *
+     * @param x The object x-coordinate in world
+     * @param y The object y-coordinate in world
+     */
+    public GameObject(float x, float y) {
+        // player takes half of a tile
+        super(x, y, Board.TILE_WIDTH / 2, Board.TILE_HEIGHT / 2);
+        setFixedRotation(true);
+        setBodyType(BodyDef.BodyType.DynamicBody);
+
+        radius = Board.TILE_WIDTH / 4;
+        destroyed = false;
+    }
 
     public void setTexture(Texture texture) {
-
         this.texture = texture;
         this.origin = new Vector2();
         this.origin.set(texture.getWidth() / 2.0f, 0);
-        // player takes half of a tile
-        this.radius = Board.TILE_WIDTH / 4;
     }
 
     public Texture getTexture() {
@@ -115,137 +113,7 @@ public abstract class GameObject implements Drawable {
      * @return the shadowposition of this object
      */
     public Vector2 getShadowposition() {
-        return shadowposition;
-    }
-
-    /**
-     * Returns the center world position of this object
-     * <p>
-     * The value returned is a reference to the position vector, which may be
-     * modified freely.
-     *
-     * @return the position of this object
-     */
-    public Vector2 getPosition() {
-        return position;
-    }
-
-    /**
-     * Returns the x value of origin of the shadow of this object.
-     * <p>
-     * The value returned should be the position of the bottom-left corner. For example:
-     * <p>
-     * [ ]
-     * -|-
-     * ||
-     * —————————
-     * (25,3)    (29,3)
-     * The function should return 25.
-     *
-     * @return the x value of the origin of the shadow of this object
-     */
-    public float getShadoworiginX() {
-        return shadoworigin.x;
-    }
-
-    /**
-     * Returns the x value of origin of the shadow of this object.
-     * <p>
-     * The value returned should be the position of the bottom-left corner. For example:
-     * <p>
-     * [ ]
-     * -|-
-     * ||
-     * —————————
-     * (25,3)    (29,3)
-     * The function should return 3.
-     *
-     * @return the y value of the origin of the shadow of this object
-     */
-    public float getShadoworiginY() {
-        return shadoworigin.y;
-    }
-
-    /**
-     * Returns the x-coordinate of the object position (center).
-     *
-     * @return the x-coordinate of the object position
-     */
-    public float getX() {
-        return position.x;
-    }
-
-    /**
-     * Sets the x-coordinate of the object position (center).
-     *
-     * @param value the x-coordinate of the object position
-     */
-    public void setX(float value) {
-        position.x = value;
-    }
-
-    /**
-     * Returns the y-coordinate of the object position (center).
-     *
-     * @return the y-coordinate of the object position
-     */
-    public float getY() {
-        return position.y;
-    }
-
-    /**
-     * Sets the y-coordinate of the object position (center).
-     *
-     * @param value the y-coordinate of the object position
-     */
-    public void setY(float value) {
-        position.y = value;
-    }
-
-    /**
-     * Returns the velocity of this object in pixels per animation frame.
-     * <p>
-     * The value returned is a reference to the velocity vector, which may be
-     * modified freely.
-     *
-     * @return the velocity of this object
-     */
-    public Vector2 getVelocity() {
-        return velocity;
-    }
-
-    /**
-     * Returns the x-coordinate of the object velocity.
-     *
-     * @return the x-coordinate of the object velocity.
-     */
-    public float getVX() {
-        return velocity.x;
-    }
-
-    /**
-     * Sets the x-coordinate of the object velocity.
-     *
-     * @param value the x-coordinate of the object velocity.
-     */
-    public void setVX(float value) {
-        velocity.x = value;
-    }
-
-    /**
-     * Sets the y-coordinate of the object velocity.
-     */
-    public float getVY() {
-        return velocity.y;
-    }
-
-    /**
-     * Sets the y-coordinate of the object velocity.
-     *
-     * @param value the y-coordinate of the object velocity.
-     */
-    public void setVY(float value) {
-        velocity.y = value;
+        return this.getPosition();
     }
 
 
@@ -283,31 +151,8 @@ public abstract class GameObject implements Drawable {
      * @return the radius of this object's shadow.
      */
     public float getRadius() {
-        return radius;
+        return this.getWidth();
     }
-
-    /**
-     * Returns the width of this object's shadow.
-     * <p>
-     * All of our objects are circles, to make collision detection easy.
-     *
-     * @return the width of this object's shadow.
-     */
-    public float getShadowwidth() {
-        return shadowwidth;
-    }
-
-    /**
-     * Returns the height of this object's shadow.
-     * <p>
-     * All of our objects are circles, to make collision detection easy.
-     *
-     * @return the height of this object's shadow.
-     */
-    public float getShadowheight() {
-        return shadowheight;
-    }
-
 
     /**
      * Returns the type of this object.
@@ -319,30 +164,12 @@ public abstract class GameObject implements Drawable {
     public abstract ObjectType getType();
 
     /**
-     * Constructs a trivial game object
-     * <p>
-     * The created object has no position or size.  These should be set by the subclasses.
-     */
-    public GameObject(float x, float y) {
-        position = new Vector2(x, y);
-        velocity = new Vector2(0.0f, 0.0f);
-        radius = 0.0f;
-        destroyed = false;
-        shadowposition = position;
-    }
-
-    /**
-     * Updates the state of this object.
-     * <p>
-     * This method only is only intended to update values that change local state in
-     * well-defined ways, like position or a cooldown value.  It does not handle
-     * collisions (which are determined by the CollisionController).  It is
-     * not intended to interact with other objects in any way at all.
+     * Updates the (local) state of this object.
      *
      * @param delta Number of seconds since last animation frame
      */
     public void update(float delta) {
-        position.add(velocity);
+
     }
 
     public float getDepth() {
@@ -352,6 +179,6 @@ public abstract class GameObject implements Drawable {
     @Override
     public void draw(GameCanvas canvas) {
         canvas.draw(texture, Color.WHITE, origin.x, origin.y,
-                GameCanvas.WorldToScreenX(position.x), GameCanvas.WorldToScreenY(position.y), 0.0f, 1.0f, 1.f);
+                GameCanvas.WorldToScreenX(getPosition().x), GameCanvas.WorldToScreenY(getPosition().y), 0.0f, 1.0f, 1.f);
     }
 }

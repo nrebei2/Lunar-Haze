@@ -1,7 +1,7 @@
 package infinityx.lunarhaze.entity;
 
+import box2dLight.PointLight;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
 import infinityx.lunarhaze.GameObject;
 
 public class Werewolf extends GameObject {
@@ -39,8 +39,6 @@ public class Werewolf extends GameObject {
      **/
     private float movementV = 0.0f; // DEPRECATED
 
-    public Body body;
-
     /**
      * Whether the  player stands on a moonlight tile
      **/
@@ -65,6 +63,11 @@ public class Werewolf extends GameObject {
      * Health point (hp) of the werewolf
      */
     private float hp;
+
+    /**
+     * Point light pointed on werewolf at all times
+     */
+    private PointLight spotLight;
 
     private final Vector2 forceCache = new Vector2();
 
@@ -158,6 +161,22 @@ public class Werewolf extends GameObject {
     }
 
     /**
+     * @return Point light on player
+     */
+    public PointLight getSpotlight() {
+        return spotLight;
+    }
+
+    /**
+     * Attaches light to player as a spotlight (pointed down at player at all times)
+     */
+    public void setSpotLight(PointLight light) {
+        spotLight = light;
+        spotLight.attachToBody(getBody(), 0, 0);
+        spotLight.setActive(true);
+    }
+
+    /**
      * Returns true if the player is on a moonlight tile.
      *
      * @return true if the player is on a moonlight tile.
@@ -202,6 +221,5 @@ public class Werewolf extends GameObject {
 
         // set the updated velocity to the player's Box2D body
         body.setLinearVelocity(velocity);
-        position = body.getPosition();
     }
 }

@@ -38,7 +38,8 @@ public class SceneObject implements Drawable {
     /**
      * Simple depth buffer, object-wise instead of pixel-wise.
      *
-     * @return depth of object from camera
+     * @return depth of object from camera/
+     * private final
      */
     @Override
     public float getDepth() {

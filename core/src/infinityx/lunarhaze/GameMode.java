@@ -1,6 +1,5 @@
 package infinityx.lunarhaze;
 
-import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -28,7 +27,6 @@ public class GameMode extends ScreenObservable implements Screen {
      * Track the current state of the game for the update loop.
      */
     public enum GameState {
-        // TODO add state
         /**
          * Before the game has started
          */
@@ -87,9 +85,6 @@ public class GameMode extends ScreenObservable implements Screen {
      * Variable to track the game state (SIMPLE FIELDS)
      */
     private GameState gameState;
-
-    private RayHandler rayHandler;
-
 
     // TODO: Maybe change to enum if there are not that many levels, or string maybe?
     /**
@@ -151,7 +146,6 @@ public class GameMode extends ScreenObservable implements Screen {
             case INTRO:
                 setupLevel();
                 gameplayController.start(levelContainer);
-                rayHandler = gameplayController.getRayHandler();
                 gameState = GameState.PLAY;
                 break;
             case OVER:
@@ -177,7 +171,7 @@ public class GameMode extends ScreenObservable implements Screen {
     }
 
     /**
-     * Initializes the levelContainer
+     * Initializes the levelContainer given the set level
      */
     private void setupLevel() {
         LevelParser ps = LevelParser.LevelParser();
@@ -197,11 +191,12 @@ public class GameMode extends ScreenObservable implements Screen {
         }
 
         // Update objects.
+        levelContainer.getWorld().step(delta, 6, 2);
         gameplayController.resolveActions(inputController, delta);
 
         // Check for collisions
         totalTime += (delta * 1000); // Seconds to milliseconds
-        physicsController.processCollisions(gameplayController.getObjects());
+        //physicsController.processCollisions(gameplayController.getObjects());
         // Clean up destroyed objects
         // gameplayController.garbageCollect();
     }
@@ -216,7 +211,7 @@ public class GameMode extends ScreenObservable implements Screen {
     private void draw(float delta) {
         canvas.clear();
 
-        // Draw the game objects
+        // Draw the level
         levelContainer.drawLevel(canvas);
 
         switch (gameState) {
@@ -231,6 +226,7 @@ public class GameMode extends ScreenObservable implements Screen {
                 canvas.begin(); // DO NOT SCALE
                 canvas.drawTextCentered("FAILURE!", displayFont, 0.0f);
                 canvas.end();
+                break;
         }
     }
 
@@ -253,11 +249,6 @@ public class GameMode extends ScreenObservable implements Screen {
         if (active) {
             update(delta);
             draw(delta);
-
-            // Draw the shadows
-            if (rayHandler != null) {
-                rayHandler.updateAndRender();
-            }
 
             if (inputController.didExit() && observer != null) {
                 observer.exitScreen(this, GO_MENU);
