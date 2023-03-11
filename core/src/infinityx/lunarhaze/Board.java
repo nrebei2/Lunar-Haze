@@ -288,7 +288,7 @@ public class Board {
     /**
      * Sets a tile as lit or not.
      *
-     * Should only be used during initialization of board, use LightingController for changing!
+     * You should probably be calling setLit in LevelContainer instead if you want light to react as well.
      *
      * @param x The x index for the Tile cell
      * @param y The y index for the Tile cell

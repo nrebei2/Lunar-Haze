@@ -1,5 +1,7 @@
 package infinityx.lunarhaze.entity;
 
+import box2dLight.PointLight;
+import com.badlogic.gdx.graphics.g3d.environment.SpotLight;
 import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.GameObject;
 
@@ -62,6 +64,9 @@ public class Werewolf extends GameObject {
      * Health point (hp) of the werewolf
      */
     private float hp;
+
+    /** Point light pointed on werewolf at all times */
+    private PointLight spotLight;
 
     private final Vector2 forceCache = new Vector2();
 
@@ -152,6 +157,22 @@ public class Werewolf extends GameObject {
      */
     public void setHp(float value) {
         hp = value;
+    }
+
+    /**
+     * @return Point light on player
+     */
+    public PointLight getSpotlight() {
+        return spotLight;
+    }
+
+    /**
+     * Attaches light to player as a spotlight (pointed down at player at all times)
+     */
+    public void setSpotLight(PointLight light) {
+        spotLight = light;
+        spotLight.attachToBody(getBody(), 0, 0);
+        spotLight.setActive(true);
     }
 
     /**

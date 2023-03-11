@@ -113,9 +113,6 @@ public class LevelContainer {
         rayHandler.setBlurNum(5);
         rayHandler.setShadows(true);
 
-        ambienceMoonlight = new PointLight(rayHandler, 512, new Color(0.65f, 0.6f, 0.77f, 0.6f), 1f, 0, 0);
-        ambienceMoonlight.setXray(true);
-        ambienceMoonlight.setActive(true);
 
         player = null;
         board = null;
@@ -143,11 +140,11 @@ public class LevelContainer {
 
         // Lighting, physics
         enemy.setFlashlight(new ConeSource(rayHandler, 512, new Color(0.8f, 0.6f, 0f, 0.9f), 2f, enemy.getX(), enemy.getY(), 0f, 30));
-        enemy.getFlashlight().attachToBody(enemy.getBody(), 0, 0, enemy.getFlashlight().getDirection());
-        enemy.getFlashlight().setActive(true);
+        enemy.setFlashlightOn(true);
 
         enemy.activatePhysics(world);
         drawables.add(enemy);
+
         return enemies.size() - 1;
     }
 
@@ -174,7 +171,11 @@ public class LevelContainer {
      */
     public void setPlayer(Werewolf player) {
         drawables.add(player);
+
+        // Lighting, physics
+        player.setSpotLight(new PointLight(rayHandler, 512, new Color(0.65f, 0.6f, 0.77f, 0.6f), 1f, 0, 0));
         player.activatePhysics(world);
+
         this.player = player;
     }
 
@@ -209,8 +210,6 @@ public class LevelContainer {
     /**
      * Sets a tile as lit or not.
      *
-     * Used and only used after initialization of Board.
-     *
      * @param x The x index for the Tile cell
      * @param y The y index for the Tile cell
      */
@@ -225,7 +224,6 @@ public class LevelContainer {
     private void removeLightAt(int x, int y) {
         int t_pos = x + y * board.getWidth();
         if (!moonlight.containsKey(t_pos)) {
-            Gdx.app.error("LightingController", "Tile should be already lit if removing!", new IllegalStateException());
             return;
         }
         moonlight.get(t_pos).setActive(false);

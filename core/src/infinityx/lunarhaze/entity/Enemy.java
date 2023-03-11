@@ -140,12 +140,20 @@ public class Enemy extends GameObject {
         super.setTexture(texture);
     }
 
+    /**
+     * Attaches light to enemy as a flashlight
+     */
     public void setFlashlight(ConeSource cone) {
         flashlight = cone;
+        flashlight.attachToBody(getBody(), 0, 0, flashlight.getDirection());
     }
 
-    public ConeSource getFlashlight() {
-        return flashlight;
+
+    /**
+     * @param on Whether to turn the flashlight on (true) or off (false)
+     */
+    public void setFlashlightOn(boolean on) {
+        flashlight.setActive(on);
     }
 
     /**
