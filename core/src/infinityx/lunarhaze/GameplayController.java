@@ -1,6 +1,5 @@
 package infinityx.lunarhaze;
 
-import box2dLight.RayHandler;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import infinityx.lunarhaze.entity.Enemy;

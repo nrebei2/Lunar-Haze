@@ -94,8 +94,10 @@ public class LevelContainer {
     private final Array<Drawable> drawables;
     private final DrawableCompare drawComp = new DrawableCompare();
 
-    /** Maps tile indices to their respective PointLight pointing on it */
-    private IntMap<PointLight> moonlight;
+    /**
+     * Maps tile indices to their respective PointLight pointing on it
+     */
+    private final IntMap<PointLight> moonlight;
 
     /**
      * Creates a new LevelContainer with no active elements.
@@ -138,11 +140,12 @@ public class LevelContainer {
     public int addEnemy(Enemy enemy) {
         enemies.addEnemy(enemy);
 
-        // Lighting, physics
-        enemy.setFlashlight(new ConeSource(rayHandler, 512, new Color(0.8f, 0.6f, 0f, 0.9f), 2f, enemy.getX(), enemy.getY(), 0f, 30));
+        // Lighting, physics (ALWAYS MAKE SURE PHYSICS IS ACTIVATED B4 ATTACHING LIGHT)
+        enemy.activatePhysics(world);
+
+        enemy.setFlashlight(new ConeSource(rayHandler, 512, new Color(0.8f, 0.6f, 0f, 0.9f), 4f, enemy.getX(), enemy.getY(), 0f, 30));
         enemy.setFlashlightOn(true);
 
-        enemy.activatePhysics(world);
         drawables.add(enemy);
 
         return enemies.size() - 1;
@@ -173,8 +176,8 @@ public class LevelContainer {
         drawables.add(player);
 
         // Lighting, physics
-        player.setSpotLight(new PointLight(rayHandler, 512, new Color(0.65f, 0.6f, 0.77f, 0.6f), 1f, 0, 0));
         player.activatePhysics(world);
+        player.setSpotLight(new PointLight(rayHandler, 512, new Color(0.65f, 0.6f, 0.77f, 0.6f), 1f, 0, 0));
 
         this.player = player;
     }
@@ -197,7 +200,9 @@ public class LevelContainer {
     /**
      * @param board Board to set for this scene
      */
-    public void setBoard(Board board) { this.board = board; }
+    public void setBoard(Board board) {
+        this.board = board;
+    }
 
     /**
      * @param obj Scene Object to add
@@ -221,6 +226,7 @@ public class LevelContainer {
             removeLightAt(x, y);
         }
     }
+
     private void removeLightAt(int x, int y) {
         int t_pos = x + y * board.getWidth();
         if (!moonlight.containsKey(t_pos)) {
@@ -228,6 +234,7 @@ public class LevelContainer {
         }
         moonlight.get(t_pos).setActive(false);
     }
+
     private void addLightAt(int x, int y) {
         int t_pos = x + y * board.getWidth();
         if (!moonlight.containsKey(t_pos)) {
@@ -251,7 +258,10 @@ public class LevelContainer {
         );
         canvas.begin(view);
 
-        //System.out.printf("Player pos: (%f, %f)\n", player.position.x, player.position.y);
+        // Debug prints
+        System.out.printf(
+                "Player pos: (%f, %f), Spotlight pos: (%f, %f) \n",
+                player.getPosition().x, player.getPosition().y, player.getSpotlight().getPosition().x, player.getSpotlight().getPosition().y);
 
         // Render order: Board tiles -> (players, enemies, scene objects) sorted by depth (y coordinate)
         board.draw(canvas);

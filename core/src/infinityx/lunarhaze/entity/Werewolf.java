@@ -1,7 +1,6 @@
 package infinityx.lunarhaze.entity;
 
 import box2dLight.PointLight;
-import com.badlogic.gdx.graphics.g3d.environment.SpotLight;
 import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.GameObject;
 
@@ -65,7 +64,9 @@ public class Werewolf extends GameObject {
      */
     private float hp;
 
-    /** Point light pointed on werewolf at all times */
+    /**
+     * Point light pointed on werewolf at all times
+     */
     private PointLight spotLight;
 
     private final Vector2 forceCache = new Vector2();

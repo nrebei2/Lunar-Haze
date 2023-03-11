@@ -145,7 +145,7 @@ public class Enemy extends GameObject {
      */
     public void setFlashlight(ConeSource cone) {
         flashlight = cone;
-        flashlight.attachToBody(getBody(), 0, 0, flashlight.getDirection());
+        flashlight.attachToBody(getBody(), 0.2f, 0, flashlight.getDirection());
     }
 
 

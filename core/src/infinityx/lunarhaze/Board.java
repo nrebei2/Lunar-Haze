@@ -7,7 +7,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.IntSet;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 
 /**
@@ -45,8 +44,10 @@ public class Board {
     public static final int TILE_WIDTH_SCREEN = 128;
     public static final int TILE_HEIGHT_SCREEN = TILE_WIDTH_SCREEN * 3 / 4;
 
-    /** Cache holding set of moonlight tiles, (n, m) is lit iff m*width + n is in moonlightTiles */
-    private IntSet moonlightTiles;
+    /**
+     * Cache holding set of moonlight tiles, (n, m) is lit iff m*width + n is in moonlightTiles
+     */
+    private final IntSet moonlightTiles;
 
     /**
      * Creates a new board of the given size
@@ -211,6 +212,7 @@ public class Board {
     /**
      * Returns null if that position is out of bounds.
      * <p>
+     *
      * @param x The x index for the Tile cell
      * @param y The y index for the Tile cell
      * @return the world position coordinates of the bottom left corner of the tile.
@@ -287,7 +289,7 @@ public class Board {
 
     /**
      * Sets a tile as lit or not.
-     *
+     * <p>
      * You should probably be calling setLit in LevelContainer instead if you want light to react as well.
      *
      * @param x The x index for the Tile cell
@@ -487,6 +489,6 @@ public class Board {
      * @return set of moonlight tile indices
      */
     public IntSet getMoonlightTiles() {
-       return moonlightTiles;
+        return moonlightTiles;
     }
 }
