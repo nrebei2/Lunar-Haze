@@ -36,6 +36,8 @@ public class InputController {
     private boolean resetPressed;
 
     private boolean exitPressed;
+    /** The singleton instance of the input controller */
+    private static InputController theController = null;
 
     /**
      * Returns the amount of sideways movement.
@@ -102,6 +104,18 @@ public class InputController {
      */
     public boolean didUse() {
         return usePressed;
+    }
+
+    /**
+     * Return the singleton instance of the input controller
+     *
+     * @return the singleton instance of the input controller
+     */
+    public static InputController getInstance() {
+        if (theController == null) {
+            theController = new InputController();
+        }
+        return theController;
     }
 
     /**

@@ -105,12 +105,18 @@ public class Enemy extends GameObject {
      * get the next patrol point of the enemy
      */
     public Vector2 getNextPatrol() {
+        Vector2 next = patrolPath.get(currentWayPoint);
+        currentWayPoint++;
         if (currentWayPoint > patrolPath.size() - 1) {
             currentWayPoint = 0;
         }
-        Vector2 next = patrolPath.get(currentWayPoint);
-        currentWayPoint++;
         return next;
+    }
+    /**
+     * get the patrol point this enemy is currently moving to
+     */
+    public Vector2 getCurrentPatrol(){
+        return patrolPath.get(currentWayPoint);
     }
 
     /**

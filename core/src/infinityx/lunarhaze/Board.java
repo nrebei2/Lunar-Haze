@@ -117,10 +117,8 @@ public class Board {
         /*if (tile.isLit()) {
             return tile.getTileTextureLit();
         }*/
-
         // Commented the above out because we added ambient lighting. LMK if it should be changed back
         return tile.getTileTextureUnlit();
-
     }
 
     /**

@@ -259,9 +259,9 @@ public class LevelContainer {
         canvas.begin(view);
 
         // Debug prints
-        System.out.printf(
-                "Player pos: (%f, %f), Spotlight pos: (%f, %f) \n",
-                player.getPosition().x, player.getPosition().y, player.getSpotlight().getPosition().x, player.getSpotlight().getPosition().y);
+        //System.out.printf(
+        //        "Player pos: (%f, %f), Spotlight pos: (%f, %f) \n",
+        //        player.getPosition().x, player.getPosition().y, player.getSpotlight().getPosition().x, player.getSpotlight().getPosition().y);
 
         // Render order: Board tiles -> (players, enemies, scene objects) sorted by depth (y coordinate)
         board.draw(canvas);
@@ -287,8 +287,8 @@ public class LevelContainer {
         // Finally, draw lights
         rayHandler.updateAndRender();
     }
-
 }
+
 
 /**
  * Depth comparison function used for drawing
