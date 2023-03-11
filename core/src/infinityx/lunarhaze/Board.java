@@ -143,7 +143,6 @@ public class Board {
      * @return the board cell index for a screen position.
      */
     public Vector2 worldToBoard(float x, float y) {
-        //TODO TILE SHRINKING PROBLEM HERE
         return new Vector2((int) (x / TILE_WIDTH), (int) (y / TILE_HEIGHT));
     }
 

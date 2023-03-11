@@ -28,7 +28,6 @@ public class GameMode extends ScreenObservable implements Screen {
      * Track the current state of the game for the update loop.
      */
     public enum GameState {
-        // TODO add state
         /**
          * Before the game has started
          */

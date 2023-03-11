@@ -81,6 +81,7 @@ public class LevelContainer {
     public LevelContainer() {
         // BOX2D initialization
         world = new World(new Vector2(0, 0), true);
+
         player = null;
         board = null;
         enemies = new EnemyList();
