@@ -217,9 +217,6 @@ public class EnemyController {
 //                default:
 //                    throw new NotImplementedException();
 //            }
-            System.out.println(worldToBoardDistance(enemy.getX(), enemy.getY(), target.getX(),
-                    target.getY()) <= DETECT_DIST_MOONLIGHT);
-            System.out.println("current state is: " + detection);
             return worldToBoardDistance(enemy.getX(), enemy.getY(), target.getX(),
                     target.getY()) <= DETECT_DIST_MOONLIGHT;
         } else {
@@ -391,7 +388,14 @@ public class EnemyController {
             case SPAWN:
                 break;
             case PATROL:
-                pos = enemy.getNextPatrol();
+                Vector2 cur_pos = enemy.getPosition();
+                if (enemy.getCurrentPatrol().equals(board.worldToBoard(cur_pos.x, cur_pos.y))) {
+
+                    pos = enemy.getNextPatrol();
+                }
+                else{
+                    pos = enemy.getCurrentPatrol();
+                }
                 board.setGoal((int) pos.x, (int) pos.y);
                 setGoal = true;
                 break;
