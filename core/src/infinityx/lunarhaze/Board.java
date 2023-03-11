@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.IntSet;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,6 +45,9 @@ public class Board {
     public static final int TILE_WIDTH_SCREEN = 128;
     public static final int TILE_HEIGHT_SCREEN = TILE_WIDTH_SCREEN * 3 / 4;
 
+    /** Cache holding set of moonlight tiles, (n, m) is lit iff m*width + n is in moonlightTiles */
+    private IntSet moonlightTiles;
+
     /**
      * Creates a new board of the given size
      *
@@ -51,6 +55,7 @@ public class Board {
      * @param height Board height in tiles
      */
     public Board(int width, int height) {
+        moonlightTiles = new IntSet();
         this.width = width;
         this.height = height;
         tiles = new Tile[width * height];
@@ -198,26 +203,39 @@ public class Board {
         Texture tiletexture = getTileTexture(x, y);
         canvas.draw(
                 tiletexture, Color.WHITE, tiletexture.getWidth() / 2, tiletexture.getHeight() / 2,
-                GameCanvas.WorldToScreenX(getTilePosition(x, y).x), GameCanvas.WorldToScreenY(getTilePosition(x, y).y), 0.0f,
+                GameCanvas.WorldToScreenX(boardCenterToWorld(x, y).x), GameCanvas.WorldToScreenY(boardCenterToWorld(x, y).y), 0.0f,
                 TILE_WIDTH_SCREEN / tiletexture.getWidth(), TILE_HEIGHT_SCREEN / tiletexture.getHeight()
         );
     }
 
     /**
-     * Returns the world position coordinate for a board cell index.
+     * Returns null if that position is out of bounds.
      * <p>
-     * Note this is the coordinate of the bottom left corner of the tile.
-     * <p>
-     * While all positions are 2-dimensional, the dimensions to
-     * the board are symmetric. This allows us to use the same
-     * method to convert an x coordinate or a y coordinate to
-     * a cell index.
-     *
-     * @return the screen position coordinate for a board cell index.
+     * @param x The x index for the Tile cell
+     * @param y The y index for the Tile cell
+     * @return the world position coordinates of the bottom left corner of the tile.
      */
     public Vector2 boardToWorld(int x, int y) {
+        if (!inBounds(x, y)) {
+            return null;
+        }
         return new Vector2(x * TILE_WIDTH, y * TILE_HEIGHT);
     }
+
+    /**
+     * Returns null if that position is out of bounds.
+     *
+     * @param x The x index for the Tile cell
+     * @param y The y index for the Tile cell
+     * @return the center world position of the given tile
+     */
+    public Vector2 boardCenterToWorld(int x, int y) {
+        if (!inBounds(x, y)) {
+            return null;
+        }
+        return boardToWorld(x, y).add(0.5f * TILE_WIDTH, 0.5f * TILE_HEIGHT);
+    }
+
 
     /**
      * Returns true if the tile is Walkable.
@@ -270,6 +288,8 @@ public class Board {
     /**
      * Sets a tile as lit or not.
      *
+     * Should only be used during initialization of board, use LightingController for changing!
+     *
      * @param x The x index for the Tile cell
      * @param y The y index for the Tile cell
      */
@@ -279,6 +299,12 @@ public class Board {
             return;
         }
         getTile(x, y).setLit(lit);
+
+        if (lit) {
+            moonlightTiles.add(x + y * width);
+        } else {
+            moonlightTiles.remove(x + y * width);
+        }
     }
 
     /**
@@ -426,21 +452,6 @@ public class Board {
         this.radius = radius;
     }
 
-    /**
-     * Returns the position of the given tile (center pixel)
-     * <p>
-     * Returns null if that position is out of bounds.
-     *
-     * @param x x info for the tile
-     * @param y y info for the tile
-     * @return the position of the given tile
-     */
-    public Vector2 getTilePosition(int x, int y) {
-        if (!inBounds(x, y)) {
-            return null;
-        }
-        return new Vector2((x + 0.5f) * TILE_WIDTH, (y + 0.5f) * TILE_HEIGHT);
-    }
 
     /**
      * Clears all marks on the board.
@@ -471,18 +482,11 @@ public class Board {
     }
 
     /**
-     * Loops through moonlight tiles and returns an list of positions. Used for lighting controller
+     * Please don't modify the return value
+     *
+     * @return set of moonlight tile indices
      */
-    public HashMap<Vector2, Vector2> getMoonlightTiles() {
-        HashMap<Vector2, Vector2> moonlightPositions = new HashMap<>();
-        for (int x = 0; x < getWidth(); x++) {
-            for (int y = 0; y < getHeight(); y++) {
-                if (getTile(x, y).isLit()) {
-                    moonlightPositions.put(new Vector2(x, y), boardToWorld(x, y).add(new Vector2(TILE_WIDTH / 2.0f, TILE_HEIGHT / 2.0f)));
-                    System.out.println("Added " + boardToWorld(x, y).toString() + " to moonlightPositions");
-                }
-            }
-        }
-        return moonlightPositions;
+    public IntSet getMoonlightTiles() {
+       return moonlightTiles;
     }
 }

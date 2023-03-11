@@ -38,6 +38,7 @@ public class GameplayController {
     private boolean gameWon;
 
     private boolean gameLost;
+    private LevelContainer levelContainer;
 
     public GameplayController() {
         player = null;
@@ -97,16 +98,13 @@ public class GameplayController {
         return player != null;
     }
 
-    public RayHandler getRayHandler() {
-        return lightingController.getRayHandler();
-    }
-
     /**
      * Starts a new game.
      * <p>
      * This method creates a single player, but does nothing else.
      */
     public void start(LevelContainer levelContainer) {
+        this.levelContainer = levelContainer;
         player = levelContainer.getPlayer();
         enemies = levelContainer.getEnemies();
         objects.add(player);
@@ -124,8 +122,7 @@ public class GameplayController {
         }
 
         // Intialize lighting
-        lightingController = new LightingController(enemies, board.getMoonlightTiles(), board.getWidth(), board.getHeight());
-        lightingController.initLights(true, true, 2, levelContainer.getWorld());
+        lightingController = new LightingController(enemies, board);
 
         /*PointLight light = new PointLight(getRayHandler(), 512, new Color(0.5f, 0.5f, 1f, 0.3f), 2000f, 0, 0);
          */
@@ -184,8 +181,7 @@ public class GameplayController {
                 remainingMoonlight--;
                 timeOnMoonlight = 0;
 
-                board.setLit(px, py, false);
-                lightingController.removeLightAt(px, py);
+                levelContainer.setLit(px, py, false);
 
                 // Check if game is won here
                 if (remainingMoonlight == 0) gameWon = true;

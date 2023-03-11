@@ -100,19 +100,20 @@ public class LevelParser {
         // int numCols = tileData.size / numRows;
 
         Board board = new Board(numRows, numRows);
+        levelContainer.setBoard(board);
+
         for (int y = 0; y < board.getHeight(); y++) {
             for (int x = 0; x < board.getWidth(); x++) {
                 int tileNum = tileData.get((board.getHeight() - y - 1) * board.getWidth() + x);
                 board.setTileTexture(x, y, tileTextures.get((tileNum - 1) * 2), tileTextures.get((tileNum - 1) * 2 + 1));
                 boolean moonInfo = (moonlightData.get((board.getHeight() - y - 1) * board.getWidth() + x) == 1);
                 if (moonInfo) levelContainer.addMoonlight();
-                board.setLit(x, y, moonInfo);
+                levelContainer.setLit(x, y, moonInfo);
                 board.setTileType(x, y, tileTypeFromNum(tileNum));
                 board.setWalkable(x, y, true);
             }
         }
 
-        levelContainer.setBoard(board);
 
         // Generate player
         JsonValue player = scene.get("player");
@@ -182,6 +183,6 @@ public class LevelParser {
         int boardY = entry.getInt(1);
         System.out.printf("X: %d, Y: %d, width: %d, height: %d\n", boardX, boardY, board.getWidth(), board.getHeight());
 
-        return board.getTilePosition(boardX, boardY);
+        return board.boardCenterToWorld(boardX, boardY);
     }
 }

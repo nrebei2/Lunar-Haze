@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.IntMap;
+import com.badlogic.gdx.utils.IntSet;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.EnemyList;
 import infinityx.lunarhaze.physics.ConeSource;
@@ -17,17 +19,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class LightingController {
-
-    /**
-     * Rayhandler for storing lights
-     */
-    protected RayHandler rayHandler;
-
-    /**
-     * All light sources in level
-     */
-    private final Array<LightSource> lights = new Array<LightSource>();
-
     /**
      * The camera defining the RayHandler view; scale is in physics coordinates
      */
@@ -38,66 +29,18 @@ public class LightingController {
      */
     private final EnemyList enemies;
 
-    private final HashMap<Vector2, Vector2> moonlightPositions;
+    private Board board;
 
-    private PointLight[][] moonlight;
+    public static final Color LIGHTCOLOR = new Color(0.7f, 0.7f, 0.9f, 0.7f);
 
-    private PointLight ambienceMoonlight;
-
-    int width;
-    int height;
-
-    public LightingController(EnemyList e, HashMap<Vector2, Vector2> pos, int w, int h) {
-        enemies = e;
-        moonlightPositions = pos;
-        width = w;
-        height = h;
-    }
-
-    public RayHandler getRayHandler() {
-        return rayHandler;
-    }
-
-    public void initLights(boolean gamma, boolean diffuse, int blur, World world) {
-
-        int width = 1280;
-        int height = 960;
-
-        raycamera = new OrthographicCamera(width, height);
-        raycamera.position.set(width / 2.0f, height / 2.0f, 0);
-        raycamera.update();
-
-        RayHandler.setGammaCorrection(gamma);
-        RayHandler.useDiffuseLight(diffuse);
-        rayHandler = new RayHandler(world, Gdx.graphics.getWidth(), Gdx.graphics.getWidth());
-        rayHandler.setCombinedMatrix(raycamera);
-        rayHandler.setAmbientLight(0.25f, 0.22f, 0.32f, 0.25f);
-        rayHandler.setBlur(blur > 0);
-        rayHandler.setBlurNum(20);
-        rayHandler.setShadows(true);
-
-        // Create light for each enemy and attach
-        for (Enemy e : enemies) {
-            e.setFlashlight(new ConeSource(rayHandler, 512, new Color(0.8f, 0.6f, 0f, 0.9f), 3500f, e.getX(), e.getY(), 0f, 30));
-            e.getFlashlight().attachToBody(e.getBody(), 0, 0, e.getFlashlight().getDirection());
-            e.getFlashlight().setActive(true);
-        }
-
-        moonlight = new PointLight[width][height];
-        for (Map.Entry<Vector2, Vector2> pos : moonlightPositions.entrySet()) {
-            Vector2 boardPos = pos.getKey();
-            Vector2 worldPos = pos.getValue();
-            moonlight[(int) boardPos.x][(int) boardPos.y] = new PointLight(rayHandler, 512, new Color(0.7f, 0.7f, 0.9f, 0.7f), 200f, worldPos.x, worldPos.y);
-            moonlight[(int) boardPos.x][(int) boardPos.y].setActive(true);
-        }
-
-        ambienceMoonlight = new PointLight(rayHandler, 512, new Color(0.65f, 0.6f, 0.77f, 0.6f), 4000f, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() / 4.0f);
-        ambienceMoonlight.setXray(true);
-        ambienceMoonlight.setActive(true);
-    }
-
-    public void removeLightAt(int x, int y) {
-        moonlight[x][y].setActive(false);
+    /**
+     * LightingController handles flashlights on enemies and moonlight on tiles
+     * @param enemies
+     * @param board
+     */
+    public LightingController(EnemyList enemies, Board board) {
+        this.enemies = enemies;
+        this.board = board;
     }
 
 }

@@ -87,9 +87,6 @@ public class GameMode extends ScreenObservable implements Screen {
      */
     private GameState gameState;
 
-    private RayHandler rayHandler;
-
-
     // TODO: Maybe change to enum if there are not that many levels, or string maybe?
     /**
      * Current level
@@ -150,7 +147,6 @@ public class GameMode extends ScreenObservable implements Screen {
             case INTRO:
                 setupLevel();
                 gameplayController.start(levelContainer);
-                rayHandler = gameplayController.getRayHandler();
                 gameState = GameState.PLAY;
                 break;
             case OVER:
@@ -176,7 +172,7 @@ public class GameMode extends ScreenObservable implements Screen {
     }
 
     /**
-     * Initializes the levelContainer
+     * Initializes the levelContainer given the set level
      */
     private void setupLevel() {
         LevelParser ps = LevelParser.LevelParser();
@@ -216,7 +212,7 @@ public class GameMode extends ScreenObservable implements Screen {
     private void draw(float delta) {
         canvas.clear();
 
-        // Draw the game objects
+        // Draw the level
         levelContainer.drawLevel(canvas);
 
         switch (gameState) {
@@ -254,11 +250,6 @@ public class GameMode extends ScreenObservable implements Screen {
         if (active) {
             update(delta);
             draw(delta);
-
-            // Draw the shadows
-            if (rayHandler != null) {
-                rayHandler.updateAndRender();
-            }
 
             if (inputController.didExit() && observer != null) {
                 observer.exitScreen(this, GO_MENU);
