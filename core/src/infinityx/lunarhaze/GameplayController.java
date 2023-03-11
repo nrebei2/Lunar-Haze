@@ -145,7 +145,7 @@ public class GameplayController {
      */
     public void resolveActions(InputController input, float delta) {
         // Process the player
-        if (player != null) {
+        if (player != null && !(gameLost || gameWon)) {
             resolvePlayer(input, delta);
             resolveMoonlight(delta);
         }
@@ -168,7 +168,7 @@ public class GameplayController {
     }
 
     public void resolveMoonlight(float delta) {
-        Vector2 pos = board.worldToBoard(player.getPosition().x, player.getPosition().y - (player.texture.getHeight() / 3f));
+        Vector2 pos = board.worldToBoard(player.getPosition().x, player.getPosition().y);
         int px = (int) pos.x;
         int py = (int) pos.y;
 
@@ -216,6 +216,11 @@ public class GameplayController {
 
     public boolean isGameWon() {
         return gameWon;
+    }
+
+    public void setWin(boolean win) {
+        if (win) this.gameWon = true;
+        else this.gameLost = true;
     }
 
     public boolean isGameLost() {

@@ -256,11 +256,11 @@ public class GameMode extends ScreenObservable implements Screen {
 
             // for convenience
             if (Gdx.input.isKeyPressed(Input.Keys.PERIOD)) {
-                gameState = GameState.WIN;
+                gameplayController.setWin(true);
             }
 
             if (Gdx.input.isKeyPressed(Input.Keys.COMMA)) {
-                gameState = GameState.OVER;
+                gameplayController.setWin(false);
             }
         }
     }
