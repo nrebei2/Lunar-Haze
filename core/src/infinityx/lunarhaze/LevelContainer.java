@@ -1,6 +1,8 @@
 package infinityx.lunarhaze;
 
 import com.badlogic.gdx.math.Affine2;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.EnemyList;
@@ -37,6 +39,11 @@ import java.util.Comparator;
  * GameCanvas should be doing any transformations
  */
 public class LevelContainer {
+
+    /**
+     * The Box2D World
+     */
+    private final World world;
     /**
      * Stores Enemies
      */
@@ -44,7 +51,7 @@ public class LevelContainer {
     /**
      * Stores SceneObjects
      */
-    private Array<SceneObject> sceneObjects;
+    private final Array<SceneObject> sceneObjects;
     /**
      * Stores Werewolf
      */
@@ -72,13 +79,14 @@ public class LevelContainer {
      * Creates a new LevelContainer with no active elements.
      */
     public LevelContainer() {
+        // BOX2D initialization
+        world = new World(new Vector2(0, 0), true);
         player = null;
         board = null;
         enemies = new EnemyList();
-        //sceneObjects = new Array<>(true, 5);
+        sceneObjects = new Array<>(true, 5);
 
         drawables = new Array<Drawable>();
-
         remainingMoonlight = 0;
     }
 
@@ -95,10 +103,18 @@ public class LevelContainer {
      */
     public int addEnemy(Enemy enemy) {
         enemies.addEnemy(enemy);
+
+        enemy.activatePhysics(world);
         drawables.add(enemy);
         return enemies.size() - 1;
     }
 
+    /**
+     * Return world held by this container
+     */
+    public World getWorld() {
+        return world;
+    }
 
     /**
      * Returns a reference to the currently active player.
@@ -116,6 +132,7 @@ public class LevelContainer {
      */
     public void setPlayer(Werewolf player) {
         drawables.add(player);
+        player.activatePhysics(world);
         this.player = player;
     }
 
@@ -156,10 +173,13 @@ public class LevelContainer {
      */
     public void drawLevel(GameCanvas canvas) {
         // Puts player at center of canvas
-        view.setToTranslation(-GameCanvas.WorldToScreenX(player.position.x) + canvas.getWidth() / 2, -GameCanvas.WorldToScreenY(player.position.y) + canvas.getHeight() / 2);
+        view.setToTranslation(
+                -GameCanvas.WorldToScreenX(player.getPosition().x) + canvas.getWidth() / 2,
+                -GameCanvas.WorldToScreenY(player.getPosition().y) + canvas.getHeight() / 2
+        );
         canvas.begin(view);
 
-        System.out.printf("Player pos: (%f, %f)\n", player.position.x, player.position.y);
+        //System.out.printf("Player pos: (%f, %f)\n", player.position.x, player.position.y);
 
         // Render order: Board tiles -> (players, enemies, scene objects) sorted by depth (y coordinate)
         board.draw(canvas);

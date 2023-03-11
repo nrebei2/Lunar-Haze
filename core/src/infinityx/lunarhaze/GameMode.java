@@ -197,11 +197,12 @@ public class GameMode extends ScreenObservable implements Screen {
         }
 
         // Update objects.
+        levelContainer.getWorld().step(delta, 6, 2);
         gameplayController.resolveActions(inputController, delta);
 
         // Check for collisions
         totalTime += (delta * 1000); // Seconds to milliseconds
-        physicsController.processCollisions(gameplayController.getObjects());
+        //physicsController.processCollisions(gameplayController.getObjects());
         // Clean up destroyed objects
         // gameplayController.garbageCollect();
     }
@@ -231,6 +232,7 @@ public class GameMode extends ScreenObservable implements Screen {
                 canvas.begin(); // DO NOT SCALE
                 canvas.drawTextCentered("FAILURE!", displayFont, 0.0f);
                 canvas.end();
+                break;
         }
     }
 

@@ -2,10 +2,6 @@ package infinityx.lunarhaze;
 
 import box2dLight.RayHandler;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.EnemyList;
@@ -42,8 +38,6 @@ public class GameplayController {
     private boolean gameWon;
 
     private boolean gameLost;
-
-    private World world;
 
     public GameplayController() {
         player = null;
@@ -123,36 +117,15 @@ public class GameplayController {
         gameWon = false;
         gameLost = false;
 
-        // BOX2D initialization
-        world = new World(new Vector2(0, 0), true);
-        // create a body definition for the player
-        BodyDef playerDef = new BodyDef();
-        playerDef.type = BodyDef.BodyType.DynamicBody;
-        playerDef.position.set(player.position);
-
-        FixtureDef playerFixtureDef = new FixtureDef();
-        playerFixtureDef.shape = new CircleShape();
-
-        player.body = world.createBody(playerDef);
-        player.body.createFixture(playerFixtureDef);
-
         for (int ii = 0; ii < enemies.size(); ii++) {
             Enemy curr = enemies.get(ii);
-            BodyDef enemyDef = new BodyDef();
-            enemyDef.type = BodyDef.BodyType.DynamicBody;
-            enemyDef.position.set(curr.position);
-
-            FixtureDef enemyFixtureDef = new FixtureDef();
-            enemyFixtureDef.shape = new CircleShape();
-            curr.body = world.createBody(enemyDef);
-            curr.body.createFixture(enemyFixtureDef);
             controls[ii] = new EnemyController(ii, player, enemies, board);
             objects.add(enemies.get(ii));
         }
 
         // Intialize lighting
         lightingController = new LightingController(enemies, board.getMoonlightTiles(), board.getWidth(), board.getHeight());
-        lightingController.initLights(true, true, 2, world);
+        lightingController.initLights(true, true, 2, levelContainer.getWorld());
 
         /*PointLight light = new PointLight(getRayHandler(), 512, new Color(0.5f, 0.5f, 1f, 0.3f), 2000f, 0, 0);
          */
@@ -181,7 +154,6 @@ public class GameplayController {
             resolveMoonlight(delta);
         }
         resolveEnemies();
-        world.step(delta, 6, 2);
     }
 
     /**
@@ -200,7 +172,7 @@ public class GameplayController {
     }
 
     public void resolveMoonlight(float delta) {
-        Vector2 pos = board.worldToBoard(player.position.x, player.position.y - (player.texture.getHeight() / 3f));
+        Vector2 pos = board.worldToBoard(player.getPosition().x, player.getPosition().y - (player.texture.getHeight() / 3f));
         int px = (int) pos.x;
         int py = (int) pos.y;
 

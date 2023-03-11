@@ -482,12 +482,12 @@ public class CollisionController {
         temp1.set(ww.getPosition()).sub(en.getPosition()).nor(); // Unit vector for w1
         temp2.set(en.getPosition()).sub(ww.getPosition()).nor(); // Unit vector for w2
 
-        temp1.scl(temp1.dot(en.getVelocity())); // Scaled to w1
-        temp2.scl(temp2.dot(ww.getVelocity())); // Scaled to w2
+        temp1.scl(temp1.dot(en.getLinearVelocity())); // Scaled to w1
+        temp2.scl(temp2.dot(ww.getLinearVelocity())); // Scaled to w2
 
         // Apply to the objects
-        en.getVelocity().sub(temp1).add(temp2);
-        ww.getVelocity().sub(temp2).add(temp1);
+        //en. getVelocity().sub(temp1).add(temp2);
+        //ww.getVelocity().sub(temp2).add(temp1);
 //        if (en.isDestroyed() || ww.isDestroyed()) {
 //            return;
 //        }

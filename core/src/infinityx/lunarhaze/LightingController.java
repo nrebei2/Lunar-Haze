@@ -79,7 +79,7 @@ public class LightingController {
         // Create light for each enemy and attach
         for (Enemy e : enemies) {
             e.setFlashlight(new ConeSource(rayHandler, 512, new Color(0.8f, 0.6f, 0f, 0.9f), 3500f, e.getX(), e.getY(), 0f, 30));
-            e.getFlashlight().attachToBody(e.body, 0, 0, e.getFlashlight().getDirection());
+            e.getFlashlight().attachToBody(e.getBody(), 0, 0, e.getFlashlight().getDirection());
             e.getFlashlight().setActive(true);
         }
 

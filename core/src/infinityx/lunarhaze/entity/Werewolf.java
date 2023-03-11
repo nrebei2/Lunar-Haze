@@ -1,7 +1,6 @@
 package infinityx.lunarhaze.entity;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
 import infinityx.lunarhaze.GameObject;
 
 public class Werewolf extends GameObject {
@@ -38,8 +37,6 @@ public class Werewolf extends GameObject {
      * The up/down movement of the werewolf
      **/
     private float movementV = 0.0f; // DEPRECATED
-
-    public Body body;
 
     /**
      * Whether the  player stands on a moonlight tile
@@ -202,6 +199,5 @@ public class Werewolf extends GameObject {
 
         // set the updated velocity to the player's Box2D body
         body.setLinearVelocity(velocity);
-        position = body.getPosition();
     }
 }
