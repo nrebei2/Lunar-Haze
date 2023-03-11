@@ -232,9 +232,9 @@ public class LevelContainer {
         int t_pos = x + y * board.getWidth();
         if (!moonlight.containsKey(t_pos)) {
             Vector2 worldPos = board.boardCenterToWorld(x, y);
-            moonlight.put(t_pos, new PointLight(rayHandler, 512, LightingController.LIGHTCOLOR, 200f, worldPos.x, worldPos.y));
+            moonlight.put(t_pos, new PointLight(rayHandler, 512, LightingController.LIGHTCOLOR, 1.5f, worldPos.x, worldPos.y));
         }
-        moonlight.get(t_pos).setActive(false);
+        moonlight.get(t_pos).setActive(true);
     }
 
     /**
