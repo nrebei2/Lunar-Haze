@@ -79,7 +79,7 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
     }
 
     /**
-     * Creates a new game object.
+     * Creates a new game object with degenerate collider settings.
      * <p>
      * All units (position, velocity, etc.) are in world units.
      *
@@ -87,10 +87,8 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
      * @param y The object y-coordinate in world
      */
     public GameObject(float x, float y) {
-        // player takes half of a tile
-        super(x, y);
+        super(x, y, 1, 1);
         setFixedRotation(true);
-        setBodyType(BodyDef.BodyType.DynamicBody);
 
         destroyed = false;
     }

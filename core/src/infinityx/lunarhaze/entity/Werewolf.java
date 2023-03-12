@@ -189,7 +189,7 @@ public class Werewolf extends GameObject {
     }
 
     /**
-     * Initialize a werewolf not standing on moonlight tile.
+     * Initialize a werewolf.
      */
     public Werewolf(float x, float y) {
 

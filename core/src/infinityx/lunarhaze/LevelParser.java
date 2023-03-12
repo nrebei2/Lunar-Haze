@@ -159,7 +159,9 @@ public class LevelParser {
      * @param  playerFormat the JSON tree defining the player
      */
     private Werewolf parsePlayer(AssetDirectory directory, JsonValue playerFormat, LevelContainer container) {
+        System.out.printf("in json: (%f, %f)\n", playerFormat.get(0).asFloat(), playerFormat.get(1).asFloat());
         Werewolf player = new Werewolf(playerFormat.get(0).asFloat(), playerFormat.get(1).asFloat());
+        System.out.printf("after init: (%f, %f)\n", player.getPosition().x, player.getPosition().y);
 
         parseGameObject(player, directory, playerJson);
 
@@ -188,7 +190,6 @@ public class LevelParser {
      */
     private Enemy parseEnemy(int id, AssetDirectory directory, JsonValue enemyFormat, LevelContainer container) {
         JsonValue enemyPos = enemyFormat.get("position");
-
 
         ArrayList<Vector2> patrol = new ArrayList<>();
         for (JsonValue patrolPos : enemyFormat.get("patrol")) {
