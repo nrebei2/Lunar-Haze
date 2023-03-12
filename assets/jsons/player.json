@@ -1,12 +1,13 @@
 {
-  "radius": 0.25,
+  "collider": {
+    "width": 0.25,
+    "height": 0.25
+  },
   "bodytype": "dynamic",
   "density": 1.0,
   "friction": 0.0,
   "restitution": 0.0,
-  "force": 80.0,
-  "damping": 10.0,
-  "maxspeed": 5.0,
+  "speed": 2.0,
   "startframe": 0,
   "texture": {
     "name" : "werewolf.movement",

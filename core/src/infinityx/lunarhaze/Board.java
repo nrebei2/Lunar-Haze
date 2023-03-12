@@ -1,8 +1,10 @@
 package infinityx.lunarhaze;
 
+import box2dLight.PointLight;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g3d.environment.SpotLight;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.IntSet;
 
@@ -33,16 +35,16 @@ public class Board {
     private final Tile[] tiles;
 
     /**
-     * Tile height and width in world length (it is actually a square)
+     * Tile height and width in world length.
+     * Should be overwritten.
      */
-    public static final float TILE_HEIGHT = 1;
-    public static final float TILE_WIDTH = TILE_HEIGHT;
+    private Vector2 tileWorldDim = new Vector2(1, 1);
 
     /**
-     * Tile height and width in screen (pixel) length
-     */
-    public static final int TILE_WIDTH_SCREEN = 128;
-    public static final int TILE_HEIGHT_SCREEN = TILE_WIDTH_SCREEN * 3 / 4;
+     * Tile height and width in screen (pixel) length.
+     * Should be overwritten.
+     * */
+    private Vector2 tileScreenDim = new Vector2(128, 96);
 
     /**
      * Cache holding set of moonlight tiles, (n, m) is lit iff m*width + n is in moonlightTiles
@@ -78,6 +80,22 @@ public class Board {
             return null;
         }
         return tiles[x * height + y];
+    }
+
+    /**
+     * Sets tile height and width in screen (pixel) length.
+     * Needed for drawing.
+     */
+    public void setTileScreenDim(int width, int height) {
+        this.tileScreenDim.set(width, height);
+    }
+
+    /**
+     * Sets tile height and width in world length.
+     * Needed for drawing.
+     */
+    public void setTileWorldDim(float width, float height) {
+        this.tileWorldDim.set(width, height);
     }
 
     /**
@@ -147,7 +165,7 @@ public class Board {
      * @return the board cell index for a screen position.
      */
     public Vector2 worldToBoard(float x, float y) {
-        return new Vector2((int) (x / TILE_WIDTH), (int) (y / TILE_HEIGHT));
+        return new Vector2((int) (x / tileWorldDim.x), (int) (y / tileWorldDim.y));
     }
 
     /**
@@ -202,8 +220,8 @@ public class Board {
         Texture tiletexture = getTileTexture(x, y);
         canvas.draw(
                 tiletexture, Color.WHITE, tiletexture.getWidth() / 2, tiletexture.getHeight() / 2,
-                GameCanvas.WorldToScreenX(boardCenterToWorld(x, y).x), GameCanvas.WorldToScreenY(boardCenterToWorld(x, y).y), 0.0f,
-                TILE_WIDTH_SCREEN / tiletexture.getWidth(), TILE_HEIGHT_SCREEN / tiletexture.getHeight()
+                canvas.WorldToScreenX(boardCenterToWorld(x, y).x), canvas.WorldToScreenY(boardCenterToWorld(x, y).y), 0.0f,
+                tileScreenDim.x / tiletexture.getWidth(), tileScreenDim.y / tiletexture.getHeight()
         );
     }
 
@@ -219,7 +237,7 @@ public class Board {
         if (!inBounds(x, y)) {
             return null;
         }
-        return new Vector2(x * TILE_WIDTH, y * TILE_HEIGHT);
+        return new Vector2(x * tileWorldDim.x, y * tileWorldDim.y);
     }
 
     /**
@@ -233,7 +251,7 @@ public class Board {
         if (!inBounds(x, y)) {
             return null;
         }
-        return boardToWorld(x, y).add(0.5f * TILE_WIDTH, 0.5f * TILE_HEIGHT);
+        return boardToWorld(x, y).add(0.5f * tileWorldDim.x, 0.5f * tileWorldDim.y);
     }
 
 
@@ -288,7 +306,6 @@ public class Board {
     /**
      * Sets a tile as lit or not.
      * <p>
-     * You should probably be calling setLit in LevelContainer instead if you want light to react as well.
      *
      * @param x The x index for the Tile cell
      * @param y The y index for the Tile cell
@@ -296,6 +313,11 @@ public class Board {
     public void setLit(int x, int y, boolean lit) {
         if (!inBounds(x, y)) {
             Gdx.app.error("Board", "Illegal tile " + x + "," + y, new IndexOutOfBoundsException());
+            return;
+        }
+        Tile t = getTile(x, y);
+        if (t.getSpotLight() == null) {
+            Gdx.app.error("Board", "This should never happen! Talk to me if this pops up for you.");
             return;
         }
         getTile(x, y).setLit(lit);
@@ -308,14 +330,30 @@ public class Board {
     }
 
     /**
-     * Returns the type of a tile.
+     * Attaches light to tile, represents the moonlight on the tile
      * <p>
-     * Null if out of bounds
      *
      * @param x The x index for the Tile cell
      * @param y The y index for the Tile cell
-     * @return true if the tile is walkable.
      */
+    public void setSpotlight(int x, int y, PointLight light) {
+        if (!inBounds(x, y)) {
+            Gdx.app.error("Board", "Illegal tile " + x + "," + y, new IndexOutOfBoundsException());
+            return;
+        }
+        getTile(x, y).setSpotLight(light);
+    }
+
+
+        /**
+         * Returns the type of a tile.
+         * <p>
+         * Null if out of bounds
+         *
+         * @param x The x index for the Tile cell
+         * @param y The y index for the Tile cell
+         * @return true if the tile is walkable.
+         */
     public Tile.TileType getTileType(int x, int y) {
         Tile tile = getTile(x, y);
 

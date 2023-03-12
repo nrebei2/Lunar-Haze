@@ -68,18 +68,31 @@
       "file": 	"images/werewolf.png",
       "wrap":  	false,
       "sprites":	{
-        "walking" : {
+        "movement" : {
           "size" : 2,
           "rows" : 1,
           "cols" : 2
         }
       }
     },
-    "villager": "images/villager.png"
-  },
+    "villager":{
+      "file": 	"images/villager.png",
+      "wrap":  	false,
+      "sprites":	{
+        "movement" : {
+          "size" : 1,
+          "rows" : 1,
+          "cols" : 1
+        }
+      }
+    }
+},
   "jsons": {
     "levels": "jsons/levels.json",
-    "player": "jsons/player.json"
+    "player": "jsons/player.json",
+    "board": "jsons/board.json",
+    "objects": "jsons/objects.json",
+    "enemies": "jsons/enemies.json"
   },
   "sounds": {
   },

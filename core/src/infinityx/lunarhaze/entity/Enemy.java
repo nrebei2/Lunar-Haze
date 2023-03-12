@@ -14,8 +14,6 @@ public class Enemy extends GameObject {
      * A unique identifier; used to decouple classes.
      */
     private final int id;
-    private static final float MOVE_SPEED = 1.5f;
-
     /**
      * Movement of the enemy
      **/
@@ -67,7 +65,6 @@ public class Enemy extends GameObject {
         return ObjectType.ENEMY;
     }
 
-
     /**
      * Returns whether the enemy is alerted.
      */
@@ -101,7 +98,16 @@ public class Enemy extends GameObject {
         direction = Direction.NORTH;
     }
 
-    /**
+    /**private Werewolf parsePlayer(AssetDirectory directory, JsonValue playerFormat, LevelContainer container) {
+        Werewolf player = new Werewolf(playerFormat.get(0).asFloat(), playerFormat.get(1).asFloat());
+
+        parseGameObject(player, directory, playerJson);
+
+        player.activatePhysics(container.getWorld());
+        player.setSpotLight(new PointLight(container.getRayHandler(), 512, new Color(0.65f, 0.6f, 0.77f, 0.6f), 1f, 0, 0));
+
+        return player;
+    }
      * get the next patrol point of the enemy
      */
     public Vector2 getNextPatrol() {
@@ -124,20 +130,6 @@ public class Enemy extends GameObject {
      */
     public boolean isAlive() {
         return isAlive;
-    }
-
-    /**
-     * Returns whether or not the ship is active.
-     * <p>
-     * An inactive ship is one that is either dead or dying.  A ship that has started
-     * to fall, but has not fallen past MAX_FALL_AMOUNT is inactive but not dead.
-     * Inactive ships are drawn but cannot be targeted or involved in collisions.
-     * They are just eye-candy at that point.
-     *
-     * @return whether or not the ship is active
-     */
-    public void setTexture(Texture texture) {
-        super.setTexture(texture);
     }
 
     /**
@@ -172,17 +164,17 @@ public class Enemy extends GameObject {
         float xVelocity = 0.0f;
         float yVelocity = 0.0f;
         if (movingLeft) {
-            xVelocity = -MOVE_SPEED;
+            xVelocity = -speed;
             direction = Direction.WEST;
         } else if (movingRight) {
-            xVelocity = MOVE_SPEED;
+            xVelocity = speed;
             direction = Direction.EAST;
         }
         if (movingDown) {
-            yVelocity = -MOVE_SPEED;
+            yVelocity = -speed;
             direction = Direction.SOUTH;
         } else if (movingUp) {
-            yVelocity = MOVE_SPEED;
+            yVelocity = speed;
             direction = Direction.NORTH;
             System.out.println("moving up");
         }

@@ -180,7 +180,7 @@ public class GameplayController {
                 remainingMoonlight--;
                 timeOnMoonlight = 0;
 
-                levelContainer.setLit(px, py, false);
+                board.setLit(px, py, false);
 
                 // Check if game is won here
                 if (remainingMoonlight == 0) gameWon = true;

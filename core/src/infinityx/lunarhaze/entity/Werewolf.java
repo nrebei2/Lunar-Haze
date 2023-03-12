@@ -12,11 +12,6 @@ public class Werewolf extends GameObject {
     public static final int SHIP_IMG_FLAT = 9;
 
     /**
-     * Move speed
-     **/
-    private static final float WEREWOLF_SPEED = 2f;
-
-    /**
      * How fast we change frames (one frame per 4 calls to update)
      */
     private static final float ANIMATION_SPEED = 0.25f;
@@ -216,8 +211,8 @@ public class Werewolf extends GameObject {
         Vector2 velocity = body.getLinearVelocity();
 
         // update the velocity based on the input from the player
-        velocity.x = movementH * WEREWOLF_SPEED;
-        velocity.y = movementV * WEREWOLF_SPEED;
+        velocity.x = movementH * speed;
+        velocity.y = movementV * speed;
 
         // set the updated velocity to the player's Box2D body
         body.setLinearVelocity(velocity);

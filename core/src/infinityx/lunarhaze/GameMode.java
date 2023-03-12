@@ -69,7 +69,7 @@ public class GameMode extends ScreenObservable implements Screen {
     /**
      * Constants for level initialization
      */
-    private JsonValue constants;
+    private JsonValue levelFormat;
     /**
      * The font for giving messages to the player
      */
@@ -126,7 +126,7 @@ public class GameMode extends ScreenObservable implements Screen {
         this.directory = directory;
         LevelParser ps = LevelParser.LevelParser();
         ps.loadConstants(directory);
-        constants = directory.getEntry("levels", JsonValue.class);
+        levelFormat = directory.getEntry("levels", JsonValue.class);
         displayFont = directory.getEntry("retro", BitmapFont.class);
     }
 
@@ -177,7 +177,8 @@ public class GameMode extends ScreenObservable implements Screen {
      */
     private void setupLevel() {
         LevelParser ps = LevelParser.LevelParser();
-        levelContainer = ps.loadLevel(constants.get(String.valueOf(level)));
+        levelContainer = ps.loadLevel(directory, levelFormat.get(String.valueOf(level)));
+        canvas.setWorldToScreen(levelContainer.worldToScreen);
     }
 
     /**

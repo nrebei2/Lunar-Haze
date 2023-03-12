@@ -39,6 +39,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
  * that mode must be done in a separate begin/end pass.
  */
 public class GameCanvas {
+
     /**
      * Enumeration to track which pass we are in
      */
@@ -133,15 +134,25 @@ public class GameCanvas {
      */
     private TextureRegion holder;
 
+    private Vector2 worldToScreen;
+
+    /**
+     * Sets the scaling factor for the world to screen transformation
+     * @param worldToScreen x
+     */
+    public void setWorldToScreen(Vector2 worldToScreen) {
+        this.worldToScreen = worldToScreen;
+    }
+
     /**
      * Both functions represent a linear map from world coordinates to screen coordinates
      */
-    public static float WorldToScreenX(float w_x) {
-        return w_x * Board.TILE_WIDTH_SCREEN / Board.TILE_WIDTH;
+    public float WorldToScreenX(float w_x) {
+        return w_x * worldToScreen.x;
     }
 
-    public static float WorldToScreenY(float w_y) {
-        return w_y * Board.TILE_HEIGHT_SCREEN / Board.TILE_HEIGHT;
+    public float WorldToScreenY(float w_y) {
+        return w_y * worldToScreen.y;
     }
 
     /**
