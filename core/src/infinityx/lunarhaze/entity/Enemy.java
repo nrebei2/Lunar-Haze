@@ -14,8 +14,6 @@ public class Enemy extends GameObject {
      * A unique identifier; used to decouple classes.
      */
     private final int id;
-    private static final float MOVE_SPEED = 1.5f;
-
     /**
      * Movement of the enemy
      **/
@@ -49,16 +47,10 @@ public class Enemy extends GameObject {
     private ConeSource flashlight;
 
     public enum Direction {
-        NORTH(1), SOUTH(3), WEST(2), EAST(0);
-
-        private final int scale;
-        private Direction(int scale) {
-            this.scale = scale;
-        }
-
-        public int getRotScale() {
-            return scale;
-        }
+        NORTH,
+        SOUTH,
+        WEST,
+        EAST
     }
 
 
@@ -72,7 +64,6 @@ public class Enemy extends GameObject {
     public ObjectType getType() {
         return ObjectType.ENEMY;
     }
-
 
     /**
      * Returns whether the enemy is alerted.
@@ -107,22 +98,25 @@ public class Enemy extends GameObject {
         direction = Direction.NORTH;
     }
 
-    /**
+    /**private Werewolf parsePlayer(AssetDirectory directory, JsonValue playerFormat, LevelContainer container) {
+        Werewolf player = new Werewolf(playerFormat.get(0).asFloat(), playerFormat.get(1).asFloat());
+
+        parseGameObject(player, directory, playerJson);
+
+        player.activatePhysics(container.getWorld());
+        player.setSpotLight(new PointLight(container.getRayHandler(), 512, new Color(0.65f, 0.6f, 0.77f, 0.6f), 1f, 0, 0));
+
+        return player;
+    }
      * get the next patrol point of the enemy
      */
     public Vector2 getNextPatrol() {
-        Vector2 next = patrolPath.get(currentWayPoint);
-        currentWayPoint++;
         if (currentWayPoint > patrolPath.size() - 1) {
             currentWayPoint = 0;
         }
+        Vector2 next = patrolPath.get(currentWayPoint);
+        currentWayPoint++;
         return next;
-    }
-    /**
-     * get the patrol point this enemy is currently moving to
-     */
-    public Vector2 getCurrentPatrol(){
-        return patrolPath.get(currentWayPoint);
     }
 
     /**
@@ -139,27 +133,11 @@ public class Enemy extends GameObject {
     }
 
     /**
-     * Returns whether or not the ship is active.
-     * <p>
-     * An inactive ship is one that is either dead or dying.  A ship that has started
-     * to fall, but has not fallen past MAX_FALL_AMOUNT is inactive but not dead.
-     * Inactive ships are drawn but cannot be targeted or involved in collisions.
-     * They are just eye-candy at that point.
-     *
-     * @return whether or not the ship is active
-     */
-    public void setTexture(Texture texture) {
-
-        super.setTexture(texture);
-        this.origin.set(75, texture.getHeight() - 150);
-    }
-
-    /**
      * Attaches light to enemy as a flashlight
      */
     public void setFlashlight(ConeSource cone) {
         flashlight = cone;
-        flashlight.attachToBody(getBody(), 0.5f, 0, flashlight.getDirection());
+        flashlight.attachToBody(getBody(), 0.2f, 0, flashlight.getDirection());
     }
 
 
@@ -186,37 +164,48 @@ public class Enemy extends GameObject {
         float xVelocity = 0.0f;
         float yVelocity = 0.0f;
         if (movingLeft) {
-            xVelocity = -MOVE_SPEED;
+            xVelocity = -speed;
             direction = Direction.WEST;
         } else if (movingRight) {
-            xVelocity = MOVE_SPEED;
+            xVelocity = speed;
             direction = Direction.EAST;
         }
         if (movingDown) {
-            yVelocity = -MOVE_SPEED;
+            yVelocity = -speed;
             direction = Direction.SOUTH;
         } else if (movingUp) {
-            yVelocity = MOVE_SPEED;
+            yVelocity = speed;
             direction = Direction.NORTH;
+            System.out.println("moving up");
         }
         body.setLinearVelocity(xVelocity, yVelocity);
+        rotate(direction);
     }
 
-    /**
-     * As the name suggests.
-     * Can someone think of a better name? Im too tired for this rn
-     */
-    public void setFlashLightRotAlongDir() {
-        body.setTransform(body.getPosition(), getDirection().getRotScale() * (float) (Math.PI / 2f));
-    }
-
-    /**
-     * Sets the specific angle of the flashlight on this enemy
-     * @param ang the angle...
-     */
-    public void setFlashLightRot(float ang) {
-       body.setTransform(body.getPosition(), ang);
-
+    private void rotate(Direction direction) {
+        float ang = body.getAngle();
+        switch (direction) {
+            case NORTH:
+                if (ang > Math.PI / 2f) body.setAngularVelocity(-4f);
+                else if (ang < Math.PI / 2f) body.setAngularVelocity(4f);
+                else body.setAngularVelocity(0);
+                break;
+            case SOUTH:
+                if (ang > (3 * Math.PI) / 2f) body.setAngularVelocity(-4f);
+                else if (ang < (3 * (Math.PI)) / 2f) body.setAngularVelocity(4f);
+                else body.setAngularVelocity(0);
+                break;
+            case WEST:
+                if (ang > Math.PI) body.setAngularVelocity(-4f);
+                else if (ang < Math.PI) body.setAngularVelocity(4f);
+                else body.setAngularVelocity(0);
+                break;
+            case EAST:
+                if (ang > (2 * Math.PI)) body.setAngularVelocity(-4f);
+                else if (ang < (2 * Math.PI)) body.setAngularVelocity(4f);
+                else body.setAngularVelocity(0);
+                break;
+        }
     }
 
     public int getId() {

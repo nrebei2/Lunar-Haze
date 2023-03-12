@@ -1,0 +1,22 @@
+{
+  "collider": {
+    "width": 0.25,
+    "height": 0.25
+  },
+  "spotlight": {
+    "color":		[1.0, 1.0, 1.0, 1.0],
+    "distance":		   2,
+    "rays":			100,
+    "soft":			false
+  },
+  "bodytype": "dynamic",
+  "density": 1.0,
+  "friction": 0.0,
+  "restitution": 0.0,
+  "speed": 2.0,
+  "startframe": 0,
+  "texture": {
+    "name" : "werewolf.movement",
+    "origin" : [64, 10]
+  }
+}

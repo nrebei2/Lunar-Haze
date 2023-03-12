@@ -1,0 +1,25 @@
+{
+  "villager": {
+    "flashlight": {
+      "color":		[1.0, 1.0, 1.0, 1.0],
+      "distance":		   3,
+      "rays":			100,
+      "soft":			false,
+      "degrees": 30
+    },
+    "collider": {
+      "width": 0.25,
+      "height": 0.25
+    },
+    "bodytype": "dynamic",
+    "density": 1.0,
+    "friction": 0.0,
+    "restitution": 0.0,
+    "speed": 5.0,
+    "startframe": 0,
+    "texture": {
+      "name": "villager.movement",
+      "origin": [75, 22]
+    }
+  }
+}

@@ -144,7 +144,7 @@ public class GameplayController {
      * @param delta Number of seconds since last animation frame
      */
     public void resolveActions(InputController input, float delta) {
-        // Process the player
+        // Process the player only when the game is in play
         if (player != null && !(gameLost || gameWon)) {
             resolvePlayer(input, delta);
             resolveMoonlight(delta);
@@ -179,7 +179,7 @@ public class GameplayController {
                 remainingMoonlight--;
                 timeOnMoonlight = 0;
 
-                levelContainer.setLit(px, py, false);
+                board.setLit(px, py, false);
 
                 // Check if game is won here
                 if (remainingMoonlight == 0) gameWon = true;
