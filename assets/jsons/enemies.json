@@ -1,5 +1,12 @@
 {
   "villager": {
+    "flashlight": {
+      "color":		[1.0, 1.0, 1.0, 1.0],
+      "distance":		   3,
+      "rays":			100,
+      "soft":			false,
+      "degrees": 30
+    },
     "collider": {
       "width": 0.25,
       "height": 0.25

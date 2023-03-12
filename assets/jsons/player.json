@@ -3,6 +3,12 @@
     "width": 0.25,
     "height": 0.25
   },
+  "spotlight": {
+    "color":		[1.0, 1.0, 1.0, 1.0],
+    "distance":		   2,
+    "rays":			100,
+    "soft":			false
+  },
   "bodytype": "dynamic",
   "density": 1.0,
   "friction": 0.0,

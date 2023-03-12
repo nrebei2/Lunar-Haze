@@ -106,16 +106,7 @@ public class LevelContainer {
     public LevelContainer() {
         // BOX2D initialization
         world = new World(new Vector2(0, 0), true);
-
-        // TODO: Maybe set in asset json and let LevelParser set these?
-        RayHandler.setGammaCorrection(true);
-        RayHandler.useDiffuseLight(true);
         rayHandler = new RayHandler(world, Gdx.graphics.getWidth(), Gdx.graphics.getWidth());
-        rayHandler.setAmbientLight(0.25f, 0.22f, 0.32f, 0.25f);
-        rayHandler.setBlur(true);
-        rayHandler.setBlurNum(5);
-        rayHandler.setShadows(true);
-
 
         player = null;
         board = null;

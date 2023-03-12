@@ -2,7 +2,9 @@ package infinityx.lunarhaze;
 
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -101,8 +103,10 @@ public class LevelParser {
     public LevelContainer loadLevel(AssetDirectory directory, JsonValue levelContents) {
         // LevelContainer empty at this point
         LevelContainer levelContainer = new LevelContainer();
-
         levelContainer.worldToScreen.set(sSize[0]/wSize[0], sSize[1]/wSize[1]);
+
+        // Ambient light
+        parseLighting(levelContents.get("ambient"), levelContainer.getRayHandler());
 
         // Generate board
         JsonValue tiles = levelContents.get("tiles");
@@ -123,7 +127,7 @@ public class LevelParser {
             JsonValue enemyInfo = enemies.get(curId);
             if (enemyInfo == null) break;
 
-            Enemy enemy = parseEnemies(curId, directory, enemyInfo, levelContainer);
+            Enemy enemy = parseEnemy(curId, directory, enemyInfo, levelContainer);
 
             levelContainer.addEnemy(enemy);
             curId++;
@@ -136,8 +140,7 @@ public class LevelParser {
         JsonValue p_dim = json.get("collider");
         object.setDimension(p_dim.get("width").asFloat(), p_dim.get("height").asFloat());
 
-        // Technically, we should do error checking here.
-        // A JSON field might accidentally be missing
+        // TODO: bother with error checking?
         object.setBodyType(json.get("bodytype").asString().equals("static") ? BodyDef.BodyType.StaticBody : BodyDef.BodyType.DynamicBody);
         object.setDensity(json.get("density").asFloat());
         object.setFriction(json.get("friction").asFloat());
@@ -150,22 +153,40 @@ public class LevelParser {
         object.setOrigin(texOrigin[0], texOrigin[1]);
     }
 
+    /**
+     * Creates a player for the level
+     *
+     * @param  playerFormat the JSON tree defining the player
+     */
     private Werewolf parsePlayer(AssetDirectory directory, JsonValue playerFormat, LevelContainer container) {
         Werewolf player = new Werewolf(playerFormat.get(0).asFloat(), playerFormat.get(1).asFloat());
 
         parseGameObject(player, directory, playerJson);
 
-        player.activatePhysics(container.getWorld());
-        player.setSpotLight(
-                new PointLight(
-                        container.getRayHandler(), 512, new Color(0.65f, 0.6f, 0.77f, 0.6f), 1f, 0, 0
-                )
+        JsonValue light = playerJson.get("spotlight");
+        float[] color = light.get("color").asFloatArray();
+        float dist  = light.getFloat("distance");
+        int rays = light.getInt("rays");
+
+        PointLight spotLight = new PointLight(
+                container.getRayHandler(), rays, Color.WHITE, dist,
+                0, 0
         );
+        spotLight.setColor(color[0],color[1],color[2],color[3]);
+        spotLight.setSoft(light.getBoolean("soft"));
+
+        player.activatePhysics(container.getWorld());
+        player.setSpotLight(spotLight);
 
         return player;
     }
 
-    private Enemy parseEnemies(int id, AssetDirectory directory, JsonValue enemyFormat, LevelContainer container) {
+    /**
+     * Creates an enemy for the level
+     *
+     * @param  enemyFormat the JSON tree defining the enemy
+     */
+    private Enemy parseEnemy(int id, AssetDirectory directory, JsonValue enemyFormat, LevelContainer container) {
         JsonValue enemyPos = enemyFormat.get("position");
 
 
@@ -181,14 +202,30 @@ public class LevelParser {
 
         enemy.activatePhysics(container.getWorld());
 
-        enemy.setFlashlight(
-                new ConeSource(
-                        container.getRayHandler(), 512, new Color(0.8f, 0.6f, 0f, 0.9f), 4f, enemy.getX(), enemy.getY(), 0f, 30));
+        JsonValue light = json.get("flashlight");
+        float[] color = light.get("color").asFloatArray();
+        float dist  = light.getFloat("distance");
+        int rays = light.getInt("rays");
+        float degrees = light.getFloat("degrees");
+
+        ConeSource flashLight = new ConeSource(
+                container.getRayHandler(), rays, Color.WHITE, dist,
+                enemy.getX(), enemy.getY(), 0f, degrees
+        );
+        flashLight.setColor(color[0],color[1],color[2],color[3]);
+        flashLight.setSoft(light.getBoolean("soft"));
+
+        enemy.setFlashlight(flashLight);
         enemy.setFlashlightOn(true);
 
         return enemy;
     }
 
+    /**
+     * Creates the Board for the level
+     *
+     * @param  boardFormat the JSON tree defining the board
+     */
     private Board parseBoard(AssetDirectory directory, JsonValue boardFormat, RayHandler rayHandler) {
         JsonValue tiles = boardFormat.get("layout");
         JsonValue moonlightData = boardFormat.get("moonlight");
@@ -245,6 +282,23 @@ public class LevelParser {
         }
 
         return board;
+    }
+
+
+    /**
+     * Creates the ambient lighting for the level
+     *
+     * @param  light the JSON tree defining the light
+     */
+    private void parseLighting(JsonValue light, RayHandler rayhandler) {
+        RayHandler.setGammaCorrection(light.getBoolean("gamma"));
+        RayHandler.useDiffuseLight(light.getBoolean("diffuse"));
+
+        float[] color = light.get("color").asFloatArray();
+        rayhandler.setAmbientLight(color[0], color[1], color[2], color[3]);
+        int blur = light.getInt("blur");
+        rayhandler.setBlur(blur > 0);
+        rayhandler.setBlurNum(blur);
     }
 
     /**
