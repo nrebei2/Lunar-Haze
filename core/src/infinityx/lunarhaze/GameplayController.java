@@ -192,7 +192,7 @@ public class GameplayController {
 
     // TODO: THIS SHOULD BE IN ENEMYCONTROLLER, also this code is a mess
     public void resolveEnemies() {
-        //board.clearVisibility();
+        //board.clearVisibility(v);
         for (Enemy en : enemies) {
             if (controls[en.getId()] != null) {
                 EnemyController curEnemyController = controls[en.getId()];
