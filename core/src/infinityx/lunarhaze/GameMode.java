@@ -252,6 +252,13 @@ public class GameMode extends WorldController implements Screen, ContactListener
                 canvas.drawTextCentered("FAILURE!", displayFont, 0.0f);
                 canvas.end();
                 break;
+            case PLAY:
+                displayFont.setColor(Color.YELLOW);
+                canvas.begin(); // DO NOT SCALE
+                canvas.drawTextUpperLeft("Moonlight collected", displayFont, 0.0f);
+//                canvas.drawRec();
+                canvas.end();
+                break;
         }
     }
 

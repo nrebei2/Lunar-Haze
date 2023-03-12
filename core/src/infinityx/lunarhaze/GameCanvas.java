@@ -96,6 +96,11 @@ public class GameCanvas {
     private final ShapeRenderer debugRender;
 
     /**
+     * Rendering context for drawing moonlight bar;
+     */
+    private final ShapeRenderer barRender;
+
+    /**
      * Track whether or not we are active (for error checking)
      */
     private DrawPass active;
@@ -166,12 +171,14 @@ public class GameCanvas {
         active = DrawPass.INACTIVE;
         spriteBatch = new PolygonSpriteBatch();
         debugRender = new ShapeRenderer();
+        barRender = new ShapeRenderer();
 
         // Set the projection matrix (for proper scaling)
         camera = new OrthographicCamera(getWidth(), getHeight());
         camera.setToOrtho(false);
         spriteBatch.setProjectionMatrix(camera.combined);
         debugRender.setProjectionMatrix(camera.combined);
+        barRender.setProjectionMatrix(camera.combined);
 
         // Initialize the cache objects
         holder = new TextureRegion();
@@ -1039,6 +1046,32 @@ public class GameCanvas {
         float x = (getWidth() - layout.width) / 2.0f;
         float y = (getHeight() + layout.height) / 2.0f;
         font.draw(spriteBatch, layout, x, y + offset);
+    }
+
+    /**
+     * Draws text on the left corner of the screen.
+     *
+     * @param text   The string to draw
+     * @param font   The font to use
+     * @param offset The y-value offset from the center of the screen.
+     */
+    public void drawTextUpperLeft(String text, BitmapFont font, float offset) {
+        if (active != DrawPass.STANDARD) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+            return;
+        }
+
+        GlyphLayout layout = new GlyphLayout(font, text);
+        float x = getWidth() - layout.width;
+        float y = getHeight() - layout.height / 2.0f;
+        font.draw(spriteBatch, layout, x, y + offset);
+    }
+
+    public void drawRec(float x, float y, float width, float height) {
+        barRender.begin(ShapeRenderer.ShapeType.Filled);
+        barRender.setColor(Color.WHITE);
+        barRender.rect(x, y, width, height);
+        barRender.end();
     }
 
     /**
