@@ -9,6 +9,9 @@
     "damping": 10.0,
     "maxspeed": 5.0,
     "startframe": 0,
-    "texture": "villager.movement"
+    "texture": {
+      "name": "villager.movement",
+      "origin": [75, 22]
+    }
   }
 }

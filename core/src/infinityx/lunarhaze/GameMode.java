@@ -16,7 +16,8 @@ import infinityx.util.ScreenObservable;
  * basic game loop (update-draw).
  */
 public class GameMode extends ScreenObservable implements Screen {
-
+    /** Need an ongoing reference to the asset directory */
+    protected AssetDirectory directory;
     // Exit codes
     /**
      * User requested to go to menu
@@ -122,8 +123,9 @@ public class GameMode extends ScreenObservable implements Screen {
      * @param directory Reference to global asset manager.
      */
     public void gatherAssets(AssetDirectory directory) {
+        this.directory = directory;
         LevelParser ps = LevelParser.LevelParser();
-        ps.loadTextures(directory);
+        ps.loadConstants(directory);
         constants = directory.getEntry("levels", JsonValue.class);
         displayFont = directory.getEntry("retro", BitmapFont.class);
     }

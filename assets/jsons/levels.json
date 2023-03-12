@@ -4,7 +4,7 @@
       "color":	  	[0.25, 0.25, 0.25, 0.25],
       "gamma":		true,
       "diffuse":	true,
-      "blur":
+      "blur":       5
     },
     "tiles": {
       "type" : "land",
@@ -29,9 +29,13 @@
           "patrol": [[3, 3]]
         }
       ],
-      "objects": {
-
-      },
+      "objects": [
+        {
+          "name" : "house",
+          "scale" : 1,
+          "position": [3, 6]
+        }
+      ],
       "moonlight":
       [[0, 1, 0, 0, 0, 0, 0,  0,0,0],
         [0, 1, 0, 0, 0, 0, 0, 1,1,0],

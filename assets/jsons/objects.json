@@ -8,7 +8,6 @@
     "texture": {
       "name": "house",
       "origin": [3, 118],
-      "tile-position": "corner"
     }
   },
   "tree": {
@@ -20,7 +19,6 @@
     "texture": {
       "name": "tree",
       "origin": [30, 85],
-      "tile-position": "center"
     }
   }
 }
