@@ -190,6 +190,7 @@ public class GameplayController {
         }
     }
 
+    // TODO: THIS SHOULD BE IN ENEMYCONTROLLER
     public void resolveEnemies() {
         board.clearVisibility();
         for (Enemy en : enemies) {
@@ -199,6 +200,15 @@ public class GameplayController {
                 curEnemyController.setVisibleTiles();
 //                boolean attacking = (action & EnemyController.CONTROL_ATTACK) != 0;
                 en.update(action);
+
+                // TODO: make more interesting actions
+                if (en.getIsAlerted()) {
+                    // angle between enemy and player
+                    double ang = Math.atan2(player.getPosition().y - en.getPosition().y, player.getPosition().x - en.getPosition().y);
+                    en.setFlashLightRot((float) ang);
+                } else {
+                    en.setFlashLightRotAlongDir();
+                }
 //                if (attacking &&) {
 //                    fireWeapon(s);
 //                } else {

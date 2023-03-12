@@ -349,6 +349,7 @@ public class EnemyController {
             case PATROL:
                 if (detectedPlayer()) {
                     state = FSMState.CHASE;
+                    enemy.setIsAlerted(true);
                 }
                 break;
             case CHASE:
@@ -357,6 +358,7 @@ public class EnemyController {
 //                }
                 if (!canChase() && !target.isOnMoonlight()) {
                     state = FSMState.PATROL;
+                    enemy.setIsAlerted(false);
                 }
                 break;
 //            case WANDER:

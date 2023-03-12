@@ -49,10 +49,16 @@ public class Enemy extends GameObject {
     private ConeSource flashlight;
 
     public enum Direction {
-        NORTH,
-        SOUTH,
-        WEST,
-        EAST
+        NORTH(1), SOUTH(3), WEST(2), EAST(0);
+
+        private final int scale;
+        private Direction(int scale) {
+            this.scale = scale;
+        }
+
+        public int getRotScale() {
+            return scale;
+        }
     }
 
 
@@ -194,44 +200,23 @@ public class Enemy extends GameObject {
             direction = Direction.NORTH;
         }
         body.setLinearVelocity(xVelocity, yVelocity);
-        rotate(direction);
     }
 
-    private void rotate(Direction direction) {
-        float ang = body.getAngle();
-        if (ang > 2*Math.PI) {
-            ang -= 2* Math.PI;
-        }
-        switch (direction) {
-            case NORTH:
-                // want to turn clockwise when between 90 and 270
-                if (ang > Math.PI / 2f && ang < (3 * Math.PI) / 2f) body.setAngularVelocity(-4f);
-                // turn counterclockwise when less than 90 or greater than 270
-                else if (ang < Math.PI / 2f || ang > (3 * Math.PI) / 2f) body.setAngularVelocity(4f);
-                else body.setAngularVelocity(0);
-                break;
-            case SOUTH:
-                // want to turn clockwise when greater than 270 or less than 90
-                if (ang > (3 * Math.PI) / 2f || ang < Math.PI / 2f ) body.setAngularVelocity(-4f);
-                // turn counterclockwise when less than 270 and and greater than 90
-                else if (ang < (3 * (Math.PI)) / 2f && ang > Math.PI / 2f ) body.setAngularVelocity(4f);
-                else body.setAngularVelocity(0);
-                break;
-            case WEST:
-                // turn clockwise when greater than 180
-                if (ang > Math.PI) body.setAngularVelocity(-4f);
-                //turn counterclock when less than 180
-                else if (ang < Math.PI) body.setAngularVelocity(4f);
-                else body.setAngularVelocity(0);
-                break;
-            case EAST:
-                // turn clockwise when greater than 0
-                if (ang > 0 && ang < Math.PI) body.setAngularVelocity(-4f);
-                // counter clockwise when greater than 180
-                else if (ang > Math.PI) body.setAngularVelocity(4f);
-                else body.setAngularVelocity(0);
-                break;
-        }
+    /**
+     * As the name suggests.
+     * Can someone think of a better name? Im too tired for this rn
+     */
+    public void setFlashLightRotAlongDir() {
+        body.setTransform(body.getPosition(), getDirection().getRotScale() * (float) (Math.PI / 2f));
+    }
+
+    /**
+     * Sets the specific angle of the flashlight on this enemy
+     * @param ang the angle...
+     */
+    public void setFlashLightRot(float ang) {
+       body.setTransform(body.getPosition(), ang);
+
     }
 
     public int getId() {
