@@ -1,54 +1,68 @@
 package infinityx.lunarhaze.entity;
 
-import com.badlogic.gdx.physics.box2d.Body;
-import com.sun.org.apache.xpath.internal.operations.Bool;
-import infinityx.audio.EffectFactory;
-import infinityx.lunarhaze.*;
-
-import com.badlogic.gdx.math.*;
-import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Vector2;
+import infinityx.lunarhaze.EnemyController;
+import infinityx.lunarhaze.GameObject;
 import infinityx.lunarhaze.physics.ConeSource;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.util.*;
+import java.util.ArrayList;
 
-public class Enemy extends GameObject{
+public class Enemy extends GameObject {
 // Instance Attributes
-    /** A unique identifier; used to decouple classes. */
-    private int id;
-    private static final float MOVE_SPEED = 3.5f;
-
-    /** Movement of the enemy **/
+    /**
+     * A unique identifier; used to decouple classes.
+     */
+    private final int id;
+    /**
+     * Movement of the enemy
+     **/
     private float movement;
 
     private Boolean faceRight;
 
-    /** Current animation frame for this werewolf */
-    private float animeframe;
+    /**
+     * Current animation frame for this werewolf
+     */
+    private final float animeframe;
 
-    /** Whether the enemy is alerted. Once alerted,
-     * the enemy start chasing werewolf */
+    /**
+     * Whether the enemy is alerted. Once alerted,
+     * the enemy start chasing werewolf
+     */
     private Boolean isAlerted;
 
-    /** Whether the enemy is alive. */
-    private boolean isAlive;
+    /**
+     * Whether the enemy is alive.
+     */
+    private final boolean isAlive;
 
-    /** points (in Tile index) in the enemy's patrolPath */
-    private ArrayList<Vector2> patrolPath;
+    /**
+     * points (in Tile index) in the enemy's patrolPath
+     */
+    private final ArrayList<Vector2> patrolPath;
 
     private Direction direction;
 
-    public enum Direction{
-        NORTH,
-        SOUTH,
-        WEST,
-        EAST
+    private ConeSource flashlight;
+
+    public enum Direction {
+        NORTH(1), SOUTH(3), WEST(2), EAST(0);
+
+        private final int scale;
+        private Direction(int scale) {
+            this.scale = scale;
+        }
+
+        public int getRotScale() {
+            return scale;
+        }
     }
 
 
     /**
      * Returns the type of this object.
-     *
+     * <p>
      * We use this instead of runtime-typing for performance reasons.
      *
      * @return the type of this object.
@@ -57,7 +71,6 @@ public class Enemy extends GameObject{
         return ObjectType.ENEMY;
     }
 
-
     /**
      * Returns whether the enemy is alerted.
      */
@@ -65,7 +78,7 @@ public class Enemy extends GameObject{
         return isAlerted;
     }
 
-    public Direction getDirection(){
+    public Direction getDirection() {
         return this.direction;
     }
 
@@ -82,7 +95,7 @@ public class Enemy extends GameObject{
      * Initialize an enemy not alerted.
      */
     public Enemy(int id, float x, float y, ArrayList<Vector2> patrolPath) {
-        super(x,y);
+        super(x, y);
         this.id = id;
         isAlive = true;
         this.patrolPath = patrolPath;
@@ -90,19 +103,38 @@ public class Enemy extends GameObject{
         isAlerted = false;
         direction = Direction.NORTH;
     }
-    /** get the next patrol point of the enemy */
-    public Vector2  getNextPatrol() {
-        if (currentWayPoint > patrolPath.size() - 1){
+
+    /**private Werewolf parsePlayer(AssetDirectory directory, JsonValue playerFormat, LevelContainer container) {
+        Werewolf player = new Werewolf(playerFormat.get(0).asFloat(), playerFormat.get(1).asFloat());
+
+        parseGameObject(player, directory, playerJson);
+
+        player.activatePhysics(container.getWorld());
+        player.setSpotLight(new PointLight(container.getRayHandler(), 512, new Color(0.65f, 0.6f, 0.77f, 0.6f), 1f, 0, 0));
+
+        return player;
+    }
+     * get the next patrol point of the enemy
+     */
+    public Vector2 getNextPatrol() {
+        if (currentWayPoint > patrolPath.size() - 1) {
             currentWayPoint = 0;
         }
-        Vector2 next =  patrolPath.get(currentWayPoint);
+        Vector2 next = patrolPath.get(currentWayPoint);
         currentWayPoint++;
         return next;
     }
 
     /**
+     * get the patrol point this enemy is currently moving to
+     */
+    public Vector2 getCurrentPatrol(){
+        return patrolPath.get(currentWayPoint);
+    }
+
+    /**
      * Returns whether or not the ship is alive.
-     *
+     * <p>
      * A ship is dead once it has fallen past MAX_FALL_AMOUNT. A dead ship cannot be
      * targeted, involved in collisions, or drawn.  For all intents and purposes, it
      * does not exist.
@@ -114,65 +146,69 @@ public class Enemy extends GameObject{
     }
 
     /**
-     * Returns whether or not the ship is active.
-     *
-     * An inactive ship is one that is either dead or dying.  A ship that has started
-     * to fall, but has not fallen past MAX_FALL_AMOUNT is inactive but not dead.
-     * Inactive ships are drawn but cannot be targeted or involved in collisions.
-     * They are just eye-candy at that point.
-     *
-     * @return whether or not the ship is active
+     * Attaches light to enemy as a flashlight
      */
-    public void setTexture(Texture texture) {
-        super.setTexture(texture);
+    public void setFlashlight(ConeSource cone) {
+        flashlight = cone;
+        flashlight.attachToBody(getBody(), 0.5f, 0, flashlight.getDirection());
+    }
+
+
+    /**
+     * @param on Whether to turn the flashlight on (true) or off (false)
+     */
+    public void setFlashlightOn(boolean on) {
+        flashlight.setActive(on);
     }
 
     /**
      * Updates the animation frame and position of this enemy.
-     *
+     * <p>
      * Notice how little this method does.  It does not actively fire the weapon.  It
      * only manages the cooldown and indicates whether the weapon is currently firing.
      * The result of weapon fire is managed by the GameplayController.
-     *
      */
     public void update(int controlCode) {
-        boolean movingLeft  = (controlCode & EnemyController.CONTROL_MOVE_LEFT) != 0;
+        boolean movingLeft = (controlCode & EnemyController.CONTROL_MOVE_LEFT) != 0;
         boolean movingRight = (controlCode & EnemyController.CONTROL_MOVE_RIGHT) != 0;
-        boolean movingUp    = (controlCode & EnemyController.CONTROL_MOVE_UP) != 0;
-        boolean movingDown  = (controlCode & EnemyController.CONTROL_MOVE_DOWN) != 0;
+        boolean movingDown = (controlCode & EnemyController.CONTROL_MOVE_DOWN) != 0;
+        boolean movingUp = (controlCode & EnemyController.CONTROL_MOVE_UP) != 0;
 
-        // Process movement command.
+        float xVelocity = 0.0f;
+        float yVelocity = 0.0f;
         if (movingLeft) {
-            velocity.x = -MOVE_SPEED;
-            velocity.y = 0;
+            xVelocity = -speed;
             direction = Direction.WEST;
         } else if (movingRight) {
-            velocity.x = MOVE_SPEED;
-            velocity.y = 0;
+            xVelocity = speed;
             direction = Direction.EAST;
-        } else if (movingUp) {
-            velocity.y = -MOVE_SPEED;
-            velocity.x = 0;
-            direction = Direction.NORTH;
-        } else if (movingDown) {
-            velocity.y = MOVE_SPEED;
-            velocity.x = 0;
-            direction = Direction.SOUTH;
-        } else {
-            // NOT MOVING, SO SLOW DOWN
-            velocity.x = 0;
-            velocity.y = 0;
         }
-
-        position = position.add(velocity);
+        if (movingDown) {
+            yVelocity = -speed;
+            direction = Direction.SOUTH;
+        } else if (movingUp) {
+            yVelocity = speed;
+            direction = Direction.NORTH;
+            System.out.println("moving up");
+        }
+        body.setLinearVelocity(xVelocity, yVelocity);
     }
 
-    public void draw(GameCanvas canvas) {
-//        float effect = faceRight ? 1.0f : -1.0f;
-//        float ox = 0.5f * texture.getRegionWidth();
-//        float oy = 0.5f * werewolfSprite.getRegionHeight()
-//        TODO 1.0f is NOT OKAY
-        canvas.draw(texture,Color.WHITE, origin.x, origin.y, position.x, position.y, 0.0f, 1.0f , 1.0f);
+    /**
+     * As the name suggests.
+     * Can someone think of a better name? Im too tired for this rn
+     */
+    public void setFlashLightRotAlongDir() {
+        body.setTransform(body.getPosition(), getDirection().getRotScale() * (float) (Math.PI / 2f));
+    }
+
+    /**
+     * Sets the specific angle of the flashlight on this enemy
+     * @param ang the angle...
+     */
+    public void setFlashLightRot(float ang) {
+        body.setTransform(body.getPosition(), ang);
+
     }
 
     public int getId() {

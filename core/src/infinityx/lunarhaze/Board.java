@@ -1,9 +1,12 @@
 package infinityx.lunarhaze;
 
+import box2dLight.PointLight;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g3d.environment.SpotLight;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.IntSet;
 
 import java.util.ArrayList;
 
@@ -14,29 +17,48 @@ import java.util.ArrayList;
  */
 public class Board {
     // Instance attributes
-    /** The board width (in number of tiles) */
-    private int width;
-    /** The board height (in number of tiles) */
-    private int height;
-    /** Height/width of the tiles, in pixels */
+    /**
+     * The board width (in number of tiles)
+     */
+    private final int width;
+    /**
+     * The board height (in number of tiles)
+     */
+    private final int height;
+    /**
+     * Height/width of the tiles, in pixels
+     */
     private float radius;
-    /** The tile grid (with above dimensions) */
-    private Tile[] tiles;
+    /**
+     * The tile grid (with above dimensions)
+     */
+    private final Tile[] tiles;
 
-    // TODO: decouple world coordinates with screen coordinates
-    /** Tile Height/Width */
-    private static final float TILE_RATIO = 0.75f;
-    private static final int TILE_WIDTH = 128;
-    private static final int TILE_HEIGHT = (int)(TILE_WIDTH*TILE_RATIO);
+    /**
+     * Tile height and width in world length.
+     * Should be overwritten.
+     */
+    private Vector2 tileWorldDim = new Vector2(1, 1);
 
+    /**
+     * Tile height and width in screen (pixel) length.
+     * Should be overwritten.
+     * */
+    private Vector2 tileScreenDim = new Vector2(128, 96);
+
+    /**
+     * Cache holding set of moonlight tiles, (n, m) is lit iff m*width + n is in moonlightTiles
+     */
+    private final IntSet moonlightTiles;
 
     /**
      * Creates a new board of the given size
      *
-     * @param width Board width in tiles
+     * @param width  Board width in tiles
      * @param height Board height in tiles
      */
     public Board(int width, int height) {
+        moonlightTiles = new IntSet();
         this.width = width;
         this.height = height;
         tiles = new Tile[width * height];
@@ -48,7 +70,7 @@ public class Board {
 
     /**
      * Returns the tile for the given position (INTERNAL USE ONLY)
-     *
+     * <p>
      * Returns null if that position is out of bounds.
      *
      * @return the tile for the given position
@@ -58,6 +80,22 @@ public class Board {
             return null;
         }
         return tiles[x * height + y];
+    }
+
+    /**
+     * Sets tile height and width in screen (pixel) length.
+     * Needed for drawing.
+     */
+    public void setTileScreenDim(int width, int height) {
+        this.tileScreenDim.set(width, height);
+    }
+
+    /**
+     * Sets tile height and width in world length.
+     * Needed for drawing.
+     */
+    public void setTileWorldDim(float width, float height) {
+        this.tileWorldDim.set(width, height);
     }
 
     /**
@@ -78,33 +116,15 @@ public class Board {
         return height;
     }
 
-    /**
-     * Returns the width of the tile.
-     *
-     * @return the width of the tile.
-     */
-    public int getTileWidth() {
-        return TILE_WIDTH;
-    }
-
-    /**
-     * Returns the height of the tile.
-     *
-     * @return the height of the tile.
-     */
-    public int getTileHeight() {
-        return TILE_HEIGHT;
-    }
-
     // Drawing information
+
     /**
      * Returns the textured mesh for a tile.
-     *
+     * <p>
      * Gives either lit or unlit texture depending on tile state.
      *
      * @param x The x index for the Tile cell
      * @param y The y index for the Tile cell
-     *
      * @return the textured mesh for a given tile.
      */
     public Texture getTileTexture(int x, int y) {
@@ -112,11 +132,11 @@ public class Board {
         if (tile == null) {
             return null;
         }
-        if (tile.isLit()) {
+        /*if (tile.isLit()) {
             return tile.getTileTextureLit();
-        } else {
-            return tile.getTileTextureUnlit();
-        }
+        }*/
+        // Commented the above out because we added ambient lighting. LMK if it should be changed back
+        return tile.getTileTextureUnlit();
     }
 
     /**
@@ -124,7 +144,6 @@ public class Board {
      *
      * @param x The x index for the Tile cell
      * @param y The y index for the Tile cell
-     *
      */
     public void setTileTexture(int x, int y, Texture unlitTex, Texture litTex) {
         Tile tile = getTile(x, y);
@@ -138,17 +157,28 @@ public class Board {
     /**
      * Returns the board cell index for a world position.
      *
-     * While all positions are 2-dimensional, the dimensions to
-     * the board are symmetric. This allows us to use the same
-     * method to convert an x coordinate or a y coordinate to
-     * a cell index.
-     *
-     *
      * @return the board cell index for a screen position.
      */
     public Vector2 worldToBoard(float x, float y) {
-        //TODO TILE SHRINKING PROBLEM HERE
-        return new Vector2((int)(x / TILE_WIDTH), (int)(y / TILE_HEIGHT));
+        return new Vector2((int) (x / tileWorldDim.x), (int) (y / tileWorldDim.y));
+    }
+
+    /**
+     * Returns the board cell index for a world x-position.
+     *
+     * @return the board cell index for a world x-position.
+     */
+    public int worldToBoardX(float x) {
+        return (int) (x / tileWorldDim.x);
+    }
+
+    /**
+     * Returns the board cell index for a world x-position.
+     *
+     * @return the board cell index for a world x-position.
+     */
+    public int worldToBoardY(float y){
+        return (int) (y / tileWorldDim.y);
     }
 
     /**
@@ -156,7 +186,6 @@ public class Board {
      *
      * @param x The x value in screen coordinates
      * @param y The y value in screen coordinates
-     *
      * @return true if a world location is safe
      */
     public boolean isBoundsAtWorld(float x, float y) {
@@ -169,11 +198,10 @@ public class Board {
      *
      * @param x The x value in screen coordinates
      * @param y The y value in screen coordinates
-     *
      * @return true if a world location is safe
      */
     private boolean search(float x, float y, ArrayList<Vector2> tinted_tiles) {
-        for (Vector2 vec:tinted_tiles){
+        for (Vector2 vec : tinted_tiles) {
             if (vec.x == x && vec.y == y) return true;
         }
         return false;
@@ -181,7 +209,7 @@ public class Board {
 
     /**
      * Draws the board to the given canvas.
-     *
+     * <p>
      * This method draws all of the tiles in this board. It should be the first drawing
      * pass in the GameEngine.
      *
@@ -190,7 +218,7 @@ public class Board {
     public void draw(GameCanvas canvas) {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                drawTile(x, y, canvas, Color.RED);
+                drawTile(x, y, canvas, Color.WHITE);
             }
         }
     }
@@ -204,37 +232,49 @@ public class Board {
     private void drawTile(int x, int y, GameCanvas canvas, Color tint) {
         Texture tiletexture = getTileTexture(x, y);
         canvas.draw(
-                tiletexture, getTile(x, y).getVisible() ? Color.RED : Color.WHITE, tiletexture.getWidth() / 2, tiletexture.getHeight() / 2,
-                getTilePosition(x,y).x,getTilePosition(x, y).y, 0.0f,
-                getTileWidth() / tiletexture.getWidth(), getTileHeight() / tiletexture.getHeight()
+                tiletexture, Color.WHITE, tiletexture.getWidth() / 2, tiletexture.getHeight() / 2,
+                canvas.WorldToScreenX(boardCenterToWorld(x, y).x), canvas.WorldToScreenY(boardCenterToWorld(x, y).y), 0.0f,
+                tileScreenDim.x / tiletexture.getWidth(), tileScreenDim.y / tiletexture.getHeight()
         );
     }
 
     /**
-     * Returns the world position coordinate for a board cell index.
+     * Returns null if that position is out of bounds.
+     * <p>
      *
-     * Note this is the coordinate of the bottom left corner of the tile.
-     *
-     * While all positions are 2-dimensional, the dimensions to
-     * the board are symmetric. This allows us to use the same
-     * method to convert an x coordinate or a y coordinate to
-     * a cell index.
-     *
-     *
-     * @return the screen position coordinate for a board cell index.
+     * @param x The x index for the Tile cell
+     * @param y The y index for the Tile cell
+     * @return the world position coordinates of the bottom left corner of the tile.
      */
     public Vector2 boardToWorld(int x, int y) {
-        return new Vector2(x * TILE_WIDTH, y * TILE_HEIGHT);
+        if (!inBounds(x, y)) {
+            return null;
+        }
+        return new Vector2(x * tileWorldDim.x, y * tileWorldDim.y);
     }
 
     /**
-     * Returns true if the tile is Walkable.
+     * Returns null if that position is out of bounds.
      *
+     * @param x The x index for the Tile cell
+     * @param y The y index for the Tile cell
+     * @return the center world position of the given tile
+     */
+    public Vector2 boardCenterToWorld(int x, int y) {
+        if (!inBounds(x, y)) {
+            return null;
+        }
+        return boardToWorld(x, y).add(0.5f * tileWorldDim.x, 0.5f * tileWorldDim.y);
+    }
+
+
+    /**
+     * Returns true if the tile is Walkable.
+     * <p>
      * A tile position that is not on the board will always evaluate to false.
      *
      * @param x The x index for the Tile cell
      * @param y The y index for the Tile cell
-     *
      * @return true if the tile is walkable.
      */
     public boolean isWalkable(int x, int y) {
@@ -252,8 +292,8 @@ public class Board {
      * @param y The y index for the Tile cell
      */
     public void setWalkable(int x, int y, boolean walkable) {
-        if (!inBounds(x,y)) {
-            Gdx.app.error("Board", "Illegal tile "+x+","+y, new IndexOutOfBoundsException());
+        if (!inBounds(x, y)) {
+            Gdx.app.error("Board", "Illegal tile " + x + "," + y, new IndexOutOfBoundsException());
             return;
         }
         getTile(x, y).setWalkable(true);
@@ -261,12 +301,11 @@ public class Board {
 
     /**
      * Returns true if the tile is lit by moonlight.
-     *
+     * <p>
      * A tile position that is not on the board will always evaluate to false.
      *
      * @param x The x index for the Tile cell
      * @param y The y index for the Tile cell
-     *
      * @return true if the tile is lit.
      */
     public boolean isLit(int x, int y) {
@@ -279,29 +318,56 @@ public class Board {
 
     /**
      * Sets a tile as lit or not.
+     * <p>
      *
      * @param x The x index for the Tile cell
      * @param y The y index for the Tile cell
      */
     public void setLit(int x, int y, boolean lit) {
-        if (!inBounds(x,y)) {
-            Gdx.app.error("Board", "Illegal tile "+x+","+y, new IndexOutOfBoundsException());
+        if (!inBounds(x, y)) {
+            Gdx.app.error("Board", "Illegal tile " + x + "," + y, new IndexOutOfBoundsException());
+            return;
+        }
+        Tile t = getTile(x, y);
+        if (t.getSpotLight() == null) {
+            Gdx.app.error("Board", "This should never happen! Talk to me if this pops up for you.");
             return;
         }
         getTile(x, y).setLit(lit);
+
+        if (lit) {
+            moonlightTiles.add(x + y * width);
+        } else {
+            moonlightTiles.remove(x + y * width);
+        }
     }
 
     /**
-     * Returns the type of a tile.
-     *
-     * Null if out of bounds
+     * Attaches light to tile, represents the moonlight on the tile
+     * <p>
      *
      * @param x The x index for the Tile cell
      * @param y The y index for the Tile cell
-     *
-     * @return true if the tile is walkable.
      */
-    public Tile.TileType getTileType (int x, int y) {
+    public void setSpotlight(int x, int y, PointLight light) {
+        if (!inBounds(x, y)) {
+            Gdx.app.error("Board", "Illegal tile " + x + "," + y, new IndexOutOfBoundsException());
+            return;
+        }
+        getTile(x, y).setSpotLight(light);
+    }
+
+
+        /**
+         * Returns the type of a tile.
+         * <p>
+         * Null if out of bounds
+         *
+         * @param x The x index for the Tile cell
+         * @param y The y index for the Tile cell
+         * @return true if the tile is walkable.
+         */
+    public Tile.TileType getTileType(int x, int y) {
         Tile tile = getTile(x, y);
 
         if (tile == null) {
@@ -318,8 +384,8 @@ public class Board {
      * @param y The y index for the Tile cell
      */
     public void setTileType(int x, int y, Tile.TileType type) {
-        if (!inBounds(x,y)) {
-            Gdx.app.error("Board", "Illegal tile "+x+","+y, new IndexOutOfBoundsException());
+        if (!inBounds(x, y)) {
+            Gdx.app.error("Board", "Illegal tile " + x + "," + y, new IndexOutOfBoundsException());
             return;
         }
         getTile(x, y).setType(type);
@@ -330,7 +396,6 @@ public class Board {
      *
      * @param x The x index for the Tile cell
      * @param y The y index for the Tile cell
-     *
      * @return true if the given position is a valid tile
      */
     public boolean inBounds(int x, int y) {
@@ -339,12 +404,11 @@ public class Board {
 
     /**
      * Returns true if the tile has been visited.
-     *
+     * <p>
      * A tile position that is not on the board will always evaluate to false.
      *
      * @param x The x index for the Tile cell
      * @param y The y index for the Tile cell
-     *
      * @return true if the tile has been visited.
      */
     public boolean isVisited(int x, int y) {
@@ -357,15 +421,15 @@ public class Board {
 
     /**
      * Marks a tile as visited.
-     *
+     * <p>
      * A marked tile will return true for isVisited(), until a call to clearMarks().
      *
      * @param x The x index for the Tile cell
      * @param y The y index for the Tile cell
      */
     public void setVisited(int x, int y) {
-        if (!inBounds(x,y)) {
-            Gdx.app.error("Board", "Illegal tile "+x+","+y, new IndexOutOfBoundsException());
+        if (!inBounds(x, y)) {
+            Gdx.app.error("Board", "Illegal tile " + x + "," + y, new IndexOutOfBoundsException());
             return;
         }
         getTile(x, y).setVisited(true);
@@ -373,12 +437,11 @@ public class Board {
 
     /**
      * Returns true if the tile is a goal.
-     *
+     * <p>
      * A tile position that is not on the board will always evaluate to false.
      *
      * @param x The x index for the Tile cell
      * @param y The y index for the Tile cell
-     *
      * @return true if the tile is a goal.
      */
     public boolean isGoal(int x, int y) {
@@ -391,15 +454,15 @@ public class Board {
 
     /**
      * Marks a tile as a goal.
-     *
+     * <p>
      * A marked tile will return true for isGoal(), until a call to clearMarks().
      *
      * @param x The x index for the Tile cell
      * @param y The y index for the Tile cell
      */
     public void setGoal(int x, int y) {
-        if (!inBounds(x,y)) {
-            Gdx.app.error("Board", "Illegal tile "+x+","+y, new IndexOutOfBoundsException());
+        if (!inBounds(x, y)) {
+            Gdx.app.error("Board", "Illegal tile " + x + "," + y, new IndexOutOfBoundsException());
             return;
         }
         getTile(x, y).setGoal(true);
@@ -408,19 +471,20 @@ public class Board {
     /**
      * Sets a tile as visible or not.
      *
-     * @param x The x index for the Tile cell
-     * @param y The y index for the Tile cell
+     * @param x       The x index for the Tile cell
+     * @param y       The y index for the Tile cell
      * @param visible to be or not to be
      */
     public void setVisible(int x, int y, boolean visible) {
-        if (!inBounds(x,y)) {
-            Gdx.app.error("Board", "Illegal tile "+x+","+y, new IndexOutOfBoundsException());
+        if (!inBounds(x, y)) {
+            Gdx.app.error("Board", "Illegal tile " + x + "," + y, new IndexOutOfBoundsException());
             return;
         }
         getTile(x, y).setVisible(visible);
     }
 
-    /** Returns the radius (height or width, should be the same) of
+    /**
+     * Returns the radius (height or width, should be the same) of
      * the tiles, in pixels
      *
      * @return the radius of tiles
@@ -429,7 +493,8 @@ public class Board {
         return radius;
     }
 
-    /** Sets the radius (height or width, should be the same) of
+    /**
+     * Sets the radius (height or width, should be the same) of
      * the tiles, in pixels
      *
      * @param radius the value to set
@@ -438,26 +503,10 @@ public class Board {
         this.radius = radius;
     }
 
-    /**
-     * Returns the position of the given tile (center pixel)
-     *
-     * Returns null if that position is out of bounds.
-     *
-     * @param x x info for the tile
-     * @param y y info for the tile
-     *
-     * @return the position of the given tile
-     */
-    public Vector2 getTilePosition(int x, int y) {
-        if (!inBounds(x, y)) {
-            return null;
-        }
-        return new Vector2((x + 0.5f) * getTileWidth(), (y + 0.5f) * getTileHeight());
-    }
 
     /**
      * Clears all marks on the board.
-     *
+     * <p>
      * This method should be done at the beginning of any pathfinding round.
      */
     public void clearMarks() {
@@ -472,14 +521,23 @@ public class Board {
 
     /**
      * Sets all tiles on the board to not visible by enemies.
-     *
+     * <p>
      * This method should be done before setting tiles as visible every update.
      */
     public void clearVisibility() {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-               setVisible(x, y, false);
+                setVisible(x, y, false);
             }
         }
+    }
+
+    /**
+     * Please don't modify the return value
+     *
+     * @return set of moonlight tile indices
+     */
+    public IntSet getMoonlightTiles() {
+        return moonlightTiles;
     }
 }

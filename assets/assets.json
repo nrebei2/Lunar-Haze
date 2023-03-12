@@ -1,81 +1,105 @@
 {
-	"textures": {
-      "background": "shared/menu_bg.png",
-      "play": "shared/play.png",
-      "won": "shared/win.png",
-      "land1-lit": {
-        "file": "tiles/land1-lit.png",
-        "minFilter": "nearest",
-        "magFilter": "nearest"
-      },
-      "land1-unlit": {
-        "file": "tiles/land1-unlit.png",
-        "minFilter": "nearest",
-        "magFilter": "nearest"
-      },
-      "land2-lit": {
-        "file": "tiles/land2-lit.png",
-        "minFilter": "nearest",
-        "magFilter": "nearest"
-      },
-      "land2-unlit": {
-        "file": "tiles/land2-unlit.png",
-        "minFilter": "nearest",
-        "magFilter": "nearest"
-      },
-      "land3-lit": {
-        "file": "tiles/land3-lit.png",
-        "minFilter": "nearest",
-        "magFilter": "nearest"
-      },
-      "land3-unlit": {
-        "file": "tiles/land3-unlit.png",
-        "minFilter": "nearest",
-        "magFilter": "nearest"
-      },
-      "land4-lit": {
-        "file": "tiles/land4-lit.png",
-        "minFilter": "nearest",
-        "magFilter": "nearest"
-      },
-      "land4-unlit": {
-        "file": "tiles/land4-unlit.png",
-        "minFilter": "nearest",
-        "magFilter": "nearest"
-      },
-      "land5-lit": {
-        "file": "tiles/land5-lit.png",
-        "minFilter": "nearest",
-        "magFilter": "nearest"
-      },
-      "land5-unlit": {
-        "file": "tiles/land5-unlit.png",
-        "minFilter": "nearest",
-        "magFilter": "nearest"
-      },
-      "land6-lit": {
-        "file": "tiles/land6-lit.png",
-        "minFilter": "nearest",
-        "magFilter": "nearest"
-      },
-      "land6-unlit": {
-        "file": "tiles/land6-unlit.png",
-        "minFilter": "nearest",
-        "magFilter": "nearest"
-      },
-      "werewolf": "images/werewolf.png",
-      "villager" : "images/villager.png"
-    },
-    "objects": {
+  "textures": {
+    "background": "shared/menu_bg.png",
+    "play": "shared/play.png",
+    "won": "shared/win.png",
 
+    "land1-lit": {
+      "file": "tiles/land1-lit.png",
+      "minFilter": "nearest",
+      "magFilter": "nearest"
     },
-    "jsons"  : {
-      "levels": "levels.json"
+    "land1-unlit": {
+      "file": "tiles/land1-unlit.png",
+      "minFilter": "nearest",
+      "magFilter": "nearest"
     },
-    "sounds" : {
-
+    "land2-lit": {
+      "file": "tiles/land2-lit.png",
+      "minFilter": "nearest",
+      "magFilter": "nearest"
     },
-    "fonts": {
-
+    "land2-unlit": {
+      "file": "tiles/land2-unlit.png",
+      "minFilter": "nearest",
+      "magFilter": "nearest"
+    },
+    "land3-lit": {
+      "file": "tiles/land3-lit.png",
+      "minFilter": "nearest",
+      "magFilter": "nearest"
+    },
+    "land3-unlit": {
+      "file": "tiles/land3-unlit.png",
+      "minFilter": "nearest",
+      "magFilter": "nearest"
+    },
+    "land4-lit": {
+      "file": "tiles/land4-lit.png",
+      "minFilter": "nearest",
+      "magFilter": "nearest"
+    },
+    "land4-unlit": {
+      "file": "tiles/land4-unlit.png",
+      "minFilter": "nearest",
+      "magFilter": "nearest"
+    },
+    "land5-lit": {
+      "file": "tiles/land5-lit.png",
+      "minFilter": "nearest",
+      "magFilter": "nearest"
+    },
+    "land5-unlit": {
+      "file": "tiles/land5-unlit.png",
+      "minFilter": "nearest",
+      "magFilter": "nearest"
+    },
+    "land6-lit": {
+      "file": "tiles/land6-lit.png",
+      "minFilter": "nearest",
+      "magFilter": "nearest"
+    },
+    "land6-unlit": {
+      "file": "tiles/land6-unlit.png",
+      "minFilter": "nearest",
+      "magFilter": "nearest"
+    },
+    "werewolf": {
+      "file": 	"images/werewolf.png",
+      "wrap":  	false,
+      "sprites":	{
+        "movement" : {
+          "size" : 2,
+          "rows" : 1,
+          "cols" : 2
+        }
+      }
+    },
+    "villager":{
+      "file": 	"images/villager.png",
+      "wrap":  	false,
+      "sprites":	{
+        "movement" : {
+          "size" : 1,
+          "rows" : 1,
+          "cols" : 1
+        }
+      }
     }
+},
+  "jsons": {
+    "levels": "jsons/levels.json",
+    "player": "jsons/player.json",
+    "board": "jsons/board.json",
+    "objects": "jsons/objects.json",
+    "enemies": "jsons/enemies.json"
+  },
+  "sounds": {
+  },
+  "fonts": {
+    "retro": {
+      "file": "shared/RetroGame.ttf",
+      "size": 64
+    }
+  }
 }
