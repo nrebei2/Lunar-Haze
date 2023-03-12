@@ -105,12 +105,18 @@ public class Enemy extends GameObject {
      * get the next patrol point of the enemy
      */
     public Vector2 getNextPatrol() {
+        Vector2 next = patrolPath.get(currentWayPoint);
+        currentWayPoint++;
         if (currentWayPoint > patrolPath.size() - 1) {
             currentWayPoint = 0;
         }
-        Vector2 next = patrolPath.get(currentWayPoint);
-        currentWayPoint++;
         return next;
+    }
+    /**
+     * get the patrol point this enemy is currently moving to
+     */
+    public Vector2 getCurrentPatrol(){
+        return patrolPath.get(currentWayPoint);
     }
 
     /**
@@ -186,7 +192,6 @@ public class Enemy extends GameObject {
         } else if (movingUp) {
             yVelocity = MOVE_SPEED;
             direction = Direction.NORTH;
-            System.out.println("moving up");
         }
         body.setLinearVelocity(xVelocity, yVelocity);
         rotate(direction);
@@ -194,25 +199,36 @@ public class Enemy extends GameObject {
 
     private void rotate(Direction direction) {
         float ang = body.getAngle();
+        if (ang > 2*Math.PI) {
+            ang -= 2* Math.PI;
+        }
         switch (direction) {
             case NORTH:
-                if (ang > Math.PI / 2f) body.setAngularVelocity(-4f);
-                else if (ang < Math.PI / 2f) body.setAngularVelocity(4f);
+                // want to turn clockwise when between 90 and 270
+                if (ang > Math.PI / 2f && ang < (3 * Math.PI) / 2f) body.setAngularVelocity(-4f);
+                // turn counterclockwise when less than 90 or greater than 270
+                else if (ang < Math.PI / 2f || ang > (3 * Math.PI) / 2f) body.setAngularVelocity(4f);
                 else body.setAngularVelocity(0);
                 break;
             case SOUTH:
-                if (ang > (3 * Math.PI) / 2f) body.setAngularVelocity(-4f);
-                else if (ang < (3 * (Math.PI)) / 2f) body.setAngularVelocity(4f);
+                // want to turn clockwise when greater than 270 or less than 90
+                if (ang > (3 * Math.PI) / 2f || ang < Math.PI / 2f ) body.setAngularVelocity(-4f);
+                // turn counterclockwise when less than 270 and and greater than 90
+                else if (ang < (3 * (Math.PI)) / 2f && ang > Math.PI / 2f ) body.setAngularVelocity(4f);
                 else body.setAngularVelocity(0);
                 break;
             case WEST:
+                // turn clockwise when greater than 180
                 if (ang > Math.PI) body.setAngularVelocity(-4f);
+                //turn counterclock when less than 180
                 else if (ang < Math.PI) body.setAngularVelocity(4f);
                 else body.setAngularVelocity(0);
                 break;
             case EAST:
-                if (ang > (2 * Math.PI)) body.setAngularVelocity(-4f);
-                else if (ang < (2 * Math.PI)) body.setAngularVelocity(4f);
+                // turn clockwise when greater than 0
+                if (ang > 0 && ang < Math.PI) body.setAngularVelocity(-4f);
+                // counter clockwise when greater than 180
+                else if (ang > Math.PI) body.setAngularVelocity(4f);
                 else body.setAngularVelocity(0);
                 break;
         }

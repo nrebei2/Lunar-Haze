@@ -146,8 +146,12 @@ public class Board {
      *
      * @return the board cell index for a screen position.
      */
-    public Vector2 worldToBoard(float x, float y) {
-        return new Vector2((int) (x / TILE_WIDTH), (int) (y / TILE_HEIGHT));
+    public int worldToBoardX(float x) {
+        return (int) (x / TILE_WIDTH);
+    }
+
+    public int worldToBoardY(float y){
+        return (int) (y / TILE_HEIGHT);
     }
 
     /**
@@ -158,8 +162,7 @@ public class Board {
      * @return true if a world location is safe
      */
     public boolean isBoundsAtWorld(float x, float y) {
-        Vector2 boardPos = worldToBoard(x, y);
-        return inBounds(Math.round(boardPos.x), Math.round(boardPos.y));
+        return inBounds(Math.round(worldToBoardX(x)), worldToBoardY(y));
     }
 
     /**

@@ -168,9 +168,8 @@ public class GameplayController {
     }
 
     public void resolveMoonlight(float delta) {
-        Vector2 pos = board.worldToBoard(player.getPosition().x, player.getPosition().y);
-        int px = (int) pos.x;
-        int py = (int) pos.y;
+        int px = board.worldToBoardX(player.getPosition().x);
+        int py = board.worldToBoardX(player.getPosition().y);
 
         if (board.isLit(px, py)) {
             timeOnMoonlight += delta; // Increase variable by time

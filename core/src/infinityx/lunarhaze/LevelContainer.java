@@ -287,8 +287,8 @@ public class LevelContainer {
         // Finally, draw lights
         rayHandler.updateAndRender();
     }
-
 }
+
 
 /**
  * Depth comparison function used for drawing
