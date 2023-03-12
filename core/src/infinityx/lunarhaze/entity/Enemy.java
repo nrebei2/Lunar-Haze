@@ -47,10 +47,16 @@ public class Enemy extends GameObject {
     private ConeSource flashlight;
 
     public enum Direction {
-        NORTH,
-        SOUTH,
-        WEST,
-        EAST
+        NORTH(1), SOUTH(3), WEST(2), EAST(0);
+
+        private final int scale;
+        private Direction(int scale) {
+            this.scale = scale;
+        }
+
+        public int getRotScale() {
+            return scale;
+        }
     }
 
 
@@ -120,6 +126,13 @@ public class Enemy extends GameObject {
     }
 
     /**
+     * get the patrol point this enemy is currently moving to
+     */
+    public Vector2 getCurrentPatrol(){
+        return patrolPath.get(currentWayPoint);
+    }
+
+    /**
      * Returns whether or not the ship is alive.
      * <p>
      * A ship is dead once it has fallen past MAX_FALL_AMOUNT. A dead ship cannot be
@@ -137,7 +150,7 @@ public class Enemy extends GameObject {
      */
     public void setFlashlight(ConeSource cone) {
         flashlight = cone;
-        flashlight.attachToBody(getBody(), 0.2f, 0, flashlight.getDirection());
+        flashlight.attachToBody(getBody(), 0.5f, 0, flashlight.getDirection());
     }
 
 
@@ -179,33 +192,23 @@ public class Enemy extends GameObject {
             System.out.println("moving up");
         }
         body.setLinearVelocity(xVelocity, yVelocity);
-        rotate(direction);
     }
 
-    private void rotate(Direction direction) {
-        float ang = body.getAngle();
-        switch (direction) {
-            case NORTH:
-                if (ang > Math.PI / 2f) body.setAngularVelocity(-4f);
-                else if (ang < Math.PI / 2f) body.setAngularVelocity(4f);
-                else body.setAngularVelocity(0);
-                break;
-            case SOUTH:
-                if (ang > (3 * Math.PI) / 2f) body.setAngularVelocity(-4f);
-                else if (ang < (3 * (Math.PI)) / 2f) body.setAngularVelocity(4f);
-                else body.setAngularVelocity(0);
-                break;
-            case WEST:
-                if (ang > Math.PI) body.setAngularVelocity(-4f);
-                else if (ang < Math.PI) body.setAngularVelocity(4f);
-                else body.setAngularVelocity(0);
-                break;
-            case EAST:
-                if (ang > (2 * Math.PI)) body.setAngularVelocity(-4f);
-                else if (ang < (2 * Math.PI)) body.setAngularVelocity(4f);
-                else body.setAngularVelocity(0);
-                break;
-        }
+    /**
+     * As the name suggests.
+     * Can someone think of a better name? Im too tired for this rn
+     */
+    public void setFlashLightRotAlongDir() {
+        body.setTransform(body.getPosition(), getDirection().getRotScale() * (float) (Math.PI / 2f));
+    }
+
+    /**
+     * Sets the specific angle of the flashlight on this enemy
+     * @param ang the angle...
+     */
+    public void setFlashLightRot(float ang) {
+        body.setTransform(body.getPosition(), ang);
+
     }
 
     public int getId() {

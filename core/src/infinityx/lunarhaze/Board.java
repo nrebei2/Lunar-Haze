@@ -156,16 +156,29 @@ public class Board {
 
     /**
      * Returns the board cell index for a world position.
-     * <p>
-     * While all positions are 2-dimensional, the dimensions to
-     * the board are symmetric. This allows us to use the same
-     * method to convert an x coordinate or a y coordinate to
-     * a cell index.
      *
      * @return the board cell index for a screen position.
      */
     public Vector2 worldToBoard(float x, float y) {
         return new Vector2((int) (x / tileWorldDim.x), (int) (y / tileWorldDim.y));
+    }
+
+    /**
+     * Returns the board cell index for a world x-position.
+     *
+     * @return the board cell index for a world x-position.
+     */
+    public int worldToBoardX(float x) {
+        return (int) (x / tileWorldDim.x);
+    }
+
+    /**
+     * Returns the board cell index for a world x-position.
+     *
+     * @return the board cell index for a world x-position.
+     */
+    public int worldToBoardY(float y){
+        return (int) (y / tileWorldDim.y);
     }
 
     /**
