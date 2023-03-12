@@ -113,6 +113,7 @@ public class BoxObstacle extends SimpleObstacle {
      * @param s_y scale y_axis
      */
     public void setScale(float s_x, float s_y) {
+        scale.set(s_x, s_y);
         dimension.set(getWidth() * s_x, getHeight() * s_y);
         resize(getWidth(), getHeight());
         createFixtures();

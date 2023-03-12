@@ -2,8 +2,8 @@
   "house": {
     "bodytype": "static",
     "collider": {
-      "width": 3,
-      "height": 3
+      "width": 0.75,
+      "height": 0.75
     },
     "density": 0.0,
     "friction": 0.0,
@@ -17,8 +17,8 @@
   "tree": {
     "bodytype": "static",
     "collider": {
-      "width": 1,
-      "height": 1
+      "width": 0.1,
+      "height": 0.05
     },
     "density": 0.0,
     "friction": 0.0,

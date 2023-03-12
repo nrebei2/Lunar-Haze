@@ -93,14 +93,14 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
     }
 
     /**
-     * @return The movement speed of this werewolf
+     * @return The movement speed of this object
      */
     public float getSpeed() {
         return speed;
     }
 
     /**
-     * Set the movement speed of this werewolf
+     * Set the movement speed of this object
      */
     public void setSpeed(float speed) {
         this.speed = speed;

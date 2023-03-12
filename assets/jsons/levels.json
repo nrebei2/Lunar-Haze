@@ -41,12 +41,12 @@
       "objects": [
         {
           "type" : "house",
-          "scale" : 1,
+          "scale" : 3.5,
           "position": [3, 6]
         },
         {
           "type" : "tree",
-          "scale" : 1,
+          "scale" : 4,
           "position": [7, 2]
         }
       ]

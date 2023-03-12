@@ -141,10 +141,9 @@ public class LevelParser {
         SceneObject object = new SceneObject(objPos.getFloat(0), objPos.getFloat(1));
         parseGameObject(object, directory, json);
 
-        int objScale = objectFormat.getInt("scale");
+        float objScale = objectFormat.getFloat("scale");
 
         object.setScale(objScale, objScale);
-
         object.activatePhysics(container.getWorld());
 
         System.out.printf("finished parsing %s!\n", objectFormat.get("type").asString());
@@ -160,7 +159,7 @@ public class LevelParser {
         object.setDensity(json.get("density").asFloat());
         object.setFriction(json.get("friction").asFloat());
         object.setRestitution(json.get("restitution").asFloat());
-        if (!json.hasChild("speed")) {
+        if (!json.has("speed")) {
             object.setSpeed(0);
         } else {
             object.setSpeed(json.get("speed").asFloat());
@@ -170,9 +169,9 @@ public class LevelParser {
         object.setTexture(directory.getEntry(texInfo.get("name").asString(), FilmStrip.class));
         int[] texOrigin = texInfo.get("origin").asIntArray();
         object.setOrigin(texOrigin[0], texOrigin[1]);
-        if (texInfo.hasChild("positioned")) {
+        if (texInfo.has("positioned")) {
             object.setPositioned(
-                    texInfo.getString("positioned") == "bottom-left" ?
+                    texInfo.getString("positioned").equals("bottom-left") ?
                             BoxObstacle.POSITIONED.BOTTOM_LEFT : BoxObstacle.POSITIONED.CENTERED
             );
         }
