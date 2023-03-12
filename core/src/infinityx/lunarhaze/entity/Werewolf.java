@@ -27,12 +27,12 @@ public class Werewolf extends GameObject {
     /**
      * The right/left movement of the werewolf
      **/
-    private float movementH = 0.0f; //DEPRECATED
+    private float movementH = 0.0f;
 
     /**
      * The up/down movement of the werewolf
      **/
-    private float movementV = 0.0f; // DEPRECATED
+    private float movementV = 0.0f;
 
     /**
      * Whether the  player stands on a moonlight tile

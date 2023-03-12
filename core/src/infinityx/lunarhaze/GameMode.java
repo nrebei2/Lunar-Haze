@@ -208,12 +208,13 @@ public class GameMode extends WorldController implements Screen, ContactListener
         if (!gameplayController.isAlive()) {
             gameState = GameState.OVER;
         }
-        this.preUpdate(delta);
+        //this.preUpdate(delta);
+        levelContainer.getWorld().step(delta, 6, 2);
         if (!inBounds(levelContainer.getPlayer())) handleBounds(levelContainer.getPlayer());
         for (GameObject obj: levelContainer.getEnemies()){
             if (!inBounds(obj)) handleBounds(obj);
         }
-        this.postUpdate(delta);
+        //this.postUpdate(delta);
 
         // Update objects.
         //levelContainer.getWorld().step(delta, 6, 2);

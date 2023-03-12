@@ -211,7 +211,7 @@ public class LevelContainer {
         canvas.begin(view);
 
         // Debug prints
-        //System.out.printf(
+        //System.out.printf(i
         //        "Player pos: (%f, %f), Spotlight pos: (%f, %f) \n",
         //        player.getPosition().x, player.getPosition().y, player.getSpotlight().getPosition().x, player.getSpotlight().getPosition().y);
 
