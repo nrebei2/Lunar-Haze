@@ -265,9 +265,8 @@ public class GameMode extends WorldController implements Screen, ContactListener
             case PLAY:
                 displayFont.setColor(Color.YELLOW);
                 canvas.begin(); // DO NOT SCALE
-                canvas.drawTextUpperRight("Moonlight", displayFont, 0.0f);
-                canvas.drawRecLine(BAR_WIDTH, BAR_HEIGHT);
-                canvas.drawRec(BAR_WIDTH * gameplayController.getPlayer().getHp() / 100, BAR_HEIGHT);
+                canvas.drawHPBar("Moonlight", displayFont, 0.0f, BAR_WIDTH,
+                        BAR_HEIGHT, gameplayController.getPlayer().getHp());
                 canvas.end();
                 break;
         }
