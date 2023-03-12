@@ -144,7 +144,7 @@ public class GameplayController {
      * @param delta Number of seconds since last animation frame
      */
     public void resolveActions(InputController input, float delta) {
-        // Process the player
+        // Process the player only when the game is in play
         if (player != null && !(gameLost || gameWon)) {
             resolvePlayer(input, delta);
             resolveMoonlight(delta);

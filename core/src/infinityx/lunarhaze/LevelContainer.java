@@ -24,7 +24,7 @@ import java.util.Comparator;
  * <p>
  * This controller also acts as the root class for all the models.
  * Holds a collection of model objects representing the game scene.
- * This includes the Board, player, enemies, and scene objects.
+ * This includes the Board, player, enemies, lights, and scene objects.
  * <p>
  * World coordinates:
  * ------------------ (n, n) (board is nxn tiles)
@@ -43,8 +43,7 @@ import java.util.Comparator;
  * +---+---+----------+
  * (0,0)
  * <p>
- * Represent all coordinates for models with world coordinates,
- * GameCanvas should be doing any transformations
+ * All models' positions are in world coordinates, Drawing should only be doing the relevant transformations
  */
 public class LevelContainer {
 

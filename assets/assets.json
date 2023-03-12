@@ -64,13 +64,22 @@
       "minFilter": "nearest",
       "magFilter": "nearest"
     },
-    "werewolf": "images/werewolf.png",
+    "werewolf": {
+      "file": 	"images/werewolf.png",
+      "wrap":  	false,
+      "sprites":	{
+        "walking" : {
+          "size" : 2,
+          "rows" : 1,
+          "cols" : 2
+        }
+      }
+    },
     "villager": "images/villager.png"
   },
-  "objects": {
-  },
   "jsons": {
-    "levels": "levels.json"
+    "levels": "jsons/levels.json",
+    "player": "jsons/player.json"
   },
   "sounds": {
   },

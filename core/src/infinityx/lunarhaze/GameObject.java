@@ -27,6 +27,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.utils.JsonValue;
+import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.physics.BoxObstacle;
 import infinityx.util.Drawable;
 
@@ -92,6 +94,19 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
 
         radius = Board.TILE_WIDTH / 4;
         destroyed = false;
+    }
+
+    /**
+     * Initializes the object via the given JSON value
+     *
+     * The JSON value has been parsed and is part of a bigger level file.  However,
+     * this JSON value is limited to the dude subtree
+     *
+     * @param directory the asset manager
+     * @param json		the JSON subtree defining the object
+     */
+    public void initialize(AssetDirectory directory, JsonValue json) {
+
     }
 
     public void setTexture(Texture texture) {

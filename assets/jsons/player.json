@@ -1,0 +1,12 @@
+{
+  "radius": 0.4,
+  "bodytype": "dynamic",
+  "density": 1.0,
+  "friction": 0.0,
+  "restitution": 0.0,
+  "force": 80.0,
+  "damping": 10.0,
+  "maxspeed": 5.0,
+  "startframe": 0,
+  "texture": "werewolf.movement"
+}

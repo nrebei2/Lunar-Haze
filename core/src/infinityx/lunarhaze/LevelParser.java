@@ -71,8 +71,9 @@ public class LevelParser {
      * Json value formatted as in assets/levels.json.
      *
      * @param levelContents json value holding level layout
+     * @param directory asset manager holding list of textures
      */
-    public LevelContainer loadData(JsonValue levelContents) {
+    public LevelContainer loadLevel(AssetDirectory directory, JsonValue levelContents) {
         // LevelContainer empty at this point
         LevelContainer levelContainer = new LevelContainer();
 
@@ -113,7 +114,6 @@ public class LevelParser {
                 board.setWalkable(x, y, true);
             }
         }
-
 
         // Generate player
         JsonValue player = scene.get("player");

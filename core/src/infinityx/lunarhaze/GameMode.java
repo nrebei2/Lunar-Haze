@@ -175,7 +175,7 @@ public class GameMode extends ScreenObservable implements Screen {
      */
     private void setupLevel() {
         LevelParser ps = LevelParser.LevelParser();
-        levelContainer = ps.loadData(constants.get(String.valueOf(level)));
+        levelContainer = ps.loadLevel(constants.get(String.valueOf(level)));
     }
 
     /**
