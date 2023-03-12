@@ -10,7 +10,9 @@ import com.badlogic.gdx.utils.IntArray;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.entity.Enemy;
+import infinityx.lunarhaze.entity.SceneObject;
 import infinityx.lunarhaze.entity.Werewolf;
+import infinityx.lunarhaze.physics.BoxObstacle;
 import infinityx.lunarhaze.physics.ConeSource;
 import infinityx.util.FilmStrip;
 
@@ -71,26 +73,6 @@ public class LevelParser {
         playerJson = directory.getEntry("player", JsonValue.class);
     }
 
-    ///**
-    // * Caches all textures from directory.
-    // *
-    // * @param directory
-    // */
-    //public void loadTextures(AssetDirectory directory) {
-    //    if (!directory.isFinished()) {
-    //        throw new RuntimeException("Directory has not finished loaded!!!");
-    //    }
-    //
-    //    // Get all textures
-    //    playerTexture = directory.getEntry("werewolf", Texture.class);
-    //    enemyTexture = directory.getEntry("villager", Texture.class);
-    //
-    //    for (int i = 1; i <= 6; i++) {
-    //        tileTextures.add(directory.getEntry("land" + i + "-unlit", Texture.class));
-    //        tileTextures.add(directory.getEntry("land" + i + "-lit", Texture.class));
-    //    }
-    //}
-
     /**
      * Creates a level given a json value.
      * Json value formatted as in assets/levels.json.
@@ -131,8 +113,42 @@ public class LevelParser {
             levelContainer.addEnemy(enemy);
             curId++;
         }
-        // TODO JsonValue objects = scene.get("objects");
+
+        // Generate scene objects
+        JsonValue objects = scene.get("objects");
+        int objId = 0;
+        while (true) {
+            JsonValue objInfo = objects.get(objId);
+            if (objInfo == null) break;
+
+            SceneObject object = parseSceneObject(directory, objInfo, levelContainer);
+
+            levelContainer.addSceneObject(object);
+            objId++;
+        }
         return levelContainer;
+    }
+
+    /**
+     * Creates a scene object for the level
+     *
+     * @param objectFormat the JSON tree defining the object
+     */
+    private SceneObject parseSceneObject(AssetDirectory directory, JsonValue objectFormat, LevelContainer container) {
+        System.out.printf("parsing %s!\n", objectFormat.get("type").asString());
+        JsonValue json = objectsJson.get(objectFormat.get("type").asString());
+        JsonValue objPos = objectFormat.get("position");
+        SceneObject object = new SceneObject(objPos.getFloat(0), objPos.getFloat(1));
+        parseGameObject(object, directory, json);
+
+        int objScale = objectFormat.getInt("scale");
+
+        object.setScale(objScale, objScale);
+
+        object.activatePhysics(container.getWorld());
+
+        System.out.printf("finished parsing %s!\n", objectFormat.get("type").asString());
+        return object;
     }
 
     private void parseGameObject(GameObject object, AssetDirectory directory, JsonValue json) {
@@ -144,12 +160,22 @@ public class LevelParser {
         object.setDensity(json.get("density").asFloat());
         object.setFriction(json.get("friction").asFloat());
         object.setRestitution(json.get("restitution").asFloat());
-        object.setSpeed(json.get("speed").asFloat());
+        if (!json.hasChild("speed")) {
+            object.setSpeed(0);
+        } else {
+            object.setSpeed(json.get("speed").asFloat());
+        }
         //object.setStartFrame(json.get("startframe").asInt());
         JsonValue texInfo = json.get("texture");
         object.setTexture(directory.getEntry(texInfo.get("name").asString(), FilmStrip.class));
         int[] texOrigin = texInfo.get("origin").asIntArray();
         object.setOrigin(texOrigin[0], texOrigin[1]);
+        if (texInfo.hasChild("positioned")) {
+            object.setPositioned(
+                    texInfo.getString("positioned") == "bottom-left" ?
+                            BoxObstacle.POSITIONED.BOTTOM_LEFT : BoxObstacle.POSITIONED.CENTERED
+            );
+        }
     }
 
     /**

@@ -47,6 +47,7 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
     public enum ObjectType {
         ENEMY,
         WEREWOLF,
+        SCENE
     }
 
     // Attributes for all game objects
@@ -202,6 +203,6 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
     @Override
     public void draw(GameCanvas canvas) {
         canvas.draw(filmstrip, Color.WHITE, origin.x, origin.y,
-                canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y), 0.0f, 1.0f, 1.f);
+                canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y), 0.0f,  scale.x, scale.y);
     }
 }

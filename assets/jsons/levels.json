@@ -40,9 +40,14 @@
       ],
       "objects": [
         {
-          "name" : "house",
+          "type" : "house",
           "scale" : 1,
           "position": [3, 6]
+        },
+        {
+          "type" : "tree",
+          "scale" : 1,
+          "position": [7, 2]
         }
       ]
     }

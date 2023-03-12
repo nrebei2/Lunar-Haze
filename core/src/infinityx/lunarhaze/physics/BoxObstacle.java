@@ -43,6 +43,16 @@ public class BoxObstacle extends SimpleObstacle {
     private final float[] vertices;
 
     /**
+     * Where is the position located on the object
+     */
+    public enum POSITIONED {
+        CENTERED, BOTTOM_LEFT
+    }
+    protected POSITIONED positioned = POSITIONED.CENTERED;
+
+    protected Vector2 scale = new Vector2(1, 1);
+
+    /**
      * Returns the dimensions of this box
      * <p>
      * This method does NOT return a reference to the dimension vector. Changes to this
@@ -85,6 +95,28 @@ public class BoxObstacle extends SimpleObstacle {
         createFixtures();
     }
 
+    /**
+     * Sets where the position is fixed on this box
+     *
+     * @param positioned bottom-left? centered?
+     */
+    public void setPositioned(POSITIONED positioned) {
+        this.positioned = positioned;
+        resize(getWidth(), getHeight());
+        createFixtures();
+    }
+
+    /**
+     * Sets the scale of the box. This will scale BOTH the texture and box collider.
+     *
+     * @param s_x scale x-axis
+     * @param s_y scale y_axis
+     */
+    public void setScale(float s_x, float s_y) {
+        dimension.set(getWidth() * s_x, getHeight() * s_y);
+        resize(getWidth(), getHeight());
+        createFixtures();
+    }
 
     /**
      * Creates a new box at the origin.
@@ -125,18 +157,55 @@ public class BoxObstacle extends SimpleObstacle {
     }
 
     /**
+     * Creates a new box object.
+     * <p>
+     * The size is expressed in physics units NOT pixels.  In order for
+     * drawing to work properly, you MUST set the drawScale. The drawScale
+     * converts the physics units to pixels.
+     *
+     * @param x      Initial x position of the box center
+     * @param y      Initial y position of the box center
+     * @param width  The object width in physics units
+     * @param height The object width in physics units
+     */
+    public BoxObstacle(POSITIONED positioned, float x, float y, float width, float height) {
+        super(x, y);
+        dimension = new Vector2(width, height);
+        sizeCache = new Vector2();
+        shape = new PolygonShape();
+        vertices = new float[8];
+        geometry = null;
+        this.positioned = positioned;
+
+        // Initialize
+        resize(width, height);
+    }
+
+    /**
      * Reset the polygon vertices in the shape to match the dimension.
      */
     private void resize(float width, float height) {
-        // Make the box with the center in the center
-        vertices[0] = -width / 2.0f;
-        vertices[1] = -height / 2.0f;
-        vertices[2] = -width / 2.0f;
-        vertices[3] = height / 2.0f;
-        vertices[4] = width / 2.0f;
-        vertices[5] = height / 2.0f;
-        vertices[6] = width / 2.0f;
-        vertices[7] = -height / 2.0f;
+        if (positioned == POSITIONED.CENTERED) {
+            // Make the box with the center on the position
+            vertices[0] = -width / 2.0f;
+            vertices[1] = -height / 2.0f;
+            vertices[2] = -width / 2.0f;
+            vertices[3] = height / 2.0f;
+            vertices[4] = width / 2.0f;
+            vertices[5] = height / 2.0f;
+            vertices[6] = width / 2.0f;
+            vertices[7] = -height / 2.0f;
+        } else {
+            // Make the box with the bottom-left on the position
+            vertices[0] = 0;
+            vertices[1] = 0;
+            vertices[2] = 0;
+            vertices[3] = height;
+            vertices[4] = width;
+            vertices[5] = height;
+            vertices[6] = width;
+            vertices[7] = 0;
+        }
         shape.set(vertices);
     }
 

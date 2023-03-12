@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.EnemyList;
+import infinityx.lunarhaze.entity.SceneObject;
 import infinityx.lunarhaze.entity.Werewolf;
 import infinityx.lunarhaze.physics.LightSource;
 import infinityx.util.Drawable;

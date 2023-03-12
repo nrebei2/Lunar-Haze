@@ -1,24 +1,31 @@
 {
   "house": {
     "bodytype": "static",
-    "size": [3, 3],
+    "collider": {
+      "width": 3,
+      "height": 3
+    },
     "density": 0.0,
     "friction": 0.0,
     "restitution": 0.0,
     "texture": {
-      "name": "house",
-      "origin": [3, 118],
+      "name": "house.static",
+      "origin": [3, 10],
+      "positioned": "bottom-left"
     }
   },
   "tree": {
     "bodytype": "static",
-    "size": [1, 1],
+    "collider": {
+      "width": 1,
+      "height": 1
+    },
     "density": 0.0,
     "friction": 0.0,
     "restitution": 0.0,
     "texture": {
-      "name": "tree",
-      "origin": [30, 85],
+      "name": "tree.static",
+      "origin": [30, 10]
     }
   }
 }
