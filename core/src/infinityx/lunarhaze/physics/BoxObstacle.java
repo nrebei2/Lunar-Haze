@@ -76,8 +76,8 @@ public class BoxObstacle extends SimpleObstacle {
     /**
      * Sets the dimensions of this box
      *
-     * @param width   The width of this box
-     * @param height  The height of this box
+     * @param width  The width of this box
+     * @param height The height of this box
      */
     public void setDimension(float width, float height) {
         dimension.set(width, height);

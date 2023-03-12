@@ -2,9 +2,7 @@ package infinityx.lunarhaze;
 
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -58,6 +56,7 @@ public class LevelParser {
 
     /**
      * Caches all constants (between levels) from directory
+     *
      * @param directory asset manager holding list of ... assets
      */
     public void loadConstants(AssetDirectory directory) {
@@ -98,12 +97,12 @@ public class LevelParser {
      * You gotta call loadConstants before calling this method.
      *
      * @param levelContents json value holding level layout
-     * @param directory asset manager holding list of textures
+     * @param directory     asset manager holding list of textures
      */
     public LevelContainer loadLevel(AssetDirectory directory, JsonValue levelContents) {
         // LevelContainer empty at this point
         LevelContainer levelContainer = new LevelContainer();
-        levelContainer.worldToScreen.set(sSize[0]/wSize[0], sSize[1]/wSize[1]);
+        levelContainer.worldToScreen.set(sSize[0] / wSize[0], sSize[1] / wSize[1]);
 
         // Ambient light
         parseLighting(levelContents.get("ambient"), levelContainer.getRayHandler());
@@ -149,14 +148,14 @@ public class LevelParser {
         //object.setStartFrame(json.get("startframe").asInt());
         JsonValue texInfo = json.get("texture");
         object.setTexture(directory.getEntry(texInfo.get("name").asString(), FilmStrip.class));
-        int[] texOrigin  = texInfo.get("origin").asIntArray();
+        int[] texOrigin = texInfo.get("origin").asIntArray();
         object.setOrigin(texOrigin[0], texOrigin[1]);
     }
 
     /**
      * Creates a player for the level
      *
-     * @param  playerFormat the JSON tree defining the player
+     * @param playerFormat the JSON tree defining the player
      */
     private Werewolf parsePlayer(AssetDirectory directory, JsonValue playerFormat, LevelContainer container) {
         System.out.printf("in json: (%f, %f)\n", playerFormat.get(0).asFloat(), playerFormat.get(1).asFloat());
@@ -167,14 +166,14 @@ public class LevelParser {
 
         JsonValue light = playerJson.get("spotlight");
         float[] color = light.get("color").asFloatArray();
-        float dist  = light.getFloat("distance");
+        float dist = light.getFloat("distance");
         int rays = light.getInt("rays");
 
         PointLight spotLight = new PointLight(
                 container.getRayHandler(), rays, Color.WHITE, dist,
                 0, 0
         );
-        spotLight.setColor(color[0],color[1],color[2],color[3]);
+        spotLight.setColor(color[0], color[1], color[2], color[3]);
         spotLight.setSoft(light.getBoolean("soft"));
 
         player.activatePhysics(container.getWorld());
@@ -186,7 +185,7 @@ public class LevelParser {
     /**
      * Creates an enemy for the level
      *
-     * @param  enemyFormat the JSON tree defining the enemy
+     * @param enemyFormat the JSON tree defining the enemy
      */
     private Enemy parseEnemy(int id, AssetDirectory directory, JsonValue enemyFormat, LevelContainer container) {
         JsonValue enemyPos = enemyFormat.get("position");
@@ -205,7 +204,7 @@ public class LevelParser {
 
         JsonValue light = json.get("flashlight");
         float[] color = light.get("color").asFloatArray();
-        float dist  = light.getFloat("distance");
+        float dist = light.getFloat("distance");
         int rays = light.getInt("rays");
         float degrees = light.getFloat("degrees");
 
@@ -213,7 +212,7 @@ public class LevelParser {
                 container.getRayHandler(), rays, Color.WHITE, dist,
                 enemy.getX(), enemy.getY(), 0f, degrees
         );
-        flashLight.setColor(color[0],color[1],color[2],color[3]);
+        flashLight.setColor(color[0], color[1], color[2], color[3]);
         flashLight.setSoft(light.getBoolean("soft"));
 
         enemy.setFlashlight(flashLight);
@@ -225,7 +224,7 @@ public class LevelParser {
     /**
      * Creates the Board for the level
      *
-     * @param  boardFormat the JSON tree defining the board
+     * @param boardFormat the JSON tree defining the board
      */
     private Board parseBoard(AssetDirectory directory, JsonValue boardFormat, RayHandler rayHandler) {
         JsonValue tiles = boardFormat.get("layout");
@@ -251,7 +250,7 @@ public class LevelParser {
         // moonlight stuff
         JsonValue light = moonlightData.get("lighting");
         float[] color = light.get("color").asFloatArray();
-        float dist  = light.getFloat("distance");
+        float dist = light.getFloat("distance");
         int rays = light.getInt("rays");
 
         // board layout stuff
@@ -268,7 +267,7 @@ public class LevelParser {
                         rayHandler, rays, Color.WHITE, dist,
                         board.boardCenterToWorld(x, y).x, board.boardCenterToWorld(x, y).y
                 );
-                point.setColor(color[0],color[1],color[2],color[3]);
+                point.setColor(color[0], color[1], color[2], color[3]);
                 point.setSoft(light.getBoolean("soft"));
                 board.setSpotlight(x, y, point);
                 board.setLit(x, y, false);
@@ -276,8 +275,8 @@ public class LevelParser {
         }
 
         for (JsonValue moonlightPos : moonlightData.get("positions")) {
-            int t_x = moonlightPos.get(0).asInt();
-            int t_y = moonlightPos.get(1).asInt();
+            int t_x = moonlightPos.getInt(0);
+            int t_y = moonlightPos.getInt(1);
 
             board.setLit(t_x, t_y, true);
         }
@@ -289,7 +288,7 @@ public class LevelParser {
     /**
      * Creates the ambient lighting for the level
      *
-     * @param  light the JSON tree defining the light
+     * @param light the JSON tree defining the light
      */
     private void parseLighting(JsonValue light, RayHandler rayhandler) {
         RayHandler.setGammaCorrection(light.getBoolean("gamma"));

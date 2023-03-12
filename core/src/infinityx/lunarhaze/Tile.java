@@ -36,7 +36,9 @@ public class Tile {
     private Texture TileTextureUnlit;
     private Texture TileTextureLit;
 
-    /** The moonlight pointing on this tile, possibly null */
+    /**
+     * The moonlight pointing on this tile, possibly null
+     */
     private PointLight spotLight;
 
     // No need for constructor, levelContainer will set attributes of all tiles through Board

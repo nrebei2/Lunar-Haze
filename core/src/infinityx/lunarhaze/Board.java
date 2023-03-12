@@ -4,7 +4,6 @@ import box2dLight.PointLight;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g3d.environment.SpotLight;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.IntSet;
 
@@ -43,7 +42,7 @@ public class Board {
     /**
      * Tile height and width in screen (pixel) length.
      * Should be overwritten.
-     * */
+     */
     private Vector2 tileScreenDim = new Vector2(128, 96);
 
     /**
@@ -177,7 +176,7 @@ public class Board {
      *
      * @return the board cell index for a world x-position.
      */
-    public int worldToBoardY(float y){
+    public int worldToBoardY(float y) {
         return (int) (y / tileWorldDim.y);
     }
 
@@ -358,15 +357,15 @@ public class Board {
     }
 
 
-        /**
-         * Returns the type of a tile.
-         * <p>
-         * Null if out of bounds
-         *
-         * @param x The x index for the Tile cell
-         * @param y The y index for the Tile cell
-         * @return true if the tile is walkable.
-         */
+    /**
+     * Returns the type of a tile.
+     * <p>
+     * Null if out of bounds
+     *
+     * @param x The x index for the Tile cell
+     * @param y The y index for the Tile cell
+     * @return true if the tile is walkable.
+     */
     public Tile.TileType getTileType(int x, int y) {
         Tile tile = getTile(x, y);
 

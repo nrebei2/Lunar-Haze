@@ -1,6 +1,5 @@
 package infinityx.lunarhaze.entity;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.EnemyController;
 import infinityx.lunarhaze.GameObject;
@@ -50,6 +49,7 @@ public class Enemy extends GameObject {
         NORTH(1), SOUTH(3), WEST(2), EAST(0);
 
         private final int scale;
+
         private Direction(int scale) {
             this.scale = scale;
         }
@@ -119,7 +119,7 @@ public class Enemy extends GameObject {
     /**
      * get the patrol point this enemy is currently moving to
      */
-    public Vector2 getCurrentPatrol(){
+    public Vector2 getCurrentPatrol() {
         return patrolPath.get(currentWayPoint);
     }
 
@@ -195,6 +195,7 @@ public class Enemy extends GameObject {
 
     /**
      * Sets the specific angle of the flashlight on this enemy
+     *
      * @param ang the angle...
      */
     public void setFlashLightRot(float ang) {

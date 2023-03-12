@@ -24,11 +24,7 @@
 package infinityx.lunarhaze;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.utils.JsonValue;
-import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.physics.BoxObstacle;
 import infinityx.util.Drawable;
 import infinityx.util.FilmStrip;
@@ -68,7 +64,9 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
      */
     protected boolean destroyed;
 
-    /** FilmStrip pointer to the texture region */
+    /**
+     * FilmStrip pointer to the texture region
+     */
     private FilmStrip filmstrip;
 
     /**
@@ -115,7 +113,7 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
     /**
      * The texture origin should correspond to the texture pixel represents the objects world position.
      * For example, if the object is a human then the origin would be the pixel between their feet.
-     *
+     * <p>
      * Note the bottom left of the texture corresponds to (0, 0), not the top left.
      *
      * @param x Where to place the origin on the u axis

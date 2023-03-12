@@ -27,7 +27,9 @@ import com.badlogic.gdx.utils.JsonValue;
  * This class is an {@link AssetLoader} to load {@link JsonValue} assets.
  */
 public class JsonValueLoader extends AsynchronousAssetLoader<JsonValue, JsonValueLoader.JsonValueParameters> {
-    /** The asynchronously read JsonValue */
+    /**
+     * The asynchronously read JsonValue
+     */
     protected JsonValue cachedData;
 
     /**
@@ -36,7 +38,7 @@ public class JsonValueLoader extends AsynchronousAssetLoader<JsonValue, JsonValu
     public static class JsonValueParameters extends AssetLoaderParameters<JsonValue> {
         // Since everything is defined in the file, nothing to do here
     }
-    
+
     /**
      * Creates a new JsonValueLoader with an internal file resolver
      */
@@ -47,15 +49,15 @@ public class JsonValueLoader extends AsynchronousAssetLoader<JsonValue, JsonValu
     /**
      * Creates a new JsonValueLoader with the given file resolver
      *
-     * @param resolver    The file resolver
+     * @param resolver The file resolver
      */
-    public JsonValueLoader (FileHandleResolver resolver) {
+    public JsonValueLoader(FileHandleResolver resolver) {
         super(resolver);
     }
 
-    /** 
+    /**
      * Returns the {@link JsonValue} instance currently loaded by this loader.
-     *
+     * <p>
      * If nothing has been loaded, this returns {@code null}.
      *
      * @return the {@link JsonValue} instance currently loaded by this loader.
@@ -64,55 +66,54 @@ public class JsonValueLoader extends AsynchronousAssetLoader<JsonValue, JsonValu
         return cachedData;
     }
 
-    /** 
+    /**
      * Loads thread-safe part of the asset and injects any dependencies into the AssetManager.
-     *
+     * <p>
      * This is used to load non-OpenGL parts of the asset that do not require the context
      * of the main thread.
      *
-     * @param manager   The asset manager
-     * @param fileName  The name of the asset to load
-     * @param file      The resolved file to load
-     * @param params    The parameters to use for loading the asset 
+     * @param manager  The asset manager
+     * @param fileName The name of the asset to load
+     * @param file     The resolved file to load
+     * @param params   The parameters to use for loading the asset
      */
     @Override
-    public void loadAsync (AssetManager manager, String fileName, FileHandle file, JsonValueParameters params) {
+    public void loadAsync(AssetManager manager, String fileName, FileHandle file, JsonValueParameters params) {
         JsonReader reader = new JsonReader();
         cachedData = reader.parse(file);
     }
 
-    /** 
+    /**
      * Loads the main thread part of the asset.
-     *
+     * <p>
      * This is used to load OpenGL parts of the asset that require the context of the
      * main thread.
      *
-     * @param manager   The asset manager
-     * @param fileName  The name of the asset to load
-     * @param file      The resolved file to load
-     * @param params    The parameters to use for loading the asset 
+     * @param manager  The asset manager
+     * @param fileName The name of the asset to load
+     * @param file     The resolved file to load
+     * @param params   The parameters to use for loading the asset
      */
     @Override
-    public JsonValue loadSync (AssetManager manager, String fileName, FileHandle file, JsonValueParameters params) {
+    public JsonValue loadSync(AssetManager manager, String fileName, FileHandle file, JsonValueParameters params) {
         JsonValue json = cachedData;
         cachedData = null;
         return json;
     }
 
-    /** 
-     * Returns the other assets this asset requires to be loaded first. 
-     * 
+    /**
+     * Returns the other assets this asset requires to be loaded first.
+     * <p>
      * This method may be called on a thread other than the GL thread. It may return
      * null if there are no dependencies.
      *
-     * @param fileName  The name of the asset to load
-     * @param file      The resolved file to load
-     * @param params parameters for loading the asset
-     *
-     * @return the other assets this asset requires to be loaded first. 
+     * @param fileName The name of the asset to load
+     * @param file     The resolved file to load
+     * @param params   parameters for loading the asset
+     * @return the other assets this asset requires to be loaded first.
      */
     @Override
-    public Array<AssetDescriptor> getDependencies (String fileName, FileHandle file, JsonValueParameters params) {
+    public Array<AssetDescriptor> getDependencies(String fileName, FileHandle file, JsonValueParameters params) {
         return null;
     }
 

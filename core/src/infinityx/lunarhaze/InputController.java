@@ -36,7 +36,9 @@ public class InputController {
     private boolean resetPressed;
 
     private boolean exitPressed;
-    /** The singleton instance of the input controller */
+    /**
+     * The singleton instance of the input controller
+     */
     private static InputController theController = null;
 
     /**

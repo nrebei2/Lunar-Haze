@@ -9,7 +9,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
-import infinityx.util.ScreenObservable;
 
 /**
  * The primary controller class for the game.
@@ -18,7 +17,9 @@ import infinityx.util.ScreenObservable;
  * basic game loop (update-draw).
  */
 public class GameMode extends WorldController implements Screen, ContactListener {
-    /** Need an ongoing reference to the asset directory */
+    /**
+     * Need an ongoing reference to the asset directory
+     */
     protected AssetDirectory directory;
     // Exit codes
     /**
@@ -192,7 +193,7 @@ public class GameMode extends WorldController implements Screen, ContactListener
     public void reset() {
         LevelParser ps = LevelParser.LevelParser();
         levelContainer = ps.loadLevel(directory, levelFormat.get(String.valueOf(level)));
-        setBounds(this.levelContainer.getBoard().getWidth(),this.levelContainer.getBoard().getHeight());
+        setBounds(this.levelContainer.getBoard().getWidth(), this.levelContainer.getBoard().getHeight());
         this.world = levelContainer.getWorld();
         world.setContactListener(this);
     }
@@ -211,7 +212,7 @@ public class GameMode extends WorldController implements Screen, ContactListener
         //this.preUpdate(delta);
         levelContainer.getWorld().step(delta, 6, 2);
         if (!inBounds(levelContainer.getPlayer())) handleBounds(levelContainer.getPlayer());
-        for (GameObject obj: levelContainer.getEnemies()){
+        for (GameObject obj : levelContainer.getEnemies()) {
             if (!inBounds(obj)) handleBounds(obj);
         }
         //this.postUpdate(delta);
@@ -293,9 +294,10 @@ public class GameMode extends WorldController implements Screen, ContactListener
 
 
     /// CONTACT LISTENER METHODS
+
     /**
      * Callback method for the start of a collision
-     *
+     * <p>
      * This method is called when we first get a collision between two objects.  We use
      * this method to test if it is the "right" kind of collision.  In particular, we
      * use it to test if we made it to the win door.
@@ -309,31 +311,35 @@ public class GameMode extends WorldController implements Screen, ContactListener
 
     /**
      * Callback method for the start of a collision
-     *
+     * <p>
      * This method is called when two objects cease to touch.  We do not use it.
      */
-    public void endContact(Contact contact) {}
+    public void endContact(Contact contact) {
+    }
 
     private final Vector2 cache = new Vector2();
 
-    /** Unused ContactListener method */
-    public void postSolve(Contact contact, ContactImpulse impulse) {}
+    /**
+     * Unused ContactListener method
+     */
+    public void postSolve(Contact contact, ContactImpulse impulse) {
+    }
 
     /**
      * Handles any modifications necessary before collision resolution
-     *
+     * <p>
      * This method is called just before Box2D resolves a collision.  We use this method
      * to implement sound on contact, using the algorithms outlined similar to those in
      * Ian Parberry's "Introduction to Game Physics with Box2D".
-     *
+     * <p>
      * However, we cannot use the proper algorithms, because LibGDX does not implement
      * b2GetPointStates from Box2D.  The danger with our approximation is that we may
      * get a collision over multiple frames (instead of detecting the first frame), and
      * so play a sound repeatedly.  Fortunately, the cooldown hack in SoundController
      * prevents this from happening.
      *
-     * @param  contact  	The two bodies that collided
-     * @param  oldManifold  The collision manifold before contact
+     * @param contact     The two bodies that collided
+     * @param oldManifold The collision manifold before contact
      */
     public void preSolve(Contact contact, Manifold oldManifold) {
         System.out.println("Collision!");

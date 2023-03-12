@@ -138,6 +138,7 @@ public class GameCanvas {
 
     /**
      * Sets the scaling factor for the world to screen transformation
+     *
      * @param worldToScreen x
      */
     public void setWorldToScreen(Vector2 worldToScreen) {

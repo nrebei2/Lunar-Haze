@@ -25,20 +25,24 @@ import com.badlogic.gdx.utils.Array;
 
 /**
  * This class is an {@link AssetLoader} to load {@link Sound} assets.
- *
+ * <p>
  * Given the primitive state of LibGDX audio, we cannot do much more than
  * specify the filename when loading the asset.
  */
 public class SoundLoader extends AsynchronousAssetLoader<Sound, SoundLoader.SoundParameters> {
-    /** A reference to the file handle resolver (inaccessible in parent class) */
+    /**
+     * A reference to the file handle resolver (inaccessible in parent class)
+     */
     protected FileHandleResolver resolver;
-    /** The asynchronously read Sound */
+    /**
+     * The asynchronously read Sound
+     */
     private Sound cachedSound;
 
     /**
      * The definable parameters for a {@link Sound} object.
      */
-	static public class SoundParameters extends AssetLoaderParameters<Sound> {
+    static public class SoundParameters extends AssetLoaderParameters<Sound> {
         // Since everything is defined in the file, nothing to do here
     }
 
@@ -52,72 +56,71 @@ public class SoundLoader extends AsynchronousAssetLoader<Sound, SoundLoader.Soun
     /**
      * Creates a new SoundBufferLoader with the given file resolver
      *
-     * @param resolver    The file resolver
+     * @param resolver The file resolver
      */
     public SoundLoader(FileHandleResolver resolver) {
         super(resolver);
         this.resolver = resolver;
     }
 
-    /** 
+    /**
      * Returns the {@link Sound} instance currently loaded by this loader.
-     *
+     * <p>
      * If nothing has been loaded, this returns {@code null}.
      *
      * @return the {@link Sound} instance currently loaded by this loader.
      */
-    protected Sound getLoadedSound () {
+    protected Sound getLoadedSound() {
         return cachedSound;
     }
 
-    /** 
+    /**
      * Loads thread-safe part of the asset and injects any dependencies into the AssetManager.
-     *
+     * <p>
      * This is used to load non-OpenGL parts of the asset that do not require the context
      * of the main thread.
      *
-     * @param manager   The asset manager
-     * @param fileName  The name of the asset to load
-     * @param file      The resolved file to load
-     * @param params    The parameters to use for loading the asset 
+     * @param manager  The asset manager
+     * @param fileName The name of the asset to load
+     * @param file     The resolved file to load
+     * @param params   The parameters to use for loading the asset
      */
     @Override
-    public void loadAsync (AssetManager manager, String fileName, FileHandle file, SoundParameters params) {
+    public void loadAsync(AssetManager manager, String fileName, FileHandle file, SoundParameters params) {
         cachedSound = Gdx.audio.newSound(file);
     }
 
-    /** 
+    /**
      * Loads the main thread part of the asset.
-     *
+     * <p>
      * This is used to load OpenGL parts of the asset that require the context of the
      * main thread.
      *
-     * @param manager   The asset manager
-     * @param fileName  The name of the asset to load
-     * @param file      The resolved file to load
-     * @param params    The parameters to use for loading the asset 
+     * @param manager  The asset manager
+     * @param fileName The name of the asset to load
+     * @param file     The resolved file to load
+     * @param params   The parameters to use for loading the asset
      */
     @Override
-    public Sound loadSync (AssetManager manager, String fileName, FileHandle file, SoundParameters params) {
+    public Sound loadSync(AssetManager manager, String fileName, FileHandle file, SoundParameters params) {
         Sound sound = cachedSound;
         cachedSound = null;
         return sound;
     }
 
-    /** 
-     * Returns the other assets this asset requires to be loaded first. 
-     * 
+    /**
+     * Returns the other assets this asset requires to be loaded first.
+     * <p>
      * This method may be called on a thread other than the GL thread. It may return
      * null if there are no dependencies.
      *
-     * @param fileName  The name of the asset to load
-     * @param file      The resolved file to load
-     * @param params parameters for loading the asset
-     *
-     * @return the other assets this asset requires to be loaded first. 
+     * @param fileName The name of the asset to load
+     * @param file     The resolved file to load
+     * @param params   parameters for loading the asset
+     * @return the other assets this asset requires to be loaded first.
      */
     @Override
-    public Array<AssetDescriptor> getDependencies (String fileName, FileHandle file, SoundParameters params) {
+    public Array<AssetDescriptor> getDependencies(String fileName, FileHandle file, SoundParameters params) {
         return null;
     }
 
