@@ -1049,13 +1049,13 @@ public class GameCanvas {
     }
 
     /**
-     * Draws text on the left corner of the screen.
+     * Draws text on the upper right corner of the screen.
      *
      * @param text   The string to draw
      * @param font   The font to use
      * @param offset The y-value offset from the center of the screen.
      */
-    public void drawTextUpperLeft(String text, BitmapFont font, float offset) {
+    public void drawTextUpperRight(String text, BitmapFont font, float offset) {
         if (active != DrawPass.STANDARD) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
             return;
@@ -1067,11 +1067,30 @@ public class GameCanvas {
         font.draw(spriteBatch, layout, x, y + offset);
     }
 
-    public void drawRec(float x, float y, float width, float height) {
-        barRender.begin(ShapeRenderer.ShapeType.Filled);
-        barRender.setColor(Color.WHITE);
-        barRender.rect(x, y, width, height);
-        barRender.end();
+    /**
+     * Draws a solid rectangle at upper right corner with specified idth and height
+     */
+    public void drawRec(float width, float height) {
+        ShapeRenderer barRenderer = new ShapeRenderer();
+        barRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        barRenderer.setColor(Color.YELLOW);
+        float x = getWidth() - width;
+        float y = getHeight() - height * 4;
+        barRenderer.rect(x, y, width, height);
+        barRenderer.end();
+    }
+
+    /**
+     * Draws a rectangle outline at the upper right corner with specified width, and height
+     */
+    public void drawRecLine(float width, float height) {
+        ShapeRenderer barRenderer = new ShapeRenderer();
+        barRenderer.begin(ShapeRenderer.ShapeType.Line);
+        barRenderer.setColor(Color.WHITE);
+        float x = getWidth() - width;
+        float y = getHeight() - height * 4;
+        barRenderer.rect(x, y, width, height);
+        barRenderer.end();
     }
 
     /**

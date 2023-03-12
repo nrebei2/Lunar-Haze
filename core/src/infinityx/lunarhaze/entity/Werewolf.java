@@ -3,6 +3,7 @@ package infinityx.lunarhaze.entity;
 import box2dLight.PointLight;
 import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.GameObject;
+import infinityx.lunarhaze.LevelContainer;
 
 public class Werewolf extends GameObject {
 
@@ -17,9 +18,14 @@ public class Werewolf extends GameObject {
     private static final float ANIMATION_SPEED = 0.25f;
 
     /**
-     * Initial hp of the werewolf is 100
+     * Initial hp of the werewolf is 0.0
      **/
-    private static final float INITIAL_HP = 100;
+    private static final float INITIAL_HP = 0.0f;
+
+    /**
+     * Maximum hp of the werewolf is 100.0
+     **/
+    private static final float MAX_HP = 100.0f;
 
     /** Reference to werewolf's sprite for drawing */
     //private FilmStrip werewolfSprite;
@@ -58,6 +64,8 @@ public class Werewolf extends GameObject {
      * Health point (hp) of the werewolf
      */
     private float hp;
+
+    private LevelContainer levelContainer;
 
     /**
      * Point light pointed on werewolf at all times
@@ -186,6 +194,7 @@ public class Werewolf extends GameObject {
 
     public void collectMoonlight() {
         moonlightCollected++;
+        hp = hp + MAX_HP * 1 / (moonlightCollected + levelContainer.getRemainingMoonlight());
     }
 
     /**
@@ -198,6 +207,7 @@ public class Werewolf extends GameObject {
         moonlight = false;
         hp = INITIAL_HP;
         moonlightCollected = 0;
+        levelContainer = new LevelContainer();
     }
 
     /**

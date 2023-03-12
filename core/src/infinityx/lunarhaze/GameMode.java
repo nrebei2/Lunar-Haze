@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
+import infinityx.lunarhaze.entity.Werewolf;
 import infinityx.util.ScreenObservable;
 
 /**
@@ -25,6 +26,15 @@ public class GameMode extends WorldController implements Screen, ContactListener
      * User requested to go to menu
      */
     public final static int GO_MENU = 0;
+
+    /**
+     * Width of the HP bar
+     */
+    private final static float BAR_WIDTH = 300f;
+    /**
+     * Height of the HP bar
+     */
+    private final static float BAR_HEIGHT = 40.0f;
 
     /**
      * Track the current state of the game for the update loop.
@@ -255,8 +265,9 @@ public class GameMode extends WorldController implements Screen, ContactListener
             case PLAY:
                 displayFont.setColor(Color.YELLOW);
                 canvas.begin(); // DO NOT SCALE
-                canvas.drawTextUpperLeft("Moonlight collected", displayFont, 0.0f);
-//                canvas.drawRec();
+                canvas.drawTextUpperRight("Moonlight", displayFont, 0.0f);
+                canvas.drawRecLine(BAR_WIDTH, BAR_HEIGHT);
+                canvas.drawRec(BAR_WIDTH * gameplayController.getPlayer().getHp() / 100, BAR_HEIGHT);
                 canvas.end();
                 break;
         }
