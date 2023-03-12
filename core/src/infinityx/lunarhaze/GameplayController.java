@@ -1,38 +1,50 @@
 package infinityx.lunarhaze;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.utils.*;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.Texture;
+
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.EnemyList;
 import infinityx.lunarhaze.entity.Werewolf;
-import infinityx.assets.AssetDirectory;
-import infinityx.util.FilmStrip;
 
+
+/**
+ * Controller to handle gameplay interactions.
+ */
 public class GameplayController {
-
-    /** Texture for werewolf */
-    private Texture werewolfTexture;
-    /** Texture for all villagers, as they look the same */
-    private Texture villagerTexture;
-
-    /** Reference to player (need to change to allow multiple players) */
+    /**
+     * Reference to player (need to change to allow multiple players)
+     */
     private Werewolf player;
 
     private EnemyList enemies;
 
-    /** The currently active object */
-    private Array<GameObject> objects;
+    /**
+     * The currently active object
+     */
+    private final Array<GameObject> objects;
 
     private EnemyController[] controls;
 
+    private LightingController lightingController;
+
     public Board board;
+
+    private static final float MOONLIGHT_COLLECT_TIME = 1.5f;
+
+    private float timeOnMoonlight;
+
+    private int remainingMoonlight;
+    private boolean gameWon;
+
+    private boolean gameLost;
+    private LevelContainer levelContainer;
 
     public GameplayController() {
         player = null;
         enemies = null;
         board = null;
         objects = new Array<GameObject>();
+        timeOnMoonlight = 0;
     }
 //
 //    /**
@@ -52,7 +64,7 @@ public class GameplayController {
 
     /**
      * Returns the list of the currently active (not destroyed) game objects
-     *
+     * <p>
      * As this method returns a reference and Lists are mutable, other classes can
      * technical modify this list.  That is a very bad idea.  Other classes should
      * only mark objects as destroyed and leave list management to this class.
@@ -66,18 +78,18 @@ public class GameplayController {
 
     /**
      * Returns a reference to the currently active player.
-     *
+     * <p>
      * This property needs to be modified if you want multiple players.
      *
      * @return a reference to the currently active player.
      */
-    public Werewolf getPlayer() { return player;}
+    public Werewolf getPlayer() {
+        return player;
+    }
 
 
     /**
      * Returns true if the currently active player is alive.
-     *
-     * This property needs to be modified if you want multiple players.
      *
      * @return true if the currently active player is alive.
      */
@@ -85,26 +97,34 @@ public class GameplayController {
         return player != null;
     }
 
-
     /**
      * Starts a new game.
-     *
+     * <p>
      * This method creates a single player, but does nothing else.
      */
     public void start(LevelContainer levelContainer) {
-        // Create the player's ship
+        this.levelContainer = levelContainer;
         player = levelContainer.getPlayer();
         enemies = levelContainer.getEnemies();
-        // Player must be in object list.
         objects.add(player);
-        // Create the board
         board = levelContainer.getBoard();
+        remainingMoonlight = levelContainer.getRemainingMoonlight();
         controls = new EnemyController[enemies.size()];
-        for(int ii = 0; ii < enemies.size(); ii++) {
-            controls[ii] = new EnemyController(ii,player,enemies, board);
+
+        gameWon = false;
+        gameLost = false;
+
+        for (int ii = 0; ii < enemies.size(); ii++) {
+            Enemy curr = enemies.get(ii);
+            controls[ii] = new EnemyController(ii, player, enemies, board);
             objects.add(enemies.get(ii));
         }
 
+        // Intialize lighting
+        lightingController = new LightingController(enemies, board);
+
+        /*PointLight light = new PointLight(getRayHandler(), 512, new Color(0.5f, 0.5f, 1f, 0.3f), 2000f, 0, 0);
+         */
     }
 
     /**
@@ -117,33 +137,29 @@ public class GameplayController {
 
     /**
      * Resolve the actions of all game objects (player and shells)
-     *
+     * <p>
      * You will probably want to modify this heavily in Part 2.
      *
-     * @param input  Reference to the input controller
-     * @param delta  Number of seconds since last animation frame
+     * @param input Reference to the input controller
+     * @param delta Number of seconds since last animation frame
      */
     public void resolveActions(InputController input, float delta) {
-        // Process the player
-        if (player != null ) {
-            resolvePlayer(input,delta);
-            resolveMoonlight();
+        // Process the player only when the game is in play
+        if (player != null && !(gameLost || gameWon)) {
+            resolvePlayer(input, delta);
+            resolveMoonlight(delta);
         }
         resolveEnemies();
-        // Process the other (non-ship) objects.
-//        for (GameObject o : objects) {
-//            o.update(delta);
-//        }
     }
 
     /**
      * Process the player's actions.
-     *
+     * <p>
      * Notice that firing bullets allocates memory to the heap.  If we were REALLY
      * worried about performance, we would use a memory pool here.
      *
-     * @param input  Reference to the input controller
-     * @param delta  Number of seconds since last animation frame
+     * @param input Reference to the input controller
+     * @param delta Number of seconds since last animation frame
      */
     public void resolvePlayer(InputController input, float delta) {
         player.setMovementH(input.getHorizontal());
@@ -151,20 +167,48 @@ public class GameplayController {
         player.update(delta);
     }
 
-    public void resolveMoonlight() {
-        int px = Math.round(player.position.x / board.getTileWidth());
-        int py = Math.round(player.position.y / board.getTileHeight());
-        if(board.isLit(px, py)) {
+    public void resolveMoonlight(float delta) {
+        int px = board.worldToBoardX(player.getPosition().x);
+        int py = board.worldToBoardX(player.getPosition().y);
+
+        if (board.isLit(px, py)) {
+            timeOnMoonlight += delta; // Increase variable by time
             player.setOnMoonlight(true);
-        } else player.setOnMoonlight(false);
+            if (timeOnMoonlight > MOONLIGHT_COLLECT_TIME) {
+                player.collectMoonlight();
+                remainingMoonlight--;
+                timeOnMoonlight = 0;
+
+                board.setLit(px, py, false);
+
+                // Check if game is won here
+                if (remainingMoonlight == 0) gameWon = true;
+            }
+        } else {
+            timeOnMoonlight = 0;
+            player.setOnMoonlight(false);
+        }
     }
 
-    public void resolveEnemies(){
-        for (Enemy en: enemies){
+    // TODO: THIS SHOULD BE IN ENEMYCONTROLLER, also this code is a mess
+    public void resolveEnemies() {
+        //board.clearVisibility();
+        for (Enemy en : enemies) {
             if (controls[en.getId()] != null) {
-                int action = controls[en.getId()].getAction();
+                EnemyController curEnemyController = controls[en.getId()];
+                int action = curEnemyController.getAction();
+                //curEnemyController.setVisibleTiles();
 //                boolean attacking = (action & EnemyController.CONTROL_ATTACK) != 0;
                 en.update(action);
+
+                // TODO: make more interesting actions
+                if (en.getIsAlerted()) {
+                    // angle between enemy and player
+                    double ang = Math.atan2(player.getPosition().y - en.getPosition().y, player.getPosition().x - en.getPosition().y);
+                    en.setFlashLightRot((float) ang);
+                } else {
+                    en.setFlashLightRotAlongDir();
+                }
 //                if (attacking &&) {
 //                    fireWeapon(s);
 //                } else {
@@ -179,6 +223,20 @@ public class GameplayController {
 
     }
 
+    public boolean isGameWon() {
+        return gameWon;
+    }
+
+    public void setWin(boolean win) {
+        if (win) this.gameWon = true;
+        else this.gameLost = true;
+    }
+
+    public boolean isGameLost() {
+        return gameLost;
+    }
+
+
     /**
      * Garbage collects all deleted objects.
      *
@@ -186,24 +244,24 @@ public class GameplayController {
      * than to delete dead ones.  Deletion restructures the list and is O(n^2) if the
      * number of deletions is high.  Since Add() is O(1), copying is O(n).
      *
-    public void garbageCollect() {
-        // INVARIANT: backing and objects are disjoint
-        for (GameObject o : objects) {
-            if (o.isDestroyed()) {
-                destroy(o);
-            } else {
-                backing.add(o);
-            }
-        }
+     public void garbageCollect() {
+     // INVARIANT: backing and objects are disjoint
+     for (GameObject o : objects) {
+     if (o.isDestroyed()) {
+     destroy(o);
+     } else {
+     backing.add(o);
+     }
+     }
 
-        // Swap the backing store and the objects.
-        // This is essentially stop-and-copy garbage collection
-        Array<GameObject> tmp = backing;
-        backing = objects;
-        objects = tmp;
-        backing.clear();
-    }
-*/
+     // Swap the backing store and the objects.
+     // This is essentially stop-and-copy garbage collection
+     Array<GameObject> tmp = backing;
+     backing = objects;
+     objects = tmp;
+     backing.clear();
+     }
+     */
 
 
 }

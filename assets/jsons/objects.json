@@ -1,0 +1,24 @@
+{
+  "house": {
+    "bodytype": "static",
+    "size": [3, 3],
+    "density": 0.0,
+    "friction": 0.0,
+    "restitution": 0.0,
+    "texture": {
+      "name": "house",
+      "origin": [3, 118],
+    }
+  },
+  "tree": {
+    "bodytype": "static",
+    "size": [1, 1],
+    "density": 0.0,
+    "friction": 0.0,
+    "restitution": 0.0,
+    "texture": {
+      "name": "tree",
+      "origin": [30, 85],
+    }
+  }
+}

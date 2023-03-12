@@ -1,17 +1,14 @@
 package infinityx.lunarhaze.entity;
 
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 
 public class EnemyList implements Iterable<Enemy> {
     /**
      * The list of enemies managed by this object.
      */
-    private Array<Enemy> enemies;
+    private final Array<Enemy> enemies;
 
     private float time;
 
