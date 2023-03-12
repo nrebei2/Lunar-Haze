@@ -137,7 +137,9 @@ public class Enemy extends GameObject {
      * @return whether or not the ship is active
      */
     public void setTexture(Texture texture) {
+
         super.setTexture(texture);
+        this.origin.set(75, texture.getHeight() - 150);
     }
 
     /**
@@ -145,7 +147,7 @@ public class Enemy extends GameObject {
      */
     public void setFlashlight(ConeSource cone) {
         flashlight = cone;
-        flashlight.attachToBody(getBody(), 0.2f, 0, flashlight.getDirection());
+        flashlight.attachToBody(getBody(), 0.5f, 0, flashlight.getDirection());
     }
 
 
