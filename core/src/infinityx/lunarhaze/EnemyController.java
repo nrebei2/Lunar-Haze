@@ -5,7 +5,6 @@ import com.badlogic.gdx.utils.Queue;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.EnemyList;
 import infinityx.lunarhaze.entity.Werewolf;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 // TODO: move all this stuff into AI controller, EnemyController should hold other enemy actions
 public class EnemyController {
@@ -175,7 +174,7 @@ public class EnemyController {
         if (direction == null) {
             return false;
         }
-        boolean inLine;
+        boolean inLine = false;
         boolean blind;
         int target_pos_x = board.worldToBoardX(target.getX());
         int target_pos_y = board.worldToBoardY(target.getY());
@@ -198,8 +197,6 @@ public class EnemyController {
                 case WEST:
                     inLine = (target_pos_x < enemy_pos_x) && (target_pos_y == enemy_pos_y);
                     break;
-                default:
-                    throw new NotImplementedException();
             }
             return boardDistance(enemy.getX(), enemy.getY(), target.getX(),
                     target.getY()) <= DETECT_DIST && inLine;

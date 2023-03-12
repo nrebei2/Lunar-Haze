@@ -320,9 +320,9 @@ public abstract class WorldController extends ScreenObservable implements Screen
      * @return true if the object is in bounds.
      */
     public boolean inBounds(GameObject obj) {
-        if (obj.getType() == WEREWOLF){
-            System.out.println("Hi, this is collision controller checking werewolf. Werewolf has x: "+obj.getX()+" and y: "+obj.getY()+", which is within the bounds x: "+bounds.x+"~"+(bounds.x+bounds.width)+" and y: "+bounds.y+"~"+(bounds.y+bounds.height));
-        }
+        //if (obj.getType() == WEREWOLF){
+            //System.out.println("Hi, this is collision controller checking werewolf. Werewolf has x: "+obj.getX()+" and y: "+obj.getY()+", which is within the bounds x: "+bounds.x+"~"+(bounds.x+bounds.width)+" and y: "+bounds.y+"~"+(bounds.y+bounds.height));
+        //}
         boolean horiz = (bounds.x <= obj.getX() && obj.getX() <= bounds.x+bounds.width);
         boolean vert  = (bounds.y <= obj.getY() && obj.getY() <= bounds.y+bounds.height);
         return horiz && vert;

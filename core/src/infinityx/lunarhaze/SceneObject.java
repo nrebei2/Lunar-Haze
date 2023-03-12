@@ -3,7 +3,6 @@ package infinityx.lunarhaze;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import infinityx.util.Drawable;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * Represents a (collection of) foreground tiles.
@@ -48,6 +47,6 @@ public class SceneObject implements Drawable {
 
     @Override
     public void draw(GameCanvas canvas) {
-        throw new NotImplementedException();
+
     }
 }

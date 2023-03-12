@@ -190,14 +190,14 @@ public class GameplayController {
         }
     }
 
-    // TODO: THIS SHOULD BE IN ENEMYCONTROLLER
+    // TODO: THIS SHOULD BE IN ENEMYCONTROLLER, also this code is a mess
     public void resolveEnemies() {
-        board.clearVisibility();
+        //board.clearVisibility();
         for (Enemy en : enemies) {
             if (controls[en.getId()] != null) {
                 EnemyController curEnemyController = controls[en.getId()];
                 int action = curEnemyController.getAction();
-                curEnemyController.setVisibleTiles();
+                //curEnemyController.setVisibleTiles();
 //                boolean attacking = (action & EnemyController.CONTROL_ATTACK) != 0;
                 en.update(action);
 
