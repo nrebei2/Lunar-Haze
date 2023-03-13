@@ -6,6 +6,10 @@ import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.EnemyList;
 import infinityx.lunarhaze.entity.Werewolf;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.PriorityQueue;
+
 // TODO: move all this stuff into AI controller, EnemyController should hold other enemy actions
 public class EnemyController {
 
@@ -389,7 +393,7 @@ public class EnemyController {
         board.clearMarks();
         Vector2 cur_pos = enemy.getPosition();
         int curr_x = board.worldToBoardX(cur_pos.x);
-        int curr_y = board.worldToBoardX(cur_pos.y);
+        int curr_y = board.worldToBoardY(cur_pos.y);
         boolean setGoal = false; // Until we find a goal
         switch (state) {
             case SPAWN:
@@ -495,6 +499,62 @@ public class EnemyController {
         return CONTROL_NO_ACTION;
         //#endregion
     }
+//
+//    private int getMoveAlongPathToGoalTile() {
+//        //#region PUT YOUR CODE HERE
+//        int x = board.worldToBoardX(enemy.getX());
+//        int y = board.worldToBoardY(enemy.getY());
+//        if (board.isGoal(x, y)) {
+//            return CONTROL_NO_ACTION;
+//        }
+//
+//        PriorityQueue<TileData> openSet = new PriorityQueue<TileData>();
+//        HashSet<TileData> closedSet = new HashSet<TileData>();
+//        HashMap<TileData, TileData> cameFrom = new HashMap<TileData, TileData>();
+//        HashMap<TileData, Double> gScore = new HashMap<TileData, Double>();
+//        HashMap<TileData, Double> fScore = new HashMap<TileData, Double>();
+//
+//
+//        board.setVisited(x, y);
+//        gScore.put(, 0.0);
+//        fScore.put(start, heuristic(start, end));
+//        openSet.add(start);
+//
+//        while (!openSet.isEmpty()) {
+//            Node current = openSet.poll();
+//
+//            if (current == end) {
+//                return reconstructPath(cameFrom, end);
+//            }
+//
+//            closedSet.add(current);
+//
+//            for (Node neighbor : current.getNeighbors()) {
+//                if (closedSet.contains(neighbor)) {
+//                    continue;
+//                }
+//
+//                double tentativeGScore = gScore.get(current) + current.distanceTo(neighbor);
+//
+//                if (!openSet.contains(neighbor) || tentativeGScore < gScore.get(neighbor)) {
+//                    cameFrom.put(neighbor, current);
+//                    gScore.put(neighbor, tentativeGScore);
+//                    fScore.put(neighbor, tentativeGScore + heuristic(neighbor, end) + hidingSpotHeuristic(neighbor));
+//
+//                    if (!openSet.contains(neighbor)) {
+//                        openSet.add(neighbor);
+//                    }
+//                }
+//            }
+//        }
+//
+//        return null;
+//    }
+//
+//    private double heuristic(Node a, Node b) {
+//        return ;
+//    }
+
 
     private int getDirection(TileData t) {
         while (t.prev.prev != null) {
@@ -548,3 +608,5 @@ public class EnemyController {
     public final int[][] directions = new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
 
 }
+
+
