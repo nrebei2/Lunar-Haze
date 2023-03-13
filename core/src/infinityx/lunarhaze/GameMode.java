@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
+import infinityx.util.ScreenObservable;
 
 /**
  * The primary controller class for the game.
@@ -16,7 +17,7 @@ import infinityx.assets.AssetDirectory;
  * of the other classes in the game and hooks them together.  It also provides the
  * basic game loop (update-draw).
  */
-public class GameMode extends WorldController implements Screen, ContactListener {
+public class GameMode extends ScreenObservable implements Screen {
     /**
      * Need an ongoing reference to the asset directory
      */
@@ -193,9 +194,9 @@ public class GameMode extends WorldController implements Screen, ContactListener
     public void reset() {
         LevelParser ps = LevelParser.LevelParser();
         levelContainer = ps.loadLevel(directory, levelFormat.get(String.valueOf(level)));
-        setBounds(this.levelContainer.getBoard().getWidth(), this.levelContainer.getBoard().getHeight());
-        this.world = levelContainer.getWorld();
-        world.setContactListener(this);
+//        setBounds(this.levelContainer.getBoard().getWidth(), this.levelContainer.getBoard().getHeight());
+//        this.world = levelContainer.getWorld();
+//        world.setContactListener(this);
     }
 
     /**
@@ -211,10 +212,10 @@ public class GameMode extends WorldController implements Screen, ContactListener
         }
         //this.preUpdate(delta);
         levelContainer.getWorld().step(delta, 6, 2);
-        if (!inBounds(levelContainer.getPlayer())) handleBounds(levelContainer.getPlayer());
-        for (GameObject obj : levelContainer.getEnemies()) {
-            if (!inBounds(obj)) handleBounds(obj);
-        }
+//        if (!inBounds(levelContainer.getPlayer())) handleBounds(levelContainer.getPlayer());
+//        for (GameObject obj : levelContainer.getEnemies()) {
+//            if (!inBounds(obj)) handleBounds(obj);
+//        }
         //this.postUpdate(delta);
 
         // Update objects.

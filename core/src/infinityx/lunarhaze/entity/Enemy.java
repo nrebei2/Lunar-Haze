@@ -180,7 +180,6 @@ public class Enemy extends GameObject {
         } else if (movingUp) {
             yVelocity = speed;
             direction = Direction.NORTH;
-            System.out.println("moving up");
         }
         body.setLinearVelocity(xVelocity, yVelocity);
     }

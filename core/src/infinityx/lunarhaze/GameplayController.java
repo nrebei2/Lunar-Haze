@@ -38,6 +38,9 @@ public class GameplayController {
     private boolean gameLost;
     private LevelContainer levelContainer;
 
+    /**This is the collision controller (handels collisions between all objects in our world*/
+    private CollisionController collisionController;
+
     public GameplayController() {
         player = null;
         enemies = null;
@@ -103,6 +106,7 @@ public class GameplayController {
      */
     public void start(LevelContainer levelContainer) {
         this.levelContainer = levelContainer;
+        this.collisionController = new CollisionController(levelContainer);
         player = levelContainer.getPlayer();
         enemies = levelContainer.getEnemies();
         objects.add(player);
