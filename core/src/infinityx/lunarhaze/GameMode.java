@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
+import infinityx.lunarhaze.entity.Werewolf;
 import infinityx.util.ScreenObservable;
 
 /**
@@ -27,6 +28,15 @@ public class GameMode extends ScreenObservable implements Screen {
      * User requested to go to menu
      */
     public final static int GO_MENU = 0;
+
+    /**
+     * Width of the HP bar
+     */
+    private final static float BAR_WIDTH = 300f;
+    /**
+     * Height of the HP bar
+     */
+    private final static float BAR_HEIGHT = 40.0f;
 
     /**
      * Track the current state of the game for the update loop.
@@ -253,6 +263,13 @@ public class GameMode extends ScreenObservable implements Screen {
                 displayFont.setColor(Color.RED);
                 canvas.begin(); // DO NOT SCALE
                 canvas.drawTextCentered("FAILURE!", displayFont, 0.0f);
+                canvas.end();
+                break;
+            case PLAY:
+                displayFont.setColor(Color.YELLOW);
+                canvas.begin(); // DO NOT SCALE
+                canvas.drawHPBar("Moonlight", displayFont, 0.0f, BAR_WIDTH,
+                        BAR_HEIGHT, gameplayController.getPlayer().getHp());
                 canvas.end();
                 break;
         }
