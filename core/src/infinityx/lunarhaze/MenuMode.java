@@ -1,48 +1,74 @@
 package infinityx.lunarhaze;
-import com.badlogic.gdx.*;
-import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g2d.*;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import infinityx.assets.AssetDirectory;
-import infinityx.lunarhaze.GameCanvas;
 import infinityx.util.ScreenObservable;
 
 /**
  * Provides a menu screen for level select
  */
 public class MenuMode extends ScreenObservable implements Screen, InputProcessor {
-    /** Background texture for start-up */
+    /**
+     * Background texture for start-up
+     */
     private Texture background;
-    /** Play button to display when done */
+    /**
+     * Play button to display when done
+     */
     private Texture playButton;
-    private static float BUTTON_SCALE  = 0.75f;
+    private static final float BUTTON_SCALE = 0.75f;
 
-    /** Reference to GameCanvas created by the root */
-    private GameCanvas canvas;
+    /**
+     * Reference to GameCanvas created by the root
+     */
+    private final GameCanvas canvas;
 
-    /** The height of the canvas window (necessary since sprite origin != screen origin) */
+    /**
+     * The height of the canvas window (necessary since sprite origin != screen origin)
+     */
     private int heightY;
-    /** Scaling factor for when the student changes the resolution. */
+    /**
+     * Scaling factor for when the student changes the resolution.
+     */
     private float scale;
 
-    /** The y-coordinate of the center of the play button */
+    /**
+     * The y-coordinate of the center of the play button
+     */
     private int centerY;
-    /** The x-coordinate of the center of the play button */
+    /**
+     * The x-coordinate of the center of the play button
+     */
     private int centerX;
 
-    /** The current state of the play button */
-    private int   pressState;
+    /**
+     * The current state of the play button
+     */
+    private int pressState;
 
-    /** Whether or not this player mode is still active */
+    /**
+     * Whether or not this player mode is still active
+     */
     private boolean active;
 
-    /** Standard window size (for scaling) */
-    private static int STANDARD_WIDTH  = 800;
-    /** Standard window height (for scaling) */
-    private static int STANDARD_HEIGHT = 700;
+    /**
+     * Standard window size (for scaling)
+     */
+    private static final int STANDARD_WIDTH = 800;
+    /**
+     * Standard window height (for scaling)
+     */
+    private static final int STANDARD_HEIGHT = 700;
 
-    /** Ratio of play height from bottom */
-    private static float PLAY_HEIGHT_RATIO = 0.25f;
+    /**
+     * Ratio of play height from bottom
+     */
+    private static final float PLAY_HEIGHT_RATIO = 0.25f;
 
     /**
      * Returns true if all assets are loaded and the player is ready to go.
@@ -55,35 +81,38 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
 
     /**
      * Creates a new Menu
-     * @param canvas 	The game canvas to draw to
+     *
+     * @param canvas The game canvas to draw to
      */
     public MenuMode(GameCanvas canvas) {
-        Gdx.input.setInputProcessor( this );
+        Gdx.input.setInputProcessor(this);
         this.canvas = canvas;
     }
 
     /**
      * Gather the assets for this controller.
-     *
+     * <p>
      * This method extracts the asset variables from the given asset directory. It
      * should only be called after the asset directory is completed.
      *
-     * @param directory	Reference to global asset manager.
+     * @param directory Reference to global asset manager.
      */
     public void gatherAssets(AssetDirectory directory) {
         //for (String s : directory.getAssetNames()) {
         //    System.out.println(s);
         //}
         //directory.isLoaded("")
-        background = directory.getEntry( "background", Texture.class );
-        background.setFilter( Texture.TextureFilter.Linear, Texture.TextureFilter.Linear );
-        playButton  = directory.getEntry( "play", Texture.class );
+        background = directory.getEntry("background", Texture.class);
+        background.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        playButton = directory.getEntry("play", Texture.class);
     }
 
     /**
      * Called when this screen should release all resources.
      */
-    public void dispose() {  }
+    public void dispose() {
+
+    }
 
     /**
      * Update the status of this menu.
@@ -94,7 +123,7 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
 
     /**
      * Draw the status of this player mode.
-     *
+     * <p>
      * We prefer to separate update and draw from one another as separate methods, instead
      * of using the single render() method that LibGDX does.  We will talk about why we
      * prefer this in lecture.
@@ -102,16 +131,17 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
     private void draw() {
         canvas.begin();
         canvas.draw(background, 0, 0);
-        Color tint = (pressState == 1 ? Color.GRAY: Color.WHITE);
-        canvas.draw(playButton, tint, playButton.getWidth()/2, playButton.getHeight()/2,
-                centerX, centerY, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+        Color tint = (pressState == 1 ? Color.GRAY : Color.WHITE);
+        canvas.draw(playButton, tint, playButton.getWidth() / 2, playButton.getHeight() / 2,
+                centerX, centerY, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
         canvas.end();
     }
 
     // ADDITIONAL SCREEN METHODS
+
     /**
      * Called when the Screen should render itself.
-     *
+     * <p>
      * We defer to the other methods update() and draw().  However, it is VERY important
      * that we only quit AFTER a draw.
      *
@@ -124,14 +154,14 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
 
             // We are are ready, notify our listener
             if (isReady() && observer != null) {
-                observer.exitScreen(this, 0);
+                observer.exitScreen(this, 1);
             }
         }
     }
 
     /**
      * Called when the Screen is resized.
-     *
+     * <p>
      * This can happen at any point during a non-paused state but will never happen
      * before a call to show().
      *
@@ -140,18 +170,18 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
      */
     public void resize(int width, int height) {
         // Compute the drawing scale
-        float sx = ((float)width)/STANDARD_WIDTH;
-        float sy = ((float)height)/STANDARD_HEIGHT;
+        float sx = ((float) width) / STANDARD_WIDTH;
+        float sy = ((float) height) / STANDARD_HEIGHT;
         scale = (sx < sy ? sx : sy);
 
-        centerY = (int)(PLAY_HEIGHT_RATIO*height);
-        centerX = width/2;
+        centerY = (int) (PLAY_HEIGHT_RATIO * height);
+        centerX = width / 2;
         heightY = height;
     }
 
     /**
      * Called when the Screen is paused.
-     *
+     * <p>
      * This is usually when it's not active or visible on screen. An Application is
      * also paused before it is destroyed.
      */
@@ -162,7 +192,7 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
 
     /**
      * Called when the Screen is resumed from a paused state.
-     *
+     * <p>
      * This is usually when it regains focus.
      */
     public void resume() {
@@ -176,6 +206,7 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
     public void show() {
         // Useless if called in outside animation loop
         active = true;
+        pressState = 0;
     }
 
     /**
@@ -220,7 +251,7 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
 
     /**
      * Called when the screen was touched or a mouse button was pressed.
-     *
+     * <p>
      * This method checks to see if the play button is available and if the click
      * is in the bounds of the play button.  If so, it signals the that the button
      * has been pressed and is currently down. Any mouse button is accepted.
@@ -236,15 +267,15 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
         }
 
         // Flip to match graphics coordinates
-        screenY = heightY-screenY;
+        screenY = heightY - screenY;
 
         //System.out.printf("%d, %d", screenX, screenY);
 
         // TODO: Fix scaling
         // Play button is a circle.
-        float radius = BUTTON_SCALE*scale*playButton.getWidth()/2.0f;
-        float dist = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
-        if (dist < radius*radius) {
+        float radius = BUTTON_SCALE * scale * playButton.getWidth() / 2.0f;
+        float dist = (screenX - centerX) * (screenX - centerX) + (screenY - centerY) * (screenY - centerY);
+        if (dist < radius * radius) {
             pressState = 1;
         }
         return false;
@@ -252,7 +283,7 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
 
     /**
      * Called when a finger was lifted or a mouse button was released.
-     *
+     * <p>
      * This method checks to see if the play button is currently pressed down. If so,
      * it signals the that the player is ready to go.
      *

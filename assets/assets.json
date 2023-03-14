@@ -1,47 +1,134 @@
 {
-	"textures": {
-      "background": "shared/menu_bg.png",
-      "play": "shared/play.png",
-      "tiles": {
-        "land1": {
-          "lit": "tiles/land1-lit.png",
-          "unlit": "tiles/land1-unlit.png"
-        },
-        "land2": {
-          "lit": "tiles/land2-lit.png",
-          "unlit": "tiles/land2-unlit.png"
-        },
-        "land3": {
-          "lit": "tiles/land3-lit.png",
-          "unlit": "tiles/land3-unlit.png"
-        },
-        "land4": {
-          "lit": "tiles/land4-lit.png",
-          "unlit": "tiles/land4-unlit.png"
-        },
-        "land5": {
-          "lit": "tiles/land5-lit.png",
-          "unlit": "tiles/land5-unlit.png"
-        },
-        "land6": {
-          "lit": "tiles/land6-lit.png",
-          "unlit": "tiles/land6-unlit.png"
+  "textures": {
+    "background": "shared/menu_bg.png",
+    "play": "shared/play.png",
+    "won": "shared/win.png",
+
+    "land1-lit": {
+      "file": "tiles/land1-lit.png",
+      "minFilter": "nearest",
+      "magFilter": "nearest"
+    },
+    "land1-unlit": {
+      "file": "tiles/land1-unlit.png",
+      "minFilter": "nearest",
+      "magFilter": "nearest"
+    },
+    "land2-lit": {
+      "file": "tiles/land2-lit.png",
+      "minFilter": "nearest",
+      "magFilter": "nearest"
+    },
+    "land2-unlit": {
+      "file": "tiles/land2-unlit.png",
+      "minFilter": "nearest",
+      "magFilter": "nearest"
+    },
+    "land3-lit": {
+      "file": "tiles/land3-lit.png",
+      "minFilter": "nearest",
+      "magFilter": "nearest"
+    },
+    "land3-unlit": {
+      "file": "tiles/land3-unlit.png",
+      "minFilter": "nearest",
+      "magFilter": "nearest"
+    },
+    "land4-lit": {
+      "file": "tiles/land4-lit.png",
+      "minFilter": "nearest",
+      "magFilter": "nearest"
+    },
+    "land4-unlit": {
+      "file": "tiles/land4-unlit.png",
+      "minFilter": "nearest",
+      "magFilter": "nearest"
+    },
+    "land5-lit": {
+      "file": "tiles/land5-lit.png",
+      "minFilter": "nearest",
+      "magFilter": "nearest"
+    },
+    "land5-unlit": {
+      "file": "tiles/land5-unlit.png",
+      "minFilter": "nearest",
+      "magFilter": "nearest"
+    },
+    "land6-lit": {
+      "file": "tiles/land6-lit.png",
+      "minFilter": "nearest",
+      "magFilter": "nearest"
+    },
+    "land6-unlit": {
+      "file": "tiles/land6-unlit.png",
+      "minFilter": "nearest",
+      "magFilter": "nearest"
+    },
+    "tree": {
+      "file": "images/tree.png",
+      "minFilter": "nearest",
+      "magFilter": "nearest",
+      "sprites":	{
+        "static" : {
+          "size" : 1,
+          "rows" : 1,
+          "cols" : 1
         }
-      },
-      "objects": {
-
-      },
-      "player": {
-
       }
     },
-    "jsons"  : {
-
+    "house": {
+      "file": "images/house.png",
+      "minFilter": "nearest",
+      "magFilter": "nearest",
+      "sprites":	{
+        "static" : {
+          "size" : 1,
+          "rows" : 1,
+          "cols" : 1
+        }
+      }
     },
-    "sounds" : {
 
+    "werewolf": {
+      "file": 	"images/werewolf.png",
+      "wrap":  	false,
+      "minFilter": "nearest",
+      "magFilter": "nearest",
+      "sprites":	{
+        "movement" : {
+          "size" : 2,
+          "rows" : 1,
+          "cols" : 2
+        }
+      }
     },
-    "fonts": {
-
+    "villager":{
+      "file": 	"images/villager.png",
+      "wrap":  	false,
+      "minFilter": "nearest",
+      "magFilter": "nearest",
+      "sprites":	{
+        "movement" : {
+          "size" : 1,
+          "rows" : 1,
+          "cols" : 1
+        }
+      }
     }
+},
+  "jsons": {
+    "levels": "jsons/levels.json",
+    "player": "jsons/player.json",
+    "board": "jsons/board.json",
+    "objects": "jsons/objects.json",
+    "enemies": "jsons/enemies.json"
+  },
+  "sounds": {
+  },
+  "fonts": {
+    "retro": {
+      "file": "shared/RetroGame.ttf",
+      "size": 64
+    }
+  }
 }
