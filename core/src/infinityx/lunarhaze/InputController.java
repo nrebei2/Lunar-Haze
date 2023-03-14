@@ -131,7 +131,7 @@ public class InputController {
     }
 
     /**
-     * Returns true if the run button was pressed.
+     * Returns true if the run button was pressed
      *
      * @return true if the run button was pressed.
      */
