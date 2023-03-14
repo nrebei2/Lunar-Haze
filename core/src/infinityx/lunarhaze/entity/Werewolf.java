@@ -3,6 +3,7 @@ package infinityx.lunarhaze.entity;
 import box2dLight.PointLight;
 import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.GameObject;
+import infinityx.lunarhaze.LevelContainer;
 
 public class Werewolf extends GameObject {
 
@@ -12,19 +13,19 @@ public class Werewolf extends GameObject {
     public static final int SHIP_IMG_FLAT = 9;
 
     /**
-     * Move speed
-     **/
-    private static final float WEREWOLF_SPEED = 2f;
-
-    /**
      * How fast we change frames (one frame per 4 calls to update)
      */
     private static final float ANIMATION_SPEED = 0.25f;
 
     /**
-     * Initial hp of the werewolf is 100
+     * Initial hp of the werewolf is 0.0
      **/
-    private static final float INITIAL_HP = 100;
+    private static final float INITIAL_HP = 0.0f;
+
+    /**
+     * Maximum hp of the werewolf is 100.0
+     **/
+    private static final float MAX_HP = 100.0f;
 
     /** Reference to werewolf's sprite for drawing */
     //private FilmStrip werewolfSprite;
@@ -32,12 +33,12 @@ public class Werewolf extends GameObject {
     /**
      * The right/left movement of the werewolf
      **/
-    private float movementH = 0.0f; //DEPRECATED
+    private float movementH = 0.0f;
 
     /**
      * The up/down movement of the werewolf
      **/
-    private float movementV = 0.0f; // DEPRECATED
+    private float movementV = 0.0f;
 
     /**
      * Whether the  player stands on a moonlight tile
@@ -63,6 +64,8 @@ public class Werewolf extends GameObject {
      * Health point (hp) of the werewolf
      */
     private float hp;
+
+    private LevelContainer levelContainer;
 
     /**
      * Point light pointed on werewolf at all times
@@ -191,10 +194,11 @@ public class Werewolf extends GameObject {
 
     public void collectMoonlight() {
         moonlightCollected++;
+        hp = hp + MAX_HP * 1 / (moonlightCollected + levelContainer.getRemainingMoonlight());
     }
 
     /**
-     * Initialize a werewolf not standing on moonlight tile.
+     * Initialize a werewolf.
      */
     public Werewolf(float x, float y) {
 
@@ -203,6 +207,7 @@ public class Werewolf extends GameObject {
         moonlight = false;
         hp = INITIAL_HP;
         moonlightCollected = 0;
+        levelContainer = new LevelContainer();
     }
 
     /**
@@ -216,8 +221,8 @@ public class Werewolf extends GameObject {
         Vector2 velocity = body.getLinearVelocity();
 
         // update the velocity based on the input from the player
-        velocity.x = movementH * WEREWOLF_SPEED;
-        velocity.y = movementV * WEREWOLF_SPEED;
+        velocity.x = movementH * speed;
+        velocity.y = movementV * speed;
 
         // set the updated velocity to the player's Box2D body
         body.setLinearVelocity(velocity);

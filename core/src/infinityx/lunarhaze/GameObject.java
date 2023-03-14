@@ -24,11 +24,10 @@
 package infinityx.lunarhaze;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.BodyDef;
 import infinityx.lunarhaze.physics.BoxObstacle;
 import infinityx.util.Drawable;
+import infinityx.util.FilmStrip;
 
 /**
  * Base class for all Model objects in the game.
@@ -48,26 +47,28 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
     public enum ObjectType {
         ENEMY,
         WEREWOLF,
+        SCENE
     }
 
     // Attributes for all game objects
+
+    /**
+     * Move speed
+     **/
+    protected float speed = 2f;
     /**
      * Reference to texture origin
      */
     protected Vector2 origin;
     /**
-     * Radius of the object shadow (used for collisions)
-     */
-    protected float radius;
-    /**
      * Whether or not the object should be removed at next timestep.
      */
     protected boolean destroyed;
+
     /**
-     * CURRENT image for this object.
+     * FilmStrip pointer to the texture region
      */
-    // TODO: Change to FilmStrip to support animations easier
-    protected Texture texture;
+    private FilmStrip filmstrip;
 
     /**
      * Creates game object at (0, 0)
@@ -77,7 +78,7 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
     }
 
     /**
-     * Creates a new game object.
+     * Creates a new game object with degenerate collider settings.
      * <p>
      * All units (position, velocity, etc.) are in world units.
      *
@@ -85,23 +86,46 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
      * @param y The object y-coordinate in world
      */
     public GameObject(float x, float y) {
-        // player takes half of a tile
-        super(x, y, Board.TILE_WIDTH / 2, Board.TILE_HEIGHT / 2);
+        super(x, y, 1, 1);
         setFixedRotation(true);
-        setBodyType(BodyDef.BodyType.DynamicBody);
 
-        radius = Board.TILE_WIDTH / 4;
         destroyed = false;
     }
 
-    public void setTexture(Texture texture) {
-        this.texture = texture;
-        this.origin = new Vector2();
-        this.origin.set(texture.getWidth() / 2.0f, 0);
+    /**
+     * @return The movement speed of this object
+     */
+    public float getSpeed() {
+        return speed;
     }
 
-    public Texture getTexture() {
-        return texture;
+    /**
+     * Set the movement speed of this object
+     */
+    public void setSpeed(float speed) {
+        this.speed = speed;
+    }
+
+    public void setTexture(FilmStrip filmstrip) {
+        this.filmstrip = filmstrip;
+        this.origin = new Vector2();
+    }
+
+    /**
+     * The texture origin should correspond to the texture pixel represents the objects world position.
+     * For example, if the object is a human then the origin would be the pixel between their feet.
+     * <p>
+     * Note the bottom left of the texture corresponds to (0, 0), not the top left.
+     *
+     * @param x Where to place the origin on the u axis
+     * @param y Where to place the origin on the v axis
+     */
+    public void setOrigin(int x, int y) {
+        this.origin.set(x, y);
+    }
+
+    public FilmStrip getTexture() {
+        return filmstrip;
     }
 
     /**
@@ -178,7 +202,7 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
 
     @Override
     public void draw(GameCanvas canvas) {
-        canvas.draw(texture, Color.WHITE, origin.x, origin.y,
-                GameCanvas.WorldToScreenX(getPosition().x), GameCanvas.WorldToScreenY(getPosition().y), 0.0f, 1.0f, 1.f);
+        canvas.draw(filmstrip, Color.WHITE, origin.x, origin.y,
+                canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y), 0.0f,  scale.x, scale.y);
     }
 }

@@ -17,12 +17,14 @@ import infinityx.audio.SoundEffect;
 
 /**
  * This class parses a JSON entry into a {@link SoundEffect}.
- *
- * SoundBuffer assets do not have any properties other than the file name (because 
+ * <p>
+ * SoundBuffer assets do not have any properties other than the file name (because
  * all properties) are stored in the file.
  */
 public class SoundEffectParser implements AssetParser<SoundEffect> {
-    /** The current font entry in the JSON directory */
+    /**
+     * The current font entry in the JSON directory
+     */
     private JsonValue root;
 
     /**
@@ -36,15 +38,15 @@ public class SoundEffectParser implements AssetParser<SoundEffect> {
 
     /**
      * Resets the parser iterator for the given directory.
-     *
+     * <p>
      * The value directory is assumed to be the root of a larger JSON structure.
      * The individual assets are defined by subtrees in this structure.
      *
-     * @param directory    The JSON representation of the asset directory
+     * @param directory The JSON representation of the asset directory
      */
     public void reset(JsonValue directory) {
         root = directory;
-        root = root.getChild( "soundfx" );
+        root = root.getChild("soundfx");
     }
 
     /**
@@ -58,20 +60,20 @@ public class SoundEffectParser implements AssetParser<SoundEffect> {
 
     /**
      * Processes the next available sound buffer, loading it into the asset manager
-     *
+     * <p>
      * {@link SoundEffect} objects have no additional loader properties.  They are
      * specified key : filename.
-     *
+     * <p>
      * This method fails silently if there are no available assets to process.
      *
-     * @param manager    The asset manager to load an asset
-     * @param keymap    The mapping of JSON keys to asset file names
+     * @param manager The asset manager to load an asset
+     * @param keymap  The mapping of JSON keys to asset file names
      */
-    public void processNext(AssetManager manager, ObjectMap<String,String> keymap) {
+    public void processNext(AssetManager manager, ObjectMap<String, String> keymap) {
         String file = root.asString();
-        String asset = file+":"+root.name();
+        String asset = file + ":" + root.name();
         keymap.put(root.name(), asset);
-        manager.load( asset, SoundEffect.class, null );
+        manager.load(asset, SoundEffect.class, null);
         root = root.next();
     }
 

@@ -39,6 +39,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
  * that mode must be done in a separate begin/end pass.
  */
 public class GameCanvas {
+
     /**
      * Enumeration to track which pass we are in
      */
@@ -95,6 +96,11 @@ public class GameCanvas {
     private final ShapeRenderer debugRender;
 
     /**
+     * Rendering context for drawing moonlight bar;
+     */
+    private final ShapeRenderer barRender;
+
+    /**
      * Track whether or not we are active (for error checking)
      */
     private DrawPass active;
@@ -133,15 +139,26 @@ public class GameCanvas {
      */
     private TextureRegion holder;
 
+    private Vector2 worldToScreen;
+
+    /**
+     * Sets the scaling factor for the world to screen transformation
+     *
+     * @param worldToScreen x
+     */
+    public void setWorldToScreen(Vector2 worldToScreen) {
+        this.worldToScreen = worldToScreen;
+    }
+
     /**
      * Both functions represent a linear map from world coordinates to screen coordinates
      */
-    public static float WorldToScreenX(float w_x) {
-        return w_x * Board.TILE_WIDTH_SCREEN / Board.TILE_WIDTH;
+    public float WorldToScreenX(float w_x) {
+        return w_x * worldToScreen.x;
     }
 
-    public static float WorldToScreenY(float w_y) {
-        return w_y * Board.TILE_HEIGHT_SCREEN / Board.TILE_HEIGHT;
+    public float WorldToScreenY(float w_y) {
+        return w_y * worldToScreen.y;
     }
 
     /**
@@ -155,12 +172,14 @@ public class GameCanvas {
         active = DrawPass.INACTIVE;
         spriteBatch = new PolygonSpriteBatch();
         debugRender = new ShapeRenderer();
+        barRender = new ShapeRenderer();
 
         // Set the projection matrix (for proper scaling)
         camera = new OrthographicCamera(getWidth(), getHeight());
         camera.setToOrtho(false);
         spriteBatch.setProjectionMatrix(camera.combined);
         debugRender.setProjectionMatrix(camera.combined);
+        barRender.setProjectionMatrix(camera.combined);
 
         // Initialize the cache objects
         holder = new TextureRegion();
@@ -1028,6 +1047,78 @@ public class GameCanvas {
         float x = (getWidth() - layout.width) / 2.0f;
         float y = (getHeight() + layout.height) / 2.0f;
         font.draw(spriteBatch, layout, x, y + offset);
+    }
+
+    public void drawHPBar(String text, BitmapFont font, float offset, float width, float height, float hp) {
+        if (active != DrawPass.STANDARD) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+            return;
+        }
+
+        GlyphLayout layout = new GlyphLayout(font, text);
+        float x = getWidth() - layout.width - width * 1.2f;
+        float y = getHeight() - layout.height / 2.0f;
+        font.draw(spriteBatch, layout, x, y + offset);
+
+        ShapeRenderer barRenderer = new ShapeRenderer();
+        barRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        barRenderer.setColor(Color.YELLOW);
+        x = getWidth() - width;
+        y = getHeight() - layout.height;
+        barRenderer.rect(x, y, width * hp/100, height);
+        barRenderer.end();
+
+        barRenderer.begin(ShapeRenderer.ShapeType.Line);
+        barRenderer.setColor(Color.WHITE);
+        x = getWidth() - width;
+        y = getHeight() - layout.height;
+        barRenderer.rect(x, y, width, height);
+        barRenderer.end();
+    }
+
+    /**
+     * Draws text on the upper right corner of the screen.
+     *
+     * @param text   The string to draw
+     * @param font   The font to use
+     * @param offset The y-value offset from the center of the screen.
+     */
+    public void drawTextUpperRight(String text, BitmapFont font, float offset) {
+        if (active != DrawPass.STANDARD) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+            return;
+        }
+
+        GlyphLayout layout = new GlyphLayout(font, text);
+        float x = getWidth() - layout.width;
+        float y = getHeight() - layout.height / 2.0f;
+        font.draw(spriteBatch, layout, x, y + offset);
+    }
+
+    /**
+     * Draws a solid rectangle at upper right corner with specified idth and height
+     */
+    public void drawRec(float width, float height) {
+        ShapeRenderer barRenderer = new ShapeRenderer();
+        barRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        barRenderer.setColor(Color.YELLOW);
+        float x = getWidth() - width;
+        float y = getHeight() - height * 4;
+        barRenderer.rect(x, y, width, height);
+        barRenderer.end();
+    }
+
+    /**
+     * Draws a rectangle outline at the upper right corner with specified width, and height
+     */
+    public void drawRecLine(float width, float height) {
+        ShapeRenderer barRenderer = new ShapeRenderer();
+        barRenderer.begin(ShapeRenderer.ShapeType.Line);
+        barRenderer.setColor(Color.WHITE);
+        float x = getWidth() - width;
+        float y = getHeight() - height * 4;
+        barRenderer.rect(x, y, width, height);
+        barRenderer.end();
     }
 
     /**

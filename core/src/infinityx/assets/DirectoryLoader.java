@@ -25,15 +25,19 @@ import com.badlogic.gdx.utils.ObjectMap;
 
 /**
  * This class is an {@link AssetLoader} to load {@link AssetDirectory.Index} assets.
- *
+ * <p>
  * This is the "top-level" loader for {@link AssetDirectory}. It is necessary to load
  * the initial directory JSON.  But it also has integrated {@link AssetParser} objects
  * to turn to contents of that JSON into more assets.
  */
 public class DirectoryLoader extends AsynchronousAssetLoader<AssetDirectory.Index, DirectoryLoader.DirectoryLoaderParameters> {
-    /** The asynchronously read AssetDirectory.Index */
+    /**
+     * The asynchronously read AssetDirectory.Index
+     */
     protected AssetDirectory.Index cachedData;
-	/** The associated parsers for parsing the JSON contents */
+    /**
+     * The associated parsers for parsing the JSON contents
+     */
     protected Array<AssetParser<?>> parsers;
 
     /**
@@ -53,58 +57,58 @@ public class DirectoryLoader extends AsynchronousAssetLoader<AssetDirectory.Inde
     /**
      * Creates a new DirectoryLoader with the given file resolver
      *
-     * @param resolver    The file resolver
+     * @param resolver The file resolver
      */
-    public DirectoryLoader (FileHandleResolver resolver) {
+    public DirectoryLoader(FileHandleResolver resolver) {
         super(resolver);
         parsers = new Array<AssetParser<?>>(false, 16);
     }
 
-	/**
-	 * Returns the {@link AssetParser} objects associated with this directory loader
-	 *
-	 * If there are no asset parsers, then no assets will be generated beyond the
-	 * initial JSON file.  The contents of the JSON file will be ignored.
-	 *
-	 * Each asset type may have multiple asset parsers
-	 *
-	 * @return the {@link AssetParser} objects associated with this directory loader
-	 */
+    /**
+     * Returns the {@link AssetParser} objects associated with this directory loader
+     * <p>
+     * If there are no asset parsers, then no assets will be generated beyond the
+     * initial JSON file.  The contents of the JSON file will be ignored.
+     * <p>
+     * Each asset type may have multiple asset parsers
+     *
+     * @return the {@link AssetParser} objects associated with this directory loader
+     */
     public Array<AssetParser<?>> getParsers() {
         return parsers;
     }
 
-	/**
-	 * Adds a {@link AssetParser} for this directory loader
-	 *
-	 * If there are no asset parsers, then no assets will be generated beyond the
-	 * initial JSON file.  The contents of the JSON file will be ignored.
-	 *
-	 * Each asset type may have multiple asset parsers
-	 *
-	 * @param parser	The {@link AssetParser} to add
-	 */
+    /**
+     * Adds a {@link AssetParser} for this directory loader
+     * <p>
+     * If there are no asset parsers, then no assets will be generated beyond the
+     * initial JSON file.  The contents of the JSON file will be ignored.
+     * <p>
+     * Each asset type may have multiple asset parsers
+     *
+     * @param parser The {@link AssetParser} to add
+     */
     public void addParser(AssetParser<?> parser) {
         parsers.add(parser);
     }
 
-	/**
-	 * Removes a {@link AssetParser} from this directory loader
-	 *
-	 * If there are no asset parsers, then no assets will be generated beyond the
-	 * initial JSON file.  The contents of the JSON file will be ignored.
-	 *
-	 * Each asset type may have multiple asset parsers
-	 *
-	 * @param parser	The {@link AssetParser} to remove
-	 */
+    /**
+     * Removes a {@link AssetParser} from this directory loader
+     * <p>
+     * If there are no asset parsers, then no assets will be generated beyond the
+     * initial JSON file.  The contents of the JSON file will be ignored.
+     * <p>
+     * Each asset type may have multiple asset parsers
+     *
+     * @param parser The {@link AssetParser} to remove
+     */
     public void removeParser(AssetParser<?> parser) {
-        parsers.removeValue(parser,false);
+        parsers.removeValue(parser, false);
     }
 
     /**
      * Returns the {@link JsonValue} instance currently loaded by this loader.
-     *
+     * <p>
      * If nothing has been loaded, this returns {@code null}.
      *
      * @return the {@link JsonValue} instance currently loaded by this loader.
@@ -115,47 +119,47 @@ public class DirectoryLoader extends AsynchronousAssetLoader<AssetDirectory.Inde
 
     /**
      * Loads thread-safe part of the asset and injects any dependencies into the AssetManager.
-     *
+     * <p>
      * This is used to load non-OpenGL parts of the asset that do not require the context
      * of the main thread.
      *
-     * @param manager   The asset manager
-     * @param fileName  The name of the asset to load
-     * @param file      The resolved file to load
-     * @param params    The parameters to use for loading the asset
+     * @param manager  The asset manager
+     * @param fileName The name of the asset to load
+     * @param file     The resolved file to load
+     * @param params   The parameters to use for loading the asset
      */
     @Override
-    public void loadAsync (AssetManager manager, String fileName, FileHandle file, DirectoryLoaderParameters params) {
+    public void loadAsync(AssetManager manager, String fileName, FileHandle file, DirectoryLoaderParameters params) {
         JsonReader reader = new JsonReader();
         cachedData = new AssetDirectory.Index();
         cachedData.directory = reader.parse(file);
         System.out.flush();
-        for(AssetParser<?> parser : parsers) {
-            ObjectMap<String,String> keys = cachedData.keymap.get( parser.getType(), null );
+        for (AssetParser<?> parser : parsers) {
+            ObjectMap<String, String> keys = cachedData.keymap.get(parser.getType(), null);
             if (keys == null) {
-                keys = new ObjectMap<String,String>();
-                cachedData.keymap.put(parser.getType(),keys);
+                keys = new ObjectMap<String, String>();
+                cachedData.keymap.put(parser.getType(), keys);
             }
-            parser.reset( cachedData.directory );
+            parser.reset(cachedData.directory);
             while (parser.hasNext()) {
-                parser.processNext( manager, keys );
+                parser.processNext(manager, keys);
             }
         }
     }
 
     /**
      * Loads the main thread part of the asset.
-     *
+     * <p>
      * This is used to load OpenGL parts of the asset that require the context of the
      * main thread.
      *
-     * @param manager   The asset manager
-     * @param fileName  The name of the asset to load
-     * @param file      The resolved file to load
-     * @param params    The parameters to use for loading the asset
+     * @param manager  The asset manager
+     * @param fileName The name of the asset to load
+     * @param file     The resolved file to load
+     * @param params   The parameters to use for loading the asset
      */
     @Override
-    public AssetDirectory.Index loadSync (AssetManager manager, String fileName, FileHandle file, DirectoryLoaderParameters params) {
+    public AssetDirectory.Index loadSync(AssetManager manager, String fileName, FileHandle file, DirectoryLoaderParameters params) {
         AssetDirectory.Index directory = cachedData;
         cachedData = null;
         return directory;
@@ -163,21 +167,19 @@ public class DirectoryLoader extends AsynchronousAssetLoader<AssetDirectory.Inde
 
     /**
      * Returns the other assets this asset requires to be loaded first.
-     *
+     * <p>
      * This method may be called on a thread other than the GL thread. It may return
      * null if there are no dependencies.
      *
-     * @param fileName  The name of the asset to load
-     * @param file      The resolved file to load
-     * @param params parameters for loading the asset
-     *
+     * @param fileName The name of the asset to load
+     * @param file     The resolved file to load
+     * @param params   parameters for loading the asset
      * @return the other assets this asset requires to be loaded first.
      */
     @Override
-    public Array<AssetDescriptor> getDependencies (String fileName, FileHandle file, DirectoryLoaderParameters params) {
+    public Array<AssetDescriptor> getDependencies(String fileName, FileHandle file, DirectoryLoaderParameters params) {
         return null;
     }
-
 
 
 }

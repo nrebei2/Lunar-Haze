@@ -1,6 +1,5 @@
 package infinityx.lunarhaze;
 
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.EnemyList;
@@ -38,6 +37,9 @@ public class GameplayController {
 
     private boolean gameLost;
     private LevelContainer levelContainer;
+
+    /**This is the collision controller (handels collisions between all objects in our world*/
+    private CollisionController collisionController;
 
     public GameplayController() {
         player = null;
@@ -104,6 +106,7 @@ public class GameplayController {
      */
     public void start(LevelContainer levelContainer) {
         this.levelContainer = levelContainer;
+        this.collisionController = new CollisionController(levelContainer);
         player = levelContainer.getPlayer();
         enemies = levelContainer.getEnemies();
         objects.add(player);
@@ -144,7 +147,7 @@ public class GameplayController {
      * @param delta Number of seconds since last animation frame
      */
     public void resolveActions(InputController input, float delta) {
-        // Process the player
+        // Process the player only when the game is in play
         if (player != null && !(gameLost || gameWon)) {
             resolvePlayer(input, delta);
             resolveMoonlight(delta);
@@ -168,44 +171,47 @@ public class GameplayController {
     }
 
     public void resolveMoonlight(float delta) {
-        Vector2 pos = board.worldToBoard(player.getPosition().x, player.getPosition().y);
-        int px = (int) pos.x;
-        int py = (int) pos.y;
+        int px = board.worldToBoardX(player.getPosition().x);
+        int py = board.worldToBoardX(player.getPosition().y);
 
         if (board.isLit(px, py)) {
-            timeOnMoonlight += delta; // Increase variable by time
+            if (board.isCollectable(px, py)) {
+                timeOnMoonlight += delta; // Increase variable by time
+            }
             player.setOnMoonlight(true);
-            if (timeOnMoonlight > MOONLIGHT_COLLECT_TIME) {
+            if (board.isCollectable(px, py) && timeOnMoonlight > MOONLIGHT_COLLECT_TIME) {
                 player.collectMoonlight();
                 remainingMoonlight--;
                 timeOnMoonlight = 0;
-
-                levelContainer.setLit(px, py, false);
-
-                // Check if game is won here
-                if (remainingMoonlight == 0) gameWon = true;
+                board.setCollected(px, py);
             }
+            // Check if game is won here
+            if (remainingMoonlight == 0) gameWon = true;
         } else {
             timeOnMoonlight = 0;
             player.setOnMoonlight(false);
         }
     }
 
+    // TODO: THIS SHOULD BE IN ENEMYCONTROLLER, also this code is a mess
     public void resolveEnemies() {
-        board.clearVisibility();
+        //board.clearVisibility();
         for (Enemy en : enemies) {
             if (controls[en.getId()] != null) {
                 EnemyController curEnemyController = controls[en.getId()];
                 int action = curEnemyController.getAction();
-                curEnemyController.setVisibleTiles();
+                //curEnemyController.setVisibleTiles();
 //                boolean attacking = (action & EnemyController.CONTROL_ATTACK) != 0;
                 en.update(action);
-//                if (attacking &&) {
-//                    fireWeapon(s);
-//                } else {
-//                    s.coolDown(true);
-//                }
 
+                // TODO: make more interesting actions
+                if (en.getIsAlerted()) {
+                    // angle between enemy and player
+                    double ang = Math.atan2(player.getPosition().y - en.getPosition().y, player.getPosition().x - en.getPosition().y);
+                    en.setFlashLightRot((float) ang);
+                } else {
+                    en.setFlashLightRotAlongDir();
+                }
             } else {
 
                 en.update(EnemyController.CONTROL_NO_ACTION);

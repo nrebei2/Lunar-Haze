@@ -3,7 +3,6 @@ package infinityx.lunarhaze;
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
@@ -12,8 +11,8 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.EnemyList;
+import infinityx.lunarhaze.entity.SceneObject;
 import infinityx.lunarhaze.entity.Werewolf;
-import infinityx.lunarhaze.physics.ConeSource;
 import infinityx.lunarhaze.physics.LightSource;
 import infinityx.util.Drawable;
 
@@ -24,7 +23,7 @@ import java.util.Comparator;
  * <p>
  * This controller also acts as the root class for all the models.
  * Holds a collection of model objects representing the game scene.
- * This includes the Board, player, enemies, and scene objects.
+ * This includes the Board, player, enemies, lights, and scene objects.
  * <p>
  * World coordinates:
  * ------------------ (n, n) (board is nxn tiles)
@@ -43,8 +42,7 @@ import java.util.Comparator;
  * +---+---+----------+
  * (0,0)
  * <p>
- * Represent all coordinates for models with world coordinates,
- * GameCanvas should be doing any transformations
+ * All models' positions are in world coordinates, Drawing should only be doing the relevant transformations
  */
 public class LevelContainer {
 
@@ -88,6 +86,8 @@ public class LevelContainer {
      */
     private final Affine2 view = new Affine2();
 
+    public Vector2 worldToScreen = new Vector2();
+
     /**
      * Holds references to all drawable entities on the level (i.e. sceneObjects, player, enemies)
      */
@@ -105,16 +105,7 @@ public class LevelContainer {
     public LevelContainer() {
         // BOX2D initialization
         world = new World(new Vector2(0, 0), true);
-
-        // TODO: Maybe set in asset json and let LevelParser set these?
-        RayHandler.setGammaCorrection(true);
-        RayHandler.useDiffuseLight(true);
         rayHandler = new RayHandler(world, Gdx.graphics.getWidth(), Gdx.graphics.getWidth());
-        rayHandler.setAmbientLight(0.25f, 0.22f, 0.32f, 0.25f);
-        rayHandler.setBlur(true);
-        rayHandler.setBlurNum(5);
-        rayHandler.setShadows(true);
-
 
         player = null;
         board = null;
@@ -124,6 +115,10 @@ public class LevelContainer {
 
         drawables = new Array<Drawable>();
         remainingMoonlight = 0;
+    }
+
+    public RayHandler getRayHandler() {
+        return rayHandler;
     }
 
     /**
@@ -139,13 +134,6 @@ public class LevelContainer {
      */
     public int addEnemy(Enemy enemy) {
         enemies.addEnemy(enemy);
-
-        // Lighting, physics (ALWAYS MAKE SURE PHYSICS IS ACTIVATED B4 ATTACHING LIGHT)
-        enemy.activatePhysics(world);
-
-        enemy.setFlashlight(new ConeSource(rayHandler, 512, new Color(0.8f, 0.6f, 0f, 0.9f), 4f, enemy.getX(), enemy.getY(), 0f, 30));
-        enemy.setFlashlightOn(true);
-
         drawables.add(enemy);
 
         return enemies.size() - 1;
@@ -174,11 +162,6 @@ public class LevelContainer {
      */
     public void setPlayer(Werewolf player) {
         drawables.add(player);
-
-        // Lighting, physics
-        player.activatePhysics(world);
-        player.setSpotLight(new PointLight(rayHandler, 512, new Color(0.65f, 0.6f, 0.77f, 0.6f), 1f, 0, 0));
-
         this.player = player;
     }
 
@@ -213,38 +196,6 @@ public class LevelContainer {
     }
 
     /**
-     * Sets a tile as lit or not.
-     *
-     * @param x The x index for the Tile cell
-     * @param y The y index for the Tile cell
-     */
-    public void setLit(int x, int y, boolean lit) {
-        board.setLit(x, y, lit);
-        if (lit) {
-            addLightAt(x, y);
-        } else {
-            removeLightAt(x, y);
-        }
-    }
-
-    private void removeLightAt(int x, int y) {
-        int t_pos = x + y * board.getWidth();
-        if (!moonlight.containsKey(t_pos)) {
-            return;
-        }
-        moonlight.get(t_pos).setActive(false);
-    }
-
-    private void addLightAt(int x, int y) {
-        int t_pos = x + y * board.getWidth();
-        if (!moonlight.containsKey(t_pos)) {
-            Vector2 worldPos = board.boardCenterToWorld(x, y);
-            moonlight.put(t_pos, new PointLight(rayHandler, 512, LightingController.LIGHTCOLOR, 1.5f, worldPos.x, worldPos.y));
-        }
-        moonlight.get(t_pos).setActive(true);
-    }
-
-    /**
      * Draws the entire scene to the canvas
      *
      * @param canvas The drawing context
@@ -253,13 +204,13 @@ public class LevelContainer {
         // Puts player at center of canvas
 
         view.setToTranslation(
-                -GameCanvas.WorldToScreenX(player.getPosition().x) + canvas.getWidth() / 2,
-                -GameCanvas.WorldToScreenY(player.getPosition().y) + canvas.getHeight() / 2
+                -canvas.WorldToScreenX(player.getPosition().x) + canvas.getWidth() / 2,
+                -canvas.WorldToScreenY(player.getPosition().y) + canvas.getHeight() / 2
         );
         canvas.begin(view);
 
         // Debug prints
-        //System.out.printf(
+        //System.out.printf(i
         //        "Player pos: (%f, %f), Spotlight pos: (%f, %f) \n",
         //        player.getPosition().x, player.getPosition().y, player.getSpotlight().getPosition().x, player.getSpotlight().getPosition().y);
 
@@ -277,8 +228,8 @@ public class LevelContainer {
         // A separate transform for lights :(
         // In an ideal world they would be the same, but I like using GameCanvas
         OrthographicCamera raycamera = new OrthographicCamera(
-                canvas.getWidth() / GameCanvas.WorldToScreenX(1),
-                canvas.getHeight() / GameCanvas.WorldToScreenY(1)
+                canvas.getWidth() / canvas.WorldToScreenX(1),
+                canvas.getHeight() / canvas.WorldToScreenY(1)
         );
         raycamera.translate(player.getPosition().x, player.getPosition().y);
         raycamera.update();
