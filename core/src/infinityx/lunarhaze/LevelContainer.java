@@ -84,7 +84,7 @@ public class LevelContainer {
     /**
      * Keeps player centered
      */
-    private final Affine2 view = new Affine2();
+    private final Vector2 view = new Vector2();
 
 
     /**
@@ -201,7 +201,7 @@ public class LevelContainer {
      * @param y y screen units along y-axis
      */
     public void setViewTranslation(float x, float y) {
-        view.setToTranslation( x, y );
+        view.set( x, y );
     }
 
     /**
@@ -210,7 +210,7 @@ public class LevelContainer {
      * @param y y screen units along y-axis
      */
     public void translateView(float x, float y) {
-        view.translate(x, y);
+        view.add(x, y);
     }
 
     /**
@@ -219,7 +219,7 @@ public class LevelContainer {
      * @param canvas The drawing context
      */
     public void drawLevel(GameCanvas canvas) {
-        canvas.begin(view);
+        canvas.beginT(view.x, view.y);
 
         // Debug prints
         //System.out.printf(i

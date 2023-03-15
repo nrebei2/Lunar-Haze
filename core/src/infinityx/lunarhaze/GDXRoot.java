@@ -119,6 +119,7 @@ public class GDXRoot extends Game implements ScreenObserver {
             directory = loading.getAssets();
             menu.gatherAssets(directory);
             game.gatherAssets(directory);
+            editor.gatherAssets(directory);
             setScreen(menu);
 
             LevelParser ps = LevelParser.LevelParser();

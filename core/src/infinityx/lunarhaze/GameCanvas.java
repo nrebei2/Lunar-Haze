@@ -144,7 +144,15 @@ public class GameCanvas {
      */
     private TextureRegion holder;
 
+    /**
+     * Scaling factors for world to screen translation
+     */
     private Vector2 worldToScreen;
+
+    /**
+     * Translation cache used for view translation
+     */
+    private Vector2 viewCache;
 
     /**
      * Sets the scaling factor for the world to screen transformation
@@ -161,9 +169,21 @@ public class GameCanvas {
     public float WorldToScreenX(float w_x) {
         return w_x * worldToScreen.x;
     }
-
     public float WorldToScreenY(float w_y) {
         return w_y * worldToScreen.y;
+    }
+
+    /**
+     * Both functions represent a map from screen coordinates to world coordinates
+     */
+    public float ScreenToWorldX(float s_x) {
+        return (s_x - viewCache.x) / worldToScreen.x;
+    }
+    /**
+     * No need to flip y-axis
+     */
+    public float ScreenToWorldY(float s_y) {
+        return ((Gdx.graphics.getHeight() - s_y) - viewCache.y) / worldToScreen.y;
     }
 
     /**
@@ -193,6 +213,7 @@ public class GameCanvas {
         local = new Affine2();
         global = new Matrix4();
         vertex = new Vector2();
+        viewCache = new Vector2(0, 0);
     }
 
     /**
@@ -437,12 +458,41 @@ public class GameCanvas {
      * @param sx the amount to scale the x-axis
      * @param sy the amount to scale the y-axis
      */
-    public void begin(float sx, float sy) {
+    public void beginS(float sx, float sy) {
         global.idt();
         global.scl(sx, sy, 1.0f);
         global.mulLeft(camera.combined);
         spriteBatch.setProjectionMatrix(global);
 
+        spriteBatch.begin();
+        active = DrawPass.STANDARD;
+    }
+
+    /**
+     * Sets view translation, used for screen to world translation
+     * @param view
+     */
+    public void setView(Vector2 view) {
+        this.viewCache.set(view);
+    }
+
+    /**
+     * Start a standard drawing sequence.
+     * <p>
+     * Nothing is flushed to the graphics card until the method end() is called.
+     *
+     * @param tx the amount to translate on the x-axis
+     * @param ty the amount to translate on the y-axis
+     */
+    public void beginT(float tx, float ty) {
+        global.idt();
+        viewCache.set(tx, ty);
+        global.translate(tx, ty, 0.0f);
+        global.mulLeft(camera.combined);
+        spriteBatch.setProjectionMatrix(global);
+        shapeRenderer.setProjectionMatrix(global);
+
+        setBlendState(BlendState.NO_PREMULT);
         spriteBatch.begin();
         active = DrawPass.STANDARD;
     }

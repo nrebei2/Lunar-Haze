@@ -6,13 +6,19 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import infinityx.assets.AssetDirectory;
 import infinityx.util.ScreenObservable;
 
 public class EditorMode extends ScreenObservable implements Screen, InputProcessor {
+    /**
+     * Need an ongoing reference to the asset directory
+     */
+    protected AssetDirectory directory;
     /**
      * Reference to GameCanvas created by the root
      */
@@ -23,9 +29,69 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     private LevelContainer level;
 
+    /**
+     * type Selected :=
+     *  | Tile of (String, Texture)
+     *  | Player of Texture
+     *  | Enemy of (String, Texture)
+     *  | Object of (String, Texture, float)
+     */
+    abstract class Selected {
+        public Texture texture;
+    }
+    class Tile extends Selected {
+        public Tile(Texture texture, String type) {
+            this.type = type;
+            this.texture = texture;
+        }
+
+        public String type;
+    }
+    class Player extends Selected {
+        public Player(Texture texture) {
+            this.texture = texture;
+        }
+    }
+    class Enemy extends Selected {
+        public Enemy(Texture texture, String type) {
+            this.type = type;
+            this.texture = texture;
+        }
+
+        public String type;
+    }
+    class SceneObject extends Selected {
+        public SceneObject(Texture texture, String type) {
+            this.type = type;
+            this.texture = texture;
+            this.scale = 1;
+        }
+
+        public String type;
+        public float scale;
+    }
+    /**
+     * What is on my cursor right now?
+     */
+    private Selected selected;
+
+    static final Color SELECTED_COLOR = new Color(0.8f, 0.8f, 0.8f, 0.7f);
+
 
     public EditorMode(GameCanvas canvas) {
         this.canvas = canvas;
+    }
+
+    /**
+     * Gather the required assets.
+     * <p>
+     * This method extracts the asset variables from the given asset directory. It
+     * should only be called after the asset directory is completed.
+     *
+     * @param directory Reference to global asset manager.
+     */
+    public void gatherAssets(AssetDirectory directory) {
+        this.directory = directory;
     }
 
     /**
@@ -43,10 +109,20 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * @param delta Number of seconds since last animation frame
      */
     private void update(float delta) {
-        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-            System.out.println("Pressing D");
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            level.translateView(-20, 0);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             level.translateView(20, 0);
         }
+        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+            level.translateView(0, -20);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+            level.translateView(0, 20);
+        }
+
+        selected = new Tile(directory.getEntry("land1-unlit", Texture.class), "land1");
     }
 
     /**
@@ -55,6 +131,22 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     private void draw(float delta) {
         canvas.clear(Color.BLACK);
         level.drawLevel(canvas);
+
+        // Cursor world position
+        float curWorldX = canvas.ScreenToWorldX(Gdx.input.getX());
+        float curWorldY = canvas.ScreenToWorldY(Gdx.input.getY());
+
+        if (selected == null) {
+            return;
+        }
+
+        // Draw selected texture
+        canvas.begin();
+        if (selected instanceof Tile) {
+            // snap to tile
+            //canvas.draw(selected.texture, SELECTED_COLOR, Gdx.input.getX(), Gdx.graphics.getHeight() - Gdx.input.getY());
+        }
+        canvas.end();
 
         //canvas.begin();
         //canvas.drawRecOutline(100, 100);
@@ -71,10 +163,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         update(delta);
         draw(delta);
 
-        // Hold a levelContainer
-        // From LevelParser thru loadEmpty
-        // Tile can have no current texture
-        // In board draw if tile is empty draw red outline
         // Buttons on right for tiles, player, enemy, lights, scene objects
         // Simple enough dont both using scene2d
         // Set size of font using displayFont.getData().setScale(height / displayFont.getXHeight());
