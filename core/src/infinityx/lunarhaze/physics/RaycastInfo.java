@@ -10,7 +10,7 @@ public class RaycastInfo implements RayCastCallback {
     /**The fixture hit by ray*/
     public Fixture fixture;
 
-    /**The starting point of the ray*/
+    /**Collision point*/
     public Vector2 point;
 
     /**The normal at the point we hit a fixture*/
