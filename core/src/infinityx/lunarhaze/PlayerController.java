@@ -55,7 +55,14 @@ public class PlayerController {
     /**
      * Whether the player won the game
      */
-    private Boolean gameWon;
+    private boolean gameWon;
+
+    private boolean isAttacking;
+
+    private float attackCounter;
+    private float attackLength;
+    private float attackCooldownCounter;
+    private float attackCooldown;
 
     /**
      * Get the player HP in PlayerController to enforce encapsulation.
@@ -102,6 +109,11 @@ public class PlayerController {
         this.levelContainer = levelContainer;
         remainingMoonlight = levelContainer.getRemainingMoonlight();
         gameWon = false;
+        isAttacking = false;
+        attackCounter = 0f;
+        attackLength = 0.75f;
+        attackCooldown = 2f;
+        attackCooldownCounter = 0f;
     }
 
     /**
@@ -173,6 +185,25 @@ public class PlayerController {
             player.setStealth(STILL_STEALTH);
         }
     }
+
+    public void attack(float delta) {
+
+        // Check if we can attack based on the attack cooldown
+        if(attackCooldownCounter > attackCooldown) {
+            if (attackCounter < attackLength) {
+                isAttacking = true;
+                attackCounter += delta;
+            } else {
+                attackCounter = 0f;
+                attackCooldownCounter = 0f;
+            }
+        } else {
+            attackCooldownCounter += delta;
+        }
+        
+    }
+
+    public boolean isAttacking() { return isAttacking; }
 
     public void update(InputController input, float delta){
         resolvePlayer(input, delta);

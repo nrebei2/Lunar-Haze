@@ -47,9 +47,13 @@ public class GameMode extends ScreenObservable implements Screen {
          */
         INTRO,
         /**
-         * While we are playing the game
+         * While we are playing the game (Night Mode)
          */
-        PLAY,
+        NIGHT,
+        /**
+         * While we are playing the game (Battle Mode)
+         */
+        DAY,
         /**
          * The werewolf is dead
          */
@@ -166,7 +170,7 @@ public class GameMode extends ScreenObservable implements Screen {
             case INTRO:
                 setupLevel();
                 gameplayController.start(levelContainer);
-                gameState = GameState.PLAY;
+                gameState = GameState.NIGHT;
                 break;
             case OVER:
             case WIN:
@@ -177,7 +181,7 @@ public class GameMode extends ScreenObservable implements Screen {
                     play(delta);
                 }
                 break;
-            case PLAY:
+            case NIGHT:
                 play(delta);
                 if (gameplayController.isGameWon()) {
                     gameState = GameState.WIN;
@@ -266,7 +270,7 @@ public class GameMode extends ScreenObservable implements Screen {
                 canvas.drawTextCentered("FAILURE!", displayFont, 0.0f);
                 canvas.end();
                 break;
-            case PLAY:
+            case NIGHT:
                 displayFont.setColor(Color.YELLOW);
                 canvas.begin(); // DO NOT SCALE
                 canvas.drawLightBar(BAR_WIDTH,
@@ -275,7 +279,6 @@ public class GameMode extends ScreenObservable implements Screen {
                         BAR_HEIGHT, gameplayController.getPlayerController().getPlayerHp());
                 canvas.drawStealthBar(BAR_WIDTH,
                         BAR_HEIGHT, gameplayController.getPlayerController().getPlayerStealth());
-                System.out.println("Player stealth is: " + gameplayController.getPlayerController().getPlayerStealth());
                 canvas.end();
                 break;
         }
