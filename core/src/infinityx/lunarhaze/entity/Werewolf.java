@@ -2,7 +2,6 @@ package infinityx.lunarhaze.entity;
 
 import box2dLight.PointLight;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
 import infinityx.lunarhaze.GameObject;
 import infinityx.lunarhaze.LevelContainer;
 
@@ -19,8 +18,25 @@ public class Werewolf extends GameObject {
     private static final float ANIMATION_SPEED = 0.25f;
 
     /**
-     * Initial hp of the werewolf is 20.0
+     * Initial light value of the werewolf is 0.0
      **/
+
+    private static final float INITIAL_LIGHT = 0.0f;
+
+    /**
+     * Initial hp of the werewolf is 100.0
+     **/
+    public static final int INITIAL_HP = 5;
+
+    /**
+     * Maximum light of the werewolf is 100.0
+     **/
+    public static final float MAX_LIGHT = 100.0f;
+
+    /**
+     * Maximum light of the werewolf is 100.0
+     **/
+
     private static final float INITIAL_HP = 50.0f;
 
     private float maxHp;
@@ -63,25 +79,20 @@ public class Werewolf extends GameObject {
     /**
      * Health point (hp) of the werewolf
      */
-    private float hp;
-
-    private LevelContainer levelContainer;
+    private int hp;
 
     /**
-     * Point light pointed on werewolf at all times
+     * Light collected of the werewolf.
+     * The value is a percentage of light on the map, between 0 and 100.
      */
-    private PointLight spotLight;
+    private float light;
 
-    private final Vector2 forceCache = new Vector2();
-
-    /* Returns whether the werewolf can move or not; the werewolf can't move
-       if its being knocked back by an attack.
+    /**
+     * Stealth value of the werewolf.
+     * The value is a float between 0 and 1.
      */
-    private boolean canMove;
+    private float stealth;
 
-    /** Controls how long the werewolf gets knocked back by an attack and the window of the
-     *  damage animation.
-     */
     private float lockoutTime;
 
 //    /**
@@ -96,19 +107,14 @@ public class Werewolf extends GameObject {
 //        return werewolfSprite;
 //    }
 
+    private LevelContainer levelContainer;
 
     /**
-     * Sets the image texture for this ship
-     *
-     * This value should be loaded by the GameMode and set there. However, we
-     * have to be prepared for this to be null at all times
-     *
-     * param value the image texture for this ship
+     * Point light pointed on werewolf at all times
      */
-    /*public void setFilmStrip(FilmStrip value) {
-        werewolfSprite = value;
-        werewolfSprite.setFrame(SHIP_IMG_FLAT);
-    }*/
+    private PointLight spotLight;
+
+    private final Vector2 forceCache = new Vector2();
 
     /**
      * Returns the type of this object.
@@ -160,7 +166,7 @@ public class Werewolf extends GameObject {
     /**
      * Returns the current hp of the werewolf.
      */
-    public float getHp() {
+    public int getHp() {
         return hp;
     }
 
@@ -169,7 +175,7 @@ public class Werewolf extends GameObject {
      *
      * @param value the current hp of the werewolf.
      */
-    public void setHp(float value) {
+    public void setHp(int value) {
         hp = value;
     }
 
@@ -179,6 +185,38 @@ public class Werewolf extends GameObject {
     }
 
     public void initLockout(float value) { lockout = value; }
+
+    /**
+     * Returns the current stealth of the werewolf.
+     */
+    public float getStealth() {
+        return stealth;
+    }
+
+    /**
+     * Sets the current stealth of the werewolf.
+     *
+     * @param value the current stealth of the werewolf.
+     */
+    public void setStealth(float value) {
+        stealth = value;
+    }
+
+    /**
+     * Returns the current light collected of the werewolf.
+     */
+    public float getLight() {
+        return light;
+    }
+
+    /**
+     * Sets the current light collected of the werewolf.
+     *
+     * @param value the current light of the werewolf.
+     */
+    public void setLight(float value) {
+        light = value;
+    }
 
     /**
      * @return Point light on player
@@ -209,6 +247,13 @@ public class Werewolf extends GameObject {
         moonlight = b;
     }
 
+    public void addMoonlightCollected(){
+        moonlightCollected ++;
+    }
+
+    public int getMoonlightCollected(){
+        return moonlightCollected;
+    }
     public void collectMoonlight() {
         moonlightCollected++;
         hp = hp + maxHp * 1 / (moonlightCollected + levelContainer.getRemainingMoonlight());
@@ -223,22 +268,11 @@ public class Werewolf extends GameObject {
         animeframe = 0.0f;
         lockoutTime = 0.0f;
         moonlight = false;
+        light = INITIAL_LIGHT;
         hp = INITIAL_HP;
+        stealth = 0.0f;
         moonlightCollected = 0;
         levelContainer = new LevelContainer();
-        canMove = true;
-    }
-
-    public void resolveAttack(GameObject enemy, float damage, float knockback) {
-
-        Body enemyBody = enemy.getBody();
-        Vector2 pos = body.getPosition();
-        Vector2 enemyPos = enemyBody.getPosition();
-        Vector2 direction = pos.sub(enemyPos).nor();
-
-        canMove = false;
-        body.applyLinearImpulse(direction.scl(knockback), body.getWorldCenter(), true);
-        setHp(hp - damage);
     }
 
     /**
@@ -247,15 +281,14 @@ public class Werewolf extends GameObject {
      * @param delta Number of seconds since last animation frame
      */
     public void update(float delta) {
+
         // get the current velocity of the player's Box2D body
         Vector2 velocity = body.getLinearVelocity();
+        
         if(canMove) {
-
-
             // update the velocity based on the input from the player
             velocity.x = movementH * speed;
             velocity.y = movementV * speed;
-
             // set the updated velocity to the player's Box2D body
             body.setLinearVelocity(velocity);
         }
@@ -265,5 +298,6 @@ public class Werewolf extends GameObject {
         } else {
             lockoutTime += delta;
         }
+
     }
 }

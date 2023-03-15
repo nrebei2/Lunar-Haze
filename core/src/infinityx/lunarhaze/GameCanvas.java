@@ -30,6 +30,7 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+import infinityx.lunarhaze.entity.Werewolf;
 
 /**
  * Primary view class for the game, abstracting the basic graphics calls.
@@ -1049,30 +1050,43 @@ public class GameCanvas {
         font.draw(spriteBatch, layout, x, y + offset);
     }
 
-    public void drawHPBar(String text, BitmapFont font, float offset, float width, float height, float hp) {
+    public void drawLightBar(float width, float height, float light) {
         if (active != DrawPass.STANDARD) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
             return;
         }
 
-        GlyphLayout layout = new GlyphLayout(font, text);
-        float x = getWidth() - layout.width - width * 1.2f;
-        float y = getHeight() - layout.height / 2.0f;
-        font.draw(spriteBatch, layout, x, y + offset);
-
         ShapeRenderer barRenderer = new ShapeRenderer();
-        barRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        barRenderer.setColor(Color.YELLOW);
-        x = getWidth() - width;
-        y = getHeight() - layout.height;
-        barRenderer.rect(x, y, width * hp/100, height);
-        barRenderer.end();
-
         barRenderer.begin(ShapeRenderer.ShapeType.Line);
         barRenderer.setColor(Color.WHITE);
-        x = getWidth() - width;
-        y = getHeight() - layout.height;
+        float x = getWidth() - width;
+        float y = getHeight() - height;
         barRenderer.rect(x, y, width, height);
+        barRenderer.end();
+
+        barRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        barRenderer.setColor(Color.YELLOW);
+        barRenderer.rect(x, y, width * light / Werewolf.MAX_LIGHT, height);
+        barRenderer.end();
+    }
+
+    public void drawHpBar(float width, float height, float hp) {
+        if (active != DrawPass.STANDARD) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+            return;
+        }
+
+        ShapeRenderer barRenderer = new ShapeRenderer();
+        barRenderer.begin(ShapeRenderer.ShapeType.Line);
+        barRenderer.setColor(Color.WHITE);
+        float x = getWidth() - width;
+        float y = getHeight() - height * 2.5f;
+        barRenderer.rect(x, y, width, height);
+        barRenderer.end();
+
+        barRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        barRenderer.setColor(Color.RED);
+        barRenderer.rect(x, y, width * hp / Werewolf.INITIAL_HP, height);
         barRenderer.end();
     }
 

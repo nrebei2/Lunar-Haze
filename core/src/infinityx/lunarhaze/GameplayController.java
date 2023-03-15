@@ -26,13 +26,10 @@ public class GameplayController {
 
     private LightingController lightingController;
 
+    private PlayerController playerController;
+
     public Board board;
 
-    private static final float MOONLIGHT_COLLECT_TIME = 1.5f;
-
-    private float timeOnMoonlight;
-
-    private int remainingMoonlight;
     private boolean gameWon;
 
     private boolean gameLost;
@@ -46,23 +43,7 @@ public class GameplayController {
         enemies = null;
         board = null;
         objects = new Array<GameObject>();
-        timeOnMoonlight = 0;
     }
-//
-//    /**
-//     * Populates this mode from the given the directory.
-//     *
-//     * The asset directory is a dictionary that maps string keys to assets.
-//     * Assets can include images, sounds, and fonts (and more). This
-//     * method delegates to the gameplay controller
-//     *
-//     * @param directory 	Reference to the asset directory.
-//     */
-//    public void populate(AssetDirectory directory) {
-//        werewolfTexture = directory.getEntry("werewolf", Texture.class);
-//        villagerTexture = directory.getEntry("villager", Texture.class);
-//    }
-
 
     /**
      * Returns the list of the currently active (not destroyed) game objects
@@ -111,7 +92,7 @@ public class GameplayController {
         enemies = levelContainer.getEnemies();
         objects.add(player);
         board = levelContainer.getBoard();
-        remainingMoonlight = levelContainer.getRemainingMoonlight();
+        this.playerController = new PlayerController(player, board, levelContainer);
         controls = new EnemyController[enemies.size()];
 
         gameWon = false;
@@ -149,48 +130,11 @@ public class GameplayController {
     public void resolveActions(InputController input, float delta) {
         // Process the player only when the game is in play
         if (player != null && !(gameLost || gameWon)) {
-            resolvePlayer(input, delta);
-            resolveMoonlight(delta);
+            playerController.resolvePlayer(input, delta);
+            playerController.resolveMoonlight(delta);
+            gameWon = playerController.isGameWon();
         }
         resolveEnemies();
-    }
-
-    /**
-     * Process the player's actions.
-     * <p>
-     * Notice that firing bullets allocates memory to the heap.  If we were REALLY
-     * worried about performance, we would use a memory pool here.
-     *
-     * @param input Reference to the input controller
-     * @param delta Number of seconds since last animation frame
-     */
-    public void resolvePlayer(InputController input, float delta) {
-        player.setMovementH(input.getHorizontal());
-        player.setMovementV(input.getVertical());
-        player.update(delta);
-    }
-
-    public void resolveMoonlight(float delta) {
-        int px = board.worldToBoardX(player.getPosition().x);
-        int py = board.worldToBoardX(player.getPosition().y);
-
-        if (board.isLit(px, py)) {
-            if (board.isCollectable(px, py)) {
-                timeOnMoonlight += delta; // Increase variable by time
-            }
-            player.setOnMoonlight(true);
-            if (board.isCollectable(px, py) && timeOnMoonlight > MOONLIGHT_COLLECT_TIME) {
-                player.collectMoonlight();
-                remainingMoonlight--;
-                timeOnMoonlight = 0;
-                board.setCollected(px, py);
-            }
-            // Check if game is won here
-            if (remainingMoonlight == 0) gameWon = true;
-        } else {
-            timeOnMoonlight = 0;
-            player.setOnMoonlight(false);
-        }
     }
 
     // TODO: THIS SHOULD BE IN ENEMYCONTROLLER, also this code is a mess

@@ -77,6 +77,8 @@ public class LevelContainer {
      */
     private Board board;
 
+    private int totalMoonlight;
+
     private int remainingMoonlight;
 
     private PointLight ambienceMoonlight;
@@ -171,6 +173,14 @@ public class LevelContainer {
 
     public int getRemainingMoonlight() {
         return remainingMoonlight;
+    }
+
+    public int getTotalMoonlight() {
+        return totalMoonlight;
+    }
+
+    public void setTotalMoonlight(int value) {
+        totalMoonlight = value;
     }
 
     /**

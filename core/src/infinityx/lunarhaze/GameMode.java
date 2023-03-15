@@ -269,7 +269,9 @@ public class GameMode extends ScreenObservable implements Screen {
             case PLAY:
                 displayFont.setColor(Color.YELLOW);
                 canvas.begin(); // DO NOT SCALE
-                canvas.drawHPBar("Moonlight", displayFont, 0.0f, BAR_WIDTH,
+                canvas.drawLightBar(BAR_WIDTH,
+                        BAR_HEIGHT, gameplayController.getPlayer().getLight());
+                canvas.drawHpBar(BAR_WIDTH,
                         BAR_HEIGHT, gameplayController.getPlayer().getHp());
                 canvas.end();
                 break;
