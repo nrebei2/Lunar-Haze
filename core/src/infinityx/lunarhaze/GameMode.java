@@ -269,9 +269,12 @@ public class GameMode extends ScreenObservable implements Screen {
                 displayFont.setColor(Color.YELLOW);
                 canvas.begin(); // DO NOT SCALE
                 canvas.drawLightBar(BAR_WIDTH,
-                        BAR_HEIGHT, gameplayController.getPlayer().getLight());
+                        BAR_HEIGHT, gameplayController.getPlayerController().getPlayerLight());
                 canvas.drawHpBar(BAR_WIDTH,
-                        BAR_HEIGHT, gameplayController.getPlayer().getHp());
+                        BAR_HEIGHT, gameplayController.getPlayerController().getPlayerHp());
+                canvas.drawStealthBar(BAR_WIDTH,
+                        BAR_HEIGHT, gameplayController.getPlayerController().getPlayerStealth());
+                System.out.println("Player stealth is: " + gameplayController.getPlayerController().getPlayerStealth());
                 canvas.end();
                 break;
         }

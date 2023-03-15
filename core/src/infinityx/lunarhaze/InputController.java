@@ -32,9 +32,9 @@ public class InputController {
     /** Input key for exiting the current level; */
     private static final int EXIT = Input.Keys.ESCAPE;
     /** Run speed for the player; */
-    private static final float RUN_SPEED = 2.0f;
+    public static final float RUN_SPEED = 2.0f;
     /** Walk speed for the player; */
-    private static final float WALK_SPEED = 1.0f;
+    public static final float WALK_SPEED = 1.0f;
 
     /**
      * How much did we move horizontally?

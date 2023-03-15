@@ -13,6 +13,16 @@ public class PlayerController {
     private static final float MOONLIGHT_COLLECT_TIME = 1.5f;
 
     /**
+     * Stealth value if the player is walking
+     */
+    private static final float WALK_STEALTH = 0.3f;
+
+    /**
+     * Stealth value if the player is running
+     */
+    private static final float RUN_STEALTH = 0.6f;
+
+    /**
      * Remaining moonlight on the map
      */
     private int remainingMoonlight;
@@ -42,6 +52,33 @@ public class PlayerController {
      */
     private Boolean gameWon;
 
+    /**
+     * Get the player HP in PlayerController to enforce encapsulation.
+     *
+     * Return HP of the player, int ranging from 0~5.
+     */
+    public int getPlayerHp(){
+        return player.getHp();
+    }
+
+    /**
+     * Get the player light in PlayerController to enforce encapsulation.
+     *
+     * Return light collected of the player, float ranging from 0~100.
+     */
+    public float getPlayerLight(){
+        return player.getLight();
+    }
+
+    /**
+     * Get the player stealth in PlayerController to enforce encapsulation.
+     *
+     * Return stealth of the player, float ranging from 0~1.
+     */
+    public float getPlayerStealth(){
+        return player.getStealth();
+    }
+
     public Boolean isGameWon() {
         return gameWon;
     }
@@ -63,11 +100,10 @@ public class PlayerController {
     }
 
     /**
-     * Process the player's actions.
+     * Process the player's movement according to input controller.
      * <p>
-     * Notice that firing bullets allocates memory to the heap.  If we were REALLY
-     * worried about performance, we would use a memory pool here.
      *
+     * @param input InputController that controls the player
      * @param delta Number of seconds since last animation frame
      */
     public void resolvePlayer(InputController input, float delta) {
@@ -76,6 +112,10 @@ public class PlayerController {
         player.update(delta);
     }
 
+    /**
+     * Player collect one moonlight, including upgrading the stats and status.
+     * <p>
+     */
     public void collectMoonlight() {
         player.addMoonlightCollected();
         remainingMoonlight--;
@@ -83,6 +123,12 @@ public class PlayerController {
         System.out.println(levelContainer.getRemainingMoonlight());
     }
 
+    /**
+     * Process the player's interaction with moonlight tile.
+     * <p>
+     *
+     * @param delta Number of seconds since last animation frame
+     */
     public void resolveMoonlight(float delta) {
         int px = board.worldToBoardX(player.getPosition().x);
         int py = board.worldToBoardX(player.getPosition().y);
@@ -105,8 +151,28 @@ public class PlayerController {
         }
     }
 
-    public void resolveSealthBar(InputController input, float delta) {
-        // TODO
+    /**
+     * Process the player's stealth value. This depends on the walk/run mode.
+     * <p>
+     *
+     * @param input InputController that controls the player
+     */
+    public void resolveSealthBar(InputController input) {
+        if (input.getHorizontal() == InputController.WALK_SPEED &&
+                input.getVertical() == InputController.WALK_SPEED){
+            player.setStealth(WALK_STEALTH);
+        } else if (input.getHorizontal() == InputController.RUN_SPEED &&
+                input.getVertical() == InputController.RUN_SPEED){
+            player.setStealth(RUN_STEALTH);
+        } else {
+
+        }
+    }
+
+    public void update(InputController input, float delta){
+        resolvePlayer(input, delta);
+        resolveMoonlight(delta);
+        resolveSealthBar(input);
     }
 
     public void loseHp() {
