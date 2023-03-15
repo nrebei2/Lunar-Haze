@@ -209,25 +209,11 @@ public class GameplayController {
     public boolean detectPlayer(Enemy enemy){
         Vector2 point1 = enemy.getPosition();
         float dist = enemy.getFlashlight().getDistance();
-
-        Vector2 point2;
-        switch (enemy.getDirection()){
-            case NORTH:
-                point2 = new Vector2(point1.x , point1.y + dist);
-                break;
-            case SOUTH:
-                point2 = new Vector2(point1.x , point1.y - dist);
-                break;
-
-            case EAST:
-                point2 = new Vector2(point1.x + dist, point1.y);
-                break;
-            case WEST:
-                point2 = new Vector2(point1.x -dist , point1.y);
-                break;
-            default:
-                throw new IllegalStateException("Unexpected value: " + enemy.getDirection());
-        }
+        float vx = enemy.getVX();
+        float vy = enemy.getVY();
+        if (vx == 0 && vy ==0) return false;
+        Vector2 direction = new Vector2(vx, vy).nor();
+        Vector2 point2 = new Vector2(point1.x + dist*direction.x, point1.y + dist*direction.y);
         RaycastInfo info = raycast(enemy, point1, point2);
         return info.hit && info.hitObject == player;
     }
@@ -240,11 +226,10 @@ public class GameplayController {
                 EnemyController curEnemyController = controls[en.getId()];
                 boolean detect = detectPlayer(en);
                 int action = curEnemyController.getAction();
-                //curEnemyController.setVisibleTiles();
 //                boolean attacking = (action & EnemyController.CONTROL_ATTACK) != 0;
                 en.update(action);
 
-                // TODO: make more interesting actions
+                // TODO: make more interesting actions                //curEnemyController.setVisibleTiles();
                 if (en.getIsAlerted()) {
                     // angle between enemy and player
                     double ang = Math.atan2(player.getPosition().y - en.getPosition().y, player.getPosition().x - en.getPosition().y);
