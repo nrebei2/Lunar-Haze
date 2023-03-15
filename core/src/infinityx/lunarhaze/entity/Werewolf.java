@@ -20,24 +20,17 @@ public class Werewolf extends GameObject {
     /**
      * Initial light value of the werewolf is 0.0
      **/
-
     private static final float INITIAL_LIGHT = 0.0f;
 
     /**
      * Initial hp of the werewolf is 100.0
      **/
-    public static final int INITIAL_HP = 5;
+    public static int INITIAL_HP = 5;
 
     /**
      * Maximum light of the werewolf is 100.0
      **/
     public static final float MAX_LIGHT = 100.0f;
-
-    /**
-     * Maximum light of the werewolf is 100.0
-     **/
-
-    private static final float INITIAL_HP = 50.0f;
 
     private float maxHp;
 
@@ -179,9 +172,8 @@ public class Werewolf extends GameObject {
         hp = value;
     }
 
-    public void initHp(float value) {
-        maxHp = value;
-        hp = value;
+    public void initHp(int value) {
+        INITIAL_HP = value;
     }
 
     public void initLockout(float value) { lockout = value; }
@@ -254,10 +246,6 @@ public class Werewolf extends GameObject {
     public int getMoonlightCollected(){
         return moonlightCollected;
     }
-    public void collectMoonlight() {
-        moonlightCollected++;
-        hp = hp + maxHp * 1 / (moonlightCollected + levelContainer.getRemainingMoonlight());
-    }
 
     /**
      * Initialize a werewolf.
@@ -284,20 +272,11 @@ public class Werewolf extends GameObject {
 
         // get the current velocity of the player's Box2D body
         Vector2 velocity = body.getLinearVelocity();
-        
-        if(canMove) {
-            // update the velocity based on the input from the player
-            velocity.x = movementH * speed;
-            velocity.y = movementV * speed;
-            // set the updated velocity to the player's Box2D body
-            body.setLinearVelocity(velocity);
-        }
-        else if(lockoutTime >= lockout) {
-            canMove = true;
-            lockoutTime = 0f;
-        } else {
-            lockoutTime += delta;
-        }
 
+        // update the velocity based on the input from the player
+        velocity.x = movementH * speed;
+        velocity.y = movementV * speed;
+        // set the updated velocity to the player's Box2D body
+        body.setLinearVelocity(velocity);
     }
 }

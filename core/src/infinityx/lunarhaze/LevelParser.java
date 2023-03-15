@@ -195,7 +195,7 @@ public class LevelParser {
         float dist = light.getFloat("distance");
         int rays = light.getInt("rays");
 
-        float health = playerJson.getFloat("health");
+        int health = playerJson.getInt("health");
         float lockout = playerJson.getFloat("lockout");
 
         player.initHp(health);

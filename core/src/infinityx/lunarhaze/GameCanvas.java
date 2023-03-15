@@ -1056,18 +1056,17 @@ public class GameCanvas {
             return;
         }
 
-        ShapeRenderer barRenderer = new ShapeRenderer();
-        barRenderer.begin(ShapeRenderer.ShapeType.Line);
-        barRenderer.setColor(Color.WHITE);
+        barRender.begin(ShapeRenderer.ShapeType.Line);
+        barRender.setColor(Color.WHITE);
         float x = getWidth() - width;
         float y = getHeight() - height;
-        barRenderer.rect(x, y, width, height);
-        barRenderer.end();
+        barRender.rect(x, y, width, height);
+        barRender.end();
 
-        barRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        barRenderer.setColor(Color.YELLOW);
-        barRenderer.rect(x, y, width * light / Werewolf.MAX_LIGHT, height);
-        barRenderer.end();
+        barRender.begin(ShapeRenderer.ShapeType.Filled);
+        barRender.setColor(Color.YELLOW);
+        barRender.rect(x, y, width * light / Werewolf.MAX_LIGHT, height);
+        barRender.end();
     }
 
     public void drawHpBar(float width, float height, float hp) {
@@ -1076,18 +1075,36 @@ public class GameCanvas {
             return;
         }
 
-        ShapeRenderer barRenderer = new ShapeRenderer();
-        barRenderer.begin(ShapeRenderer.ShapeType.Line);
-        barRenderer.setColor(Color.WHITE);
+        barRender.begin(ShapeRenderer.ShapeType.Line);
+        barRender.setColor(Color.WHITE);
         float x = getWidth() - width;
-        float y = getHeight() - height * 2.5f;
-        barRenderer.rect(x, y, width, height);
-        barRenderer.end();
+        float y = getHeight() - height * 2.25f;
+        barRender.rect(x, y, width, height);
+        barRender.end();
 
-        barRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        barRenderer.setColor(Color.RED);
-        barRenderer.rect(x, y, width * hp / Werewolf.INITIAL_HP, height);
-        barRenderer.end();
+        barRender.begin(ShapeRenderer.ShapeType.Filled);
+        barRender.setColor(Color.RED);
+        barRender.rect(x, y, width * hp / Werewolf.INITIAL_HP, height);
+        barRender.end();
+    }
+
+    public void drawStealthBar(float width, float height, float stealth) {
+        if (active != DrawPass.STANDARD) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+            return;
+        }
+
+        barRender.begin(ShapeRenderer.ShapeType.Line);
+        barRender.setColor(Color.WHITE);
+        float x = getWidth() - width;
+        float y = getHeight() - height * 3.5f;
+        barRender.rect(x, y, width, height);
+        barRender.end();
+
+        barRender.begin(ShapeRenderer.ShapeType.Filled);
+        barRender.setColor(Color.BLUE);
+        barRender.rect(x, y, width * stealth / 1.0f, height);
+        barRender.end();
     }
 
     /**

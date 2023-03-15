@@ -70,6 +70,13 @@ public class GameplayController {
         return player;
     }
 
+    /**
+     * Returns a reference to the current PlayerController.
+     */
+    public PlayerController getPlayerController() {
+        return playerController;
+    }
+
 
     /**
      * Returns true if the currently active player is alive.
@@ -130,9 +137,9 @@ public class GameplayController {
     public void resolveActions(InputController input, float delta) {
         // Process the player only when the game is in play
         if (player != null && !(gameLost || gameWon)) {
-            playerController.resolvePlayer(input, delta);
-            playerController.resolveMoonlight(delta);
+            playerController.update(input, delta);
             gameWon = playerController.isGameWon();
+            gameLost = playerController.getPlayerHp() <= 0;
         }
         resolveEnemies();
     }
