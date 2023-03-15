@@ -130,6 +130,21 @@ public class LevelParser {
     }
 
     /**
+     * Creates an empty level to be filled in the level editor.
+     * You gotta call loadConstants before calling this method.
+     */
+    public LevelContainer loadEmpty() {
+        // LevelContainer empty at this point
+        LevelContainer levelContainer = new LevelContainer();
+        levelContainer.worldToScreen.set(sSize[0] / wSize[0], sSize[1] / wSize[1]);
+
+        Board board = new Board(10, 10);
+        levelContainer.setBoard(board);
+
+        return levelContainer;
+    }
+
+    /**
      * Creates a scene object for the level
      *
      * @param objectFormat the JSON tree defining the object

@@ -9,10 +9,11 @@ import com.badlogic.gdx.graphics.Texture;
 public class Tile {
     public enum TileType {
         Grass, Road, Dirt,
-        // TODO: Add more types
+        // Used for Level Editor if no texture has been placed
+        EMPTY
     }
 
-    private TileType type;
+    private TileType type = TileType.EMPTY;
     /**
      * Is there a scene object on this tile?
      */

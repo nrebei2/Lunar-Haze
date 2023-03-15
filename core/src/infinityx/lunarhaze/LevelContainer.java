@@ -196,17 +196,20 @@ public class LevelContainer {
     }
 
     /**
+     * Translate the screen
+     * @param x x screen units along x-axis
+     * @param y y screen units along y-axis
+     */
+    public void setViewTranslation(float x, float y) {
+        view.setToTranslation( x, y );
+    }
+
+    /**
      * Draws the entire scene to the canvas
      *
      * @param canvas The drawing context
      */
     public void drawLevel(GameCanvas canvas) {
-        // Puts player at center of canvas
-
-        view.setToTranslation(
-                -canvas.WorldToScreenX(player.getPosition().x) + canvas.getWidth() / 2,
-                -canvas.WorldToScreenY(player.getPosition().y) + canvas.getHeight() / 2
-        );
         canvas.begin(view);
 
         // Debug prints

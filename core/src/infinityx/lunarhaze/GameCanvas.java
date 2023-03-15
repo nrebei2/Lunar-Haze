@@ -1110,16 +1110,24 @@ public class GameCanvas {
     }
 
     /**
-     * Draws a rectangle outline at the upper right corner with specified width, and height
+     * Draws a rectangle outline.
+     *
+     * @param x bottom-left screen x
+     * @param y bottom-left screen y
      */
-    public void drawRecLine(float width, float height) {
+    public void drawRecOutline(float x, float y, float width, float height, Color color) {
         ShapeRenderer barRenderer = new ShapeRenderer();
         barRenderer.begin(ShapeRenderer.ShapeType.Line);
-        barRenderer.setColor(Color.WHITE);
-        float x = getWidth() - width;
-        float y = getHeight() - height * 4;
+        barRenderer.setColor(color);
         barRenderer.rect(x, y, width, height);
         barRenderer.end();
+    }
+
+    /**
+     * Draws a rectangle outline at the upper right corner
+     */
+    public void drawRecOutline(float width, float height) {
+        drawRecOutline(getWidth() - width, getHeight() - height * 4, width, height, Color.WHITE);
     }
 
     /**

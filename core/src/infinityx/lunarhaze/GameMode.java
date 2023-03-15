@@ -141,8 +141,7 @@ public class GameMode extends ScreenObservable implements Screen {
      */
     public void gatherAssets(AssetDirectory directory) {
         this.directory = directory;
-        LevelParser ps = LevelParser.LevelParser();
-        ps.loadConstants(directory);
+
         inputController.loadConstants(directory);
         levelFormat = directory.getEntry("levels", JsonValue.class);
         displayFont = directory.getEntry("retro", BitmapFont.class);
@@ -250,6 +249,11 @@ public class GameMode extends ScreenObservable implements Screen {
     public void draw(float delta) {
         canvas.clear();
 
+        // Puts player at center of canvas
+        levelContainer.setViewTranslation(
+                -canvas.WorldToScreenX(levelContainer.getPlayer().getPosition().x) + canvas.getWidth() / 2,
+                -canvas.WorldToScreenY(levelContainer.getPlayer().getPosition().y) + canvas.getHeight() / 2
+        );
         // Draw the level
         levelContainer.drawLevel(canvas);
 

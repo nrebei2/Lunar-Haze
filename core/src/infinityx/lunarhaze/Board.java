@@ -237,7 +237,13 @@ public class Board {
     private void drawTile(int x, int y, GameCanvas canvas, Color tint) {
         Texture tiletexture = getTileTexture(x, y);
         // if moonlight is not collectable, tint with a lighter color
-        if (isLit(x, y) && !isCollectable(x, y)) {
+        if (getTileType(x, y) == Tile.TileType.EMPTY) {
+            canvas.drawRecOutline(
+                    canvas.WorldToScreenX(boardToWorld(x, y).x), canvas.WorldToScreenY(boardToWorld(x, y).y),
+                    tileScreenDim.x, tileScreenDim.y, Color.RED
+            );
+        }
+        else if (isLit(x, y) && !isCollectable(x, y)) {
             canvas.draw(
                     tiletexture, Color.GREEN, tiletexture.getWidth() / 2, tiletexture.getHeight() / 2,
                     canvas.WorldToScreenX(boardCenterToWorld(x, y).x), canvas.WorldToScreenY(boardCenterToWorld(x, y).y), 0.0f,
