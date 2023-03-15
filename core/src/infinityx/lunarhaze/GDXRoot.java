@@ -122,7 +122,7 @@ public class GDXRoot extends Game implements ScreenObserver {
             setScreen(menu);
 
             LevelParser ps = LevelParser.LevelParser();
-            ps.loadConstants(directory);
+            ps.loadConstants(directory, canvas);
 
             loading.dispose();
             loading = null;

@@ -86,7 +86,6 @@ public class LevelContainer {
      */
     private final Affine2 view = new Affine2();
 
-    public Vector2 worldToScreen = new Vector2();
 
     /**
      * Holds references to all drawable entities on the level (i.e. sceneObjects, player, enemies)
@@ -106,6 +105,7 @@ public class LevelContainer {
         // BOX2D initialization
         world = new World(new Vector2(0, 0), true);
         rayHandler = new RayHandler(world, Gdx.graphics.getWidth(), Gdx.graphics.getWidth());
+        rayHandler.setAmbientLight(1);
 
         player = null;
         board = null;
@@ -196,12 +196,21 @@ public class LevelContainer {
     }
 
     /**
-     * Translate the screen
+     * Set view translation
      * @param x x screen units along x-axis
      * @param y y screen units along y-axis
      */
     public void setViewTranslation(float x, float y) {
         view.setToTranslation( x, y );
+    }
+
+    /**
+     * Translate the screen view
+     * @param x x screen units along x-axis
+     * @param y y screen units along y-axis
+     */
+    public void translateView(float x, float y) {
+        view.translate(x, y);
     }
 
     /**
@@ -234,8 +243,10 @@ public class LevelContainer {
                 canvas.getWidth() / canvas.WorldToScreenX(1),
                 canvas.getHeight() / canvas.WorldToScreenY(1)
         );
-        raycamera.translate(player.getPosition().x, player.getPosition().y);
-        raycamera.update();
+        if (player != null) {
+            raycamera.translate(player.getPosition().x, player.getPosition().y);
+            raycamera.update();
+        }
         rayHandler.setCombinedMatrix(raycamera);
 
         // Finally, draw lights

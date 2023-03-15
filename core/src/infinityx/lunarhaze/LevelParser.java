@@ -60,13 +60,16 @@ public class LevelParser {
      * Caches all constants (between levels) from directory
      *
      * @param directory asset manager holding list of ... assets
+     * @param canvas
      */
-    public void loadConstants(AssetDirectory directory) {
+    public void loadConstants(AssetDirectory directory, GameCanvas canvas) {
         // TODO: create and cache player and board? not sure if that would do much
         // There is not a lot constant between levels
         JsonValue boardJson = directory.getEntry("board", JsonValue.class);
         wSize = boardJson.get("tileWorldSize").asFloatArray();
         sSize = boardJson.get("tileScreenSize").asIntArray();
+
+        canvas.setWorldToScreen(new Vector2(sSize[0] / wSize[0], sSize[1] / wSize[1]));
 
         enemiesJson = directory.getEntry("enemies", JsonValue.class);
         objectsJson = directory.getEntry("objects", JsonValue.class);
@@ -84,7 +87,6 @@ public class LevelParser {
     public LevelContainer loadLevel(AssetDirectory directory, JsonValue levelContents) {
         // LevelContainer empty at this point
         LevelContainer levelContainer = new LevelContainer();
-        levelContainer.worldToScreen.set(sSize[0] / wSize[0], sSize[1] / wSize[1]);
 
         // Ambient light
         parseLighting(levelContents.get("ambient"), levelContainer.getRayHandler());
@@ -136,9 +138,12 @@ public class LevelParser {
     public LevelContainer loadEmpty() {
         // LevelContainer empty at this point
         LevelContainer levelContainer = new LevelContainer();
-        levelContainer.worldToScreen.set(sSize[0] / wSize[0], sSize[1] / wSize[1]);
 
         Board board = new Board(10, 10);
+
+        board.setTileScreenDim(sSize[0], sSize[1]);
+        board.setTileWorldDim(wSize[0], wSize[1]);
+
         levelContainer.setBoard(board);
 
         return levelContainer;
