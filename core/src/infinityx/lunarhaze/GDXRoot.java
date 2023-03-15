@@ -34,6 +34,11 @@ public class GDXRoot extends Game implements ScreenObserver {
     private MenuMode menu;
 
     /**
+     * Level editor
+     */
+    private EditorMode editor;
+
+    /**
      * Creates a new game from the configuration settings.
      * <p>
      * This method configures the asset manager, but does not load any assets
@@ -52,6 +57,7 @@ public class GDXRoot extends Game implements ScreenObserver {
         loading = new LoadingMode("assets.json", canvas, 1);
         game = new GameMode(canvas);
         menu = new MenuMode(canvas);
+        editor = new EditorMode(canvas);
 
         // Set screen observer to this game
         loading.setObserver(this);
@@ -120,8 +126,14 @@ public class GDXRoot extends Game implements ScreenObserver {
         } else if (screen == menu) {
             // TODO: should exitCode be the level?
             game.setLevel(exitCode);
-            setScreen(game);
-            System.out.println("set game screen");
+            switch (exitCode) {
+                case MenuMode.GO_EDITOR:
+                    setScreen(editor);
+                    break;
+                case MenuMode.GO_PLAY:
+                    setScreen(game);
+                    break;
+            }
         } else if (screen == game) {
             if (exitCode == GameMode.GO_MENU) {
                 setScreen(menu);
