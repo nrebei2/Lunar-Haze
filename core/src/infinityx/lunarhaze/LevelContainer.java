@@ -3,7 +3,6 @@ package infinityx.lunarhaze;
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
@@ -12,8 +11,8 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.EnemyList;
+import infinityx.lunarhaze.entity.SceneObject;
 import infinityx.lunarhaze.entity.Werewolf;
-import infinityx.lunarhaze.physics.ConeSource;
 import infinityx.lunarhaze.physics.LightSource;
 import infinityx.util.Drawable;
 
@@ -211,7 +210,7 @@ public class LevelContainer {
         canvas.begin(view);
 
         // Debug prints
-        //System.out.printf(
+        //System.out.printf(i
         //        "Player pos: (%f, %f), Spotlight pos: (%f, %f) \n",
         //        player.getPosition().x, player.getPosition().y, player.getSpotlight().getPosition().x, player.getSpotlight().getPosition().y);
 

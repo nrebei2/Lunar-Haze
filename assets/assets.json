@@ -64,9 +64,36 @@
       "minFilter": "nearest",
       "magFilter": "nearest"
     },
+    "tree": {
+      "file": "images/tree.png",
+      "minFilter": "nearest",
+      "magFilter": "nearest",
+      "sprites":	{
+        "static" : {
+          "size" : 1,
+          "rows" : 1,
+          "cols" : 1
+        }
+      }
+    },
+    "house": {
+      "file": "images/house.png",
+      "minFilter": "nearest",
+      "magFilter": "nearest",
+      "sprites":	{
+        "static" : {
+          "size" : 1,
+          "rows" : 1,
+          "cols" : 1
+        }
+      }
+    },
+
     "werewolf": {
       "file": 	"images/werewolf.png",
       "wrap":  	false,
+      "minFilter": "nearest",
+      "magFilter": "nearest",
       "sprites":	{
         "movement" : {
           "size" : 2,
@@ -78,6 +105,8 @@
     "villager":{
       "file": 	"images/villager.png",
       "wrap":  	false,
+      "minFilter": "nearest",
+      "magFilter": "nearest",
       "sprites":	{
         "movement" : {
           "size" : 1,

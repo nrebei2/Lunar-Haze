@@ -4,7 +4,6 @@ import box2dLight.PointLight;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g3d.environment.SpotLight;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.IntSet;
 
@@ -43,7 +42,7 @@ public class Board {
     /**
      * Tile height and width in screen (pixel) length.
      * Should be overwritten.
-     * */
+     */
     private Vector2 tileScreenDim = new Vector2(128, 96);
 
     /**
@@ -132,9 +131,14 @@ public class Board {
         if (tile == null) {
             return null;
         }
-        /*if (tile.isLit()) {
+        // Retain below it so it gives different textures for
+        // collected and uncollected moonlight tiles
+        if (tile.isLit() && !(tile.isCollected())) {
             return tile.getTileTextureLit();
-        }*/
+        }
+        if (tile.isLit() && tile.isCollected()) {
+            return tile.getTileTextureLitButCollected();
+        }
         // Commented the above out because we added ambient lighting. LMK if it should be changed back
         return tile.getTileTextureUnlit();
     }
@@ -145,13 +149,14 @@ public class Board {
      * @param x The x index for the Tile cell
      * @param y The y index for the Tile cell
      */
-    public void setTileTexture(int x, int y, Texture unlitTex, Texture litTex) {
+    public void setTileTexture(int x, int y, Texture unlitTex, Texture litTex, Texture litColTex) {
         Tile tile = getTile(x, y);
         if (tile == null) {
             return;
         }
         tile.setTileTextureUnlit(unlitTex);
         tile.setTileTextureLit(litTex);
+        tile.setTileTextureLitButCollected(litColTex);
     }
 
     /**
@@ -177,7 +182,7 @@ public class Board {
      *
      * @return the board cell index for a world x-position.
      */
-    public int worldToBoardY(float y){
+    public int worldToBoardY(float y) {
         return (int) (y / tileWorldDim.y);
     }
 
@@ -231,11 +236,20 @@ public class Board {
      */
     private void drawTile(int x, int y, GameCanvas canvas, Color tint) {
         Texture tiletexture = getTileTexture(x, y);
-        canvas.draw(
-                tiletexture, Color.WHITE, tiletexture.getWidth() / 2, tiletexture.getHeight() / 2,
-                canvas.WorldToScreenX(boardCenterToWorld(x, y).x), canvas.WorldToScreenY(boardCenterToWorld(x, y).y), 0.0f,
-                tileScreenDim.x / tiletexture.getWidth(), tileScreenDim.y / tiletexture.getHeight()
-        );
+        // if moonlight is not collectable, tint with a lighter color
+        if (isLit(x, y) && !isCollectable(x, y)) {
+            canvas.draw(
+                    tiletexture, Color.GREEN, tiletexture.getWidth() / 2, tiletexture.getHeight() / 2,
+                    canvas.WorldToScreenX(boardCenterToWorld(x, y).x), canvas.WorldToScreenY(boardCenterToWorld(x, y).y), 0.0f,
+                    tileScreenDim.x / tiletexture.getWidth(), tileScreenDim.y / tiletexture.getHeight()
+            );
+        } else {
+            canvas.draw(
+                    tiletexture, Color.WHITE, tiletexture.getWidth() / 2, tiletexture.getHeight() / 2,
+                    canvas.WorldToScreenX(boardCenterToWorld(x, y).x), canvas.WorldToScreenY(boardCenterToWorld(x, y).y), 0.0f,
+                    tileScreenDim.x / tiletexture.getWidth(), tileScreenDim.y / tiletexture.getHeight()
+            );
+        }
     }
 
     /**
@@ -343,6 +357,47 @@ public class Board {
     }
 
     /**
+     * Returns true if the moonlight tile is collectable.
+     * <p>
+     * A tile position that is not on the board will always evaluate to false.
+     *
+     * @param x The x index for the Tile cell
+     * @param y The y index for the Tile cell
+     * @return true if the moonlight tile is collectable.
+     */
+    public Boolean isCollectable(int x, int y) {
+        if (!inBounds(x, y)) {
+            Gdx.app.error("Board", "Illegal tile " + x + "," + y, new IndexOutOfBoundsException());
+            return false;
+        }
+        Tile t = getTile(x, y);
+
+        return !t.isCollected();
+    }
+
+    /**
+     * Sets a tile as collected but still lit.
+     * <p>
+     *
+     * @param x The x index for the Tile cell
+     * @param y The y index for the Tile cell
+     */
+    public void setCollected(int x, int y) {
+        if (!inBounds(x, y)) {
+            Gdx.app.error("Board", "Illegal tile " + x + "," + y, new IndexOutOfBoundsException());
+            return;
+        }
+        Tile t = getTile(x, y);
+        if (t.getSpotLight() == null) {
+            Gdx.app.error("Board", "This should never happen! Talk to me if this pops up for you.");
+            return;
+        }
+        if (getTile(x, y).isLit()){
+            getTile(x, y).setCollected();
+        }
+    }
+
+    /**
      * Attaches light to tile, represents the moonlight on the tile
      * <p>
      *
@@ -358,15 +413,15 @@ public class Board {
     }
 
 
-        /**
-         * Returns the type of a tile.
-         * <p>
-         * Null if out of bounds
-         *
-         * @param x The x index for the Tile cell
-         * @param y The y index for the Tile cell
-         * @return true if the tile is walkable.
-         */
+    /**
+     * Returns the type of a tile.
+     * <p>
+     * Null if out of bounds
+     *
+     * @param x The x index for the Tile cell
+     * @param y The y index for the Tile cell
+     * @return true if the tile is walkable.
+     */
     public Tile.TileType getTileType(int x, int y) {
         Tile tile = getTile(x, y);
 

@@ -31,10 +31,17 @@ public class Tile {
     private boolean visible = false;
 
     /**
+     * Is the moonlight collected?
+     */
+    private boolean collected = false;
+
+    /**
      * Texture of tile (Lit/Unlit from moonlight)
      **/
     private Texture TileTextureUnlit;
     private Texture TileTextureLit;
+
+    private Texture TileTextureLitButCollected;
 
     /** The moonlight pointing on this tile, possibly null */
     private PointLight spotLight;
@@ -96,6 +103,14 @@ public class Tile {
         spotLight.setActive(lit);
     }
 
+
+    public Boolean isCollected() {
+        return collected;
+    }
+    public void setCollected() {
+        collected = true;
+    }
+
     /**
      * Attaches light to tile, represents the moonlight on the tile
      */
@@ -137,12 +152,18 @@ public class Tile {
         return TileTextureLit;
     }
 
+    public Texture getTileTextureLitButCollected() { return TileTextureLitButCollected; }
+
     public void setTileTextureUnlit(Texture unlitTex) {
         this.TileTextureUnlit = unlitTex;
     }
 
     public void setTileTextureLit(Texture litTex) {
         this.TileTextureLit = litTex;
+    }
+
+    public void setTileTextureLitButCollected(Texture litTex) {
+        this.TileTextureLitButCollected = litTex;
     }
 
 }

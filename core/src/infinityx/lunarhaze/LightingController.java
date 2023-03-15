@@ -5,16 +5,15 @@ import infinityx.lunarhaze.entity.EnemyList;
 
 public class LightingController {
     /**
-     * List of enemies to attach to
+     * List of enemies
      */
     private final EnemyList enemies;
 
     private final Board board;
 
-    public static final Color LIGHTCOLOR = new Color(0.7f, 0.7f, 0.9f, 0.7f);
-
     /**
-     * LightingController handles flashlights on enemies and moonlight on tiles
+     * TODO: This is a controller class, so it should handle interactions between lights and objects
+     * Maybe the light should update throughout the lifetime of the level??
      *
      * @param enemies
      * @param board
