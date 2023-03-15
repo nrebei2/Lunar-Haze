@@ -139,6 +139,7 @@ public class GameplayController {
         if (player != null && !(gameLost || gameWon)) {
             playerController.update(input, delta);
             gameWon = playerController.isGameWon();
+            gameLost = playerController.getPlayerHp() <= 0;
         }
         resolveEnemies();
     }
