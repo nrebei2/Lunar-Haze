@@ -18,14 +18,23 @@ public class Werewolf extends GameObject {
     private static final float ANIMATION_SPEED = 0.25f;
 
     /**
-     * Initial hp of the werewolf is 0.0
+     * Initial light value of the werewolf is 0.0
      **/
-    private static final float INITIAL_HP = 0.0f;
+    private static final float INITIAL_LIGHT = 0.0f;
 
     /**
-     * Maximum hp of the werewolf is 100.0
+     * Initial hp of the werewolf is 100.0
      **/
-    private static final float MAX_HP = 100.0f;
+    private static final int INITIAL_HP = 5;
+
+    /**
+     * Maximum light of the werewolf is 100.0
+     **/
+    public static final float MAX_LIGHT = 100.0f;
+
+    /**
+     * Maximum light of the werewolf is 100.0
+     **/
 
     /** Reference to werewolf's sprite for drawing */
     //private FilmStrip werewolfSprite;
@@ -33,12 +42,12 @@ public class Werewolf extends GameObject {
     /**
      * The right/left movement of the werewolf
      **/
-    private float movementH = 0.0f; //DEPRECATED
+    private float movementH = 0.0f;
 
     /**
      * The up/down movement of the werewolf
      **/
-    private float movementV = 0.0f; // DEPRECATED
+    private float movementV = 0.0f;
 
     /**
      * Whether the  player stands on a moonlight tile
@@ -63,7 +72,19 @@ public class Werewolf extends GameObject {
     /**
      * Health point (hp) of the werewolf
      */
-    private float hp;
+    private int hp;
+
+    /**
+     * Light collected of the werewolf.
+     * The value is a percentage of light on the map, between 0 and 100.
+     */
+    private float light;
+
+    /**
+     * Stealth value of the werewolf.
+     * The value is a float between 0 and 1.
+     */
+    private float stealth;
 
     private LevelContainer levelContainer;
 
@@ -73,32 +94,6 @@ public class Werewolf extends GameObject {
     private PointLight spotLight;
 
     private final Vector2 forceCache = new Vector2();
-
-//    /**
-//     * Returns the image filmstrip for this ship
-//     *
-//     * This value should be loaded by the GameMode and set there. However, we
-//     * have to be prepared for this to be null at all times
-//     *
-//     * @return the image texture for this ship
-//     */
-//    public FilmStrip getFilmStrip() {
-//        return werewolfSprite;
-//    }
-
-
-    /**
-     * Sets the image texture for this ship
-     *
-     * This value should be loaded by the GameMode and set there. However, we
-     * have to be prepared for this to be null at all times
-     *
-     * param value the image texture for this ship
-     */
-    /*public void setFilmStrip(FilmStrip value) {
-        werewolfSprite = value;
-        werewolfSprite.setFrame(SHIP_IMG_FLAT);
-    }*/
 
     /**
      * Returns the type of this object.
@@ -150,7 +145,7 @@ public class Werewolf extends GameObject {
     /**
      * Returns the current hp of the werewolf.
      */
-    public float getHp() {
+    public int getHp() {
         return hp;
     }
 
@@ -159,8 +154,40 @@ public class Werewolf extends GameObject {
      *
      * @param value the current hp of the werewolf.
      */
-    public void setHp(float value) {
+    public void setHp(int value) {
         hp = value;
+    }
+
+    /**
+     * Returns the current stealth of the werewolf.
+     */
+    public float getStealth() {
+        return stealth;
+    }
+
+    /**
+     * Sets the current stealth of the werewolf.
+     *
+     * @param value the current stealth of the werewolf.
+     */
+    public void setStealth(float value) {
+        stealth = value;
+    }
+
+    /**
+     * Returns the current light collected of the werewolf.
+     */
+    public float getLight() {
+        return light;
+    }
+
+    /**
+     * Sets the current light collected of the werewolf.
+     *
+     * @param value the current light of the werewolf.
+     */
+    public void setLight(float value) {
+        light = value;
     }
 
     /**
@@ -192,20 +219,25 @@ public class Werewolf extends GameObject {
         moonlight = b;
     }
 
-    public void collectMoonlight() {
-        moonlightCollected++;
-        hp = hp + MAX_HP * 1 / (moonlightCollected + levelContainer.getRemainingMoonlight());
+    public void addMoonlightCollected(){
+        moonlightCollected ++;
+    }
+
+    public int getMoonlightCollected(){
+        return moonlightCollected;
     }
 
     /**
-     * Initialize a werewolf not standing on moonlight tile.
+     * Initialize a werewolf.
      */
     public Werewolf(float x, float y) {
 
         super(x, y);
         animeframe = 0.0f;
         moonlight = false;
+        light = INITIAL_LIGHT;
         hp = INITIAL_HP;
+        stealth = 0.0f;
         moonlightCollected = 0;
         levelContainer = new LevelContainer();
     }

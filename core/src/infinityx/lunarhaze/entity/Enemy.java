@@ -1,6 +1,5 @@
 package infinityx.lunarhaze.entity;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.EnemyController;
 import infinityx.lunarhaze.GameObject;
@@ -50,6 +49,7 @@ public class Enemy extends GameObject {
         NORTH(1), SOUTH(3), WEST(2), EAST(0);
 
         private final int scale;
+
         private Direction(int scale) {
             this.scale = scale;
         }
@@ -104,31 +104,22 @@ public class Enemy extends GameObject {
         direction = Direction.NORTH;
     }
 
-    /**private Werewolf parsePlayer(AssetDirectory directory, JsonValue playerFormat, LevelContainer container) {
-        Werewolf player = new Werewolf(playerFormat.get(0).asFloat(), playerFormat.get(1).asFloat());
-
-        parseGameObject(player, directory, playerJson);
-
-        player.activatePhysics(container.getWorld());
-        player.setSpotLight(new PointLight(container.getRayHandler(), 512, new Color(0.65f, 0.6f, 0.77f, 0.6f), 1f, 0, 0));
-
-        return player;
-    }
+    /**
      * get the next patrol point of the enemy
      */
     public Vector2 getNextPatrol() {
+        Vector2 next = patrolPath.get(currentWayPoint);
+        currentWayPoint++;
         if (currentWayPoint > patrolPath.size() - 1) {
             currentWayPoint = 0;
         }
-        Vector2 next = patrolPath.get(currentWayPoint);
-        currentWayPoint++;
         return next;
     }
 
     /**
      * get the patrol point this enemy is currently moving to
      */
-    public Vector2 getCurrentPatrol(){
+    public Vector2 getCurrentPatrol() {
         return patrolPath.get(currentWayPoint);
     }
 
@@ -189,7 +180,6 @@ public class Enemy extends GameObject {
         } else if (movingUp) {
             yVelocity = speed;
             direction = Direction.NORTH;
-            System.out.println("moving up");
         }
         body.setLinearVelocity(xVelocity, yVelocity);
     }
@@ -204,6 +194,7 @@ public class Enemy extends GameObject {
 
     /**
      * Sets the specific angle of the flashlight on this enemy
+     *
      * @param ang the angle...
      */
     public void setFlashLightRot(float ang) {
