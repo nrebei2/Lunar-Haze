@@ -7,12 +7,23 @@ import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import infinityx.lunarhaze.GameObject;
 
 public class RaycastInfo implements RayCastCallback {
+    /**The fixture hit by ray*/
     public Fixture fixture;
+
+    /**The starting point of the ray*/
     public Vector2 point;
+
+    /**The normal at the point we hit a fixture*/
     public Vector2 normal;
+
+    /**The fraction of the ray that is used to hit the fixture*/
     public float fraction;
     public boolean hit;
+
+    /**The gameobject that is casting the ray*/
     private GameObject requestingObject;
+
+    /**The gameobject that is attached to the fixture hit*/
     public GameObject hitObject;
 
     public RaycastInfo(GameObject obj){
@@ -24,6 +35,14 @@ public class RaycastInfo implements RayCastCallback {
         hitObject = null;
         this.requestingObject = obj;
     }
+
+    /**Call back function for raycasting
+     *
+     * return -1 to filter the current intersection
+     * return 0 to terminate
+     * returning fraction to clip the ray for closest hit
+     * returning 1 to continue
+     * */
     @Override
     public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
         System.out.println(fixture.getUserData());

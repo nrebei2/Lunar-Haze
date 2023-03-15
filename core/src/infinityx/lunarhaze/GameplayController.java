@@ -208,8 +208,26 @@ public class GameplayController {
 
     public boolean detectPlayer(Enemy enemy){
         Vector2 point1 = enemy.getPosition();
-        Vector2 point2 = new Vector2(point1.x+4, point1.y);
+        float dist = enemy.getFlashlight().getDistance();
 
+        Vector2 point2;
+        switch (enemy.getDirection()){
+            case NORTH:
+                point2 = new Vector2(point1.x , point1.y + dist);
+                break;
+            case SOUTH:
+                point2 = new Vector2(point1.x , point1.y - dist);
+                break;
+
+            case EAST:
+                point2 = new Vector2(point1.x + dist, point1.y);
+                break;
+            case WEST:
+                point2 = new Vector2(point1.x -dist , point1.y);
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + enemy.getDirection());
+        }
         RaycastInfo info = raycast(enemy, point1, point2);
         return info.hit && info.hitObject == player;
     }
