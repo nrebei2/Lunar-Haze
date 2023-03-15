@@ -79,7 +79,7 @@ public class PlayerController {
     public void collectMoonlight() {
         player.addMoonlightCollected();
         remainingMoonlight--;
-        player.setLight(player.getLight() + (Werewolf.MAX_LIGHT / (player.getMoonlightCollected() + levelContainer.getRemainingMoonlight())));
+        player.setLight(player.getLight() + (Werewolf.MAX_LIGHT / levelContainer.getTotalMoonlight()));
         System.out.println(levelContainer.getRemainingMoonlight());
     }
 
