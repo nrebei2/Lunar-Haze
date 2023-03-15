@@ -21,12 +21,11 @@ public class Werewolf extends GameObject {
     /**
      * Initial hp of the werewolf is 20.0
      **/
-    private static final float INITIAL_HP = 100.0f;
+    private static final float INITIAL_HP = 50.0f;
 
-    /**
-     * Maximum hp of the werewolf is 100.0
-     **/
-    private static final float MAX_HP = 100.0f;
+    private float maxHp;
+
+    private float lockout;
 
     /** Reference to werewolf's sprite for drawing */
     //private FilmStrip werewolfSprite;
@@ -83,9 +82,7 @@ public class Werewolf extends GameObject {
     /** Controls how long the werewolf gets knocked back by an attack and the window of the
      *  damage animation.
      */
-    private final float DAMAGE_INVINCIBLE_WINDOW = 2.0f;
-
-    private float currDamageTime;
+    private float lockoutTime;
 
 //    /**
 //     * Returns the image filmstrip for this ship
@@ -176,6 +173,13 @@ public class Werewolf extends GameObject {
         hp = value;
     }
 
+    public void initHp(float value) {
+        maxHp = value;
+        hp = value;
+    }
+
+    public void initLockout(float value) { lockout = value; }
+
     /**
      * @return Point light on player
      */
@@ -207,7 +211,7 @@ public class Werewolf extends GameObject {
 
     public void collectMoonlight() {
         moonlightCollected++;
-        hp = hp + MAX_HP * 1 / (moonlightCollected + levelContainer.getRemainingMoonlight());
+        hp = hp + maxHp * 1 / (moonlightCollected + levelContainer.getRemainingMoonlight());
     }
 
     /**
@@ -217,7 +221,7 @@ public class Werewolf extends GameObject {
 
         super(x, y);
         animeframe = 0.0f;
-        currDamageTime = 0.0f;
+        lockoutTime = 0.0f;
         moonlight = false;
         hp = INITIAL_HP;
         moonlightCollected = 0;
@@ -255,8 +259,11 @@ public class Werewolf extends GameObject {
             // set the updated velocity to the player's Box2D body
             body.setLinearVelocity(velocity);
         }
-        else if(velocity.x == 0f && velocity.y == 0f) {
+        else if(lockoutTime >= lockout) {
             canMove = true;
+            lockoutTime = 0f;
+        } else {
+            lockoutTime += delta;
         }
     }
 }

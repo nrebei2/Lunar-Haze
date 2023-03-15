@@ -24,7 +24,7 @@
     },
     "attack": {
       "knockback": 3.0,
-      "damage": 10.0
+      "damage": 25.0
     }
   }
 }
