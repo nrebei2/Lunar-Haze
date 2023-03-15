@@ -1,0 +1,2 @@
+TODO: can someone write the format of each json and how to edit it if they got the time
+just so the designers can edit if they want to
