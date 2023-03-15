@@ -158,11 +158,11 @@ public class PlayerController {
      * @param input InputController that controls the player
      */
     public void resolveSealthBar(InputController input) {
-        if (input.getHorizontal() == InputController.WALK_SPEED &&
-                input.getVertical() == InputController.WALK_SPEED){
+        if (input.getHorizontal() == input.getWalkSpeed() &&
+                input.getVertical() == input.getWalkSpeed()){
             player.setStealth(WALK_STEALTH);
-        } else if (input.getHorizontal() == InputController.RUN_SPEED &&
-                input.getVertical() == InputController.RUN_SPEED){
+        } else if (input.getHorizontal() == input.getRunSpeed() &&
+                input.getVertical() == input.getRunSpeed()){
             player.setStealth(RUN_STEALTH);
         } else {
 

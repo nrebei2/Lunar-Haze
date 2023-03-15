@@ -143,6 +143,7 @@ public class GameMode extends ScreenObservable implements Screen {
         this.directory = directory;
         LevelParser ps = LevelParser.LevelParser();
         ps.loadConstants(directory);
+        inputController.loadConstants(directory);
         levelFormat = directory.getEntry("levels", JsonValue.class);
         displayFont = directory.getEntry("retro", BitmapFont.class);
     }

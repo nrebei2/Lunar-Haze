@@ -195,6 +195,12 @@ public class LevelParser {
         float dist = light.getFloat("distance");
         int rays = light.getInt("rays");
 
+        float health = playerJson.getFloat("health");
+        float lockout = playerJson.getFloat("lockout");
+
+        player.initHp(health);
+        player.initLockout(lockout);
+
         PointLight spotLight = new PointLight(
                 container.getRayHandler(), rays, Color.WHITE, dist,
                 0, 0
