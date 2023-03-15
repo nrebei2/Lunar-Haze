@@ -270,6 +270,8 @@ public class GameMode extends ScreenObservable implements Screen {
                 canvas.begin(); // DO NOT SCALE
                 canvas.drawLightBar(BAR_WIDTH,
                         BAR_HEIGHT, gameplayController.getPlayer().getLight());
+                canvas.drawHpBar(BAR_WIDTH,
+                        BAR_HEIGHT, gameplayController.getPlayer().getHp());
                 canvas.end();
                 break;
         }

@@ -30,6 +30,7 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+import infinityx.lunarhaze.entity.Werewolf;
 
 /**
  * Primary view class for the game, abstracting the basic graphics calls.
@@ -1065,7 +1066,27 @@ public class GameCanvas {
 
         barRenderer.begin(ShapeRenderer.ShapeType.Filled);
         barRenderer.setColor(Color.YELLOW);
-        barRenderer.rect(x, y, width * light/100.0f, height);
+        barRenderer.rect(x, y, width * light / Werewolf.MAX_LIGHT, height);
+        barRenderer.end();
+    }
+
+    public void drawHpBar(float width, float height, float hp) {
+        if (active != DrawPass.STANDARD) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+            return;
+        }
+
+        ShapeRenderer barRenderer = new ShapeRenderer();
+        barRenderer.begin(ShapeRenderer.ShapeType.Line);
+        barRenderer.setColor(Color.WHITE);
+        float x = getWidth() - width;
+        float y = getHeight() - height * 2.5f;
+        barRenderer.rect(x, y, width, height);
+        barRenderer.end();
+
+        barRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        barRenderer.setColor(Color.RED);
+        barRenderer.rect(x, y, width * hp / Werewolf.INITIAL_HP, height);
         barRenderer.end();
     }
 
