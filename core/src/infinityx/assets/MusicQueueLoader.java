@@ -21,79 +21,96 @@ import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
-import infinityx.audio.*;
+import infinityx.audio.AudioEngine;
+import infinityx.audio.AudioSource;
+import infinityx.audio.MusicQueue;
+import infinityx.audio.SoundEffect;
 
 /**
  * This class is an {@link AssetLoader} to load {@link SoundEffect} assets.
- *
+ * <p>
  * All music buffers are named symbolically, since that may span multiple audio sources.
  * They are fully defined by their loader parameters.
  */
 public class MusicQueueLoader extends AsynchronousAssetLoader<MusicQueue, MusicQueueLoader.MusicQueueParameters> {
-    /** The asynchronously read MusicBuffer */
+    /**
+     * The asynchronously read MusicBuffer
+     */
     private MusicQueue cachedBuffer;
-    
+
     /**
      * The definable parameters for a {@link SoundEffect}.
-     * 
+     * <p>
      * While a music buffer may be derived from an audio source, it can be empty so long
      * as the number of channels (mono/stereo) and sample rate is defined.  Set sampleRate
      * to -1 to use the sample rate of the first source.
-     */ 
-    public static  class MusicQueueParameters extends AssetLoaderParameters<MusicQueue> {
-        /** The sources pre-attached to this music buffer (may be empty) */
+     */
+    public static class MusicQueueParameters extends AssetLoaderParameters<MusicQueue> {
+        /**
+         * The sources pre-attached to this music buffer (may be empty)
+         */
         public Array<String> sources;
-        /** 
+        /**
          * Whether the audio sources in this buffer are required to be mono.
-         * 
-         * If sources is not empty, this value will be ignored and the buffer will 
+         * <p>
+         * If sources is not empty, this value will be ignored and the buffer will
          * use the setting of the first audio source.
          */
         public boolean isMono;
-        /** 
+        /**
          * The samples per second of all audio sources
-         * 
-         * If sources is not empty, this value will be ignored and the buffer will 
+         * <p>
+         * If sources is not empty, this value will be ignored and the buffer will
          * use the setting of the first audio source.
          */
         public int sampleRate;
-        /** The initial volume in range [0,1] */
+        /**
+         * The initial volume in range [0,1]
+         */
         public float volume;
-        /** The pitch multiplier volume in range [0.5,2.0] */
+        /**
+         * The pitch multiplier volume in range [0.5,2.0]
+         */
         public float pitch;
-        /** The stereo pan in range [-1,1] (only valid on mono sources) */
+        /**
+         * The stereo pan in range [-1,1] (only valid on mono sources)
+         */
         public float panning;
-        /** Whether to loop this music buffer */
+        /**
+         * Whether to loop this music buffer
+         */
         public boolean looping;
-        /** Whether to use a local loop behavior (loop one source only) */
+        /**
+         * Whether to use a local loop behavior (loop one source only)
+         */
         public boolean shortLoop;
 
         /**
          * Creates music buffer parameters for stereo CD sound.
-         *
+         * <p>
          * There will be no sources.  isMono is false and sampleRate is 44.1k.
          */
         public MusicQueueParameters() {
-            this(false,44100);
+            this(false, 44100);
         }
 
         /**
          * Creates music buffer parameters for a single audio source
          *
-         * @param fileName  The file for the parent audio source.
+         * @param fileName The file for the parent audio source.
          */
         public MusicQueueParameters(String fileName) {
-            this(false,0);
+            this(false, 0);
             sources.add(fileName);
         }
 
         /**
          * Creates music buffer parameters for the given stream settings.
-         *
+         * <p>
          * There will be no initial sources.
          *
-         * @param isMono        Whether this music buffer is a mono audio stream
-         * @param sampleRate    The number of samples per second
+         * @param isMono     Whether this music buffer is a mono audio stream
+         * @param sampleRate The number of samples per second
          */
         public MusicQueueParameters(boolean isMono, int sampleRate) {
             this.isMono = isMono;
@@ -118,69 +135,69 @@ public class MusicQueueLoader extends AsynchronousAssetLoader<MusicQueue, MusicQ
     /**
      * Creates a new MusicBufferLoader with the given file resolver
      *
-     * @param resolver    The file resolver
+     * @param resolver The file resolver
      */
     public MusicQueueLoader(FileHandleResolver resolver) {
         super(resolver);
     }
 
-    /** 
+    /**
      * Returns the {@link MusicQueue} instance currently loaded by this loader.
-     *
+     * <p>
      * If nothing has been loaded, this returns {@code null}.
      *
      * @return the {@link MusicQueue} instance currently loaded by this loader.
      */
-    protected MusicQueue getLoadedMusic () {
+    protected MusicQueue getLoadedMusic() {
         return cachedBuffer;
     }
 
-    /** 
+    /**
      * Loads thread-safe part of the asset and injects any dependencies into the AssetManager.
-     *
+     * <p>
      * This is used to load non-OpenGL parts of the asset that do not require the context
      * of the main thread.
      *
-     * @param manager   The asset manager
-     * @param fileName  The name of the asset to load
-     * @param file      The resolved file to load
-     * @param params    The parameters to use for loading the asset 
+     * @param manager  The asset manager
+     * @param fileName The name of the asset to load
+     * @param file     The resolved file to load
+     * @param params   The parameters to use for loading the asset
      */
     @Override
-    public void loadAsync (AssetManager manager, String fileName, FileHandle file, MusicQueueParameters params) {
+    public void loadAsync(AssetManager manager, String fileName, FileHandle file, MusicQueueParameters params) {
         if (params == null) {
             params = new MusicQueueParameters();
         }
-        
+
         if (params.sources.size == 0) {
-            cachedBuffer = ((AudioEngine)Gdx.audio).newMusicBuffer(params.isMono,params.sampleRate);
+            cachedBuffer = ((AudioEngine) Gdx.audio).newMusicBuffer(params.isMono, params.sampleRate);
         } else {
             AudioSource first = manager.get(manager.getDependencies(fileName).first(), AudioSource.class);
-            cachedBuffer = ((AudioEngine)Gdx.audio).newMusicBuffer(first.getChannels() == 1, first.getSampleRate());
+            cachedBuffer = ((AudioEngine) Gdx.audio).newMusicBuffer(first.getChannels() == 1, first.getSampleRate());
         }
-        cachedBuffer.setVolume( params.volume );
-        cachedBuffer.setPitch( params.pitch );
-        cachedBuffer.setPan( params.panning );
-        cachedBuffer.setLooping( params.looping );
-        cachedBuffer.setLoopBehavior( params.shortLoop );
-        for(String deps : manager.getDependencies(fileName)) {
-            cachedBuffer.addSource( manager.get(deps,AudioSource.class) );
+        cachedBuffer.setVolume(params.volume);
+        cachedBuffer.setPitch(params.pitch);
+        cachedBuffer.setPan(params.panning);
+        cachedBuffer.setLooping(params.looping);
+        cachedBuffer.setLoopBehavior(params.shortLoop);
+        for (String deps : manager.getDependencies(fileName)) {
+            cachedBuffer.addSource(manager.get(deps, AudioSource.class));
         }
     }
 
-    /** 
+    /**
      * Loads the main thread part of the asset.
-     *
+     * <p>
      * This is used to load OpenGL parts of the asset that require the context of the
      * main thread.
      *
-     * @param manager   The asset manager
-     * @param fileName  The name of the asset to load
-     * @param file      The resolved file to load
-     * @param params    The parameters to use for loading the asset 
+     * @param manager  The asset manager
+     * @param fileName The name of the asset to load
+     * @param file     The resolved file to load
+     * @param params   The parameters to use for loading the asset
      */
     @Override
-    public MusicQueue loadSync (AssetManager manager, String fileName, FileHandle file, MusicQueueParameters params) {
+    public MusicQueue loadSync(AssetManager manager, String fileName, FileHandle file, MusicQueueParameters params) {
         MusicQueue music = cachedBuffer;
         cachedBuffer = null;
         return music;
@@ -189,33 +206,32 @@ public class MusicQueueLoader extends AsynchronousAssetLoader<MusicQueue, MusicQ
     /**
      * Eliminate the file resolution as all file names are logical.
      *
-     * @param fileName    Pointless
+     * @param fileName Pointless
      */
     @Override
-    public FileHandle resolve (String fileName) {
+    public FileHandle resolve(String fileName) {
         return null;
     }
 
-    /** 
-     * Returns the other assets this asset requires to be loaded first. 
-     * 
+    /**
+     * Returns the other assets this asset requires to be loaded first.
+     * <p>
      * This method may be called on a thread other than the GL thread. It may return
      * null if there are no dependencies.
      *
-     * @param fileName  The name of the asset to load
-     * @param file      The resolved file to load
-     * @param params parameters for loading the asset
-     *
-     * @return the other assets this asset requires to be loaded first. 
+     * @param fileName The name of the asset to load
+     * @param file     The resolved file to load
+     * @param params   parameters for loading the asset
+     * @return the other assets this asset requires to be loaded first.
      */
     @Override
-    public Array<AssetDescriptor> getDependencies (String fileName, FileHandle file, MusicQueueParameters params) {
+    public Array<AssetDescriptor> getDependencies(String fileName, FileHandle file, MusicQueueParameters params) {
         if (params == null) {
             params = new MusicQueueParameters();
         }
         Array<AssetDescriptor> deps = new Array<AssetDescriptor>(params.sources.size);
-        for(String name : params.sources) {
-            deps.add( new AssetDescriptor<AudioSource>( name, AudioSource.class ) );
+        for (String name : params.sources) {
+            deps.add(new AssetDescriptor<AudioSource>(name, AudioSource.class));
         }
         return deps;
     }

@@ -202,7 +202,7 @@ public class EnemyController {
                     target.getY()) <= DETECT_DIST && inLine;
         }
         /**Enemy only need to be less than detection distance away, enemy can see in an area*/
-        else if (detection == Detection.AREA){
+        else if (detection == Detection.AREA) {
             return boardDistance(enemy.getX(), enemy.getY(), target.getX(),
                     target.getY()) <= DETECT_DIST;
         } else if (detection == Detection.MOON) {
@@ -272,7 +272,7 @@ public class EnemyController {
         }
         int pos_x = board.worldToBoardX(target.getX());
         int pos_y = board.worldToBoardX(target.getY());
-        return boardDistance(x,y, pos_x,pos_y) <= ATTACK_DIST;
+        return boardDistance(x, y, pos_x, pos_y) <= ATTACK_DIST;
     }
 
     /**
@@ -398,11 +398,10 @@ public class EnemyController {
                 Vector2 pos;
                 if (enemy.getCurrentPatrol().x == curr_x && enemy.getCurrentPatrol().y == curr_y) {
                     pos = enemy.getNextPatrol();
-                }
-                else{
+                } else {
                     pos = enemy.getCurrentPatrol();
                 }
-                board.setGoal((int)pos.x, (int)pos.y);
+                board.setGoal((int) pos.x, (int) pos.y);
                 setGoal = true;
                 break;
 //            case WANDER:
