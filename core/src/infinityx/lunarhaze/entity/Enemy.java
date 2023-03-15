@@ -148,6 +148,10 @@ public class Enemy extends GameObject {
         flashlight.attachToBody(getBody(), 0.5f, 0, flashlight.getDirection());
     }
 
+    public ConeSource getFlashlight(){
+        return this.flashlight;
+    }
+
 
     /**
      * @param on Whether to turn the flashlight on (true) or off (false)
