@@ -3,6 +3,8 @@ package infinityx.lunarhaze;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.utils.JsonValue;
+import infinityx.assets.AssetDirectory;
 import java.awt.geom.RectangularShape;
 
 /**
@@ -31,10 +33,26 @@ public class InputController {
     private static final int RESET = Input.Keys.R;
     /** Input key for exiting the current level; */
     private static final int EXIT = Input.Keys.ESCAPE;
-    /** Run speed for the player; */
-    private static final float RUN_SPEED = 2.0f;
-    /** Walk speed for the player; */
-    private static final float WALK_SPEED = 1.0f;
+
+    /**
+     * Constants from asset directory
+     */
+    JsonValue inputJson;
+    float runSpeed;
+    float walkSpeed;
+
+    /**
+     * Caches all constants (between levels) from directory
+     *
+     * @param directory asset manager holding list of ... assets
+     */
+    public void loadConstants(AssetDirectory directory) {
+        // TODO: create and cache player and board? not sure if that would do much
+        // There is not a lot constant between levels
+        JsonValue inputJson = directory.getEntry("input", JsonValue.class);
+        runSpeed = inputJson.get("runSpeed").asFloat();
+        walkSpeed = inputJson.get("walkSpeed").asFloat();
+    }
 
     /**
      * How much did we move horizontally?
@@ -186,9 +204,9 @@ public class InputController {
         // Directional controls
         float move;
         if(runPressed){
-            move = RUN_SPEED;
+            move = runSpeed;
         }else{
-            move = WALK_SPEED;
+            move = walkSpeed;
         }
 
         horizontal = 0.0f;
