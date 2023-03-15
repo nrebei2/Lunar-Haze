@@ -175,18 +175,18 @@ public class GameplayController {
         int py = board.worldToBoardX(player.getPosition().y);
 
         if (board.isLit(px, py)) {
-            timeOnMoonlight += delta; // Increase variable by time
+            if (board.isCollectable(px, py)) {
+                timeOnMoonlight += delta; // Increase variable by time
+            }
             player.setOnMoonlight(true);
-            if (timeOnMoonlight > MOONLIGHT_COLLECT_TIME) {
+            if (board.isCollectable(px, py) && timeOnMoonlight > MOONLIGHT_COLLECT_TIME) {
                 player.collectMoonlight();
                 remainingMoonlight--;
                 timeOnMoonlight = 0;
-
-                board.setLit(px, py, false);
-
-                // Check if game is won here
-                if (remainingMoonlight == 0) gameWon = true;
+                board.setCollected(px, py);
             }
+            // Check if game is won here
+            if (remainingMoonlight == 0) gameWon = true;
         } else {
             timeOnMoonlight = 0;
             player.setOnMoonlight(false);
@@ -212,12 +212,6 @@ public class GameplayController {
                 } else {
                     en.setFlashLightRotAlongDir();
                 }
-//                if (attacking &&) {
-//                    fireWeapon(s);
-//                } else {
-//                    s.coolDown(true);
-//                }
-
             } else {
 
                 en.update(EnemyController.CONTROL_NO_ACTION);
