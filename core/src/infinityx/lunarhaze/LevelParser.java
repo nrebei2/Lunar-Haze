@@ -156,6 +156,7 @@ public class LevelParser {
 
         // TODO: bother with error checking?
         object.setBodyType(json.get("bodytype").asString().equals("static") ? BodyDef.BodyType.StaticBody : BodyDef.BodyType.DynamicBody);
+        object.setLinearDamping(json.get("damping").asFloat());
         object.setDensity(json.get("density").asFloat());
         object.setFriction(json.get("friction").asFloat());
         object.setRestitution(json.get("restitution").asFloat());
@@ -200,7 +201,6 @@ public class LevelParser {
         );
         spotLight.setColor(color[0], color[1], color[2], color[3]);
         spotLight.setSoft(light.getBoolean("soft"));
-
         player.activatePhysics(container.getWorld());
         player.setSpotLight(spotLight);
 
@@ -242,6 +242,10 @@ public class LevelParser {
 
         enemy.setFlashlight(flashLight);
         enemy.setFlashlightOn(true);
+
+        JsonValue attack = json.get("attack");
+        enemy.setAttackKnockback(attack.getFloat("knockback"));
+        enemy.setAttackDamage(attack.getFloat("damage"));
 
         return enemy;
     }

@@ -2,10 +2,8 @@ package infinityx.lunarhaze;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
-import java.awt.geom.RectangularShape;
 
 /**
  * Device-independent input manager.
@@ -43,12 +41,8 @@ public class InputController {
 
     /**
      * Caches all constants (between levels) from directory
-     *
-     * @param directory asset manager holding list of ... assets
      */
     public void loadConstants(AssetDirectory directory) {
-        // TODO: create and cache player and board? not sure if that would do much
-        // There is not a lot constant between levels
         JsonValue inputJson = directory.getEntry("input", JsonValue.class);
         runSpeed = inputJson.get("runSpeed").asFloat();
         walkSpeed = inputJson.get("walkSpeed").asFloat();
@@ -172,9 +166,6 @@ public class InputController {
     public boolean didExit() {
         return exitPressed;
     }
-
-
-
 
     /**
      * Return the singleton instance of the input controller

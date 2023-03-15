@@ -1,95 +1,26 @@
 package infinityx.lunarhaze;
 
-import box2dLight.PointLight;
-import box2dLight.RayHandler;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.Array;
-import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.EnemyList;
-import infinityx.lunarhaze.physics.ConeSource;
-import infinityx.lunarhaze.physics.LightSource;
-
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public class LightingController {
+    /**
+     * List of enemies
+     */
+    private final EnemyList enemies;
 
-    /** Rayhandler for storing lights */
-    protected RayHandler rayHandler;
+    private final Board board;
 
-    /** All light sources in level */
-    private Array<LightSource> lights = new Array<LightSource>();
-
-    /** The camera defining the RayHandler view; scale is in physics coordinates */
-    protected OrthographicCamera raycamera;
-
-    /** List of enemies to attach to */
-    private EnemyList enemies;
-
-    private HashMap<Vector2, Vector2> moonlightPositions;
-
-    private PointLight[][] moonlight;
-
-    private PointLight ambienceMoonlight;
-
-    int width;
-    int height;
-
-    public LightingController(EnemyList e, HashMap<Vector2, Vector2> pos, int w, int h) {
-        enemies = e;
-        moonlightPositions = pos;
-        width = w;
-        height = h;
-    }
-
-    public RayHandler getRayHandler() { return rayHandler; }
-    public void initLights(boolean gamma, boolean diffuse, int blur, World world) {
-
-        int width = 1280;
-        int height = 960;
-
-        raycamera = new OrthographicCamera(width, height);
-        raycamera.position.set(width/2.0f, height/2.0f, 0);
-        raycamera.update();
-
-        RayHandler.setGammaCorrection(gamma);
-        RayHandler.useDiffuseLight(diffuse);
-        rayHandler = new RayHandler(world, Gdx.graphics.getWidth(), Gdx.graphics.getWidth());
-        rayHandler.setCombinedMatrix(raycamera);
-        rayHandler.setAmbientLight(0.25f, 0.22f, 0.32f, 0.25f);
-        rayHandler.setBlur(blur > 0);
-        rayHandler.setBlurNum(20);
-        rayHandler.setShadows(true);
-
-        // Create light for each enemy and attach
-        for(Enemy e : enemies) {
-            e.setFlashlight(new ConeSource(rayHandler, 512, new Color(0.8f, 0.6f, 0f, 0.9f), 3500f, e.getX(), e.getY(), 0f, 30));
-            e.getFlashlight().attachToBody(e.body, 0, 0, e.getFlashlight().getDirection());
-            e.getFlashlight().setActive(true);
-        }
-
-        moonlight = new PointLight[width][height];
-        for(Map.Entry<Vector2, Vector2> pos : moonlightPositions.entrySet()) {
-            Vector2 boardPos = pos.getKey();
-            Vector2 worldPos = pos.getValue();
-            moonlight[(int) boardPos.x][(int) boardPos.y] = new PointLight(rayHandler, 512, new Color(0.7f, 0.7f, 0.9f, 0.7f), 200f, worldPos.x, worldPos.y);
-            moonlight[(int) boardPos.x][(int) boardPos.y].setActive(true);
-        }
-
-        ambienceMoonlight = new PointLight(rayHandler, 512, new Color(0.65f, 0.6f, 0.77f, 0.5f), 4000f, 0, Gdx.graphics.getHeight()*3/4.0f);
-        ambienceMoonlight.setXray(true);
-        ambienceMoonlight.setActive(true);
-    }
-
-    public void removeLightAt(int x, int y) {
-        moonlight[x][y].setActive(false);
+    /**
+     * TODO: This is a controller class, so it should handle interactions between lights and objects
+     * Maybe the light should update throughout the lifetime of the level??
+     *
+     * @param enemies
+     * @param board
+     */
+    public LightingController(EnemyList enemies, Board board) {
+        this.enemies = enemies;
+        this.board = board;
     }
 
 }
