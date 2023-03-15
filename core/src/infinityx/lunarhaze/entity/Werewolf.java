@@ -25,16 +25,16 @@ public class Werewolf extends GameObject {
     /**
      * Initial hp of the werewolf is 100.0
      **/
-    public static final int INITIAL_HP = 5;
+    public static int INITIAL_HP = 5;
 
     /**
      * Maximum light of the werewolf is 100.0
      **/
     public static final float MAX_LIGHT = 100.0f;
 
-    /**
-     * Maximum light of the werewolf is 100.0
-     **/
+    private float maxHp;
+
+    private float lockout;
 
     /** Reference to werewolf's sprite for drawing */
     //private FilmStrip werewolfSprite;
@@ -85,6 +85,20 @@ public class Werewolf extends GameObject {
      * The value is a float between 0 and 1.
      */
     private float stealth;
+
+    private float lockoutTime;
+
+//    /**
+//     * Returns the image filmstrip for this ship
+//     *
+//     * This value should be loaded by the GameMode and set there. However, we
+//     * have to be prepared for this to be null at all times
+//     *
+//     * @return the image texture for this ship
+//     */
+//    public FilmStrip getFilmStrip() {
+//        return werewolfSprite;
+//    }
 
     private LevelContainer levelContainer;
 
@@ -157,6 +171,12 @@ public class Werewolf extends GameObject {
     public void setHp(int value) {
         hp = value;
     }
+
+    public void initHp(int value) {
+        INITIAL_HP = value;
+    }
+
+    public void initLockout(float value) { lockout = value; }
 
     /**
      * Returns the current stealth of the werewolf.
@@ -234,6 +254,7 @@ public class Werewolf extends GameObject {
 
         super(x, y);
         animeframe = 0.0f;
+        lockoutTime = 0.0f;
         moonlight = false;
         light = INITIAL_LIGHT;
         hp = INITIAL_HP;
@@ -255,7 +276,6 @@ public class Werewolf extends GameObject {
         // update the velocity based on the input from the player
         velocity.x = movementH * speed;
         velocity.y = movementV * speed;
-
         // set the updated velocity to the player's Box2D body
         body.setLinearVelocity(velocity);
     }

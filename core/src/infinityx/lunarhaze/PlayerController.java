@@ -13,6 +13,11 @@ public class PlayerController {
     private static final float MOONLIGHT_COLLECT_TIME = 1.5f;
 
     /**
+     * Stealth value if the player is standing still
+     */
+    private static final float STILL_STEALTH = 0.0f;
+
+    /**
      * Stealth value if the player is walking
      */
     private static final float WALK_STEALTH = 0.3f;
@@ -158,14 +163,14 @@ public class PlayerController {
      * @param input InputController that controls the player
      */
     public void resolveSealthBar(InputController input) {
-        if (input.getHorizontal() == input.getWalkSpeed() &&
-                input.getVertical() == input.getWalkSpeed()){
+        if (Math.abs(input.getHorizontal()) == input.getWalkSpeed() ||
+                Math.abs(input.getVertical()) == input.getWalkSpeed()){
             player.setStealth(WALK_STEALTH);
-        } else if (input.getHorizontal() == input.getRunSpeed() &&
-                input.getVertical() == input.getRunSpeed()){
+        } else if (Math.abs(input.getHorizontal()) == input.getRunSpeed() ||
+                Math.abs(input.getVertical()) == input.getRunSpeed()){
             player.setStealth(RUN_STEALTH);
-        } else {
-
+        } else if (input.getHorizontal() == 0 || input.getVertical() == 0 ){
+            player.setStealth(STILL_STEALTH);
         }
     }
 
