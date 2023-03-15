@@ -147,6 +147,7 @@ public class GameplayController {
         EnemyController.resolveEnemies(controls,player,enemies);
     }
 
+
     public RaycastInfo raycast(GameObject requestingObject, Vector2 point1, Vector2 point2){
         RaycastInfo callback = new RaycastInfo(requestingObject);
         World world = levelContainer.getWorld();
