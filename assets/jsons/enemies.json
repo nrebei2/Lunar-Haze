@@ -15,11 +15,16 @@
     "density": 1.0,
     "friction": 0.0,
     "restitution": 0.0,
+    "damping": 0.0,
     "speed": 2,
     "startframe": 0,
     "texture": {
       "name": "villager.movement",
       "origin": [75, 22]
+    },
+    "attack": {
+      "knockback": 3.0,
+      "damage": 10.0
     }
   }
 }

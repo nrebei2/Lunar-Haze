@@ -45,6 +45,10 @@ public class Enemy extends GameObject {
 
     private ConeSource flashlight;
 
+    private float attackKnockback;
+
+    private float attackDamage;
+
     public enum Direction {
         NORTH(1), SOUTH(3), WEST(2), EAST(0);
 
@@ -151,6 +155,14 @@ public class Enemy extends GameObject {
     public void setFlashlightOn(boolean on) {
         flashlight.setActive(on);
     }
+
+    public float getAttackKnockback() { return attackKnockback; }
+
+    public float getAttackDamage() { return attackDamage; }
+
+    public void setAttackKnockback(float knockback) { attackKnockback = knockback; }
+
+    public void setAttackDamage(float dmg) { attackDamage = dmg; }
 
     /**
      * Updates the animation frame and position of this enemy.

@@ -2,6 +2,7 @@ package infinityx.lunarhaze.entity;
 
 import box2dLight.PointLight;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import infinityx.lunarhaze.GameObject;
 import infinityx.lunarhaze.LevelContainer;
 
@@ -18,9 +19,9 @@ public class Werewolf extends GameObject {
     private static final float ANIMATION_SPEED = 0.25f;
 
     /**
-     * Initial hp of the werewolf is 0.0
+     * Initial hp of the werewolf is 20.0
      **/
-    private static final float INITIAL_HP = 0.0f;
+    private static final float INITIAL_HP = 100.0f;
 
     /**
      * Maximum hp of the werewolf is 100.0
@@ -73,6 +74,18 @@ public class Werewolf extends GameObject {
     private PointLight spotLight;
 
     private final Vector2 forceCache = new Vector2();
+
+    /* Returns whether the werewolf can move or not; the werewolf can't move
+       if its being knocked back by an attack.
+     */
+    private boolean canMove;
+
+    /** Controls how long the werewolf gets knocked back by an attack and the window of the
+     *  damage animation.
+     */
+    private final float DAMAGE_INVINCIBLE_WINDOW = 2.0f;
+
+    private float currDamageTime;
 
 //    /**
 //     * Returns the image filmstrip for this ship
@@ -204,10 +217,24 @@ public class Werewolf extends GameObject {
 
         super(x, y);
         animeframe = 0.0f;
+        currDamageTime = 0.0f;
         moonlight = false;
         hp = INITIAL_HP;
         moonlightCollected = 0;
         levelContainer = new LevelContainer();
+        canMove = true;
+    }
+
+    public void resolveAttack(GameObject enemy, float damage, float knockback) {
+
+        Body enemyBody = enemy.getBody();
+        Vector2 pos = body.getPosition();
+        Vector2 enemyPos = enemyBody.getPosition();
+        Vector2 direction = pos.sub(enemyPos).nor();
+
+        canMove = false;
+        body.applyLinearImpulse(direction.scl(knockback), body.getWorldCenter(), true);
+        setHp(hp - damage);
     }
 
     /**
@@ -216,15 +243,20 @@ public class Werewolf extends GameObject {
      * @param delta Number of seconds since last animation frame
      */
     public void update(float delta) {
-
         // get the current velocity of the player's Box2D body
         Vector2 velocity = body.getLinearVelocity();
+        if(canMove) {
 
-        // update the velocity based on the input from the player
-        velocity.x = movementH * speed;
-        velocity.y = movementV * speed;
 
-        // set the updated velocity to the player's Box2D body
-        body.setLinearVelocity(velocity);
+            // update the velocity based on the input from the player
+            velocity.x = movementH * speed;
+            velocity.y = movementV * speed;
+
+            // set the updated velocity to the player's Box2D body
+            body.setLinearVelocity(velocity);
+        }
+        else if(velocity.x == 0f && velocity.y == 0f) {
+            canMove = true;
+        }
     }
 }
