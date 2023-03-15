@@ -34,6 +34,14 @@ public class Werewolf extends GameObject {
 
     private float maxHp;
 
+    /* Returns whether the werewolf can move or not; the werewolf can't move
+       if its being knocked back by an attack.
+     */
+    private boolean canMove;
+
+    /** Controls how long the werewolf gets knocked back by an attack and the window of the
+     *  damage animation.
+     */
     private float lockout;
 
     /** Reference to werewolf's sprite for drawing */
@@ -247,6 +255,8 @@ public class Werewolf extends GameObject {
         return moonlightCollected;
     }
 
+    public void setCanMove(boolean value) { canMove = value; }
+
     /**
      * Initialize a werewolf.
      */
@@ -269,14 +279,22 @@ public class Werewolf extends GameObject {
      * @param delta Number of seconds since last animation frame
      */
     public void update(float delta) {
+        // Check if being hit by an attack. If being hit by an attack we can't move
+        if(canMove) {
+            // get the current velocity of the player's Box2D body
+            Vector2 velocity = body.getLinearVelocity();
+            // update the velocity based on the input from the player
+            velocity.x = movementH * speed;
+            velocity.y = movementV * speed;
 
-        // get the current velocity of the player's Box2D body
-        Vector2 velocity = body.getLinearVelocity();
-
-        // update the velocity based on the input from the player
-        velocity.x = movementH * speed;
-        velocity.y = movementV * speed;
-        // set the updated velocity to the player's Box2D body
-        body.setLinearVelocity(velocity);
+            // set the updated velocity to the player's Box2D body
+            body.setLinearVelocity(velocity);
+        }
+        else if(lockoutTime >= lockout) {
+            canMove = true;
+            lockoutTime = 0f;
+        } else {
+            lockoutTime += delta;
+        }
     }
 }
