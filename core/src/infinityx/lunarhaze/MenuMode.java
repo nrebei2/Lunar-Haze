@@ -13,6 +13,8 @@ import infinityx.util.ScreenObservable;
  * Provides a menu screen for level select
  */
 public class MenuMode extends ScreenObservable implements Screen, InputProcessor {
+    public static final int GO_EDITOR = 0;
+    public static final int GO_PLAY = 1;
     /**
      * Background texture for start-up
      */
@@ -152,9 +154,13 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
             update(delta);
             draw();
 
+            if (Gdx.input.isKeyPressed(Input.Keys.L)) {
+                observer.exitScreen(this, GO_EDITOR);
+            }
+
             // We are are ready, notify our listener
             if (isReady() && observer != null) {
-                observer.exitScreen(this, 1);
+                observer.exitScreen(this, GO_PLAY);
             }
         }
     }
