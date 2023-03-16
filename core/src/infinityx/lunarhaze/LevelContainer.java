@@ -335,7 +335,7 @@ public class LevelContainer {
         canvas.end();
 
         // A separate transform for lights :(
-        // In an ideal world they would be the same, but lights should be scaled while textures should NOT
+        // In an ideal world they would be the same, but lights should be scaled while textures shouldn't
         OrthographicCamera raycamera = new OrthographicCamera(
                 canvas.getWidth() / canvas.WorldToScreenX(1),
                 canvas.getHeight() / canvas.WorldToScreenY(1)

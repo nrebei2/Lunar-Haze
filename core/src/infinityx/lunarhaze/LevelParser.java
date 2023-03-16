@@ -45,6 +45,9 @@ public class LevelParser {
     float[] wSize;
     int[] sSize;
 
+    /**
+     * Access to current container since it can be flushed upon re-initialization.
+     */
     private LevelContainer levelContainer;
 
     /**

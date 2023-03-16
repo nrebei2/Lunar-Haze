@@ -74,10 +74,6 @@ public class GameMode extends ScreenObservable implements Screen {
      */
     private InputController inputController;
     /**
-     * Handle collision and physics (CONTROLLER CLASS)
-     */
-    //private CollisionController physicsController;
-    /**
      * Contains level details! May be null.
      */
     private LevelContainer levelContainer;
@@ -109,14 +105,12 @@ public class GameMode extends ScreenObservable implements Screen {
     private int level;
 
     public GameMode(GameCanvas canvas) {
-        //TODO
         this.canvas = canvas;
         active = false;
         gameState = GameState.INTRO;
         // Create the controllers:
         inputController = new InputController();
         gameplayController = new GameplayController();
-        //physicsController = new CollisionController(canvas.getWidth(), canvas.getHeight(), levelContainer);
     }
 
     /**
@@ -130,7 +124,6 @@ public class GameMode extends ScreenObservable implements Screen {
         // must reload level container and controllers
         this.gameState = GameState.INTRO;
     }
-
 
     /**
      * Gather the required assets.

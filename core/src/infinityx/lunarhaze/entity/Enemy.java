@@ -232,11 +232,6 @@ public class Enemy extends GameObject {
         flashlight.setActive(false);
     }
 
-    public ConeSource getFlashlight(){
-        return this.flashlight;
-    }
-
-
     /**
      * @param on Whether to turn the flashlight on (true) or off (false)
      */
