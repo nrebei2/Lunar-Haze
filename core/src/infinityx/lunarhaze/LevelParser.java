@@ -46,13 +46,11 @@ public class LevelParser {
     /**
      * Constants from asset directory
      */
-    JsonValue enemiesJson;
-    JsonValue objectsJson;
     JsonValue playerJson;
     float[] wSize;
     int[] sSize;
 
-    private LevelContainer levelContainer = new LevelContainer();
+    private LevelContainer levelContainer;
 
     /**
      * Caches all constants (between levels) from directory
@@ -67,16 +65,18 @@ public class LevelParser {
 
         canvas.setWorldToScreen(new Vector2(sSize[0] / wSize[0], sSize[1] / wSize[1]));
 
-        enemiesJson = directory.getEntry("enemies", JsonValue.class);
-        objectsJson = directory.getEntry("objects", JsonValue.class);
+        levelContainer = new LevelContainer(directory);
+        levelContainer.enemiesJson = directory.getEntry("enemies", JsonValue.class);
+        levelContainer.objectJson = directory.getEntry("objects", JsonValue.class);
+
         playerJson = directory.getEntry("player", JsonValue.class);
 
         // Cache player
-        System.out.println("Parsing player");
         Werewolf player = new Werewolf();
         player.initialize(directory, playerJson, levelContainer);
         levelContainer.setPlayer(player);
-        System.out.println("Finished parsing player");
+
+
     }
 
     /**
@@ -112,19 +112,20 @@ public class LevelParser {
             JsonValue enemyInfo = enemies.get(curId);
             if (enemyInfo == null) break;
 
-            Enemy enemy = new Enemy();
-            enemy.initialize(directory, enemiesJson.get(enemyInfo.getString("type")), levelContainer);
-            enemy.setId(curId);
             JsonValue enemyPos = enemyInfo.get("position");
 
             ArrayList<Vector2> patrol = new ArrayList<>();
             for (JsonValue patrolPos : enemyInfo.get("patrol")) {
                 patrol.add(new Vector2(patrolPos.getInt(0), patrolPos.getInt(1)));
             }
-            enemy.setPatrolPath(patrol);
-            enemy.setPosition(enemyPos.getFloat(0), enemyPos.getFloat(1));
 
-            levelContainer.addEnemy(enemy);
+            levelContainer.addEnemy(
+                    enemyInfo.getString("type"),
+                    enemyPos.getFloat(0),
+                    enemyPos.getFloat(1),
+                    patrol
+            );
+
             curId++;
         }
 
@@ -135,15 +136,14 @@ public class LevelParser {
             JsonValue objInfo = objects.get(objId);
             if (objInfo == null) break;
 
-            SceneObject object = new SceneObject();
-            object.initialize(directory, objectsJson.get(objInfo.getString("type")), levelContainer);
             JsonValue objPos = objInfo.get("position");
-            object.setPosition(objPos.getFloat(0), objPos.getFloat(1));
-
             float objScale = objInfo.getFloat("scale");
-            object.setScale(objScale, objScale);
 
-            levelContainer.addSceneObject(object);
+            levelContainer.addSceneObject(
+                    objInfo.getString("type"), objPos.getFloat(0),
+                    objPos.getFloat(1), objScale
+            );
+
             objId++;
         }
         return levelContainer;

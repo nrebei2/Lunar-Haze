@@ -4,12 +4,11 @@ import box2dLight.PointLight;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.IntMap;
-import com.badlogic.gdx.utils.ObjectMap;
+import com.badlogic.gdx.utils.JsonValue;
+import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.EnemyList;
 import infinityx.lunarhaze.entity.SceneObject;
@@ -17,6 +16,7 @@ import infinityx.lunarhaze.entity.Werewolf;
 import infinityx.lunarhaze.physics.LightSource;
 import infinityx.util.Drawable;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 
 /**
@@ -46,7 +46,10 @@ import java.util.Comparator;
  * All models' positions are in world coordinates, Drawing should only be doing the relevant transformations
  */
 public class LevelContainer {
-
+    /**
+     * Need an ongoing reference to the asset directory
+     */
+    protected AssetDirectory directory;
     /**
      * Rayhandler for storing lights
      */
@@ -95,6 +98,12 @@ public class LevelContainer {
     private Array<Drawable> drawables;
     private final DrawableCompare drawComp = new DrawableCompare();
 
+    /** Constants for enemy initialization */
+    public JsonValue enemiesJson;
+
+    /** Constants for scene object initialization */
+    public JsonValue objectJson;
+
     /**
      * Initialize attributes
      */
@@ -112,11 +121,12 @@ public class LevelContainer {
     /**
      * Creates a new LevelContainer with no active elements.
      */
-    public LevelContainer() {
+    public LevelContainer(AssetDirectory directory) {
         // BOX2D initialization
         world = new World(new Vector2(0, 0), true);
         rayHandler = new RayHandler(world, Gdx.graphics.getWidth(), Gdx.graphics.getWidth());
         player = null;
+        this.directory = directory;
         initialize();
     }
 
@@ -143,13 +153,31 @@ public class LevelContainer {
 
     /**
      * @param enemy Enemy to append to enemy list
-     * @return id of the added enemy
+     * @return Enemy added with updated id
      */
-    public int addEnemy(Enemy enemy) {
+    public Enemy addEnemy(Enemy enemy) {
         enemies.addEnemy(enemy);
         drawables.add(enemy);
 
-        return enemies.size() - 1;
+        enemy.setId(enemies.size() - 1);
+        return enemy;
+    }
+
+    /**
+     * @param type type of Enemy to append to enemy list (e.g. villager)
+     * @param x world x-position
+     * @param y world y-position
+     * @param patrol patrol path for this enemy
+     * @return Enemy added with updated id
+     */
+    public Enemy addEnemy(String type, float x, float y, ArrayList<Vector2> patrol) {
+        Enemy enemy = new Enemy();
+        enemy.initialize(directory, enemiesJson.get(type), this);
+
+        enemy.setPatrolPath(patrol);
+        enemy.setPosition(x, y);
+
+        return addEnemy(enemy);
     }
 
     /**
@@ -202,10 +230,30 @@ public class LevelContainer {
 
     /**
      * @param obj Scene Object to add
+     * @return scene object added
      */
-    public void addSceneObject(SceneObject obj) {
+    public SceneObject addSceneObject(SceneObject obj) {
         sceneObjects.add(obj);
         drawables.add(obj);
+
+        return obj;
+    }
+
+    /**
+     * @param type type of scene object to add (e.g. house)
+     * @param x world x-position
+     * @param y world y-position
+     * @param scale scale of object
+     * @return scene object added
+     */
+    public SceneObject addSceneObject(String type, float x, float y, float scale) {
+        SceneObject object = new SceneObject();
+        object.initialize(directory, objectJson.get(type), this);
+
+        object.setPosition(x, y);
+        object.setScale(scale, scale);
+
+        return addSceneObject(object);
     }
 
     /**
@@ -245,12 +293,6 @@ public class LevelContainer {
         //System.out.printf(
         //        "Player pos: (%f, %f), Spotlight pos: (%f, %f) \n",
         //        player.getPosition().x, player.getPosition().y, player.getSpotlight().getPosition().x, player.getSpotlight().getPosition().y);
-
-        System.out.printf("Enemy count %d\n", enemies.size());
-
-        for (Enemy enemy : enemies) {
-            System.out.printf("flashlight pos: (%f, %f)\n", enemy.getRestitution(), enemy.getBody().getPosition().y);
-        }
 
         // Render order: Board tiles -> (players, enemies, scene objects) sorted by depth (y coordinate)
         board.draw(canvas);
