@@ -151,6 +151,7 @@ public class GameCanvas {
 
     /**
      * Translation cache used for view translation
+     * TODO: I dont like this, maybe a better way to restructure
      */
     private Vector2 viewCache;
 
@@ -466,14 +467,6 @@ public class GameCanvas {
 
         spriteBatch.begin();
         active = DrawPass.STANDARD;
-    }
-
-    /**
-     * Sets view translation, used for screen to world translation
-     * @param view
-     */
-    public void setView(Vector2 view) {
-        this.viewCache.set(view);
     }
 
     /**

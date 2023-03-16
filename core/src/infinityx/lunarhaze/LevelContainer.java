@@ -214,6 +214,13 @@ public class LevelContainer {
     }
 
     /**
+     * Returns last set view transform
+     */
+    public Vector2 getView() {
+        return view;
+    }
+
+    /**
      * Draws the entire scene to the canvas
      *
      * @param canvas The drawing context

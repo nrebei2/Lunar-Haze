@@ -76,7 +76,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     private Selected selected;
 
-    public static final Color SELECTED_COLOR = new Color(0.8f, 0.8f, 0.8f, 0.7f);
+    public static final Color SELECTED_COLOR = new Color(0.8f, 0.8f, 0.8f, 1f);
 
 
     public EditorMode(GameCanvas canvas) {
@@ -101,7 +101,20 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     @Override
     public void show() {
         level = LevelParser.LevelParser().loadEmpty();
-        selected = new Tile(directory.getEntry("land1-unlit", Texture.class), "land1");
+
+        //Board board = level.getBoard();
+        //
+        //board.setTileTexture(0, 0,
+        //        directory.getEntry("land1-unlit", Texture.class),
+        //        directory.getEntry("land1-lit", Texture.class),
+        //        // currently collected tile is same as uncollected ones
+        //        // since we have no assets for collected but lit tiles
+        //        directory.getEntry("land1-lit", Texture.class)
+        //);
+        //board.setTileType(0, 0, infinityx.lunarhaze.Tile.TileType.Road);
+        ////board.setWalkable(0, y, true);
+
+        selected = new Tile(directory.getEntry("land1-unlit", Texture.class), "land");
     }
 
     /**
@@ -124,15 +137,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             level.translateView(0, 20);
         }
 
-    }
-
-    /**
-     * Draw the status of this editor mode.
-     */
-    private void draw(float delta) {
-        canvas.clear(Color.BLACK);
-        level.drawLevel(canvas);
-
         // Cursor world position
         float curWorldX = canvas.ScreenToWorldX(Gdx.input.getX());
         float curWorldY = canvas.ScreenToWorldY(Gdx.input.getY());
@@ -141,16 +145,28 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             return;
         }
 
-        canvas.begin();
         if (selected instanceof Tile) {
             // snap to tile
             int boardX = level.getBoard().worldToBoardX(curWorldX);
             int boardY = level.getBoard().worldToBoardY(curWorldY);
 
+            //System.out.printf("selected texture height: %s\n", selected.texture.toString());
+
             level.getBoard().setPreviewTile(new Board.PreviewTile(boardX, boardY, selected.texture));
             //System.out.printf("board pos: (%d, %d)", boardX, boardY);
         }
 
+    }
+
+    /**
+     * Draw the status of this editor mode.
+     */
+    private void draw(float delta) {
+        canvas.clear();
+        level.drawLevel(canvas);
+
+        canvas.beginT(level.getView().x, level.getView().y);
+        level.getBoard().drawOutline(canvas);
         canvas.end();
     }
 
@@ -165,8 +181,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         draw(delta);
 
         // Buttons on right for tiles, player, enemy, lights, scene objects
-        // Simple enough dont both using scene2d
-        // Set size of font using displayFont.getData().setScale(height / displayFont.getXHeight());
+        // Simple enough dont bother using scene2d
+        // Set pixel size of height of font using displayFont.getData().setScale(height / displayFont.getXHeight());
 
     }
 

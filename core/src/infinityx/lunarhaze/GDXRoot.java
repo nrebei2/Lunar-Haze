@@ -63,6 +63,7 @@ public class GDXRoot extends Game implements ScreenObserver {
         loading.setObserver(this);
         game.setObserver(this);
         menu.setObserver(this);
+        editor.setObserver(this);
 
         setScreen(loading);
     }

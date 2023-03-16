@@ -259,10 +259,6 @@ public class Board {
     private void drawTile(int x, int y, GameCanvas canvas) {
         // Used for level editor
         if (getTileType(x, y) == Tile.TileType.EMPTY) {
-            canvas.drawRecOutline(
-                    canvas.WorldToScreenX(boardToWorld(x, y).x), canvas.WorldToScreenY(boardToWorld(x, y).y),
-                    tileScreenDim.x, tileScreenDim.y, Color.RED
-            );
             return;
         }
 
@@ -284,10 +280,25 @@ public class Board {
     }
 
     /**
+     * Draws red outline for tile placement. Used in level editor.
+     * @param canvas
+     */
+    public void drawOutline(GameCanvas canvas) {
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                canvas.drawRecOutline(
+                        canvas.WorldToScreenX(boardToWorld(x, y).x), canvas.WorldToScreenY(boardToWorld(x, y).y),
+                        tileScreenDim.x, tileScreenDim.y, Color.RED
+                );
+            }
+        }
+    }
+
+    /**
      * Sets the preview tile. Used for the level editor.
      * @param tile
      */
-    public void setPreviewTile(PreviewTile tile) {
+    void setPreviewTile(PreviewTile tile) {
         if (!inBounds(tile.b_x, tile.b_y)) {
             previewTile = null;
             return;
@@ -299,7 +310,7 @@ public class Board {
      * Draws a preview texture at tile position (x, y). Used for the level editor.
      * @param canvas
      */
-    public void drawPreview(GameCanvas canvas) {
+    private void drawPreview(GameCanvas canvas) {
         Texture preview = this.previewTile.texture;
         int x = this.previewTile.b_x;
         int y = this.previewTile.b_y;

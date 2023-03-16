@@ -96,7 +96,9 @@ public class Tile {
     }
 
     public boolean isLit() {
-
+        if (spotLight == null) {
+            return false;
+        }
         return spotLight.isActive();
     }
 
