@@ -42,11 +42,6 @@ public class LevelParser {
         return instance;
     }
 
-
-    /**
-     * Constants from asset directory
-     */
-    JsonValue playerJson;
     float[] wSize;
     int[] sSize;
 
@@ -65,17 +60,12 @@ public class LevelParser {
 
         canvas.setWorldToScreen(new Vector2(sSize[0] / wSize[0], sSize[1] / wSize[1]));
 
-        levelContainer = new LevelContainer(directory);
-        levelContainer.enemiesJson = directory.getEntry("enemies", JsonValue.class);
-        levelContainer.objectJson = directory.getEntry("objects", JsonValue.class);
-
-        playerJson = directory.getEntry("player", JsonValue.class);
-
-        // Cache player
-        Werewolf player = new Werewolf();
-        player.initialize(directory, playerJson, levelContainer);
-        levelContainer.setPlayer(player);
-
+        levelContainer = new LevelContainer(
+                directory,
+                directory.getEntry("enemies", JsonValue.class),
+                directory.getEntry("objects", JsonValue.class),
+                directory.getEntry("player", JsonValue.class)
+        );
 
     }
 
@@ -163,6 +153,7 @@ public class LevelParser {
         board.setTileWorldDim(wSize[0], wSize[1]);
 
         levelContainer.setBoard(board);
+        levelContainer.hidePlayer();
 
         return levelContainer;
     }

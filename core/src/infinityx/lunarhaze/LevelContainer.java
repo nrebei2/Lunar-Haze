@@ -99,33 +99,50 @@ public class LevelContainer {
     private final DrawableCompare drawComp = new DrawableCompare();
 
     /** Constants for enemy initialization */
-    public JsonValue enemiesJson;
+    JsonValue enemiesJson;
 
     /** Constants for scene object initialization */
-    public JsonValue objectJson;
+    JsonValue objectJson;
+
+    /** Constants for player initialization */
+    JsonValue playerJson;
+
+    /** is the player hidden */
+    private boolean hidden;
 
     /**
      * Initialize attributes
      */
     private void initialize() {
+        world = new World(new Vector2(0, 0), true);
+        rayHandler = new RayHandler(world, Gdx.graphics.getWidth(), Gdx.graphics.getWidth());
         rayHandler.setAmbientLight(1);
+
+        drawables = new Array<Drawable>();
+
+        if (player == null) {
+            Werewolf player = new Werewolf();
+            player.initialize(directory, playerJson, this);
+            setPlayer(player);
+        } else {
+            // If we already have a player, then just reuse
+            setPlayer(player);
+        }
 
         board = null;
         enemies = new EnemyList();
         sceneObjects = new Array<>(true, 5);
 
-        drawables = new Array<Drawable>();
         remainingMoonlight = 0;
     }
 
     /**
      * Creates a new LevelContainer with no active elements.
      */
-    public LevelContainer(AssetDirectory directory) {
-        // BOX2D initialization
-        world = new World(new Vector2(0, 0), true);
-        rayHandler = new RayHandler(world, Gdx.graphics.getWidth(), Gdx.graphics.getWidth());
-        player = null;
+    public LevelContainer(AssetDirectory directory, JsonValue enemiesJson, JsonValue objectJson, JsonValue playerJson) {
+        this.enemiesJson = enemiesJson;
+        this.objectJson = objectJson;
+        this.playerJson = playerJson;
         this.directory = directory;
         initialize();
     }
@@ -137,7 +154,6 @@ public class LevelContainer {
     public void flush() {
        initialize();
        // The player object can be carried over!
-       drawables.add(player);
     }
 
     public RayHandler getRayHandler() {
@@ -204,6 +220,24 @@ public class LevelContainer {
     public void setPlayer(Werewolf player) {
         drawables.add(player);
         this.player = player;
+    }
+
+    /**
+     * Hide player from drawing. Used for level editor.
+     */
+    public void hidePlayer() {
+        if (hidden) return;
+        hidden = true;
+        drawables.removeValue(player, true);
+    }
+
+    /**
+     * Show player for drawing. Used for level editor.
+     */
+    public void showPlayer() {
+        if (!hidden) return;
+        hidden = false;
+        drawables.add(player);
     }
 
     public void addMoonlight() {

@@ -123,6 +123,14 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         );
         board.setTileType((int)mouseBoard.x, (int)mouseBoard.y, infinityx.lunarhaze.Tile.TileType.Road);
     }
+    private void placeSelection() {
+        if (selected instanceof Tile) {
+            board.removePreview();
+            placeTile();
+        } else if (selected instanceof Player) {
+            selected = null;
+        }
+    }
 
     /**
      * Called when this screen becomes the current screen for a {@link Game}.
@@ -131,7 +139,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     public void show() {
         level = LevelParser.LevelParser().loadEmpty();
         board = level.getBoard();
-        selected = new Tile(directory.getEntry("land1-unlit", Texture.class), "land");
+        //selected = new Tile(directory.getEntry("land1-unlit", Texture.class), "land");
+        selected = new Player(level.getPlayer().getTexture().getTexture());
         Gdx.input.setInputProcessor(this);
     }
 
@@ -280,10 +289,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             return false;
         }
 
-        if (selected instanceof Tile) {
-            board.removePreview();
-            placeTile();
-        }
+        placeSelection();
         return true;
     }
 
@@ -345,20 +351,24 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             return true;
         }
 
+        int boardX = board.worldToBoardX(mouseWorld.x);
+        int boardY = board.worldToBoardY(mouseWorld.y);
+
         if (selected instanceof Tile) {
             // snap to tile
-
-            //System.out.printf("selected texture height: %s\n", selected.texture.toString());
-
-            int boardX = board.worldToBoardX(mouseWorld.x);
-            int boardY = board.worldToBoardY(mouseWorld.y);
-
             if (!mouseBoard.epsilonEquals(boardX, boardY)) {
                 // mouse is on different tile now
                 mouseBoard.set(boardX, boardY);
                 board.setPreviewTile((int) mouseBoard.x, (int) mouseBoard.y, selected.texture);
             }
             //System.out.printf("board pos: (%d, %d)", boardX, boardY);
+        } else if (selected instanceof Player) {
+            if (board.inBounds(boardX, boardY)) {
+                level.showPlayer();
+                level.getPlayer().setPosition(mouseWorld);
+            } else {
+                level.hidePlayer();
+            }
         }
         return true;
     }
