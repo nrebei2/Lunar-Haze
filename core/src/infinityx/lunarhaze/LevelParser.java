@@ -197,11 +197,7 @@ public class LevelParser {
             for (int x = 0; x < board.getWidth(); x++) {
                 int tileNum = tileData.get((board.getHeight() - y - 1) * board.getWidth() + x);
                 board.setTileTexture(x, y,
-                        directory.getEntry(texType + tileNum + "-unlit", Texture.class),
-                        directory.getEntry(texType + tileNum + "-lit", Texture.class),
-                        // currently collected tile is same as uncollected ones
-                        // since we have no assets for collected but lit tiles
-                        directory.getEntry(texType + tileNum + "-lit", Texture.class)
+                        directory.getEntry(texType + tileNum + "-unlit", Texture.class)
                 );
                 board.setTileType(x, y, tileTypeFromNum(tileNum));
                 board.setWalkable(x, y, true);

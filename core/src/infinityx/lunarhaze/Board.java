@@ -13,6 +13,8 @@ import java.util.ArrayList;
 /**
  * Class represents a 2D grid of tiles.
  * Wrapper around tile data
+ * TODO: make this extend TiledMap? Useful if we will need layers later on. Tile can then extend StaticTiledMapTile.
+ * Ref: https://libgdx.com/wiki/graphics/2d/tile-maps
  */
 public class Board {
     // Instance attributes
@@ -149,16 +151,7 @@ public class Board {
         if (tile == null) {
             return null;
         }
-        // Retain below it so it gives different textures for
-        // collected and uncollected moonlight tiles
-        if (tile.isLit() && !(tile.isCollected())) {
-            return tile.getTileTextureLit();
-        }
-        if (tile.isLit() && tile.isCollected()) {
-            return tile.getTileTextureLitButCollected();
-        }
-        // Commented the above out because we added ambient lighting. LMK if it should be changed back
-        return tile.getTileTextureUnlit();
+        return tile.getTileTexture();
     }
 
     /**
@@ -167,14 +160,12 @@ public class Board {
      * @param x The x index for the Tile cell
      * @param y The y index for the Tile cell
      */
-    public void setTileTexture(int x, int y, Texture unlitTex, Texture litTex, Texture litColTex) {
+    public void setTileTexture(int x, int y, Texture tex) {
         Tile tile = getTile(x, y);
         if (tile == null) {
             return;
         }
-        tile.setTileTextureUnlit(unlitTex);
-        tile.setTileTextureLit(litTex);
-        tile.setTileTextureLitButCollected(litColTex);
+        tile.setTileTexture(tex);
     }
 
     /**

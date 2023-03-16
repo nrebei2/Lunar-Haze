@@ -26,10 +26,6 @@ public class Tile {
      * Has this tile been visited (used for pathfinding AI)?
      */
     private boolean visited = false;
-    /**
-     * Can an enemy see this tile?
-     */
-    private boolean visible = false;
 
     /**
      * Is the moonlight collected?
@@ -37,12 +33,11 @@ public class Tile {
     private boolean collected = false;
 
     /**
-     * Texture of tile (Lit/Unlit from moonlight)
+     * Texture of tile
+     * TODO: Should be a TextureRegion taken from a sprite sheet of tiles to optimize rendering.
+     * Right now, the spritebatch is unable to batch much geometry since texture changes when drawing board.
      **/
-    private Texture TileTextureUnlit;
-    private Texture TileTextureLit;
-
-    private Texture TileTextureLitButCollected;
+    private Texture TileTexture;
 
     /** The moonlight pointing on this tile, possibly null */
     private PointLight spotLight;
@@ -125,48 +120,23 @@ public class Tile {
         return spotLight;
     }
 
-    public boolean getVisible() {
-        return visible;
-    }
-
     public void setVisible(boolean visible) {
         this.visible = visible;
     }
 
     /**
-     * Returns the unlit image texture for the tile. Will be drawn if lit is false.
+     * Returns the image texture for the tile.
      * <p>
      * May be null, must be set before get
      *
      * @return the unit image texture for the tile
      */
-    public Texture getTileTextureUnlit() {
-        return TileTextureUnlit;
+    public Texture getTileTexture() {
+        return TileTexture;
     }
 
-    /**
-     * Returns the lit image texture for the tile. Will be drawn if lit is true.
-     * <p>
-     * May be null, must be set before get
-     *
-     * @return the lit image texture for the tile
-     */
-    public Texture getTileTextureLit() {
-        return TileTextureLit;
-    }
-
-    public Texture getTileTextureLitButCollected() { return TileTextureLitButCollected; }
-
-    public void setTileTextureUnlit(Texture unlitTex) {
-        this.TileTextureUnlit = unlitTex;
-    }
-
-    public void setTileTextureLit(Texture litTex) {
-        this.TileTextureLit = litTex;
-    }
-
-    public void setTileTextureLitButCollected(Texture litTex) {
-        this.TileTextureLitButCollected = litTex;
+    public void setTileTexture(Texture tex) {
+        this.TileTexture = tex;
     }
 
 }

@@ -138,8 +138,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     }
 
     private void placeTile() {
-        board.setTileTexture((int)mouseBoard.x, (int)mouseBoard.y,
-                selected.texture, selected.texture, selected.texture
+        board.setTileTexture(
+                (int)mouseBoard.x, (int)mouseBoard.y,
+                selected.texture
         );
         board.setTileType((int)mouseBoard.x, (int)mouseBoard.y, infinityx.lunarhaze.Tile.TileType.Road);
     }
