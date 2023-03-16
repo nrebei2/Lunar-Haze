@@ -59,15 +59,15 @@ public class LevelContainer {
     /**
      * The Box2D World
      */
-    private final World world;
+    private World world;
     /**
      * Stores Enemies
      */
-    private final EnemyList enemies;
+    private EnemyList enemies;
     /**
      * Stores SceneObjects
      */
-    private final Array<SceneObject> sceneObjects;
+    private Array<SceneObject> sceneObjects;
     /**
      * Stores Werewolf
      */
@@ -90,19 +90,10 @@ public class LevelContainer {
     /**
      * Holds references to all drawable entities on the level (i.e. sceneObjects, player, enemies)
      */
-    private final Array<Drawable> drawables;
+    private Array<Drawable> drawables;
     private final DrawableCompare drawComp = new DrawableCompare();
 
-    /**
-     * Maps tile indices to their respective PointLight pointing on it
-     */
-    private final IntMap<PointLight> moonlight;
-
-    /**
-     * Creates a new LevelContainer with no active elements.
-     */
-    public LevelContainer() {
-        // BOX2D initialization
+    private void initialize() {
         world = new World(new Vector2(0, 0), true);
         rayHandler = new RayHandler(world, Gdx.graphics.getWidth(), Gdx.graphics.getWidth());
         rayHandler.setAmbientLight(1);
@@ -111,10 +102,24 @@ public class LevelContainer {
         board = null;
         enemies = new EnemyList();
         sceneObjects = new Array<>(true, 5);
-        moonlight = new IntMap<>();
 
         drawables = new Array<Drawable>();
         remainingMoonlight = 0;
+    }
+
+    /**
+     * Creates a new LevelContainer with no active elements.
+     */
+    public LevelContainer() {
+        // BOX2D initialization
+        initialize();
+    }
+
+    /**
+     * "flush" all objects from this level and resets level
+     */
+    public void flush() {
+       initialize();
     }
 
     public RayHandler getRayHandler() {
@@ -245,7 +250,7 @@ public class LevelContainer {
         canvas.end();
 
         // A separate transform for lights :(
-        // In an ideal world they would be the same, but I like using GameCanvas
+        // In an ideal world they would be the same, but lights should be scaled while textures should NOT
         OrthographicCamera raycamera = new OrthographicCamera(
                 canvas.getWidth() / canvas.WorldToScreenX(1),
                 canvas.getHeight() / canvas.WorldToScreenY(1)
@@ -259,6 +264,8 @@ public class LevelContainer {
         // Finally, draw lights
         rayHandler.updateAndRender();
     }
+
+
 }
 
 

@@ -267,8 +267,6 @@ public class LoadingMode extends ScreenObservable implements Screen, InputProces
         // No progress so far.
         progress = 0;
 
-        Gdx.input.setInputProcessor(this);
-
         // Start loading the real assets
         assets = new AssetDirectory(file);
         assets.loadAssets();
@@ -451,6 +449,7 @@ public class LoadingMode extends ScreenObservable implements Screen, InputProces
         // Useless if called in outside animation loop
         active = true;
         elapsed = 0f;
+        Gdx.input.setInputProcessor(this);
     }
 
     /**

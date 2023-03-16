@@ -87,7 +87,6 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
      * @param canvas The game canvas to draw to
      */
     public MenuMode(GameCanvas canvas) {
-        Gdx.input.setInputProcessor(this);
         this.canvas = canvas;
     }
 
@@ -213,6 +212,7 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
         // Useless if called in outside animation loop
         active = true;
         pressState = 0;
+        Gdx.input.setInputProcessor(this);
     }
 
     /**

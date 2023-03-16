@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.utils.IntArray;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectMap;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.SceneObject;
@@ -57,6 +58,15 @@ public class LevelParser {
     int[] sSize;
 
     /**
+     * Cached objects
+     */
+    public Werewolf cacheWerewolf;
+    public ObjectMap<String, Enemy> cacheEnemies = new ObjectMap();
+
+
+    private LevelContainer levelContainer = new LevelContainer();
+
+    /**
      * Caches all constants (between levels) from directory
      *
      * @param directory asset manager holding list of ... assets
@@ -74,6 +84,9 @@ public class LevelParser {
         enemiesJson = directory.getEntry("enemies", JsonValue.class);
         objectsJson = directory.getEntry("objects", JsonValue.class);
         playerJson = directory.getEntry("player", JsonValue.class);
+
+        cacheWerewolf = parsePlayer(directory, levelContainer);
+        cache
     }
 
     /**
@@ -86,7 +99,7 @@ public class LevelParser {
      */
     public LevelContainer loadLevel(AssetDirectory directory, JsonValue levelContents) {
         // LevelContainer empty at this point
-        LevelContainer levelContainer = new LevelContainer();
+        levelContainer.flush();
 
         // Ambient light
         parseLighting(levelContents.get("ambient"), levelContainer.getRayHandler());
@@ -100,7 +113,7 @@ public class LevelParser {
 
         // Generate player
         JsonValue player = scene.get("player");
-        Werewolf playerModel = parsePlayer(directory, player, levelContainer);
+        cacheWerewolf.setPosition(player.getFloat(0), player.getFloat(1));
         levelContainer.setPlayer(playerModel);
 
         // Generate enemies
@@ -137,7 +150,7 @@ public class LevelParser {
      */
     public LevelContainer loadEmpty() {
         // LevelContainer empty at this point
-        LevelContainer levelContainer = new LevelContainer();
+        levelContainer.flush();
 
         Board board = new Board(10, 10);
 
@@ -203,9 +216,8 @@ public class LevelParser {
      *
      * @param playerFormat the JSON tree defining the player
      */
-    private Werewolf parsePlayer(AssetDirectory directory, JsonValue playerFormat, LevelContainer container) {
-        System.out.printf("in json: (%f, %f)\n", playerFormat.get(0).asFloat(), playerFormat.get(1).asFloat());
-        Werewolf player = new Werewolf(playerFormat.get(0).asFloat(), playerFormat.get(1).asFloat());
+    private Werewolf parsePlayer(AssetDirectory directory, LevelContainer container) {
+        Werewolf player = new Werewolf();
         System.out.printf("after init: (%f, %f)\n", player.getPosition().x, player.getPosition().y);
 
         parseGameObject(player, directory, playerJson);

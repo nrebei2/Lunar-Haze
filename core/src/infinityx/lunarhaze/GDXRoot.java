@@ -143,7 +143,10 @@ public class GDXRoot extends Game implements ScreenObserver {
             if (exitCode == GameMode.GO_MENU) {
                 setScreen(menu);
             }
-
+        } else if (screen == editor) {
+            if (exitCode == EditorMode.GO_MENU) {
+                setScreen(menu);
+            }
         } else {
             Gdx.app.exit();
         }

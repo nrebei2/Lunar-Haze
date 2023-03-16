@@ -35,6 +35,10 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     private Board board;
 
+    /**
+     * User requested to go to menu
+     */
+    public final static int GO_MENU = 0;
 
     /**
      * type Selected :=
@@ -114,7 +118,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     }
 
     private void placeTile() {
-
         board.setTileTexture((int)mouseBoard.x, (int)mouseBoard.y,
                 selected.texture, selected.texture, selected.texture
         );
@@ -153,8 +156,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             level.translateView(0, 20);
         }
 
-
-
+        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
+            observer.exitScreen(this, GO_MENU);
+        }
 
     }
 
@@ -272,13 +276,13 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        board.removePreview();
         if (selected == null) {
             return false;
         }
 
         if (selected instanceof Tile) {
-           placeTile();
+            board.removePreview();
+            placeTile();
         }
         return true;
     }
@@ -316,7 +320,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             int boardY = board.worldToBoardY(mouseWorld.y);
 
             if (!mouseBoard.epsilonEquals(boardX, boardY)) {
-                System.out.println("BRUHDASJDHD");
                 // mouse is on different tile now
                 mouseBoard.set(boardX, boardY);
                 placeTile();
@@ -335,8 +338,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
         // Cursor world position
-        System.out.println("updating mouse...");
         mouseWorld.set(canvas.ScreenToWorldX(Gdx.input.getX()), canvas.ScreenToWorldY(Gdx.input.getY()));
+        //System.out.printf("mouse world: (%f, %f)\n", mouseWorld.x, mouseWorld.y);
 
         if (selected == null) {
             return true;

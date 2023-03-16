@@ -32,7 +32,7 @@ import infinityx.util.FilmStrip;
 /**
  * Base class for all Model objects in the game.
  */
-public abstract class GameObject extends BoxObstacle implements Drawable {
+public abstract class GameObject extends BoxObstacle implements Drawable, Cloneable {
 
     /**
      * Enum specifying the type of this game object.
@@ -205,4 +205,6 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
         canvas.draw(filmstrip, Color.WHITE, origin.x, origin.y,
                 canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y), 0.0f,  scale.x, scale.y);
     }
+
+
 }

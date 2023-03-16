@@ -215,6 +215,13 @@ public class Werewolf extends GameObject {
     }
 
     /**
+     * Initialize a werewolf with dummy position.
+     */
+    public Werewolf() {
+        this(0, 0);
+    }
+
+    /**
      * Initialize a werewolf.
      */
     public Werewolf(float x, float y) {
@@ -227,6 +234,12 @@ public class Werewolf extends GameObject {
         moonlightCollected = 0;
         levelContainer = new LevelContainer();
         canMove = true;
+    }
+
+    @Override
+    protected Werewolf clone() throws CloneNotSupportedException {
+        Werewolf werewolf = new Werewolf();
+        werewolf.setBodyState(this.body);
     }
 
     public void resolveAttack(GameObject enemy, float damage, float knockback) {
