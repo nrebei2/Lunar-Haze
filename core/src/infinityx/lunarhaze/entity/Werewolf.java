@@ -1,10 +1,13 @@
 package infinityx.lunarhaze.entity;
 
 import box2dLight.PointLight;
+import box2dLight.RayHandler;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import infinityx.lunarhaze.GameObject;
 import infinityx.lunarhaze.LevelContainer;
+import infinityx.lunarhaze.physics.BoxObstacle;
 
 public class Werewolf extends GameObject {
 
@@ -64,8 +67,6 @@ public class Werewolf extends GameObject {
      * Health point (hp) of the werewolf
      */
     private float hp;
-
-    private LevelContainer levelContainer;
 
     /**
      * Point light pointed on werewolf at all times
@@ -209,9 +210,9 @@ public class Werewolf extends GameObject {
         moonlight = b;
     }
 
-    public void collectMoonlight() {
+    public void collectMoonlight(LevelContainer container) {
         moonlightCollected++;
-        hp = hp + maxHp * 1 / (moonlightCollected + levelContainer.getRemainingMoonlight());
+        hp = hp + maxHp * 1 / (moonlightCollected + container.getRemainingMoonlight());
     }
 
     /**
@@ -232,14 +233,32 @@ public class Werewolf extends GameObject {
         moonlight = false;
         hp = INITIAL_HP;
         moonlightCollected = 0;
-        levelContainer = new LevelContainer();
         canMove = true;
     }
 
-    @Override
-    protected Werewolf clone() throws CloneNotSupportedException {
+    /**
+     * Deep clones player, can be used independently of this
+     * @return new player
+     */
+    public Werewolf deepClone(LevelContainer container) {
         Werewolf werewolf = new Werewolf();
-        werewolf.setBodyState(this.body);
+        werewolf.setSpeed(speed);
+        werewolf.setTexture(getTexture());
+        werewolf.initHp(maxHp);
+        werewolf.initLockout(lockout);
+        werewolf.setOrigin((int)origin.x, (int)origin.y);
+        PointLight spotLight = new PointLight(
+                container.getRayHandler(), this.spotLight.getRayNum(), this.spotLight.getColor(), this.spotLight.getDistance(),
+                0, 0
+        );
+        werewolf.setBodyState(body);
+        spotLight.setSoft(this.spotLight.isSoft());
+        werewolf.activatePhysics(container.getWorld());
+        werewolf.setSpotLight(spotLight);
+
+        werewolf.setDimension(getDimension().x, getDimension().y);
+        werewolf.setPositioned(positioned);
+        return werewolf;
     }
 
     public void resolveAttack(GameObject enemy, float damage, float knockback) {

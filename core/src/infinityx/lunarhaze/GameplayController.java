@@ -180,7 +180,7 @@ public class GameplayController {
             }
             player.setOnMoonlight(true);
             if (board.isCollectable(px, py) && timeOnMoonlight > MOONLIGHT_COLLECT_TIME) {
-                player.collectMoonlight();
+                player.collectMoonlight(levelContainer);
                 remainingMoonlight--;
                 timeOnMoonlight = 0;
                 board.setCollected(px, py);

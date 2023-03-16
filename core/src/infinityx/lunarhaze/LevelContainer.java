@@ -94,8 +94,6 @@ public class LevelContainer {
     private final DrawableCompare drawComp = new DrawableCompare();
 
     private void initialize() {
-        world = new World(new Vector2(0, 0), true);
-        rayHandler = new RayHandler(world, Gdx.graphics.getWidth(), Gdx.graphics.getWidth());
         rayHandler.setAmbientLight(1);
 
         player = null;
@@ -112,6 +110,8 @@ public class LevelContainer {
      */
     public LevelContainer() {
         // BOX2D initialization
+        world = new World(new Vector2(0, 0), true);
+        rayHandler = new RayHandler(world, Gdx.graphics.getWidth(), Gdx.graphics.getWidth());
         initialize();
     }
 

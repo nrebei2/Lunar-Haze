@@ -32,7 +32,7 @@ import infinityx.util.FilmStrip;
 /**
  * Base class for all Model objects in the game.
  */
-public abstract class GameObject extends BoxObstacle implements Drawable, Cloneable {
+public abstract class GameObject extends BoxObstacle implements Drawable {
 
     /**
      * Enum specifying the type of this game object.

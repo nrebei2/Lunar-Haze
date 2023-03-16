@@ -1,8 +1,10 @@
 package infinityx.lunarhaze.entity;
 
+import box2dLight.PointLight;
 import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.EnemyController;
 import infinityx.lunarhaze.GameObject;
+import infinityx.lunarhaze.LevelContainer;
 import infinityx.lunarhaze.physics.ConeSource;
 
 import java.util.ArrayList;
@@ -12,7 +14,7 @@ public class Enemy extends GameObject {
     /**
      * A unique identifier; used to decouple classes.
      */
-    private final int id;
+    private int id;
     /**
      * Movement of the enemy
      **/
@@ -106,6 +108,40 @@ public class Enemy extends GameObject {
         animeframe = 0.0f;
         isAlerted = false;
         direction = Direction.NORTH;
+    }
+
+    /**
+     * Initialize an enemy with no id and position
+     */
+    public Enemy(ArrayList<Vector2> patrolPath) {
+        isAlive = true;
+        this.patrolPath = patrolPath;
+        animeframe = 0.0f;
+        isAlerted = false;
+        direction = Direction.NORTH;
+    }
+
+    /**
+     * Deep clones enemy, can be used independently of this
+     * @return new enemy
+     */
+    public Enemy deepClone(LevelContainer container) {
+        Enemy enemy = new Enemy(patrolPath);
+        enemy.setSpeed(speed);
+        enemy.setTexture(getTexture());
+        enemy.setOrigin((int)origin.x, (int)origin.y);
+        ConeSource flashLight = new ConeSource(
+                container.getRayHandler(), this.flashlight.getRayNum(), this.flashlight.getColor(), this.flashlight.getDistance(),
+                0, 0, this.flashlight.getDirection(), this.flashlight.getConeDegree()
+        );
+        enemy.setBodyState(body);
+        flashLight.setSoft(this.flashlight.isSoft());
+        enemy.activatePhysics(container.getWorld());
+        enemy.setFlashlight(flashlight);
+
+        enemy.setDimension(getDimension().x, getDimension().y);
+        enemy.setPositioned(positioned);
+        return enemy;
     }
 
     /**
@@ -216,5 +252,9 @@ public class Enemy extends GameObject {
 
     public int getId() {
         return this.id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }
