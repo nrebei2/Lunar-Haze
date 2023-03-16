@@ -79,18 +79,23 @@ public class LevelParser {
         playerJson = directory.getEntry("player", JsonValue.class);
 
         // Cache player
+        System.out.println("Parsing player");
         levelContainer.setPlayer(parsePlayer(directory, levelContainer));
+        System.out.println("Finished parsing player");
 
         // Cache enemies
         for (JsonValue enemy : enemiesJson) {
             System.out.printf("Parsing %s\n", enemy.name());
             levelContainer.cacheEnemies.put(enemy.name(), parseEnemy(directory, levelContainer, enemy.name()));
+            System.out.printf("Finished parsing %s\n", enemy.name());
         }
 
         // Cache scene objects
-        for (JsonValue object : enemiesJson) {
+        for (JsonValue object : objectsJson) {
             System.out.printf("Parsing %s\n", object.name());
             levelContainer.cacheSceneObj.put(object.name(), parseSceneObject(directory, levelContainer, object.name()));
+            System.out.printf("Finished parsing %s\n", object.name());
+
         }
     }
 
@@ -235,8 +240,6 @@ public class LevelParser {
      */
     private Werewolf parsePlayer(AssetDirectory directory, LevelContainer container) {
         Werewolf player = new Werewolf();
-        System.out.printf("after init: (%f, %f)\n", player.getPosition().x, player.getPosition().y);
-
         parseGameObject(player, directory, playerJson);
 
         JsonValue light = playerJson.get("spotlight");

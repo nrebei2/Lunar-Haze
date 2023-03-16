@@ -113,9 +113,10 @@ public class Enemy extends GameObject {
     }
 
     /**
-     * Initialize an enemy with dummy attributes
+     * Initialize an enemy with dummy position, id, and patrol path
      */
     public Enemy() {
+        super(0, 0);
         isAlive = true;
         this.patrolPath = new ArrayList<>();
         animeframe = 0.0f;

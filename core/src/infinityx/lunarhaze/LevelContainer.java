@@ -108,10 +108,12 @@ public class LevelContainer {
     private Array<Drawable> drawables;
     private final DrawableCompare drawComp = new DrawableCompare();
 
+    /**
+     * Initialize attributes
+     */
     private void initialize() {
         rayHandler.setAmbientLight(1);
 
-        player = null;
         board = null;
         enemies = new EnemyList();
         sceneObjects = new Array<>(true, 5);
@@ -127,14 +129,18 @@ public class LevelContainer {
         // BOX2D initialization
         world = new World(new Vector2(0, 0), true);
         rayHandler = new RayHandler(world, Gdx.graphics.getWidth(), Gdx.graphics.getWidth());
+        player = null;
         initialize();
     }
 
     /**
-     * "flush" all objects from this level and resets level
+     * "flush" all objects from this level and resets level.
+     * P
      */
     public void flush() {
        initialize();
+       // The player object can be carried over!
+       drawables.add(player);
     }
 
     public RayHandler getRayHandler() {
@@ -249,7 +255,7 @@ public class LevelContainer {
         canvas.beginT(view.x, view.y);
 
         // Debug prints
-        //System.out.printf(i
+        //System.out.printf(
         //        "Player pos: (%f, %f), Spotlight pos: (%f, %f) \n",
         //        player.getPosition().x, player.getPosition().y, player.getSpotlight().getPosition().x, player.getSpotlight().getPosition().y);
 
