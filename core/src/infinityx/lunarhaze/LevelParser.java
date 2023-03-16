@@ -57,13 +57,6 @@ public class LevelParser {
     float[] wSize;
     int[] sSize;
 
-    /**
-     * Cached objects
-     */
-    public Werewolf cacheWerewolf;
-    public ObjectMap<String, Enemy> cacheEnemies = new ObjectMap();
-
-
     private LevelContainer levelContainer = new LevelContainer();
 
     /**
@@ -85,8 +78,20 @@ public class LevelParser {
         objectsJson = directory.getEntry("objects", JsonValue.class);
         playerJson = directory.getEntry("player", JsonValue.class);
 
-        cacheWerewolf = parsePlayer(directory, levelContainer);
-        cache
+        // Cache player
+        levelContainer.setPlayer(parsePlayer(directory, levelContainer));
+
+        // Cache enemies
+        for (JsonValue enemy : enemiesJson) {
+            System.out.printf("Parsing %s\n", enemy.name());
+            levelContainer.cacheEnemies.put(enemy.name(), parseEnemy(directory, levelContainer, enemy.name()));
+        }
+
+        // Cache scene objects
+        for (JsonValue object : enemiesJson) {
+            System.out.printf("Parsing %s\n", object.name());
+            levelContainer.cacheSceneObj.put(object.name(), parseSceneObject(directory, levelContainer, object.name()));
+        }
     }
 
     /**
@@ -113,8 +118,7 @@ public class LevelParser {
 
         // Generate player
         JsonValue player = scene.get("player");
-        cacheWerewolf.setPosition(player.getFloat(0), player.getFloat(1));
-        levelContainer.setPlayer(playerModel);
+        levelContainer.getPlayer().setPosition(player.getFloat(0), player.getFloat(1));
 
         // Generate enemies
         JsonValue enemies = scene.get("enemies");
@@ -123,7 +127,16 @@ public class LevelParser {
             JsonValue enemyInfo = enemies.get(curId);
             if (enemyInfo == null) break;
 
-            Enemy enemy = parseEnemy(curId, directory, enemyInfo, levelContainer);
+            Enemy enemy = levelContainer.cacheEnemies.get(enemyInfo.getString("type")).deepClone(levelContainer);
+            enemy.setId(curId);
+            JsonValue enemyPos = enemyInfo.get("position");
+
+            ArrayList<Vector2> patrol = new ArrayList<>();
+            for (JsonValue patrolPos : enemyInfo.get("patrol")) {
+                patrol.add(new Vector2(patrolPos.getInt(0), patrolPos.getInt(1)));
+            }
+            enemy.setPatrolPath(patrol);
+            enemy.setPosition(enemyPos.getFloat(0), enemyPos.getFloat(1));
 
             levelContainer.addEnemy(enemy);
             curId++;
@@ -136,7 +149,12 @@ public class LevelParser {
             JsonValue objInfo = objects.get(objId);
             if (objInfo == null) break;
 
-            SceneObject object = parseSceneObject(directory, objInfo, levelContainer);
+            SceneObject object = levelContainer.cacheSceneObj.get(objInfo.getString("type")).deepClone(levelContainer);
+            JsonValue objPos = objInfo.get("position");
+            object.setPosition(objPos.getFloat(0), objPos.getFloat(1));
+
+            float objScale = objInfo.getFloat("scale");
+            object.setScale(objScale, objScale);
 
             levelContainer.addSceneObject(object);
             objId++;
@@ -163,26 +181,25 @@ public class LevelParser {
     }
 
     /**
-     * Creates a scene object for the level
+     * Creates a general scene object to be placed in level
      *
-     * @param objectFormat the JSON tree defining the object
+     * @param name the name of the scene object (e.g. tree)
      */
-    private SceneObject parseSceneObject(AssetDirectory directory, JsonValue objectFormat, LevelContainer container) {
-        System.out.printf("parsing %s!\n", objectFormat.get("type").asString());
-        JsonValue json = objectsJson.get(objectFormat.get("type").asString());
-        JsonValue objPos = objectFormat.get("position");
-        SceneObject object = new SceneObject(objPos.getFloat(0), objPos.getFloat(1));
+    private SceneObject parseSceneObject(AssetDirectory directory, LevelContainer container, String name) {
+        JsonValue json = objectsJson.get(name);
+        SceneObject object = new SceneObject();
         parseGameObject(object, directory, json);
 
-        float objScale = objectFormat.getFloat("scale");
-
-        object.setScale(objScale, objScale);
         object.activatePhysics(container.getWorld());
 
-        System.out.printf("finished parsing %s!\n", objectFormat.get("type").asString());
         return object;
     }
 
+    /**
+     * Further parses specific GameObject (collider info, etc.) attributes.
+     *
+     * @param json Json tree holding information
+     */
     private void parseGameObject(GameObject object, AssetDirectory directory, JsonValue json) {
         JsonValue p_dim = json.get("collider");
         object.setDimension(p_dim.get("width").asFloat(), p_dim.get("height").asFloat());
@@ -212,9 +229,9 @@ public class LevelParser {
     }
 
     /**
-     * Creates a player for the level
+     * Creates a general player with dummy position
      *
-     * @param playerFormat the JSON tree defining the player
+     * @param container LevelContainer which this player is placed in
      */
     private Werewolf parsePlayer(AssetDirectory directory, LevelContainer container) {
         Werewolf player = new Werewolf();
@@ -246,21 +263,13 @@ public class LevelParser {
     }
 
     /**
-     * Creates an enemy for the level
+     * Creates an enemy given name. Attributed are fetched from enemies.json.
      *
-     * @param enemyFormat the JSON tree defining the enemy
+     * @param name the name of the enemy as specified in assets
      */
-    private Enemy parseEnemy(int id, AssetDirectory directory, JsonValue enemyFormat, LevelContainer container) {
-        JsonValue enemyPos = enemyFormat.get("position");
-
-        ArrayList<Vector2> patrol = new ArrayList<>();
-        for (JsonValue patrolPos : enemyFormat.get("patrol")) {
-            patrol.add(new Vector2(patrolPos.getInt(0), patrolPos.getInt(1)));
-        }
-
-        Enemy enemy = new Enemy(id, enemyPos.get(0).asFloat(), enemyPos.get(1).asFloat(), patrol);
-
-        JsonValue json = enemiesJson.get(enemyFormat.get("type").asString());
+    private Enemy parseEnemy(AssetDirectory directory, LevelContainer container, String name) {
+        Enemy enemy = new Enemy();
+        JsonValue json = enemiesJson.get(name);
         parseGameObject(enemy, directory, json);
 
         enemy.activatePhysics(container.getWorld());
@@ -289,7 +298,7 @@ public class LevelParser {
     }
 
     /**
-     * Creates the Board for the level
+     * Creates the Board for the _specific_ level.
      *
      * @param boardFormat the JSON tree defining the board
      */
@@ -356,7 +365,7 @@ public class LevelParser {
 
 
     /**
-     * Creates the ambient lighting for the level
+     * Creates the ambient lighting for the _specific_ level
      *
      * @param light the JSON tree defining the light
      */

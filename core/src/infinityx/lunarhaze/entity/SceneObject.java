@@ -23,6 +23,13 @@ public class SceneObject extends GameObject implements Drawable {
     }
 
     /**
+     * Initialize scene object with dummy position
+     */
+    public SceneObject() {
+        this(0, 0);
+    }
+
+    /**
      * Returns the type of this object.
      * <p>
      * We use this instead of runtime-typing for performance reasons.
@@ -38,7 +45,7 @@ public class SceneObject extends GameObject implements Drawable {
      * Deep clones scene object, can be used independently of this
      * @return new scene object
      */
-    public GameObject deepClone(LevelContainer container) {
+    public SceneObject deepClone(LevelContainer container) {
         SceneObject object = new SceneObject(getX(), getY());
         object.setTexture(getTexture());
         object.setOrigin((int)origin.x, (int)origin.y);

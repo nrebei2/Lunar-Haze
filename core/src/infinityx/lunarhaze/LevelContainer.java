@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
+import com.badlogic.gdx.utils.ObjectMap;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.EnemyList;
 import infinityx.lunarhaze.entity.SceneObject;
@@ -69,7 +70,9 @@ public class LevelContainer {
      */
     private Array<SceneObject> sceneObjects;
     /**
-     * Stores Werewolf
+     * Stores Werewolf. Since there is always one and only one player in a level,
+     * this attribute is always initialized and carried over across levels.
+     * Therefore, this is like a player cache.
      */
     private Werewolf player;
     /**
@@ -85,6 +88,18 @@ public class LevelContainer {
      * Keeps player centered
      */
     private final Vector2 view = new Vector2();
+
+    /**
+     * Cached enemies, is a table of enemy names (e.g. villager) to their actual game objects.
+     * This is useful for an enemy spawner, but always USE A DEEP CLONE after retrieving.
+     */
+    public ObjectMap<String, Enemy> cacheEnemies = new ObjectMap();
+
+    /**
+     * Cached enemies, is a table of scene object names (e.g. house) to their actual game objects.
+     * Not sure when this would be useful, but always USE A DEEP CLONE after retrieving.
+     */
+    public ObjectMap<String, SceneObject> cacheSceneObj = new ObjectMap();
 
 
     /**

@@ -41,7 +41,9 @@ public class Enemy extends GameObject {
     /**
      * points (in Tile index) in the enemy's patrolPath
      */
-    private final ArrayList<Vector2> patrolPath;
+    // TODO: if we wanna be fancy use a bezier
+    // Not that bad since we can easily compute the tangent and add force on enemy along it
+    private ArrayList<Vector2> patrolPath;
 
     private Direction direction;
 
@@ -111,11 +113,11 @@ public class Enemy extends GameObject {
     }
 
     /**
-     * Initialize an enemy with no id and position
+     * Initialize an enemy with dummy attributes
      */
-    public Enemy(ArrayList<Vector2> patrolPath) {
+    public Enemy() {
         isAlive = true;
-        this.patrolPath = patrolPath;
+        this.patrolPath = new ArrayList<>();
         animeframe = 0.0f;
         isAlerted = false;
         direction = Direction.NORTH;
@@ -126,7 +128,7 @@ public class Enemy extends GameObject {
      * @return new enemy
      */
     public Enemy deepClone(LevelContainer container) {
-        Enemy enemy = new Enemy(patrolPath);
+        Enemy enemy = new Enemy();
         enemy.setSpeed(speed);
         enemy.setTexture(getTexture());
         enemy.setOrigin((int)origin.x, (int)origin.y);
@@ -161,6 +163,10 @@ public class Enemy extends GameObject {
      */
     public Vector2 getCurrentPatrol() {
         return patrolPath.get(currentWayPoint);
+    }
+
+    public void setPatrolPath(ArrayList<Vector2> path) {
+        this.patrolPath = path;
     }
 
     /**
