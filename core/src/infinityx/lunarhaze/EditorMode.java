@@ -31,6 +31,12 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     private LevelContainer level;
 
     /**
+     * Reference to levels board
+     */
+    private Board board;
+
+
+    /**
      * type Selected :=
      *  | Tile of (String, Texture)
      *  | Player of Texture
@@ -76,8 +82,20 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     private Selected selected;
 
-    public static final Color SELECTED_COLOR = new Color(0.8f, 0.8f, 0.8f, 1f);
+    /**
+     * Tint for textures before placement
+     */
+    public static final Color SELECTED_COLOR = new Color(0.65f, 0.65f, 0.65f, 1f);
 
+    /**
+     * Holds world coordinates of cursor
+     */
+    private Vector2 mouseWorld = new Vector2();
+
+    /**
+     * Last board position the mouse was on
+     */
+    private Vector2 mouseBoard = new Vector2();
 
     public EditorMode(GameCanvas canvas) {
         this.canvas = canvas;
@@ -101,20 +119,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     @Override
     public void show() {
         level = LevelParser.LevelParser().loadEmpty();
-
-        //Board board = level.getBoard();
-        //
-        //board.setTileTexture(0, 0,
-        //        directory.getEntry("land1-unlit", Texture.class),
-        //        directory.getEntry("land1-lit", Texture.class),
-        //        // currently collected tile is same as uncollected ones
-        //        // since we have no assets for collected but lit tiles
-        //        directory.getEntry("land1-lit", Texture.class)
-        //);
-        //board.setTileType(0, 0, infinityx.lunarhaze.Tile.TileType.Road);
-        ////board.setWalkable(0, y, true);
-
+        board = level.getBoard();
         selected = new Tile(directory.getEntry("land1-unlit", Texture.class), "land");
+        Gdx.input.setInputProcessor(this);
     }
 
     /**
@@ -124,6 +131,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * @param delta Number of seconds since last animation frame
      */
     private void update(float delta) {
+        // Move world with arrow keys
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             level.translateView(-20, 0);
         }
@@ -137,24 +145,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             level.translateView(0, 20);
         }
 
-        // Cursor world position
-        float curWorldX = canvas.ScreenToWorldX(Gdx.input.getX());
-        float curWorldY = canvas.ScreenToWorldY(Gdx.input.getY());
 
-        if (selected == null) {
-            return;
-        }
-
-        if (selected instanceof Tile) {
-            // snap to tile
-            int boardX = level.getBoard().worldToBoardX(curWorldX);
-            int boardY = level.getBoard().worldToBoardY(curWorldY);
-
-            //System.out.printf("selected texture height: %s\n", selected.texture.toString());
-
-            level.getBoard().setPreviewTile(new Board.PreviewTile(boardX, boardY, selected.texture));
-            //System.out.printf("board pos: (%d, %d)", boardX, boardY);
-        }
 
     }
 
@@ -166,7 +157,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         level.drawLevel(canvas);
 
         canvas.beginT(level.getView().x, level.getView().y);
-        level.getBoard().drawOutline(canvas);
+        board.drawOutline(canvas);
         canvas.end();
     }
 
@@ -235,6 +226,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     @Override
     public boolean keyDown(int keycode) {
+
         return false;
     }
 
@@ -271,7 +263,20 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        return false;
+        if (selected == null) {
+            return false;
+        }
+
+        if (selected instanceof Tile) {
+            System.out.println("HELELASJDLASD");
+            int boardX = board.worldToBoardX(mouseWorld.x);
+            int boardY = board.worldToBoardY(mouseWorld.y);
+            board.setTileTexture(boardX, boardY,
+                   selected.texture, selected.texture, selected.texture
+            );
+            board.setTileType(boardX, boardY, infinityx.lunarhaze.Tile.TileType.Road);
+        }
+        return true;
     }
 
     /**
@@ -310,7 +315,29 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
-        return false;
+        // Cursor world position
+        mouseWorld.set(canvas.ScreenToWorldX(Gdx.input.getX()), canvas.ScreenToWorldY(Gdx.input.getY()));
+
+        if (selected == null) {
+            return true;
+        }
+
+        if (selected instanceof Tile) {
+            // snap to tile
+
+            //System.out.printf("selected texture height: %s\n", selected.texture.toString());
+
+            int boardX = board.worldToBoardX(mouseWorld.x);
+            int boardY = board.worldToBoardY(mouseWorld.y);
+
+            if (!mouseBoard.epsilonEquals(boardX, boardY)) {
+                // mouse is on different tile now
+                mouseBoard.set(boardX, boardY);
+                board.setPreviewTile((int) mouseBoard.x, (int) mouseBoard.y, selected.texture);
+            }
+            //System.out.printf("board pos: (%d, %d)", boardX, boardY);
+        }
+        return true;
     }
 
 

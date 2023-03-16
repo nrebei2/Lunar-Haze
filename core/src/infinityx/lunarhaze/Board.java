@@ -296,14 +296,16 @@ public class Board {
 
     /**
      * Sets the preview tile. Used for the level editor.
-     * @param tile
+     * @param x The x index for the Tile cell
+     * @param y The y index for the Tile cell
+     * @param texture The texture used for preview
      */
-    void setPreviewTile(PreviewTile tile) {
-        if (!inBounds(tile.b_x, tile.b_y)) {
+    void setPreviewTile(int x, int y, Texture texture) {
+        if (!inBounds(x, y)) {
             previewTile = null;
             return;
         }
-        this.previewTile = tile;
+        this.previewTile = new PreviewTile(x, y, texture);
     }
 
     /**
