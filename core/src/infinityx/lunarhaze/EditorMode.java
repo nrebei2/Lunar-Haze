@@ -7,6 +7,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -75,7 +76,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     private Selected selected;
 
-    static final Color SELECTED_COLOR = new Color(0.8f, 0.8f, 0.8f, 0.7f);
+    public static final Color SELECTED_COLOR = new Color(0.8f, 0.8f, 0.8f, 0.7f);
 
 
     public EditorMode(GameCanvas canvas) {
@@ -100,6 +101,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     @Override
     public void show() {
         level = LevelParser.LevelParser().loadEmpty();
+        selected = new Tile(directory.getEntry("land1-unlit", Texture.class), "land1");
     }
 
     /**
@@ -122,7 +124,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             level.translateView(0, 20);
         }
 
-        selected = new Tile(directory.getEntry("land1-unlit", Texture.class), "land1");
     }
 
     /**
@@ -140,17 +141,17 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             return;
         }
 
-        // Draw selected texture
         canvas.begin();
         if (selected instanceof Tile) {
             // snap to tile
-            //canvas.draw(selected.texture, SELECTED_COLOR, Gdx.input.getX(), Gdx.graphics.getHeight() - Gdx.input.getY());
-        }
-        canvas.end();
+            int boardX = level.getBoard().worldToBoardX(curWorldX);
+            int boardY = level.getBoard().worldToBoardY(curWorldY);
 
-        //canvas.begin();
-        //canvas.drawRecOutline(100, 100);
-        //canvas.end();
+            level.getBoard().setPreviewTile(new Board.PreviewTile(boardX, boardY, selected.texture));
+            //System.out.printf("board pos: (%d, %d)", boardX, boardY);
+        }
+
+        canvas.end();
     }
 
     /**
