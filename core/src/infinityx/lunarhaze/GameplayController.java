@@ -172,6 +172,7 @@ public class GameplayController {
      */
     public void resolvePlayer(InputController input, float delta) {
         player.setMovementH(input.getHorizontal());
+
         player.setMovementV(input.getVertical());
         player.update(delta);
     }
@@ -186,7 +187,7 @@ public class GameplayController {
             }
             player.setOnMoonlight(true);
             if (board.isCollectable(px, py) && timeOnMoonlight > MOONLIGHT_COLLECT_TIME) {
-                player.collectMoonlight();
+                player.collectMoonlight(levelContainer);
                 remainingMoonlight--;
                 timeOnMoonlight = 0;
                 board.setCollected(px, py);

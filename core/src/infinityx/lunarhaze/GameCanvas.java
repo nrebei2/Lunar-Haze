@@ -101,6 +101,11 @@ public class GameCanvas {
     private final ShapeRenderer barRender;
 
     /**
+     * Rendering context for drawing shapes affected by global matrix;
+     */
+    private final ShapeRenderer shapeRenderer;
+
+    /**
      * Track whether or not we are active (for error checking)
      */
     private DrawPass active;
@@ -139,7 +144,16 @@ public class GameCanvas {
      */
     private TextureRegion holder;
 
+    /**
+     * Scaling factors for world to screen translation
+     */
     private Vector2 worldToScreen;
+
+    /**
+     * Translation cache used for view translation
+     * TODO: I dont like this, maybe a better way to restructure
+     */
+    private Vector2 viewCache;
 
     /**
      * Sets the scaling factor for the world to screen transformation
@@ -156,9 +170,21 @@ public class GameCanvas {
     public float WorldToScreenX(float w_x) {
         return w_x * worldToScreen.x;
     }
-
     public float WorldToScreenY(float w_y) {
         return w_y * worldToScreen.y;
+    }
+
+    /**
+     * Both functions represent a map from screen coordinates to world coordinates
+     */
+    public float ScreenToWorldX(float s_x) {
+        return (s_x - viewCache.x) / worldToScreen.x;
+    }
+    /**
+     * No need to flip y-axis
+     */
+    public float ScreenToWorldY(float s_y) {
+        return ((Gdx.graphics.getHeight() - s_y) - viewCache.y) / worldToScreen.y;
     }
 
     /**
@@ -173,6 +199,8 @@ public class GameCanvas {
         spriteBatch = new PolygonSpriteBatch();
         debugRender = new ShapeRenderer();
         barRender = new ShapeRenderer();
+        shapeRenderer = new ShapeRenderer();
+
 
         // Set the projection matrix (for proper scaling)
         camera = new OrthographicCamera(getWidth(), getHeight());
@@ -186,6 +214,7 @@ public class GameCanvas {
         local = new Affine2();
         global = new Matrix4();
         vertex = new Vector2();
+        viewCache = new Vector2(0, 0);
     }
 
     /**
@@ -415,6 +444,7 @@ public class GameCanvas {
         global.setAsAffine(affine);
         global.mulLeft(camera.combined);
         spriteBatch.setProjectionMatrix(global);
+        shapeRenderer.setProjectionMatrix(global);
 
         setBlendState(BlendState.NO_PREMULT);
         spriteBatch.begin();
@@ -429,12 +459,33 @@ public class GameCanvas {
      * @param sx the amount to scale the x-axis
      * @param sy the amount to scale the y-axis
      */
-    public void begin(float sx, float sy) {
+    public void beginS(float sx, float sy) {
         global.idt();
         global.scl(sx, sy, 1.0f);
         global.mulLeft(camera.combined);
         spriteBatch.setProjectionMatrix(global);
 
+        spriteBatch.begin();
+        active = DrawPass.STANDARD;
+    }
+
+    /**
+     * Start a standard drawing sequence.
+     * <p>
+     * Nothing is flushed to the graphics card until the method end() is called.
+     *
+     * @param tx the amount to translate on the x-axis
+     * @param ty the amount to translate on the y-axis
+     */
+    public void beginT(float tx, float ty) {
+        global.idt();
+        viewCache.set(tx, ty);
+        global.translate(tx, ty, 0.0f);
+        global.mulLeft(camera.combined);
+        spriteBatch.setProjectionMatrix(global);
+        shapeRenderer.setProjectionMatrix(global);
+
+        setBlendState(BlendState.NO_PREMULT);
         spriteBatch.begin();
         active = DrawPass.STANDARD;
     }
@@ -1110,17 +1161,25 @@ public class GameCanvas {
     }
 
     /**
-     * Draws a rectangle outline at the upper right corner with specified width, and height
+     * Draws a rectangle outline affected by global transform.
+     *
+     * @param x bottom-left screen x
+     * @param y bottom-left screen y
      */
-    public void drawRecLine(float width, float height) {
-        ShapeRenderer barRenderer = new ShapeRenderer();
-        barRenderer.begin(ShapeRenderer.ShapeType.Line);
-        barRenderer.setColor(Color.WHITE);
-        float x = getWidth() - width;
-        float y = getHeight() - height * 4;
-        barRenderer.rect(x, y, width, height);
-        barRenderer.end();
+    public void drawRecOutline(float x, float y, float width, float height, Color color) {
+
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setColor(color);
+        shapeRenderer.rect(x, y, width, height);
+        shapeRenderer.end();
     }
+
+    /**
+     * Draws a rectangle outline at the upper right corner
+     */
+    //public void drawRecOutline(float width, float height) {
+    //    drawRecOutline(getWidth() - width, getHeight() - height * 4, width, height, Color.WHITE);
+    //}
 
     /**
      * Start the debug drawing sequence.

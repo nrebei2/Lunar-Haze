@@ -4,11 +4,11 @@ import box2dLight.PointLight;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.IntMap;
+import com.badlogic.gdx.utils.JsonValue;
+import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.EnemyList;
 import infinityx.lunarhaze.entity.SceneObject;
@@ -16,6 +16,7 @@ import infinityx.lunarhaze.entity.Werewolf;
 import infinityx.lunarhaze.physics.LightSource;
 import infinityx.util.Drawable;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 
 /**
@@ -45,7 +46,10 @@ import java.util.Comparator;
  * All models' positions are in world coordinates, Drawing should only be doing the relevant transformations
  */
 public class LevelContainer {
-
+    /**
+     * Need an ongoing reference to the asset directory
+     */
+    protected AssetDirectory directory;
     /**
      * Rayhandler for storing lights
      */
@@ -59,17 +63,19 @@ public class LevelContainer {
     /**
      * The Box2D World
      */
-    private final World world;
+    private World world;
     /**
      * Stores Enemies
      */
-    private final EnemyList enemies;
+    private EnemyList enemies;
     /**
      * Stores SceneObjects
      */
-    private final Array<SceneObject> sceneObjects;
+    private Array<SceneObject> sceneObjects;
     /**
-     * Stores Werewolf
+     * Stores Werewolf. Since there is always one and only one player in a level,
+     * this attribute is always initialized and carried over across levels.
+     * Therefore, this is like a player cache.
      */
     private Werewolf player;
     /**
@@ -84,37 +90,65 @@ public class LevelContainer {
     /**
      * Keeps player centered
      */
-    private final Affine2 view = new Affine2();
-
-    public Vector2 worldToScreen = new Vector2();
+    private final Vector2 view = new Vector2();
 
     /**
      * Holds references to all drawable entities on the level (i.e. sceneObjects, player, enemies)
      */
-    private final Array<Drawable> drawables;
+    private Array<Drawable> drawables;
     private final DrawableCompare drawComp = new DrawableCompare();
 
+    /** Constants for enemy initialization */
+    JsonValue enemiesJson;
+
+    /** Constants for scene object initialization */
+    JsonValue objectJson;
+
+    /** Constants for player initialization */
+    JsonValue playerJson;
+
+    /** is the player hidden */
+    private boolean hidden;
+
     /**
-     * Maps tile indices to their respective PointLight pointing on it
+     * Initialize attributes
      */
-    private final IntMap<PointLight> moonlight;
+    private void initialize() {
+        world = new World(new Vector2(0, 0), true);
+        rayHandler = new RayHandler(world, Gdx.graphics.getWidth(), Gdx.graphics.getWidth());
+        rayHandler.setAmbientLight(1);
+
+        drawables = new Array<Drawable>();
+
+        Werewolf player = new Werewolf();
+        player.initialize(directory, playerJson, this);
+        setPlayer(player);
+
+        board = null;
+        enemies = new EnemyList();
+        sceneObjects = new Array<>(true, 5);
+
+        remainingMoonlight = 0;
+    }
 
     /**
      * Creates a new LevelContainer with no active elements.
      */
-    public LevelContainer() {
-        // BOX2D initialization
-        world = new World(new Vector2(0, 0), true);
-        rayHandler = new RayHandler(world, Gdx.graphics.getWidth(), Gdx.graphics.getWidth());
+    public LevelContainer(AssetDirectory directory, JsonValue enemiesJson, JsonValue objectJson, JsonValue playerJson) {
+        this.enemiesJson = enemiesJson;
+        this.objectJson = objectJson;
+        this.playerJson = playerJson;
+        this.directory = directory;
+        initialize();
+    }
 
-        player = null;
-        board = null;
-        enemies = new EnemyList();
-        sceneObjects = new Array<>(true, 5);
-        moonlight = new IntMap<>();
-
-        drawables = new Array<Drawable>();
-        remainingMoonlight = 0;
+    /**
+     * "flush" all objects from this level and resets level.
+     * P
+     */
+    public void flush() {
+       initialize();
+       // The player object can be carried over!
     }
 
     public RayHandler getRayHandler() {
@@ -130,13 +164,31 @@ public class LevelContainer {
 
     /**
      * @param enemy Enemy to append to enemy list
-     * @return id of the added enemy
+     * @return Enemy added with updated id
      */
-    public int addEnemy(Enemy enemy) {
+    public Enemy addEnemy(Enemy enemy) {
         enemies.addEnemy(enemy);
         drawables.add(enemy);
 
-        return enemies.size() - 1;
+        enemy.setId(enemies.size() - 1);
+        return enemy;
+    }
+
+    /**
+     * @param type type of Enemy to append to enemy list (e.g. villager)
+     * @param x world x-position
+     * @param y world y-position
+     * @param patrol patrol path for this enemy
+     * @return Enemy added with updated id
+     */
+    public Enemy addEnemy(String type, float x, float y, ArrayList<Vector2> patrol) {
+        Enemy enemy = new Enemy();
+        enemy.initialize(directory, enemiesJson.get(type), this);
+
+        enemy.setPatrolPath(patrol);
+        enemy.setPosition(x, y);
+
+        return addEnemy(enemy);
     }
 
     /**
@@ -165,6 +217,24 @@ public class LevelContainer {
         this.player = player;
     }
 
+    /**
+     * Hide player from drawing. Used for level editor.
+     */
+    public void hidePlayer() {
+        if (hidden) return;
+        hidden = true;
+        drawables.removeValue(player, true);
+    }
+
+    /**
+     * Show player for drawing. Used for level editor.
+     */
+    public void showPlayer() {
+        if (!hidden) return;
+        hidden = false;
+        drawables.add(player);
+    }
+
     public void addMoonlight() {
         remainingMoonlight++;
     }
@@ -189,10 +259,55 @@ public class LevelContainer {
 
     /**
      * @param obj Scene Object to add
+     * @return scene object added
      */
-    public void addSceneObject(SceneObject obj) {
+    public SceneObject addSceneObject(SceneObject obj) {
         sceneObjects.add(obj);
         drawables.add(obj);
+
+        return obj;
+    }
+
+    /**
+     * @param type type of scene object to add (e.g. house)
+     * @param x world x-position
+     * @param y world y-position
+     * @param scale scale of object
+     * @return scene object added
+     */
+    public SceneObject addSceneObject(String type, float x, float y, float scale) {
+        SceneObject object = new SceneObject();
+        object.initialize(directory, objectJson.get(type), this);
+
+        object.setPosition(x, y);
+        object.setScale(scale, scale);
+
+        return addSceneObject(object);
+    }
+
+    /**
+     * Set view translation
+     * @param x x screen units along x-axis
+     * @param y y screen units along y-axis
+     */
+    public void setViewTranslation(float x, float y) {
+        view.set( x, y );
+    }
+
+    /**
+     * Translate the screen view
+     * @param x x screen units along x-axis
+     * @param y y screen units along y-axis
+     */
+    public void translateView(float x, float y) {
+        view.add(x, y);
+    }
+
+    /**
+     * Returns last set view transform
+     */
+    public Vector2 getView() {
+        return view;
     }
 
     /**
@@ -201,16 +316,10 @@ public class LevelContainer {
      * @param canvas The drawing context
      */
     public void drawLevel(GameCanvas canvas) {
-        // Puts player at center of canvas
-
-        view.setToTranslation(
-                -canvas.WorldToScreenX(player.getPosition().x) + canvas.getWidth() / 2,
-                -canvas.WorldToScreenY(player.getPosition().y) + canvas.getHeight() / 2
-        );
-        canvas.begin(view);
+        canvas.beginT(view.x, view.y);
 
         // Debug prints
-        //System.out.printf(i
+        //System.out.printf(
         //        "Player pos: (%f, %f), Spotlight pos: (%f, %f) \n",
         //        player.getPosition().x, player.getPosition().y, player.getSpotlight().getPosition().x, player.getSpotlight().getPosition().y);
 
@@ -226,18 +335,22 @@ public class LevelContainer {
         canvas.end();
 
         // A separate transform for lights :(
-        // In an ideal world they would be the same, but I like using GameCanvas
+        // In an ideal world they would be the same, but lights should be scaled while textures should NOT
         OrthographicCamera raycamera = new OrthographicCamera(
                 canvas.getWidth() / canvas.WorldToScreenX(1),
                 canvas.getHeight() / canvas.WorldToScreenY(1)
         );
-        raycamera.translate(player.getPosition().x, player.getPosition().y);
-        raycamera.update();
+        if (player != null) {
+            raycamera.translate(player.getPosition().x, player.getPosition().y);
+            raycamera.update();
+        }
         rayHandler.setCombinedMatrix(raycamera);
 
         // Finally, draw lights
         rayHandler.updateAndRender();
     }
+
+
 }
 
 

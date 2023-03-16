@@ -25,6 +25,9 @@ package infinityx.lunarhaze;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.utils.JsonValue;
+import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.physics.BoxObstacle;
 import infinityx.util.Drawable;
 import infinityx.util.FilmStrip;
@@ -90,6 +93,39 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
         setFixedRotation(true);
 
         destroyed = false;
+    }
+
+    /**
+     * Further parses specific GameObject (collider info, etc.) attributes.
+     *
+     * @param json Json tree holding information
+     * @param container LevelContainer which this player is placed in
+     */
+    public void initialize(AssetDirectory directory, JsonValue json, LevelContainer container) {
+        JsonValue p_dim = json.get("collider");
+        setDimension(p_dim.get("width").asFloat(), p_dim.get("height").asFloat());
+        // TODO: bother with error checking?
+        setBodyType(json.get("bodytype").asString().equals("static") ? BodyDef.BodyType.StaticBody : BodyDef.BodyType.DynamicBody);
+        setLinearDamping(json.get("damping").asFloat());
+        setDensity(json.get("density").asFloat());
+        setFriction(json.get("friction").asFloat());
+        setRestitution(json.get("restitution").asFloat());
+        if (!json.has("speed")) {
+            setSpeed(0);
+        } else {
+            setSpeed(json.get("speed").asFloat());
+        }
+        //setStartFrame(json.get("startframe").asInt());
+        JsonValue texInfo = json.get("texture");
+        setTexture(directory.getEntry(texInfo.get("name").asString(), FilmStrip.class));
+        int[] texOrigin = texInfo.get("origin").asIntArray();
+        setOrigin(texOrigin[0], texOrigin[1]);
+        if (texInfo.has("positioned")) {
+            setPositioned(
+                    texInfo.getString("positioned").equals("bottom-left") ?
+                            BoxObstacle.POSITIONED.BOTTOM_LEFT : BoxObstacle.POSITIONED.CENTERED
+            );
+        }
     }
 
     /**
@@ -205,4 +241,6 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
         canvas.draw(filmstrip, Color.WHITE, origin.x, origin.y,
                 canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y), 0.0f,  scale.x, scale.y);
     }
+
+
 }

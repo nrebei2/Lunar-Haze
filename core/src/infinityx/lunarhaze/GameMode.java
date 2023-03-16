@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -141,8 +142,7 @@ public class GameMode extends ScreenObservable implements Screen {
      */
     public void gatherAssets(AssetDirectory directory) {
         this.directory = directory;
-        LevelParser ps = LevelParser.LevelParser();
-        ps.loadConstants(directory);
+
         inputController.loadConstants(directory);
         levelFormat = directory.getEntry("levels", JsonValue.class);
         displayFont = directory.getEntry("retro", BitmapFont.class);
@@ -196,7 +196,6 @@ public class GameMode extends ScreenObservable implements Screen {
     private void setupLevel() {
         LevelParser ps = LevelParser.LevelParser();
         levelContainer = ps.loadLevel(directory, levelFormat.get(String.valueOf(level)));
-        canvas.setWorldToScreen(levelContainer.worldToScreen);
     }
 
     /**
@@ -250,6 +249,11 @@ public class GameMode extends ScreenObservable implements Screen {
     public void draw(float delta) {
         canvas.clear();
 
+        // Puts player at center of canvas
+        levelContainer.setViewTranslation(
+                -canvas.WorldToScreenX(levelContainer.getPlayer().getPosition().x) + canvas.getWidth() / 2,
+                -canvas.WorldToScreenY(levelContainer.getPlayer().getPosition().y) + canvas.getHeight() / 2
+        );
         // Draw the level
         levelContainer.drawLevel(canvas);
 

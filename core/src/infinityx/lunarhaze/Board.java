@@ -51,6 +51,25 @@ public class Board {
     private final IntSet moonlightTiles;
 
     /**
+     * Used in editor
+     */
+    private PreviewTile previewTile;
+
+    public static class PreviewTile {
+        // Board (x, y)
+        int b_x; int b_y;
+        // Preview texture
+        Texture texture;
+
+
+        public PreviewTile(int b_x, int b_y, Texture texture) {
+            this.b_x = b_x;
+            this.b_y = b_y;
+            this.texture = texture;
+        }
+    }
+
+    /**
      * Creates a new board of the given size
      *
      * @param width  Board width in tiles
@@ -63,7 +82,6 @@ public class Board {
         tiles = new Tile[width * height];
         for (int ii = 0; ii < tiles.length; ii++) {
             tiles[ii] = new Tile();
-
         }
     }
 
@@ -223,8 +241,12 @@ public class Board {
     public void draw(GameCanvas canvas) {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                drawTile(x, y, canvas, Color.WHITE);
+                drawTile(x, y, canvas);
             }
+        }
+
+        if (this.previewTile != null) {
+            drawPreview(canvas);
         }
     }
 
@@ -234,9 +256,14 @@ public class Board {
      * @param x The x index for the Tile cell
      * @param y The y index for the Tile cell
      */
-    private void drawTile(int x, int y, GameCanvas canvas, Color tint) {
-        Texture tiletexture = getTileTexture(x, y);
+    private void drawTile(int x, int y, GameCanvas canvas) {
+        // Used for level editor
+        if (getTileType(x, y) == Tile.TileType.EMPTY) {
+            return;
+        }
+
         // if moonlight is not collectable, tint with a lighter color
+        Texture tiletexture = getTileTexture(x, y);
         if (isLit(x, y) && !isCollectable(x, y)) {
             canvas.draw(
                     tiletexture, Color.GREEN, tiletexture.getWidth() / 2, tiletexture.getHeight() / 2,
@@ -250,6 +277,54 @@ public class Board {
                     tileScreenDim.x / tiletexture.getWidth(), tileScreenDim.y / tiletexture.getHeight()
             );
         }
+    }
+
+    /**
+     * Draws red outline for tile placement. Used in level editor.
+     * @param canvas
+     */
+    public void drawOutline(GameCanvas canvas) {
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                canvas.drawRecOutline(
+                        canvas.WorldToScreenX(boardToWorld(x, y).x), canvas.WorldToScreenY(boardToWorld(x, y).y),
+                        tileScreenDim.x, tileScreenDim.y, Color.RED
+                );
+            }
+        }
+    }
+
+    /**
+     * Sets the preview tile. Used for the level editor.
+     * @param x The x index for the Tile cell
+     * @param y The y index for the Tile cell
+     * @param texture The texture used for preview
+     */
+    void setPreviewTile(int x, int y, Texture texture) {
+        if (!inBounds(x, y)) {
+            removePreview();
+            return;
+        }
+        this.previewTile = new PreviewTile(x, y, texture);
+    }
+
+    void removePreview() {
+        previewTile = null;
+    }
+
+    /**
+     * Draws a preview texture at tile position (x, y). Used for the level editor.
+     * @param canvas
+     */
+    private void drawPreview(GameCanvas canvas) {
+        Texture preview = this.previewTile.texture;
+        int x = this.previewTile.b_x;
+        int y = this.previewTile.b_y;
+        canvas.draw(
+                preview, EditorMode.SELECTED_COLOR, preview.getWidth() / 2, preview.getHeight() / 2,
+                canvas.WorldToScreenX(boardCenterToWorld(x, y).x), canvas.WorldToScreenY(boardCenterToWorld(x, y).y), 0.0f,
+                tileScreenDim.x / preview.getWidth(), tileScreenDim.y / preview.getHeight()
+        );
     }
 
     /**
