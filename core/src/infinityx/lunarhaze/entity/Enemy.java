@@ -1,7 +1,9 @@
 package infinityx.lunarhaze.entity;
 
-import box2dLight.PointLight;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.JsonValue;
+import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.EnemyController;
 import infinityx.lunarhaze.GameObject;
 import infinityx.lunarhaze.LevelContainer;
@@ -90,6 +92,10 @@ public class Enemy extends GameObject {
         return this.direction;
     }
 
+    public ConeSource getFlashlight() {
+        return flashlight;
+    }
+
     /**
      * Sets whether the enemy is alerted.
      */
@@ -125,6 +131,39 @@ public class Enemy extends GameObject {
     }
 
     /**
+     * Initalize the enemy with the given data
+     */
+    public void initialize(AssetDirectory directory, JsonValue json, LevelContainer container) {
+        JsonValue p_dim = json.get("collider");
+        setDimension(p_dim.get("width").asFloat(), p_dim.get("height").asFloat());
+
+        super.initialize(directory, json, container);
+
+        JsonValue light = json.get("flashlight");
+        float[] color = light.get("color").asFloatArray();
+        float dist = light.getFloat("distance");
+        int rays = light.getInt("rays");
+        float degrees = light.getFloat("degrees");
+
+        ConeSource flashLight = new ConeSource(
+                container.getRayHandler(), rays, Color.WHITE, dist,
+                getX(), getY(), 0f, degrees
+        );
+        flashLight.setColor(color[0], color[1], color[2], color[3]);
+        flashLight.setSoft(light.getBoolean("soft"));
+
+        activatePhysics(container.getWorld());
+        setFlashlight(flashLight);
+
+        setFlashlightOn(true);
+        //getBody().setActive(false);
+
+        JsonValue attack = json.get("attack");
+        setAttackKnockback(attack.getFloat("knockback"));
+        setAttackDamage(attack.getFloat("damage"));
+    }
+
+    /**
      * Deep clones enemy, can be used independently of this
      * @return new enemy
      */
@@ -137,10 +176,11 @@ public class Enemy extends GameObject {
                 container.getRayHandler(), this.flashlight.getRayNum(), this.flashlight.getColor(), this.flashlight.getDistance(),
                 0, 0, this.flashlight.getDirection(), this.flashlight.getConeDegree()
         );
-        enemy.setBodyState(body);
         flashLight.setSoft(this.flashlight.isSoft());
+        enemy.setBodyState(body);
         enemy.activatePhysics(container.getWorld());
         enemy.setFlashlight(flashlight);
+        enemy.setFlashlightOn(true);
 
         enemy.setDimension(getDimension().x, getDimension().y);
         enemy.setPositioned(positioned);
@@ -189,6 +229,7 @@ public class Enemy extends GameObject {
     public void setFlashlight(ConeSource cone) {
         flashlight = cone;
         flashlight.attachToBody(getBody(), 0.5f, 0, flashlight.getDirection());
+        flashlight.setActive(false);
     }
 
 

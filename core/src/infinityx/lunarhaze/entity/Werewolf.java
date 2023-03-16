@@ -1,13 +1,13 @@
 package infinityx.lunarhaze.entity;
 
 import box2dLight.PointLight;
-import box2dLight.RayHandler;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.utils.JsonValue;
+import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.GameObject;
 import infinityx.lunarhaze.LevelContainer;
-import infinityx.lunarhaze.physics.BoxObstacle;
 
 public class Werewolf extends GameObject {
 
@@ -234,6 +234,35 @@ public class Werewolf extends GameObject {
         hp = INITIAL_HP;
         moonlightCollected = 0;
         canMove = true;
+    }
+
+    /**
+     * Initialize the werewolf with the given data
+     *
+     * @param container LevelContainer which this player is placed in
+     */
+    public void initialize(AssetDirectory directory, JsonValue json, LevelContainer container) {
+        super.initialize(directory, json, container);
+
+        JsonValue light = json.get("spotlight");
+        float[] color = light.get("color").asFloatArray();
+        float dist = light.getFloat("distance");
+        int rays = light.getInt("rays");
+
+        float health = json.getFloat("health");
+        float lockout = json.getFloat("lockout");
+
+        initHp(health);
+        initLockout(lockout);
+
+        PointLight spotLight = new PointLight(
+                container.getRayHandler(), rays, Color.WHITE, dist,
+                0, 0
+        );
+        spotLight.setColor(color[0], color[1], color[2], color[3]);
+        spotLight.setSoft(light.getBoolean("soft"));
+        activatePhysics(container.getWorld());
+        setSpotLight(spotLight);
     }
 
     /**

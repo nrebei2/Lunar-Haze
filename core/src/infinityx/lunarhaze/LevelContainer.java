@@ -90,19 +90,6 @@ public class LevelContainer {
     private final Vector2 view = new Vector2();
 
     /**
-     * Cached enemies, is a table of enemy names (e.g. villager) to their actual game objects.
-     * This is useful for an enemy spawner, but always USE A DEEP CLONE after retrieving.
-     */
-    public ObjectMap<String, Enemy> cacheEnemies = new ObjectMap();
-
-    /**
-     * Cached enemies, is a table of scene object names (e.g. house) to their actual game objects.
-     * Not sure when this would be useful, but always USE A DEEP CLONE after retrieving.
-     */
-    public ObjectMap<String, SceneObject> cacheSceneObj = new ObjectMap();
-
-
-    /**
      * Holds references to all drawable entities on the level (i.e. sceneObjects, player, enemies)
      */
     private Array<Drawable> drawables;
@@ -258,6 +245,12 @@ public class LevelContainer {
         //System.out.printf(
         //        "Player pos: (%f, %f), Spotlight pos: (%f, %f) \n",
         //        player.getPosition().x, player.getPosition().y, player.getSpotlight().getPosition().x, player.getSpotlight().getPosition().y);
+
+        System.out.printf("Enemy count %d\n", enemies.size());
+
+        for (Enemy enemy : enemies) {
+            System.out.printf("flashlight pos: (%f, %f)\n", enemy.getRestitution(), enemy.getBody().getPosition().y);
+        }
 
         // Render order: Board tiles -> (players, enemies, scene objects) sorted by depth (y coordinate)
         board.draw(canvas);

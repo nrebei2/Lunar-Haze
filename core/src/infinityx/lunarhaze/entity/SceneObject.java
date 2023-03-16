@@ -2,6 +2,8 @@ package infinityx.lunarhaze.entity;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.JsonValue;
+import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.GameCanvas;
 import infinityx.lunarhaze.GameObject;
 import infinityx.lunarhaze.LevelContainer;
@@ -30,12 +32,21 @@ public class SceneObject extends GameObject implements Drawable {
     }
 
     /**
-     * Returns the type of this object.
-     * <p>
-     * We use this instead of runtime-typing for performance reasons.
-     *
-     * @return the type of this object.
+     * Initialize scene object given json.
+     * @param container LevelContainer which this player is placed in
      */
+    public void initialize(AssetDirectory directory, JsonValue json, LevelContainer container) {
+        super.initialize(directory, json, container);
+        activatePhysics(container.getWorld());
+    }
+
+        /**
+         * Returns the type of this object.
+         * <p>
+         * We use this instead of runtime-typing for performance reasons.
+         *
+         * @return the type of this object.
+         */
     @Override
     public ObjectType getType() {
        return ObjectType.SCENE;
