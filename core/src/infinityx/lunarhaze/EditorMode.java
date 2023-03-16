@@ -113,6 +113,14 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         this.directory = directory;
     }
 
+    private void placeTile() {
+
+        board.setTileTexture((int)mouseBoard.x, (int)mouseBoard.y,
+                selected.texture, selected.texture, selected.texture
+        );
+        board.setTileType((int)mouseBoard.x, (int)mouseBoard.y, infinityx.lunarhaze.Tile.TileType.Road);
+    }
+
     /**
      * Called when this screen becomes the current screen for a {@link Game}.
      */
@@ -144,6 +152,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
             level.translateView(0, 20);
         }
+
 
 
 
@@ -263,18 +272,13 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        board.removePreview();
         if (selected == null) {
             return false;
         }
 
         if (selected instanceof Tile) {
-            System.out.println("HELELASJDLASD");
-            int boardX = board.worldToBoardX(mouseWorld.x);
-            int boardY = board.worldToBoardY(mouseWorld.y);
-            board.setTileTexture(boardX, boardY,
-                   selected.texture, selected.texture, selected.texture
-            );
-            board.setTileType(boardX, boardY, infinityx.lunarhaze.Tile.TileType.Road);
+           placeTile();
         }
         return true;
     }
@@ -303,7 +307,22 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        return false;
+        mouseWorld.set(canvas.ScreenToWorldX(Gdx.input.getX()), canvas.ScreenToWorldY(Gdx.input.getY()));
+        if (selected == null) {
+            return false;
+        }
+        if (selected instanceof Tile) {
+            int boardX = board.worldToBoardX(mouseWorld.x);
+            int boardY = board.worldToBoardY(mouseWorld.y);
+
+            if (!mouseBoard.epsilonEquals(boardX, boardY)) {
+                System.out.println("BRUHDASJDHD");
+                // mouse is on different tile now
+                mouseBoard.set(boardX, boardY);
+                placeTile();
+            }
+        }
+        return true;
     }
 
     /**
@@ -316,6 +335,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
         // Cursor world position
+        System.out.println("updating mouse...");
         mouseWorld.set(canvas.ScreenToWorldX(Gdx.input.getX()), canvas.ScreenToWorldY(Gdx.input.getY()));
 
         if (selected == null) {

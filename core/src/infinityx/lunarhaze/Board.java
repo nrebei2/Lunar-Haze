@@ -302,10 +302,14 @@ public class Board {
      */
     void setPreviewTile(int x, int y, Texture texture) {
         if (!inBounds(x, y)) {
-            previewTile = null;
+            removePreview();
             return;
         }
         this.previewTile = new PreviewTile(x, y, texture);
+    }
+
+    void removePreview() {
+        previewTile = null;
     }
 
     /**
