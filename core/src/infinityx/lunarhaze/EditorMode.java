@@ -103,6 +103,24 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     private Vector2 mouseBoard = new Vector2();
 
+    // Scene graph is just a tree of length 1 with root `EditorMode` and leaves buttons
+    // therefore no need to have children for buttons
+    // we can edit this later if we want
+    // scene2d uses actors as nodes and scene as root
+    //private ArrayList<Button>
+
+    // class Button should hold
+    // float x, y: bottom left position
+    // float width, height
+    // draw function given Game Canvas
+    // onClick : should update color
+    // onHover : should update color
+    // onRelease : should update _selected_
+    // boolean hit(x, y) : is mouse hitting this right now?
+
+    // editor should should check if hit every mouse movement
+    // and call the relevant methods on buttons
+
     public EditorMode(GameCanvas canvas) {
         this.canvas = canvas;
     }
