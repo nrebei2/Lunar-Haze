@@ -15,6 +15,8 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import infinityx.assets.AssetDirectory;
 import infinityx.util.ScreenObservable;
 
+import java.util.ArrayList;
+
 public class EditorMode extends ScreenObservable implements Screen, InputProcessor {
     /**
      * Need an ongoing reference to the asset directory
@@ -139,7 +141,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     public void show() {
         level = LevelParser.LevelParser().loadEmpty();
         board = level.getBoard();
-        //selected = new Tile(directory.getEntry("land1-unlit", Texture.class), "land");
+        selected = new Tile(directory.getEntry("land1-unlit", Texture.class), "land");
         selected = new Player(level.getPlayer().getTexture().getTexture());
         Gdx.input.setInputProcessor(this);
     }

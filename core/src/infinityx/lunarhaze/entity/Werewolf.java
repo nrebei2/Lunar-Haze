@@ -312,7 +312,6 @@ public class Werewolf extends GameObject {
         Vector2 velocity = body.getLinearVelocity();
         if(canMove) {
 
-
             // update the velocity based on the input from the player
             velocity.x = movementH * speed;
             velocity.y = movementV * speed;

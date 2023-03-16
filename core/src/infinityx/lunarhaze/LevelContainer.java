@@ -120,14 +120,9 @@ public class LevelContainer {
 
         drawables = new Array<Drawable>();
 
-        if (player == null) {
-            Werewolf player = new Werewolf();
-            player.initialize(directory, playerJson, this);
-            setPlayer(player);
-        } else {
-            // If we already have a player, then just reuse
-            setPlayer(player);
-        }
+        Werewolf player = new Werewolf();
+        player.initialize(directory, playerJson, this);
+        setPlayer(player);
 
         board = null;
         enemies = new EnemyList();

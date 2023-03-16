@@ -66,7 +66,6 @@ public class LevelParser {
                 directory.getEntry("objects", JsonValue.class),
                 directory.getEntry("player", JsonValue.class)
         );
-
     }
 
     /**

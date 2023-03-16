@@ -166,6 +166,7 @@ public class GameplayController {
      */
     public void resolvePlayer(InputController input, float delta) {
         player.setMovementH(input.getHorizontal());
+
         player.setMovementV(input.getVertical());
         player.update(delta);
     }
