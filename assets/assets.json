@@ -64,13 +64,66 @@
       "minFilter": "nearest",
       "magFilter": "nearest"
     },
-    "werewolf": "images/werewolf.png",
-    "villager": "images/villager.png"
-  },
-  "objects": {
-  },
+    "tree": {
+      "file": "images/tree.png",
+      "minFilter": "nearest",
+      "magFilter": "nearest",
+      "sprites":	{
+        "static" : {
+          "size" : 1,
+          "rows" : 1,
+          "cols" : 1
+        }
+      }
+    },
+    "house": {
+      "file": "images/house.png",
+      "minFilter": "nearest",
+      "magFilter": "nearest",
+      "sprites":	{
+        "static" : {
+          "size" : 1,
+          "rows" : 1,
+          "cols" : 1
+        }
+      }
+    },
+
+    "werewolf": {
+      "file": 	"images/werewolf.png",
+      "wrap":  	false,
+      "minFilter": "nearest",
+      "magFilter": "nearest",
+      "sprites":	{
+        "movement" : {
+          "size" : 2,
+          "rows" : 1,
+          "cols" : 2
+        }
+      }
+    },
+    "villager":{
+      "file": 	"images/villager.png",
+      "wrap":  	false,
+      "minFilter": "nearest",
+      "magFilter": "nearest",
+      "sprites":	{
+        "movement" : {
+          "size" : 1,
+          "rows" : 1,
+          "cols" : 1
+        }
+      }
+    }
+},
   "jsons": {
-    "levels": "levels.json"
+    "levels": "jsons/levels.json",
+    "player": "jsons/player.json",
+    "dimensions": "jsons/dimensions.json",
+    "objects": "jsons/objects.json",
+    "enemies": "jsons/enemies.json",
+    "input": "jsons/input.json",
+    "dust": "jsons/dust.json"
   },
   "sounds": {
   },

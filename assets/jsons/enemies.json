@@ -1,0 +1,31 @@
+{
+  "villager": {
+    "flashlight": {
+      "color":		[0.8, 0.6, 0, 0.9],
+      "distance":		   4,
+      "rays":			512,
+      "soft":			false,
+      "degrees": 30
+    },
+    "texture": {
+      "name": "villager.movement",
+      "origin": [75, 22],
+      "scale": 1
+    },
+    "collider": {
+      "width": 0.5,
+      "height": 0.5
+    },
+    "bodytype": "dynamic",
+    "density": 1.0,
+    "friction": 0.0,
+    "restitution": 1.0,
+    "damping": 0.0,
+    "speed": 2,
+    "startframe": 0,
+    "attack": {
+      "knockback": 3.0,
+      "damage": 25.0
+    }
+  }
+}

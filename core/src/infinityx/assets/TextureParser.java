@@ -20,16 +20,18 @@ import com.badlogic.gdx.utils.ObjectMap;
 
 /**
  * This class parses a JSON entry into a {@link Texture}.
- *
+ * <p>
  * The parser converts JSON entries into {@link TextureLoader.TextureParameter}
  * values of the same name. It is also possible to specify a texture by simply
  * giving the name of the file.  In that case, the default parameters will be
  * used on loading.
- * 
+ * <p>
  * all properties) are stored in the file.
  */
 public class TextureParser implements AssetParser<Texture> {
-    /** The current font entry in the JSON directory */
+    /**
+     * The current font entry in the JSON directory
+     */
     private JsonValue root;
 
     /**
@@ -43,15 +45,15 @@ public class TextureParser implements AssetParser<Texture> {
 
     /**
      * Resets the parser iterator for the given directory.
-     *
+     * <p>
      * The value directory is assumed to be the root of a larger JSON structure.
      * The individual assets are defined by subtrees in this structure.
      *
-     * @param directory    The JSON representation of the asset directory
+     * @param directory The JSON representation of the asset directory
      */
     public void reset(JsonValue directory) {
         root = directory;
-        root = root.getChild( "textures" );
+        root = root.getChild("textures");
     }
 
     /**
@@ -65,20 +67,20 @@ public class TextureParser implements AssetParser<Texture> {
 
     /**
      * Processes the next available texture, loading it into the asset manager
-     *
+     * <p>
      * The parser converts JSON entries into {@link TextureLoader.TextureParameter}
-     * values of the same name. The file will be the contents of the file entry.  The 
+     * values of the same name. The file will be the contents of the file entry.  The
      * key will be the name of the font object.
-     *
+     * <p>
      * If the JSON value is a string and not an object, it will interpret that
      * string as the file and use the default settings.
-     *
+     * <p>
      * This method fails silently if there are no available assets to process.
      *
-     * @param manager	The asset manager to load an asset
-     * @param keymap    The mapping of JSON keys to asset file names
+     * @param manager The asset manager to load an asset
+     * @param keymap  The mapping of JSON keys to asset file names
      */
-    public void processNext(AssetManager manager, ObjectMap<String,String> keymap) {
+    public void processNext(AssetManager manager, ObjectMap<String, String> keymap) {
         TextureLoader.TextureParameter params = new TextureLoader.TextureParameter();
         if (root.isString()) {
             params.genMipMaps = false;
@@ -88,21 +90,21 @@ public class TextureParser implements AssetParser<Texture> {
             params.wrapV = Texture.TextureWrap.ClampToEdge;
             params.format = Pixmap.Format.RGBA8888;
             String file = root.asString();
-            keymap.put(root.name(),file);
-            manager.load( file,Texture.class, params );
-		} else {
-            params.genMipMaps = root.getBoolean( "mipmaps",false );
+            keymap.put(root.name(), file);
+            manager.load(file, Texture.class, params);
+        } else {
+            params.genMipMaps = root.getBoolean("mipmaps", false);
             params.minFilter = ParserUtils.parseFilter(root.get("minFilter"), Texture.TextureFilter.Linear);
             params.magFilter = ParserUtils.parseFilter(root.get("magFilter"), Texture.TextureFilter.Linear);
             params.wrapU = ParserUtils.parseWrap(root.get("wrapU"), Texture.TextureWrap.ClampToEdge);
             params.wrapV = ParserUtils.parseWrap(root.get("wrapV"), Texture.TextureWrap.ClampToEdge);
-            params.format = root.getBoolean( "alpha",true ) ? Pixmap.Format.RGBA8888 : Pixmap.Format.RGB888;
-            String file = root.getString( "file", null );
+            params.format = root.getBoolean("alpha", true) ? Pixmap.Format.RGBA8888 : Pixmap.Format.RGB888;
+            String file = root.getString("file", null);
             if (file != null) {
-                keymap.put(root.name(),file);
-                manager.load( file,Texture.class, params );
+                keymap.put(root.name(), file);
+                manager.load(file, Texture.class, params);
             }
-		}
+        }
         root = root.next();
     }
 

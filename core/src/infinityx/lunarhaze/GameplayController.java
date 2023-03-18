@@ -1,10 +1,12 @@
 package infinityx.lunarhaze;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.EnemyList;
 import infinityx.lunarhaze.entity.Werewolf;
+import infinityx.lunarhaze.physics.RaycastInfo;
 
 
 /**
@@ -38,6 +40,11 @@ public class GameplayController {
 
     private boolean gameLost;
     private LevelContainer levelContainer;
+
+    /**
+     * This is the collision controller (handels collisions between all objects in our world
+     */
+    private CollisionController collisionController;
 
     public GameplayController() {
         player = null;
@@ -104,6 +111,7 @@ public class GameplayController {
      */
     public void start(LevelContainer levelContainer) {
         this.levelContainer = levelContainer;
+        this.collisionController = new CollisionController(levelContainer);
         player = levelContainer.getPlayer();
         enemies = levelContainer.getEnemies();
         objects.add(player);
@@ -121,7 +129,7 @@ public class GameplayController {
         }
 
         // Intialize lighting
-        lightingController = new LightingController(enemies, board);
+        lightingController = new LightingController(levelContainer);
 
         /*PointLight light = new PointLight(getRayHandler(), 512, new Color(0.5f, 0.5f, 1f, 0.3f), 2000f, 0, 0);
          */
@@ -144,7 +152,8 @@ public class GameplayController {
      * @param delta Number of seconds since last animation frame
      */
     public void resolveActions(InputController input, float delta) {
-        // Process the player
+        // Process the player only when the game is in play
+        lightingController.updateDust(delta);
         if (player != null && !(gameLost || gameWon)) {
             resolvePlayer(input, delta);
             resolveMoonlight(delta);
@@ -163,6 +172,7 @@ public class GameplayController {
      */
     public void resolvePlayer(InputController input, float delta) {
         player.setMovementH(input.getHorizontal());
+
         player.setMovementV(input.getVertical());
         player.update(delta);
     }
@@ -172,22 +182,41 @@ public class GameplayController {
         int py = board.worldToBoardX(player.getPosition().y);
 
         if (board.isLit(px, py)) {
-            timeOnMoonlight += delta; // Increase variable by time
+            if (board.isCollectable(px, py)) {
+                timeOnMoonlight += delta; // Increase variable by time
+            }
             player.setOnMoonlight(true);
-            if (timeOnMoonlight > MOONLIGHT_COLLECT_TIME) {
-                player.collectMoonlight();
+            if (board.isCollectable(px, py) && timeOnMoonlight > MOONLIGHT_COLLECT_TIME) {
+                player.collectMoonlight(levelContainer);
                 remainingMoonlight--;
                 timeOnMoonlight = 0;
-
-                levelContainer.setLit(px, py, false);
-
-                // Check if game is won here
-                if (remainingMoonlight == 0) gameWon = true;
+                board.setCollected(px, py);
             }
+            // Check if game is won here
+            if (remainingMoonlight == 0) gameWon = true;
         } else {
             timeOnMoonlight = 0;
             player.setOnMoonlight(false);
         }
+    }
+
+    public RaycastInfo raycast(GameObject requestingObject, Vector2 point1, Vector2 point2) {
+        RaycastInfo callback = new RaycastInfo(requestingObject);
+        World world = levelContainer.getWorld();
+        world.rayCast(callback, new Vector2(point1.x, point1.y), new Vector2(point2.x, point2.y));
+        return callback;
+    }
+
+    public boolean detectPlayer(Enemy enemy) {
+        Vector2 point1 = enemy.getPosition();
+        float dist = enemy.getFlashlight().getDistance();
+        float vx = enemy.getVX();
+        float vy = enemy.getVY();
+        if (vx == 0 && vy == 0) return false;
+        Vector2 direction = new Vector2(vx, vy).nor();
+        Vector2 point2 = new Vector2(point1.x + dist * direction.x, point1.y + dist * direction.y);
+        RaycastInfo info = raycast(enemy, point1, point2);
+        return info.hit && info.hitObject == player;
     }
 
     // TODO: THIS SHOULD BE IN ENEMYCONTROLLER, also this code is a mess
@@ -196,12 +225,12 @@ public class GameplayController {
         for (Enemy en : enemies) {
             if (controls[en.getId()] != null) {
                 EnemyController curEnemyController = controls[en.getId()];
+                boolean detect = detectPlayer(en);
                 int action = curEnemyController.getAction();
-                //curEnemyController.setVisibleTiles();
 //                boolean attacking = (action & EnemyController.CONTROL_ATTACK) != 0;
                 en.update(action);
 
-                // TODO: make more interesting actions
+                // TODO: make more interesting actions                //curEnemyController.setVisibleTiles();
                 if (en.getIsAlerted()) {
                     // angle between enemy and player
                     double ang = Math.atan2(player.getPosition().y - en.getPosition().y, player.getPosition().x - en.getPosition().y);
@@ -209,12 +238,6 @@ public class GameplayController {
                 } else {
                     en.setFlashLightRotAlongDir();
                 }
-//                if (attacking &&) {
-//                    fireWeapon(s);
-//                } else {
-//                    s.coolDown(true);
-//                }
-
             } else {
 
                 en.update(EnemyController.CONTROL_NO_ACTION);

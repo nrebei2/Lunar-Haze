@@ -16,7 +16,7 @@ public class TextureRegionParser implements AssetParser<TextureRegion> {
 
     public void reset(JsonValue directory) {
         root = directory;
-        root = root.getChild( "textures" );
+        root = root.getChild("textures");
         atlas = null;
         advance();
     }
@@ -25,11 +25,11 @@ public class TextureRegionParser implements AssetParser<TextureRegion> {
         return atlas != null;
     }
 
-    public void processNext(AssetManager manager, ObjectMap<String,String> keymap) {
+    public void processNext(AssetManager manager, ObjectMap<String, String> keymap) {
         if (atlas.size < 4) {
-            throw new GdxRuntimeException( "Rectangle "+atlas+" is not valid");
+            throw new GdxRuntimeException("Rectangle " + atlas + " is not valid");
         }
-        String file = root.getString( "file", null );
+        String file = root.getString("file", null);
         if (file == null) {
             advance();
             return;
@@ -38,13 +38,13 @@ public class TextureRegionParser implements AssetParser<TextureRegion> {
 
         params.x = atlas.getInt(0);
         params.y = atlas.getInt(1);
-        params.width  = atlas.getInt(2);
+        params.width = atlas.getInt(2);
         params.height = atlas.getInt(3);
-        params.width = params.width == -1 ? -1 : params.width-params.x;
-        params.height = params.height == -1 ? -1 : params.height-params.y;
-        String region = file+":"+atlas.name();
-        keymap.put(root.name()+"."+atlas.name(),region);
-        manager.load( region,TextureRegion.class, params );
+        params.width = params.width == -1 ? -1 : params.width - params.x;
+        params.height = params.height == -1 ? -1 : params.height - params.y;
+        String region = file + ":" + atlas.name();
+        keymap.put(root.name() + "." + atlas.name(), region);
+        manager.load(region, TextureRegion.class, params);
         advance();
     }
 
@@ -60,8 +60,8 @@ public class TextureRegionParser implements AssetParser<TextureRegion> {
             }
         }
         while (atlas == null && root != null) {
-            if (root.hasChild( "atlas" )) {
-                atlas = root.getChild( "atlas" );
+            if (root.hasChild("atlas")) {
+                atlas = root.getChild("atlas");
             } else {
                 root = root.next();
             }

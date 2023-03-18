@@ -12,7 +12,7 @@ public class DesktopLauncher {
 		config.setTitle("Lunar Haze");
 		config.setResizable(true);
 
-		config.setWindowedMode(1280, 960);
+		config.setWindowedMode(1920, 1080);
 		new Lwjgl3Application(new GDXRoot(), config);
 	}
 }

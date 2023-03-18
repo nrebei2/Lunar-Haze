@@ -1,5 +1,6 @@
 package infinityx.lunarhaze;
 
+import box2dLight.PointLight;
 import com.badlogic.gdx.graphics.Texture;
 
 /**
@@ -8,10 +9,11 @@ import com.badlogic.gdx.graphics.Texture;
 public class Tile {
     public enum TileType {
         Grass, Road, Dirt,
-        // TODO: Add more types
+        // Used for Level Editor if no texture has been placed
+        EMPTY
     }
 
-    private TileType type;
+    private TileType type = TileType.EMPTY;
     /**
      * Is there a scene object on this tile?
      */
@@ -24,20 +26,28 @@ public class Tile {
      * Has this tile been visited (used for pathfinding AI)?
      */
     private boolean visited = false;
+
     /**
-     * Is there moonlight on this tile?
-     */
-    private boolean lit = false;
-    /**
-     * Can an enemy see this tile?
+     * Use for debugging
      */
     private boolean visible = false;
 
     /**
-     * Texture of tile (Lit/Unlit from moonlight)
+     * Is the moonlight collected?
+     */
+    private boolean collected = false;
+
+    /**
+     * Texture of tile
+     * TODO: Should be a TextureRegion taken from a sprite sheet of tiles to optimize rendering.
+     * Right now, the spritebatch is unable to batch much geometry since texture changes when drawing board.
      **/
-    private Texture TileTextureUnlit;
-    private Texture TileTextureLit;
+    private Texture TileTexture;
+
+    /**
+     * The moonlight pointing on this tile, possibly null
+     */
+    private PointLight spotLight;
 
     // No need for constructor, levelContainer will set attributes of all tiles through Board
     public Tile() {
@@ -88,49 +98,60 @@ public class Tile {
     }
 
     public boolean isLit() {
-        return lit;
+        if (spotLight == null) {
+            return false;
+        }
+        return spotLight.isActive();
     }
 
     public void setLit(boolean lit) {
-        this.lit = lit;
+        spotLight.setActive(lit);
     }
 
-    public boolean getVisible() {
-        return visible;
+
+    public Boolean isCollected() {
+        return collected;
     }
 
+    public void setCollected() {
+        collected = true;
+    }
+
+    /**
+     * Attaches light to tile, represents the moonlight on the tile
+     */
+    public void setSpotLight(PointLight light) {
+        spotLight = light;
+    }
+
+    public PointLight getSpotLight() {
+        return spotLight;
+    }
+
+    /**
+     * Use for debugging
+     */
     public void setVisible(boolean visible) {
         this.visible = visible;
     }
 
+    public boolean getVisible() {
+        return this.visible;
+    }
+
     /**
-     * Returns the unlit image texture for the tile. Will be drawn if lit is false.
+     * Returns the image texture for the tile.
      * <p>
      * May be null, must be set before get
      *
      * @return the unit image texture for the tile
      */
-    public Texture getTileTextureUnlit() {
-        return TileTextureUnlit;
+    public Texture getTileTexture() {
+        return TileTexture;
     }
 
-    /**
-     * Returns the lit image texture for the tile. Will be drawn if lit is true.
-     * <p>
-     * May be null, must be set before get
-     *
-     * @return the lit image texture for the tile
-     */
-    public Texture getTileTextureLit() {
-        return TileTextureLit;
-    }
-
-    public void setTileTextureUnlit(Texture unlitTex) {
-        this.TileTextureUnlit = unlitTex;
-    }
-
-    public void setTileTextureLit(Texture litTex) {
-        this.TileTextureLit = litTex;
+    public void setTileTexture(Texture tex) {
+        this.TileTexture = tex;
     }
 
 }

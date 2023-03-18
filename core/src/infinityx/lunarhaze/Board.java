@@ -1,5 +1,6 @@
 package infinityx.lunarhaze;
 
+import box2dLight.PointLight;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -12,6 +13,8 @@ import java.util.ArrayList;
 /**
  * Class represents a 2D grid of tiles.
  * Wrapper around tile data
+ * TODO: make this extend TiledMap? Useful if we will need layers later on. Tile can then extend StaticTiledMapTile.
+ * Ref: https://libgdx.com/wiki/graphics/2d/tile-maps
  */
 public class Board {
     // Instance attributes
@@ -33,21 +36,41 @@ public class Board {
     private final Tile[] tiles;
 
     /**
-     * Tile height and width in world length (it is actually a square)
+     * Tile height and width in world length.
+     * Should be overwritten.
      */
-    public static final float TILE_HEIGHT = 1;
-    public static final float TILE_WIDTH = TILE_HEIGHT;
+    private Vector2 tileWorldDim = new Vector2(1, 1);
 
     /**
-     * Tile height and width in screen (pixel) length
+     * Tile height and width in screen (pixel) length.
+     * Should be overwritten.
      */
-    public static final int TILE_WIDTH_SCREEN = 128;
-    public static final int TILE_HEIGHT_SCREEN = TILE_WIDTH_SCREEN * 3 / 4;
+    private Vector2 tileScreenDim = new Vector2(128, 96);
 
     /**
      * Cache holding set of moonlight tiles, (n, m) is lit iff m*width + n is in moonlightTiles
      */
     private final IntSet moonlightTiles;
+
+    /**
+     * Used in editor
+     */
+    private PreviewTile previewTile;
+
+    public static class PreviewTile {
+        // Board (x, y)
+        int b_x;
+        int b_y;
+        // Preview texture
+        Texture texture;
+
+
+        public PreviewTile(int b_x, int b_y, Texture texture) {
+            this.b_x = b_x;
+            this.b_y = b_y;
+            this.texture = texture;
+        }
+    }
 
     /**
      * Creates a new board of the given size
@@ -62,7 +85,6 @@ public class Board {
         tiles = new Tile[width * height];
         for (int ii = 0; ii < tiles.length; ii++) {
             tiles[ii] = new Tile();
-
         }
     }
 
@@ -78,6 +100,29 @@ public class Board {
             return null;
         }
         return tiles[x * height + y];
+    }
+
+    /**
+     * Sets tile height and width in screen (pixel) length.
+     * Needed for drawing.
+     */
+    public void setTileScreenDim(int width, int height) {
+        this.tileScreenDim.set(width, height);
+    }
+
+    /**
+     * Sets tile height and width in world length.
+     * Needed for drawing.
+     */
+    public void setTileWorldDim(float width, float height) {
+        this.tileWorldDim.set(width, height);
+    }
+
+    /**
+     * @return tile height and width in world length.
+     */
+    public Vector2 getTileWorldDim() {
+        return this.tileWorldDim;
     }
 
     /**
@@ -114,11 +159,7 @@ public class Board {
         if (tile == null) {
             return null;
         }
-        /*if (tile.isLit()) {
-            return tile.getTileTextureLit();
-        }*/
-        // Commented the above out because we added ambient lighting. LMK if it should be changed back
-        return tile.getTileTextureUnlit();
+        return tile.getTileTexture();
     }
 
     /**
@@ -127,31 +168,39 @@ public class Board {
      * @param x The x index for the Tile cell
      * @param y The y index for the Tile cell
      */
-    public void setTileTexture(int x, int y, Texture unlitTex, Texture litTex) {
+    public void setTileTexture(int x, int y, Texture tex) {
         Tile tile = getTile(x, y);
         if (tile == null) {
             return;
         }
-        tile.setTileTextureUnlit(unlitTex);
-        tile.setTileTextureLit(litTex);
+        tile.setTileTexture(tex);
     }
 
     /**
      * Returns the board cell index for a world position.
-     * <p>
-     * While all positions are 2-dimensional, the dimensions to
-     * the board are symmetric. This allows us to use the same
-     * method to convert an x coordinate or a y coordinate to
-     * a cell index.
      *
      * @return the board cell index for a screen position.
      */
-    public int worldToBoardX(float x) {
-        return (int) (x / TILE_WIDTH);
+    public Vector2 worldToBoard(float x, float y) {
+        return new Vector2((int) (x / tileWorldDim.x), (int) (y / tileWorldDim.y));
     }
 
-    public int worldToBoardY(float y){
-        return (int) (y / TILE_HEIGHT);
+    /**
+     * Returns the board cell index for a world x-position.
+     *
+     * @return the board cell index for a world x-position.
+     */
+    public int worldToBoardX(float x) {
+        return (int) (x / tileWorldDim.x);
+    }
+
+    /**
+     * Returns the board cell index for a world x-position.
+     *
+     * @return the board cell index for a world x-position.
+     */
+    public int worldToBoardY(float y) {
+        return (int) (y / tileWorldDim.y);
     }
 
     /**
@@ -162,7 +211,8 @@ public class Board {
      * @return true if a world location is safe
      */
     public boolean isBoundsAtWorld(float x, float y) {
-        return inBounds(Math.round(worldToBoardX(x)), worldToBoardY(y));
+        Vector2 boardPos = worldToBoard(x, y);
+        return inBounds(Math.round(boardPos.x), Math.round(boardPos.y));
     }
 
     /**
@@ -190,8 +240,12 @@ public class Board {
     public void draw(GameCanvas canvas) {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                drawTile(x, y, canvas, Color.WHITE);
+                drawTile(x, y, canvas);
             }
+        }
+
+        if (this.previewTile != null) {
+            drawPreview(canvas);
         }
     }
 
@@ -201,12 +255,77 @@ public class Board {
      * @param x The x index for the Tile cell
      * @param y The y index for the Tile cell
      */
-    private void drawTile(int x, int y, GameCanvas canvas, Color tint) {
+    private void drawTile(int x, int y, GameCanvas canvas) {
+        // Used for level editor
+        if (getTileType(x, y) == Tile.TileType.EMPTY) {
+            return;
+        }
+
+        // if moonlight is not collectable, tint with a lighter color
         Texture tiletexture = getTileTexture(x, y);
+        if (isLit(x, y) && !isCollectable(x, y)) {
+            canvas.draw(
+                    tiletexture, Color.GREEN, tiletexture.getWidth() / 2, tiletexture.getHeight() / 2,
+                    canvas.WorldToScreenX(boardCenterToWorld(x, y).x), canvas.WorldToScreenY(boardCenterToWorld(x, y).y), 0.0f,
+                    tileScreenDim.x / tiletexture.getWidth(), tileScreenDim.y / tiletexture.getHeight()
+            );
+        } else {
+            canvas.draw(
+                    tiletexture, Color.WHITE, tiletexture.getWidth() / 2, tiletexture.getHeight() / 2,
+                    canvas.WorldToScreenX(boardCenterToWorld(x, y).x), canvas.WorldToScreenY(boardCenterToWorld(x, y).y), 0.0f,
+                    tileScreenDim.x / tiletexture.getWidth(), tileScreenDim.y / tiletexture.getHeight()
+            );
+        }
+    }
+
+    /**
+     * Draws red outline for tile placement. Used in level editor.
+     *
+     * @param canvas
+     */
+    public void drawOutline(GameCanvas canvas) {
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                canvas.drawRecOutline(
+                        canvas.WorldToScreenX(boardToWorldX(x)), canvas.WorldToScreenY(boardToWorldY(y)),
+                        tileScreenDim.x, tileScreenDim.y, Color.RED
+                );
+            }
+        }
+    }
+
+    /**
+     * Sets the preview tile. Used for the level editor.
+     *
+     * @param x       The x index for the Tile cell
+     * @param y       The y index for the Tile cell
+     * @param texture The texture used for preview
+     */
+    void setPreviewTile(int x, int y, Texture texture) {
+        if (!inBounds(x, y)) {
+            removePreview();
+            return;
+        }
+        this.previewTile = new PreviewTile(x, y, texture);
+    }
+
+    void removePreview() {
+        previewTile = null;
+    }
+
+    /**
+     * Draws a preview texture at tile position (x, y). Used for the level editor.
+     *
+     * @param canvas
+     */
+    private void drawPreview(GameCanvas canvas) {
+        Texture preview = this.previewTile.texture;
+        int x = this.previewTile.b_x;
+        int y = this.previewTile.b_y;
         canvas.draw(
-                tiletexture, Color.WHITE, tiletexture.getWidth() / 2, tiletexture.getHeight() / 2,
-                GameCanvas.WorldToScreenX(boardCenterToWorld(x, y).x), GameCanvas.WorldToScreenY(boardCenterToWorld(x, y).y), 0.0f,
-                TILE_WIDTH_SCREEN / tiletexture.getWidth(), TILE_HEIGHT_SCREEN / tiletexture.getHeight()
+                preview, EditorMode.SELECTED_COLOR, preview.getWidth() / 2, preview.getHeight() / 2,
+                canvas.WorldToScreenX(boardCenterToWorld(x, y).x), canvas.WorldToScreenY(boardCenterToWorld(x, y).y), 0.0f,
+                tileScreenDim.x / preview.getWidth(), tileScreenDim.y / preview.getHeight()
         );
     }
 
@@ -222,7 +341,23 @@ public class Board {
         if (!inBounds(x, y)) {
             return null;
         }
-        return new Vector2(x * TILE_WIDTH, y * TILE_HEIGHT);
+        return new Vector2(x * tileWorldDim.x, y * tileWorldDim.y);
+    }
+
+    /**
+     * @param x The x index for the Tile cell
+     * @return the world x-position coordinates of the bottom left corner.
+     */
+    public float boardToWorldX(int x) {
+        return x * tileWorldDim.x;
+    }
+
+    /**
+     * @param y The y index for the Tile cell
+     * @return the world y-position coordinates of the bottom left corner.
+     */
+    public float boardToWorldY(int y) {
+        return y * tileWorldDim.y;
     }
 
     /**
@@ -236,7 +371,7 @@ public class Board {
         if (!inBounds(x, y)) {
             return null;
         }
-        return boardToWorld(x, y).add(0.5f * TILE_WIDTH, 0.5f * TILE_HEIGHT);
+        return boardToWorld(x, y).add(0.5f * tileWorldDim.x, 0.5f * tileWorldDim.y);
     }
 
 
@@ -291,7 +426,6 @@ public class Board {
     /**
      * Sets a tile as lit or not.
      * <p>
-     * You should probably be calling setLit in LevelContainer instead if you want light to react as well.
      *
      * @param x The x index for the Tile cell
      * @param y The y index for the Tile cell
@@ -299,6 +433,11 @@ public class Board {
     public void setLit(int x, int y, boolean lit) {
         if (!inBounds(x, y)) {
             Gdx.app.error("Board", "Illegal tile " + x + "," + y, new IndexOutOfBoundsException());
+            return;
+        }
+        Tile t = getTile(x, y);
+        if (t.getSpotLight() == null) {
+            Gdx.app.error("Board", "This should never happen! Talk to me if this pops up for you.");
             return;
         }
         getTile(x, y).setLit(lit);
@@ -309,6 +448,63 @@ public class Board {
             moonlightTiles.remove(x + y * width);
         }
     }
+
+    /**
+     * Returns true if the moonlight tile is collectable.
+     * <p>
+     * A tile position that is not on the board will always evaluate to false.
+     *
+     * @param x The x index for the Tile cell
+     * @param y The y index for the Tile cell
+     * @return true if the moonlight tile is collectable.
+     */
+    public Boolean isCollectable(int x, int y) {
+        if (!inBounds(x, y)) {
+            Gdx.app.error("Board", "Illegal tile " + x + "," + y, new IndexOutOfBoundsException());
+            return false;
+        }
+        Tile t = getTile(x, y);
+
+        return !t.isCollected();
+    }
+
+    /**
+     * Sets a tile as collected but still lit.
+     * <p>
+     *
+     * @param x The x index for the Tile cell
+     * @param y The y index for the Tile cell
+     */
+    public void setCollected(int x, int y) {
+        if (!inBounds(x, y)) {
+            Gdx.app.error("Board", "Illegal tile " + x + "," + y, new IndexOutOfBoundsException());
+            return;
+        }
+        Tile t = getTile(x, y);
+        if (t.getSpotLight() == null) {
+            Gdx.app.error("Board", "This should never happen! Talk to me if this pops up for you.");
+            return;
+        }
+        if (getTile(x, y).isLit()) {
+            getTile(x, y).setCollected();
+        }
+    }
+
+    /**
+     * Attaches light to tile, represents the moonlight on the tile
+     * <p>
+     *
+     * @param x The x index for the Tile cell
+     * @param y The y index for the Tile cell
+     */
+    public void setSpotlight(int x, int y, PointLight light) {
+        if (!inBounds(x, y)) {
+            Gdx.app.error("Board", "Illegal tile " + x + "," + y, new IndexOutOfBoundsException());
+            return;
+        }
+        getTile(x, y).setSpotLight(light);
+    }
+
 
     /**
      * Returns the type of a tile.

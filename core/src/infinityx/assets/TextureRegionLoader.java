@@ -26,39 +26,53 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 
 /**
  * This class is an {@link AssetLoader} to load {@link TextureRegion} assets.
- *
+ * <p>
  * A texture region asset should be specified by filename:name where name is a unique
  * name for the region.
  */
 public class TextureRegionLoader extends AsynchronousAssetLoader<TextureRegion, TextureRegionLoader.TextureRegionParameters> {
-    /** A reference to the file handle resolver (inaccessible in parent class) */
+    /**
+     * A reference to the file handle resolver (inaccessible in parent class)
+     */
     protected FileHandleResolver resolver;
-    /** The asynchronously read TextureRegion */
+    /**
+     * The asynchronously read TextureRegion
+     */
     private TextureRegion cachedRegion;
 
     /**
      * The definable parameters for a {@link TextureRegion}.
-     * 
+     * <p>
      * A texture region is a texture plus a rectangle.  This parameter defines both those
      * values (through a symbolic link to the texture in this manager).  A texture region
      * is fully defined  by these parameters.  The file name is just a symbolic reference.
-     */ 
+     */
     public static class TextureRegionParameters extends AssetLoaderParameters<TextureRegion> {
-        /** The reference to the texture in the asset manager */
+        /**
+         * The reference to the texture in the asset manager
+         */
         public String source;
-        /** The starting x-coordinate for the texture region (measured in pixels) */
+        /**
+         * The starting x-coordinate for the texture region (measured in pixels)
+         */
         public int x = 0;
-        /** The starting y-coordinate for the texture region (measured in pixels)  */
+        /**
+         * The starting y-coordinate for the texture region (measured in pixels)
+         */
         public int y = 0;
-        /** The pixel width of the texture region; use -1 for "remaining" width */
-        public int width  = -1;
-        /** The pixel height of the texture region; use -1 for "remaining" height */
+        /**
+         * The pixel width of the texture region; use -1 for "remaining" width
+         */
+        public int width = -1;
+        /**
+         * The pixel height of the texture region; use -1 for "remaining" height
+         */
         public int height = -1;
 
         /**
          * Creates texture region parameters for the give texture.
          *
-         * @param fileName    The file for the parent texture
+         * @param fileName The file for the parent texture
          */
         public TextureRegionParameters(String fileName) {
             this.source = fileName;
@@ -66,12 +80,12 @@ public class TextureRegionLoader extends AsynchronousAssetLoader<TextureRegion, 
 
         /**
          * Creates texture region parameters with the given values.
-         *
+         * <p>
          * All values are measured in pixels (of the source file).
          *
-         * @param fileName  The file for the parent texture
-         * @param width     The width of the texture region
-         * @param height    The height of the texture region
+         * @param fileName The file for the parent texture
+         * @param width    The width of the texture region
+         * @param height   The height of the texture region
          */
         public TextureRegionParameters(String fileName, int width, int height) {
             this.source = fileName;
@@ -79,14 +93,14 @@ public class TextureRegionLoader extends AsynchronousAssetLoader<TextureRegion, 
 
         /**
          * Creates texture region parameters with the given values.
-         *
+         * <p>
          * All values are measured in pixels (of the source file).
          *
-         * @param fileName  The file for the parent texture
-         * @param x         The starting x-coordinate of the texture region
-         * @param y         The starting y-coordinate of the texture region
-         * @param width     The width of the texture region
-         * @param height    The height of the texture region
+         * @param fileName The file for the parent texture
+         * @param x        The starting x-coordinate of the texture region
+         * @param y        The starting y-coordinate of the texture region
+         * @param width    The width of the texture region
+         * @param height   The height of the texture region
          */
         public TextureRegionParameters(String fileName, int x, int y, int width, int height) {
             this.source = fileName;
@@ -104,34 +118,34 @@ public class TextureRegionLoader extends AsynchronousAssetLoader<TextureRegion, 
     /**
      * Creates a new TextureRegionLoader with the given file resolver
      *
-     * @param resolver    The file resolver
+     * @param resolver The file resolver
      */
-    public TextureRegionLoader (FileHandleResolver resolver) {
+    public TextureRegionLoader(FileHandleResolver resolver) {
         super(resolver);
         this.resolver = resolver;
     }
 
-    /** 
+    /**
      * Returns the {@link TextureRegion} instance currently loaded by this loader.
-     *
+     * <p>
      * If nothing has been loaded, this returns {@code null}.
      *
      * @return the {@link TextureRegion} instance currently loaded by this loader.
      */
-    protected TextureRegion getLoadedRegion () {
+    protected TextureRegion getLoadedRegion() {
         return cachedRegion;
     }
 
-    /** 
+    /**
      * Loads thread-safe part of the asset and injects any dependencies into the AssetManager.
-     *
+     * <p>
      * This is used to load non-OpenGL parts of the asset that do not require the context
      * of the main thread.
      *
-     * @param manager   The asset manager
-     * @param fileName  The name of the asset to load
-     * @param file      The resolved file to load
-     * @param params    The parameters to use for loading the asset 
+     * @param manager  The asset manager
+     * @param fileName The name of the asset to load
+     * @param file     The resolved file to load
+     * @param params   The parameters to use for loading the asset
      */
     @Override
     public void loadAsync(AssetManager manager, String fileName, FileHandle file, TextureRegionParameters params) {
@@ -139,16 +153,16 @@ public class TextureRegionLoader extends AsynchronousAssetLoader<TextureRegion, 
         cachedRegion = load(texture, params);
     }
 
-   /** 
+    /**
      * Loads the main thread part of the asset.
-     *
+     * <p>
      * This is used to load OpenGL parts of the asset that require the context of the
      * main thread.
      *
-     * @param manager   The asset manager
-     * @param fileName  The name of the asset to load
-     * @param file      The resolved file to load
-     * @param params    The parameters to use for loading the asset 
+     * @param manager  The asset manager
+     * @param fileName The name of the asset to load
+     * @param file     The resolved file to load
+     * @param params   The parameters to use for loading the asset
      */
     @Override
     public TextureRegion loadSync(AssetManager manager, String fileName, FileHandle file, TextureRegionParameters params) {
@@ -159,64 +173,61 @@ public class TextureRegionLoader extends AsynchronousAssetLoader<TextureRegion, 
 
     /**
      * Resolves the file for this texture region.
-     *
+     * <p>
      * A texture region asset should be specified by filename:name where name is a unique
      * name for the region.
      *
-     * @param fileName  The file name to resolve
-     *
+     * @param fileName The file name to resolve
      * @return handle to the file, as resolved by the file resolver.
      */
     @Override
-    public FileHandle resolve (String fileName) {
+    public FileHandle resolve(String fileName) {
         int suffix = fileName.lastIndexOf(':');
         if (suffix == -1) {
-            throw new GdxRuntimeException( "Texture region file name must end in ':name'." );
+            throw new GdxRuntimeException("Texture region file name must end in ':name'.");
         }
-        String prefix = fileName.substring( 0,suffix );
+        String prefix = fileName.substring(0, suffix);
         return resolver.resolve(prefix);
     }
 
-    /** 
-     * Returns the other assets this asset requires to be loaded first. 
-     * 
+    /**
+     * Returns the other assets this asset requires to be loaded first.
+     * <p>
      * This method may be called on a thread other than the GL thread. It may return
      * null if there are no dependencies.
      *
-     * @param fileName  The name of the asset to load
-     * @param file      The resolved file to load
-     * @param params parameters for loading the asset
-     *
-     * @return the other assets this asset requires to be loaded first. 
+     * @param fileName The name of the asset to load
+     * @param file     The resolved file to load
+     * @param params   parameters for loading the asset
+     * @return the other assets this asset requires to be loaded first.
      */
     @Override
-    public Array<AssetDescriptor> getDependencies (String fileName, FileHandle file, TextureRegionParameters params) {
+    public Array<AssetDescriptor> getDependencies(String fileName, FileHandle file, TextureRegionParameters params) {
         if (params == null) {
             int suffix = fileName.lastIndexOf(':');
-            String prefix = (suffix == -1) ? fileName : fileName.substring( 0,suffix );
-            params = new TextureRegionParameters( prefix );
+            String prefix = (suffix == -1) ? fileName : fileName.substring(0, suffix);
+            params = new TextureRegionParameters(prefix);
         }
         Array<AssetDescriptor> deps = new Array<AssetDescriptor>(1);
-        deps.add(new AssetDescriptor<Texture>( params.source, Texture.class));
+        deps.add(new AssetDescriptor<Texture>(params.source, Texture.class));
         return deps;
     }
 
-    /** 
+    /**
      * Loads a texture region from the given texture and parameters.
-     *
+     * <p>
      * If params is null, the texture region will be the entire texture.
      *
-     * @param texture   The parent texture
-     * @param params    The definition of the texture region.
-     *
+     * @param texture The parent texture
+     * @param params  The definition of the texture region.
      * @return a texture region for the given texture and parameters.
      */
-    public TextureRegion load (Texture texture, TextureRegionParameters params) {
+    public TextureRegion load(Texture texture, TextureRegionParameters params) {
         if (params == null) {
             return new TextureRegion(texture);
         }
-        int width  = params.width  < 0 ? texture.getWidth()-params.x  : params.width;
-        int height = params.height < 0 ? texture.getHeight()-params.y : params.height;
-        return new TextureRegion(texture,params.x,params.y,width,height);
+        int width = params.width < 0 ? texture.getWidth() - params.x : params.width;
+        int height = params.height < 0 ? texture.getHeight() - params.y : params.height;
+        return new TextureRegion(texture, params.x, params.y, width, height);
     }
 }
