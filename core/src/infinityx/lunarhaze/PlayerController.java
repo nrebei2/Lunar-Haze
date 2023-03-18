@@ -84,10 +84,16 @@ public class PlayerController {
         return player.getStealth();
     }
 
+    /**
+     * Get whether player achieves the condition to win.
+     */
     public Boolean isGameWon() {
         return gameWon;
     }
 
+    /**
+     * Set whether player achieves the condition to win.
+     */
     public void setGameWon(Boolean value) {
         gameWon = value;
     }
@@ -180,10 +186,12 @@ public class PlayerController {
         resolveSealthBar(input);
     }
 
+    /**
+     * Let the player lose 1 HP point. This function should be called by CollisionController
+     * when the player collides with one of the enemies.
+     */
     public void loseHp() {
         player.setHp(player.getHp() - 1);
     }
-
-
 
 }
