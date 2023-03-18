@@ -63,10 +63,6 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
      * Reference to texture origin
      */
     protected Vector2 origin;
-    /**
-     * Whether or not the object should be removed at next timestep.
-     */
-    protected boolean destroyed;
 
     /**
      * FilmStrip pointer to the texture region
@@ -94,8 +90,6 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
     public GameObject(float x, float y) {
         super(x, y, 1, 1);
         setFixedRotation(true);
-
-        destroyed = false;
     }
 
     /**
@@ -166,45 +160,6 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
 
     public FilmStrip getTexture() {
         return filmstrip;
-    }
-
-    /**
-     * Returns the shadowposition of this object (e.g. location of the center pixel of the shadow)
-     * <p>
-     * The value returned is a reference to the position vector, which may be
-     * modified freely.
-     *
-     * @return the shadowposition of this object
-     */
-    public Vector2 getShadowposition() {
-        return this.getPosition();
-    }
-
-
-    /**
-     * Returns true if this object is destroyed.
-     * <p>
-     * Objects are not removed immediately when destroyed.  They are garbage collected
-     * at the end of the frame.  This tells us whether the object should be garbage
-     * collected at the frame end.
-     *
-     * @return true if this object is destroyed
-     */
-    public boolean isDestroyed() {
-        return destroyed;
-    }
-
-    /**
-     * Sets whether this object is destroyed.
-     * <p>
-     * Objects are not removed immediately when destroyed.  They are garbage collected
-     * at the end of the frame.  This tells us whether the object should be garbage
-     * collected at the frame end.
-     *
-     * @param value whether this object is destroyed
-     */
-    public void setDestroyed(boolean value) {
-        destroyed = value;
     }
 
     /**

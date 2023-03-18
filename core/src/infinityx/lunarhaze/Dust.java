@@ -4,8 +4,13 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Pool;
+import infinityx.assets.AssetDirectory;
+import infinityx.lunarhaze.physics.BoxObstacle;
 import infinityx.util.Drawable;
+import infinityx.util.FilmStrip;
 
 public class Dust implements Drawable {
     /** The particle position in world coordinates */
@@ -15,7 +20,7 @@ public class Dust implements Drawable {
     private Vector2 velocity;
 
     /** The current rotation of texture, affected by rps */
-    private float textureRot = 0;
+    private float textureRot;
 
     /** Rotations per second */
     private float rps;
@@ -26,10 +31,12 @@ public class Dust implements Drawable {
     public enum DustState {
         APPEARING, ALIVE, DECAYING
     }
-    private DustState state = DustState.APPEARING;
+    private DustState state;
 
-    private float elapsed = 0;
-    private static final float FADE_TIME = 0.4f;
+
+    /** Used for fading in/out */
+    private float elapsed;
+    private static final float FADE_TIME = 5f;
 
     /**
      * Easing in function, easing out is reversed
@@ -39,15 +46,22 @@ public class Dust implements Drawable {
     /**
      * alpha tint, corresponds to state
      */
-    private float alpha = 0;
+    private float alpha;
 
     /** May be null */
     private Texture texture;
 
+    /** How much the texture of this object should be scaled when drawn */
+    private float textureScale;
+
+
     /**
-     * Whether or not the object should be removed at next timestep.
+     * Whether or not the object should be reset at next timestep.
      */
-    protected boolean destroyed = false;
+    private boolean destroyed = false;
+
+    /** Scale of specific dust particle (on top of texture scale) */
+    private float scale;
 
     /**
      * Returns the position of this particle.
@@ -119,6 +133,12 @@ public class Dust implements Drawable {
         this.texture = texture;
     }
 
+    /** sets texture scale for drawing */
+    public void setTextureScale(float scale) {this.textureScale = scale;}
+
+    /** Set scale which further scales this dust particle for drawing */
+    public void setScale(float scale) {this.scale = scale;}
+
     /** Once called this particle will begin decaying (disappearing) then become destroyed. */
     public void beginDecay() {
         this.state = DustState.DECAYING;
@@ -132,7 +152,7 @@ public class Dust implements Drawable {
     }
 
     /**
-     * Creates a new (unitialized) Particle.
+     * Creates a new (uninitialized) Particle.
      *
      * The position and velocity are initially 0.  To initialize
      * the particle, use the appropriate setters.
@@ -140,6 +160,7 @@ public class Dust implements Drawable {
     public Dust() {
         position = new Vector2();
         velocity = new Vector2();
+        reset();
     }
 
     /**
@@ -167,7 +188,7 @@ public class Dust implements Drawable {
                 }
                 break;
         }
-        position.add(velocity.scl(delta));
+        position.add(velocity.x * delta, velocity.y * delta);
         textureRot += rps * delta;
     }
 
@@ -179,6 +200,8 @@ public class Dust implements Drawable {
         this.textureRot = 0;
         this.alpha = 0;
         this.elapsed = 0;
+        this.destroyed = false;
+        this.scale = 1;
     }
 
     /**
@@ -198,8 +221,8 @@ public class Dust implements Drawable {
      */
     @Override
     public void draw(GameCanvas canvas) {
-            canvas.draw(texture, alpha, texture.getWidth() / 2, texture.getHeight() / 2,
-                    canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y), textureRot,
-                    0.1f, 0.1f);
+        canvas.draw(texture, alpha, texture.getWidth() / 2, texture.getHeight() / 2,
+                canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y), textureRot,
+                textureScale * scale, textureScale * scale);
     }
 }
