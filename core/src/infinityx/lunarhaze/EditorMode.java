@@ -5,17 +5,10 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import infinityx.assets.AssetDirectory;
 import infinityx.util.ScreenObservable;
-
-import java.util.ArrayList;
 
 public class EditorMode extends ScreenObservable implements Screen, InputProcessor {
     /**
@@ -44,14 +37,15 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
     /**
      * type Selected :=
-     *  | Tile of (String, Texture)
-     *  | Player of Texture
-     *  | Enemy of (String, Texture)
-     *  | Object of (String, Texture, float)
+     * | Tile of (String, Texture)
+     * | Player of Texture
+     * | Enemy of (String, Texture)
+     * | Object of (String, Texture, float)
      */
     abstract class Selected {
         public Texture texture;
     }
+
     class Tile extends Selected {
         public Tile(Texture texture, String type) {
             this.type = type;
@@ -60,11 +54,13 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
         public String type;
     }
+
     class Player extends Selected {
         public Player(Texture texture) {
             this.texture = texture;
         }
     }
+
     class Enemy extends Selected {
         public Enemy(Texture texture, String type) {
             this.type = type;
@@ -73,6 +69,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
         public String type;
     }
+
     class SceneObject extends Selected {
         public SceneObject(Texture texture, String type) {
             this.type = type;
@@ -83,6 +80,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         public String type;
         public float scale;
     }
+
     /**
      * What is on my cursor right now?
      */
@@ -139,11 +137,12 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
     private void placeTile() {
         board.setTileTexture(
-                (int)mouseBoard.x, (int)mouseBoard.y,
+                (int) mouseBoard.x, (int) mouseBoard.y,
                 selected.texture
         );
-        board.setTileType((int)mouseBoard.x, (int)mouseBoard.y, infinityx.lunarhaze.Tile.TileType.Road);
+        board.setTileType((int) mouseBoard.x, (int) mouseBoard.y, infinityx.lunarhaze.Tile.TileType.Road);
     }
+
     private void placeSelection() {
         if (selected instanceof Tile) {
             board.removePreview();

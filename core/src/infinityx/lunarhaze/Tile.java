@@ -27,7 +27,9 @@ public class Tile {
      */
     private boolean visited = false;
 
-    /** Use for debugging */
+    /**
+     * Use for debugging
+     */
     private boolean visible = false;
 
     /**
@@ -42,7 +44,9 @@ public class Tile {
      **/
     private Texture TileTexture;
 
-    /** The moonlight pointing on this tile, possibly null */
+    /**
+     * The moonlight pointing on this tile, possibly null
+     */
     private PointLight spotLight;
 
     // No need for constructor, levelContainer will set attributes of all tiles through Board
@@ -108,6 +112,7 @@ public class Tile {
     public Boolean isCollected() {
         return collected;
     }
+
     public void setCollected() {
         collected = true;
     }
@@ -123,7 +128,9 @@ public class Tile {
         return spotLight;
     }
 
-    /** Use for debugging */
+    /**
+     * Use for debugging
+     */
     public void setVisible(boolean visible) {
         this.visible = visible;
     }

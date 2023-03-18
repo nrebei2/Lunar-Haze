@@ -23,13 +23,14 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 
 /**
  * Primary view class for the game, abstracting the basic graphics calls.
@@ -120,7 +121,9 @@ public class GameCanvas {
     int height;
 
     // CACHE OBJECTS
-    /** Color cache for setting alpha on sprites */
+    /**
+     * Color cache for setting alpha on sprites
+     */
     private Color alphaCache;
     /**
      * Affine cache for current sprite to draw
@@ -162,6 +165,7 @@ public class GameCanvas {
     public float WorldToScreenX(float w_x) {
         return w_x * worldToScreen.x;
     }
+
     public float WorldToScreenY(float w_y) {
         return w_y * worldToScreen.y;
     }
@@ -173,6 +177,7 @@ public class GameCanvas {
     public float ScreenToWorldX(float s_x) {
         return (s_x - viewCache.x) / worldToScreen.x;
     }
+
     /**
      * No need to flip y-axis
      */
@@ -907,7 +912,7 @@ public class GameCanvas {
         barRenderer.setColor(Color.YELLOW);
         x = getWidth() - width;
         y = getHeight() - layout.height;
-        barRenderer.rect(x, y, width * hp/100, height);
+        barRenderer.rect(x, y, width * hp / 100, height);
         barRenderer.end();
 
         barRenderer.begin(ShapeRenderer.ShapeType.Line);

@@ -1,6 +1,5 @@
 package infinityx.lunarhaze;
 
-import box2dLight.PointLight;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -96,16 +95,24 @@ public class LevelContainer {
     private Array<Drawable> drawables;
     private final DrawableCompare drawComp = new DrawableCompare();
 
-    /** Constants for enemy initialization */
+    /**
+     * Constants for enemy initialization
+     */
     JsonValue enemiesJson;
 
-    /** Constants for scene object initialization */
+    /**
+     * Constants for scene object initialization
+     */
     JsonValue objectJson;
 
-    /** Constants for player initialization */
+    /**
+     * Constants for player initialization
+     */
     JsonValue playerJson;
 
-    /** is the player hidden */
+    /**
+     * is the player hidden
+     */
     private boolean hidden;
 
     /**
@@ -145,8 +152,8 @@ public class LevelContainer {
      * P
      */
     public void flush() {
-       initialize();
-       // The player object can be carried over!
+        initialize();
+        // The player object can be carried over!
     }
 
     public RayHandler getRayHandler() {
@@ -173,9 +180,9 @@ public class LevelContainer {
     }
 
     /**
-     * @param type type of Enemy to append to enemy list (e.g. villager)
-     * @param x world x-position
-     * @param y world y-position
+     * @param type   type of Enemy to append to enemy list (e.g. villager)
+     * @param x      world x-position
+     * @param y      world y-position
      * @param patrol patrol path for this enemy
      * @return Enemy added with updated id
      */
@@ -285,9 +292,9 @@ public class LevelContainer {
     }
 
     /**
-     * @param type type of scene object to add (e.g. house)
-     * @param x world x-position
-     * @param y world y-position
+     * @param type  type of scene object to add (e.g. house)
+     * @param x     world x-position
+     * @param y     world y-position
      * @param scale scale of object
      * @return scene object added
      */
@@ -303,15 +310,17 @@ public class LevelContainer {
 
     /**
      * Set view translation
+     *
      * @param x x screen units along x-axis
      * @param y y screen units along y-axis
      */
     public void setViewTranslation(float x, float y) {
-        view.set( x, y );
+        view.set(x, y);
     }
 
     /**
      * Translate the screen view
+     *
      * @param x x screen units along x-axis
      * @param y y screen units along y-axis
      */

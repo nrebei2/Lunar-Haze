@@ -69,7 +69,9 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
      */
     private FilmStrip filmstrip;
 
-    /** How much the texture of this object should be scaled when drawn */
+    /**
+     * How much the texture of this object should be scaled when drawn
+     */
     private float textureScale;
 
     /**
@@ -95,7 +97,7 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
     /**
      * Further parses specific GameObject (collider info, etc.) attributes.
      *
-     * @param json Json tree holding information
+     * @param json      Json tree holding information
      * @param container LevelContainer which this player is placed in
      */
     public void initialize(AssetDirectory directory, JsonValue json, LevelContainer container) {

@@ -80,8 +80,9 @@ public class Werewolf extends GameObject {
      */
     private boolean canMove;
 
-    /** Controls how long the werewolf gets knocked back by an attack and the window of the
-     *  damage animation.
+    /**
+     * Controls how long the werewolf gets knocked back by an attack and the window of the
+     * damage animation.
      */
     private float lockoutTime;
 
@@ -179,7 +180,9 @@ public class Werewolf extends GameObject {
         hp = value;
     }
 
-    public void initLockout(float value) { lockout = value; }
+    public void initLockout(float value) {
+        lockout = value;
+    }
 
     /**
      * @return Point light on player
@@ -267,6 +270,7 @@ public class Werewolf extends GameObject {
 
     /**
      * Deep clones player, can be used independently of this
+     *
      * @return new player
      */
     public Werewolf deepClone(LevelContainer container) {
@@ -275,7 +279,7 @@ public class Werewolf extends GameObject {
         werewolf.setTexture(getTexture());
         werewolf.initHp(maxHp);
         werewolf.initLockout(lockout);
-        werewolf.setOrigin((int)origin.x, (int)origin.y);
+        werewolf.setOrigin((int) origin.x, (int) origin.y);
         PointLight spotLight = new PointLight(
                 container.getRayHandler(), this.spotLight.getRayNum(), this.spotLight.getColor(), this.spotLight.getDistance(),
                 0, 0
@@ -310,7 +314,7 @@ public class Werewolf extends GameObject {
     public void update(float delta) {
         // get the current velocity of the player's Box2D body
         Vector2 velocity = body.getLinearVelocity();
-        if(canMove) {
+        if (canMove) {
 
             // update the velocity based on the input from the player
             velocity.x = movementH * speed;
@@ -318,8 +322,7 @@ public class Werewolf extends GameObject {
 
             // set the updated velocity to the player's Box2D body
             body.setLinearVelocity(velocity);
-        }
-        else if(lockoutTime >= lockout) {
+        } else if (lockoutTime >= lockout) {
             canMove = true;
             lockoutTime = 0f;
         } else {

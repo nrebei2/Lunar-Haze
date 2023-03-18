@@ -59,7 +59,8 @@ public class Board {
 
     public static class PreviewTile {
         // Board (x, y)
-        int b_x; int b_y;
+        int b_x;
+        int b_y;
         // Preview texture
         Texture texture;
 
@@ -279,6 +280,7 @@ public class Board {
 
     /**
      * Draws red outline for tile placement. Used in level editor.
+     *
      * @param canvas
      */
     public void drawOutline(GameCanvas canvas) {
@@ -294,8 +296,9 @@ public class Board {
 
     /**
      * Sets the preview tile. Used for the level editor.
-     * @param x The x index for the Tile cell
-     * @param y The y index for the Tile cell
+     *
+     * @param x       The x index for the Tile cell
+     * @param y       The y index for the Tile cell
      * @param texture The texture used for preview
      */
     void setPreviewTile(int x, int y, Texture texture) {
@@ -312,6 +315,7 @@ public class Board {
 
     /**
      * Draws a preview texture at tile position (x, y). Used for the level editor.
+     *
      * @param canvas
      */
     private void drawPreview(GameCanvas canvas) {
@@ -481,7 +485,7 @@ public class Board {
             Gdx.app.error("Board", "This should never happen! Talk to me if this pops up for you.");
             return;
         }
-        if (getTile(x, y).isLit()){
+        if (getTile(x, y).isLit()) {
             getTile(x, y).setCollected();
         }
     }

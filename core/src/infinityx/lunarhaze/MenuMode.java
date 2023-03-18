@@ -132,7 +132,7 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
     private void draw() {
         canvas.begin();
         Color alphaTint = Color.WHITE;
-        canvas.drawOverlay(background,alphaTint,true);
+        canvas.drawOverlay(background, alphaTint, true);
 //        canvas.draw(background, 0, 0);
         Color tint = (pressState == 1 ? Color.GRAY : Color.WHITE);
         canvas.draw(playButton, tint, playButton.getWidth() / 2, playButton.getHeight() / 2,

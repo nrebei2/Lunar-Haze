@@ -8,9 +8,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.IntArray;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
-import infinityx.lunarhaze.entity.Enemy;
-import infinityx.lunarhaze.entity.SceneObject;
-import infinityx.lunarhaze.entity.Werewolf;
 
 import java.util.ArrayList;
 

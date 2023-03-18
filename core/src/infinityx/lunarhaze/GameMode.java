@@ -4,13 +4,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
-import infinityx.lunarhaze.entity.Werewolf;
 import infinityx.util.ScreenObservable;
 
 /**
@@ -233,13 +231,11 @@ public class GameMode extends ScreenObservable implements Screen {
     }
 
     /**
-     *
      * Draw the status of this player mode.
      * <p>
      * We prefer to separate update and draw from one another as separate methods, instead
      * of using the single render() method that LibGDX does.  We will talk about why we
      * prefer this in lecture.
-     *
      */
     public void draw(float delta) {
         canvas.clear();

@@ -165,13 +165,14 @@ public class Enemy extends GameObject {
 
     /**
      * Deep clones enemy, can be used independently of this
+     *
      * @return new enemy
      */
     public Enemy deepClone(LevelContainer container) {
         Enemy enemy = new Enemy();
         enemy.setSpeed(speed);
         enemy.setTexture(getTexture());
-        enemy.setOrigin((int)origin.x, (int)origin.y);
+        enemy.setOrigin((int) origin.x, (int) origin.y);
         ConeSource flashLight = new ConeSource(
                 container.getRayHandler(), this.flashlight.getRayNum(), this.flashlight.getColor(), this.flashlight.getDistance(),
                 0, 0, this.flashlight.getDirection(), this.flashlight.getConeDegree()
@@ -239,13 +240,21 @@ public class Enemy extends GameObject {
         flashlight.setActive(on);
     }
 
-    public float getAttackKnockback() { return attackKnockback; }
+    public float getAttackKnockback() {
+        return attackKnockback;
+    }
 
-    public float getAttackDamage() { return attackDamage; }
+    public float getAttackDamage() {
+        return attackDamage;
+    }
 
-    public void setAttackKnockback(float knockback) { attackKnockback = knockback; }
+    public void setAttackKnockback(float knockback) {
+        attackKnockback = knockback;
+    }
 
-    public void setAttackDamage(float dmg) { attackDamage = dmg; }
+    public void setAttackDamage(float dmg) {
+        attackDamage = dmg;
+    }
 
     /**
      * Updates the animation frame and position of this enemy.
