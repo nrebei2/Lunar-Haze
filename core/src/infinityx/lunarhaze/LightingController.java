@@ -1,6 +1,7 @@
 package infinityx.lunarhaze;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.utils.Pool;
 import infinityx.lunarhaze.entity.EnemyList;
 
 public class LightingController {
@@ -10,6 +11,8 @@ public class LightingController {
     private final EnemyList enemies;
 
     private final Board board;
+
+    private DustPool dustPool;
 
     /**
      * TODO: This is a controller class, so it should handle interactions between lights and objects
@@ -21,6 +24,8 @@ public class LightingController {
     public LightingController(EnemyList enemies, Board board) {
         this.enemies = enemies;
         this.board = board;
+        dustPool = new DustPool(100);
+        //dustPool.
     }
 
 }

@@ -20,7 +20,8 @@
     "startframe": 0,
     "texture": {
       "name": "villager.movement",
-      "origin": [75, 22]
+      "origin": [75, 22],
+      "scale": 1
     },
     "attack": {
       "knockback": 3.0,

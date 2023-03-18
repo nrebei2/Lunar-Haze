@@ -161,7 +161,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         level = LevelParser.LevelParser().loadEmpty();
         board = level.getBoard();
         selected = new Tile(directory.getEntry("land1-unlit", Texture.class), "land");
-        selected = new Player(level.getPlayer().getTexture().getTexture());
+        //selected = new Player(level.getPlayer().getTexture().getTexture());
         Gdx.input.setInputProcessor(this);
     }
 

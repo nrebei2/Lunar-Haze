@@ -119,7 +119,7 @@
   "jsons": {
     "levels": "jsons/levels.json",
     "player": "jsons/player.json",
-    "board": "jsons/board.json",
+    "dimensions": "jsons/dimensions.json",
     "objects": "jsons/objects.json",
     "enemies": "jsons/enemies.json",
     "input": "jsons/input.json"

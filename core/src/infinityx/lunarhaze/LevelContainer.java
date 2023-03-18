@@ -316,6 +316,8 @@ public class LevelContainer {
      * @param canvas The drawing context
      */
     public void drawLevel(GameCanvas canvas) {
+
+        //System.out.printf("Width: %d, Height: %d\n", Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         canvas.beginT(view.x, view.y);
 
         // Debug prints

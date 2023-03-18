@@ -1,5 +1,11 @@
 {
   "house": {
+    "texture": {
+      "name": "house.static",
+      "origin": [3, 10],
+      "scale": 1,
+      "positioned": "bottom-left"
+    },
     "bodytype": "static",
     "collider": {
       "width": 0.75,
@@ -8,12 +14,7 @@
     "density": 0.0,
     "friction": 0.0,
     "restitution": 0.0,
-    "damping": 0.0,
-    "texture": {
-      "name": "house.static",
-      "origin": [3, 10],
-      "positioned": "bottom-left"
-    }
+    "damping": 0.0
   },
   "tree": {
     "bodytype": "static",

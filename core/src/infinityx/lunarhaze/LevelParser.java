@@ -57,9 +57,9 @@ public class LevelParser {
      * @param canvas
      */
     public void loadConstants(AssetDirectory directory, GameCanvas canvas) {
-        JsonValue boardJson = directory.getEntry("board", JsonValue.class);
-        wSize = boardJson.get("tileWorldSize").asFloatArray();
-        sSize = boardJson.get("tileScreenSize").asIntArray();
+        JsonValue dimensions = directory.getEntry("dimensions", JsonValue.class);
+        wSize = dimensions.get("tileWorldSize").asFloatArray();
+        sSize = dimensions.get("tileScreenSize").asIntArray();
 
         canvas.setWorldToScreen(new Vector2(sSize[0] / wSize[0], sSize[1] / wSize[1]));
 

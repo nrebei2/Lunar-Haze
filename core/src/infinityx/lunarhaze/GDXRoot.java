@@ -13,7 +13,7 @@ public class GDXRoot extends Game implements ScreenObserver {
     // Multiple Modes/Screens (GameMode, LoadingMode, etc.) with GDXRoot handling switching the scenes
 
     /**
-     * AssetManager to load game assets (textures, sounds, etc.)
+     *  AssetManager to load game assets (textures, sounds, etc.)
      */
     AssetDirectory directory;
     /**

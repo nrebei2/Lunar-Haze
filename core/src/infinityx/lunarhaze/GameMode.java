@@ -233,11 +233,13 @@ public class GameMode extends ScreenObservable implements Screen {
     }
 
     /**
+     *
      * Draw the status of this player mode.
      * <p>
      * We prefer to separate update and draw from one another as separate methods, instead
      * of using the single render() method that LibGDX does.  We will talk about why we
      * prefer this in lecture.
+     *
      */
     public void draw(float delta) {
         canvas.clear();

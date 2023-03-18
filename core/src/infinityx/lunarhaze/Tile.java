@@ -27,6 +27,9 @@ public class Tile {
      */
     private boolean visited = false;
 
+    /** Use for debugging */
+    private boolean visible = false;
+
     /**
      * Is the moonlight collected?
      */
@@ -120,8 +123,13 @@ public class Tile {
         return spotLight;
     }
 
+    /** Use for debugging */
     public void setVisible(boolean visible) {
         this.visible = visible;
+    }
+
+    public boolean getVisible() {
+        return this.visible;
     }
 
     /**
