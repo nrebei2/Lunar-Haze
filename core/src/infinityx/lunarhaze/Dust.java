@@ -29,7 +29,7 @@ public class Dust implements Drawable {
     private DustState state = DustState.APPEARING;
 
     private float elapsed = 0;
-    private static final float FADE_TIME = 2;
+    private static final float FADE_TIME = 0.4f;
 
     /**
      * Easing in function, easing out is reversed
@@ -165,13 +165,14 @@ public class Dust implements Drawable {
                 if (outProg == 1f) {
                     this.destroyed = true;
                 }
+                break;
         }
         position.add(velocity.scl(delta));
         textureRot += rps * delta;
     }
 
     /**
-     * Resets the object for reuse. Object references should be nulled and fields may be set to default values.
+     * Resets the object for reuse.
      */
     public void reset() {
         this.state = DustState.APPEARING;
@@ -199,6 +200,6 @@ public class Dust implements Drawable {
     public void draw(GameCanvas canvas) {
             canvas.draw(texture, alpha, texture.getWidth() / 2, texture.getHeight() / 2,
                     canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y), textureRot,
-                    1, 1);
+                    0.1f, 0.1f);
     }
 }

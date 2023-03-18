@@ -41,7 +41,7 @@ public class LightingController {
         dustPools = new IntMap<>();
         for (int i = 0; i < board.getWidth(); i++) {
             for (int j = 0; j < board.getHeight(); j++) {
-                if (board.isCollectable(i, j)) {
+                if (board.isCollectable(i, j) && board.isLit(i, j)) {
                     Dust[] dusts = new Dust[POOL_CAPACITY];
                     for(int ii = 0; ii < POOL_CAPACITY; ii++) {
                         Dust dust = new Dust();
@@ -52,6 +52,7 @@ public class LightingController {
                     dustPools.put(map_pos, dusts);
 
                     // add to level container so they draw
+                    System.out.println("Adding pool");
                     container.addDrawables(dustPools.get(map_pos));
                 }
             }
@@ -62,12 +63,14 @@ public class LightingController {
      * Begin decaying all particles that stray away from its assigned board tile.
      * Reinitialize all dust particles set to destroy.
      */
-    public void updateDust() {
+    public void updateDust(float delta) {
         for (IntMap.Entry<Dust[]> entry: dustPools) {
             int x = entry.key % board.getWidth();
             int y = (entry.key - x) / board.getWidth();
             for (Dust dust: entry.value) {
+                dust.update(delta);
               if (board.worldToBoardX(dust.getX()) != x || board.worldToBoardY(dust.getY()) != y) {
+                  System.out.println("begin DECAY!");
                   dust.beginDecay();
               }
               if (dust.isDestroyed()) {
@@ -84,12 +87,13 @@ public class LightingController {
      * */
     public void initializeDust(int x, int y, Dust dust) {
         // set random position inside tile
+        dust.reset();
         dust.setX(board.boardToWorldX(x) + MathUtils.random()*board.getTileWorldDim().x);
         dust.setY(board.boardToWorldY(y) + MathUtils.random()*board.getTileWorldDim().y);
 
         // TODO: make editable
         dust.setRPS(MathUtils.random() * 0.5f);
-        dust.setVelocity(MathUtils.random()*MathUtils.PI2, MathUtils.random(0.1f, 0.4f));
+        dust.setVelocity(MathUtils.random()*MathUtils.PI2, MathUtils.random(0.01f, 0.1f));
         dust.setTexture(dustTexture);
     }
 }

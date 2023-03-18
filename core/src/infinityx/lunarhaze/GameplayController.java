@@ -154,6 +154,7 @@ public class GameplayController {
      */
     public void resolveActions(InputController input, float delta) {
         // Process the player only when the game is in play
+        lightingController.updateDust(delta);
         if (player != null && !(gameLost || gameWon)) {
             resolvePlayer(input, delta);
             resolveMoonlight(delta);
