@@ -9,7 +9,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
-import infinityx.lunarhaze.entity.Werewolf;
 import infinityx.util.ScreenObservable;
 
 /**
@@ -73,10 +72,6 @@ public class GameMode extends ScreenObservable implements Screen {
      */
     private InputController inputController;
     /**
-     * Handle collision and physics (CONTROLLER CLASS)
-     */
-    //private CollisionController physicsController;
-    /**
      * Contains level details! May be null.
      */
     private LevelContainer levelContainer;
@@ -108,14 +103,12 @@ public class GameMode extends ScreenObservable implements Screen {
     private int level;
 
     public GameMode(GameCanvas canvas) {
-        //TODO
         this.canvas = canvas;
         active = false;
         gameState = GameState.INTRO;
         // Create the controllers:
         inputController = new InputController();
         gameplayController = new GameplayController();
-        //physicsController = new CollisionController(canvas.getWidth(), canvas.getHeight(), levelContainer);
     }
 
     /**
@@ -130,7 +123,6 @@ public class GameMode extends ScreenObservable implements Screen {
         this.gameState = GameState.INTRO;
     }
 
-
     /**
      * Gather the required assets.
      * <p>
@@ -141,8 +133,7 @@ public class GameMode extends ScreenObservable implements Screen {
      */
     public void gatherAssets(AssetDirectory directory) {
         this.directory = directory;
-        LevelParser ps = LevelParser.LevelParser();
-        ps.loadConstants(directory);
+
         inputController.loadConstants(directory);
         levelFormat = directory.getEntry("levels", JsonValue.class);
         displayFont = directory.getEntry("retro", BitmapFont.class);
@@ -196,7 +187,6 @@ public class GameMode extends ScreenObservable implements Screen {
     private void setupLevel() {
         LevelParser ps = LevelParser.LevelParser();
         levelContainer = ps.loadLevel(directory, levelFormat.get(String.valueOf(level)));
-        canvas.setWorldToScreen(levelContainer.worldToScreen);
     }
 
     /**
@@ -250,6 +240,11 @@ public class GameMode extends ScreenObservable implements Screen {
     public void draw(float delta) {
         canvas.clear();
 
+        // Puts player at center of canvas
+        levelContainer.setViewTranslation(
+                -canvas.WorldToScreenX(levelContainer.getPlayer().getPosition().x) + canvas.getWidth() / 2,
+                -canvas.WorldToScreenY(levelContainer.getPlayer().getPosition().y) + canvas.getHeight() / 2
+        );
         // Draw the level
         levelContainer.drawLevel(canvas);
 

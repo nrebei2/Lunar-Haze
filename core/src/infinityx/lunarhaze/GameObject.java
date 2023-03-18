@@ -25,6 +25,9 @@ package infinityx.lunarhaze;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.utils.JsonValue;
+import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.physics.BoxObstacle;
 import infinityx.util.Drawable;
 import infinityx.util.FilmStrip;
@@ -60,15 +63,16 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
      * Reference to texture origin
      */
     protected Vector2 origin;
-    /**
-     * Whether or not the object should be removed at next timestep.
-     */
-    protected boolean destroyed;
 
     /**
      * FilmStrip pointer to the texture region
      */
     private FilmStrip filmstrip;
+
+    /**
+     * How much the texture of this object should be scaled when drawn
+     */
+    private float textureScale;
 
     /**
      * Creates game object at (0, 0)
@@ -88,8 +92,40 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
     public GameObject(float x, float y) {
         super(x, y, 1, 1);
         setFixedRotation(true);
+    }
 
-        destroyed = false;
+    /**
+     * Further parses specific GameObject (collider info, etc.) attributes.
+     *
+     * @param json      Json tree holding information
+     * @param container LevelContainer which this player is placed in
+     */
+    public void initialize(AssetDirectory directory, JsonValue json, LevelContainer container) {
+        JsonValue p_dim = json.get("collider");
+        setDimension(p_dim.get("width").asFloat(), p_dim.get("height").asFloat());
+        // TODO: bother with error checking?
+        setBodyType(json.get("bodytype").asString().equals("static") ? BodyDef.BodyType.StaticBody : BodyDef.BodyType.DynamicBody);
+        setLinearDamping(json.get("damping").asFloat());
+        setDensity(json.get("density").asFloat());
+        setFriction(json.get("friction").asFloat());
+        setRestitution(json.get("restitution").asFloat());
+        if (!json.has("speed")) {
+            setSpeed(0);
+        } else {
+            setSpeed(json.get("speed").asFloat());
+        }
+        //setStartFrame(json.get("startframe").asInt());
+        JsonValue texInfo = json.get("texture");
+        setTexture(directory.getEntry(texInfo.get("name").asString(), FilmStrip.class));
+        int[] texOrigin = texInfo.get("origin").asIntArray();
+        setOrigin(texOrigin[0], texOrigin[1]);
+        if (texInfo.has("positioned")) {
+            setPositioned(
+                    texInfo.getString("positioned").equals("bottom-left") ?
+                            BoxObstacle.POSITIONED.BOTTOM_LEFT : BoxObstacle.POSITIONED.CENTERED
+            );
+        }
+        this.textureScale = texInfo.getFloat("scale");
     }
 
     /**
@@ -129,56 +165,6 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
     }
 
     /**
-     * Returns the shadowposition of this object (e.g. location of the center pixel of the shadow)
-     * <p>
-     * The value returned is a reference to the position vector, which may be
-     * modified freely.
-     *
-     * @return the shadowposition of this object
-     */
-    public Vector2 getShadowposition() {
-        return this.getPosition();
-    }
-
-
-    /**
-     * Returns true if this object is destroyed.
-     * <p>
-     * Objects are not removed immediately when destroyed.  They are garbage collected
-     * at the end of the frame.  This tells us whether the object should be garbage
-     * collected at the frame end.
-     *
-     * @return true if this object is destroyed
-     */
-    public boolean isDestroyed() {
-        return destroyed;
-    }
-
-    /**
-     * Sets whether this object is destroyed.
-     * <p>
-     * Objects are not removed immediately when destroyed.  They are garbage collected
-     * at the end of the frame.  This tells us whether the object should be garbage
-     * collected at the frame end.
-     *
-     * @param value whether this object is destroyed
-     */
-    public void setDestroyed(boolean value) {
-        destroyed = value;
-    }
-
-    /**
-     * Returns the radius of this object's shadow.
-     * <p>
-     * All of our objects are circles, to make collision detection easy.
-     *
-     * @return the radius of this object's shadow.
-     */
-    public float getRadius() {
-        return this.getWidth();
-    }
-
-    /**
      * Returns the type of this object.
      * <p>
      * We use this instead of runtime-typing for performance reasons.
@@ -200,9 +186,11 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
         return this.getY();
     }
 
-    @Override
     public void draw(GameCanvas canvas) {
         canvas.draw(filmstrip, Color.WHITE, origin.x, origin.y,
-                canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y), 0.0f,  scale.x, scale.y);
+                canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y), 0.0f,
+                textureScale * scale.x, textureScale * scale.y);
     }
+
+
 }

@@ -22,8 +22,6 @@ package infinityx.lunarhaze;
  * Updated asset version, 2/6/2021
  */
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -36,7 +34,7 @@ import infinityx.util.ScreenObservable;
 /**
  * Class that provides a loading screen for the state of the game.
  */
-public class LoadingMode extends ScreenObservable implements Screen, InputProcessor {
+public class LoadingMode extends ScreenObservable implements Screen {
 
     /**
      * Track the current state of the loading screen.
@@ -267,8 +265,6 @@ public class LoadingMode extends ScreenObservable implements Screen, InputProces
         // No progress so far.
         progress = 0;
 
-        Gdx.input.setInputProcessor(this);
-
         // Start loading the real assets
         assets = new AssetDirectory(file);
         assets.loadAssets();
@@ -459,100 +455,5 @@ public class LoadingMode extends ScreenObservable implements Screen, InputProces
     public void hide() {
         // Useless if called in outside animation loop
         active = false;
-    }
-
-    // PROCESSING PLAYER INPUT
-
-    /**
-     * Called when the screen was touched or a mouse button was pressed.
-     *
-     * @param screenX the x-coordinate of the mouse on the screen
-     * @param screenY the y-coordinate of the mouse on the screen
-     * @param pointer the button or touch finger number
-     * @return whether to hand the event to other listeners.
-     */
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        return true;
-    }
-
-    /**
-     * Called when a finger was lifted or a mouse button was released.
-     * <p>
-     * This method checks to see if the play button is currently pressed down. If so,
-     * it signals the that the player is ready to go.
-     *
-     * @param screenX the x-coordinate of the mouse on the screen
-     * @param screenY the y-coordinate of the mouse on the screen
-     * @param pointer the button or touch finger number
-     * @return whether to hand the event to other listeners.
-     */
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        return true;
-    }
-
-    // UNSUPPORTED METHODS FROM InputProcessor
-
-    /**
-     * Called when a key is pressed (UNSUPPORTED)
-     *
-     * @param keycode the key pressed
-     * @return whether to hand the event to other listeners.
-     */
-    public boolean keyDown(int keycode) {
-        return true;
-    }
-
-    /**
-     * Called when a key is typed (UNSUPPORTED)
-     *
-     * @param keycode the key typed
-     * @return whether to hand the event to other listeners.
-     */
-    public boolean keyTyped(char character) {
-        return true;
-    }
-
-    /**
-     * Called when a key is released (UNSUPPORTED)
-     *
-     * @param keycode the key released
-     * @return whether to hand the event to other listeners.
-     */
-    public boolean keyUp(int keycode) {
-        return true;
-    }
-
-    /**
-     * Called when the mouse was moved without any buttons being pressed. (UNSUPPORTED)
-     *
-     * @param screenX the x-coordinate of the mouse on the screen
-     * @param screenY the y-coordinate of the mouse on the screen
-     * @return whether to hand the event to other listeners.
-     */
-    public boolean mouseMoved(int screenX, int screenY) {
-        return true;
-    }
-
-    /**
-     * Called when the mouse wheel was scrolled. (UNSUPPORTED)
-     *
-     * @param dx the amount of horizontal scroll
-     * @param dy the amount of vertical scroll
-     * @return whether to hand the event to other listeners.
-     */
-    public boolean scrolled(float dx, float dy) {
-        return true;
-    }
-
-    /**
-     * Called when the mouse or finger was dragged. (UNSUPPORTED)
-     *
-     * @param screenX the x-coordinate of the mouse on the screen
-     * @param screenY the y-coordinate of the mouse on the screen
-     * @param pointer the button or touch finger number
-     * @return whether to hand the event to other listeners.
-     */
-    public boolean touchDragged(int screenX, int screenY, int pointer) {
-        return true;
     }
 }

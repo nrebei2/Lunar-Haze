@@ -130,7 +130,7 @@ public class GameplayController {
         }
 
         // Intialize lighting
-        lightingController = new LightingController(enemies, board);
+        lightingController = new LightingController(levelContainer);
 
         /*PointLight light = new PointLight(getRayHandler(), 512, new Color(0.5f, 0.5f, 1f, 0.3f), 2000f, 0, 0);
          */
@@ -186,7 +186,7 @@ public class GameplayController {
             }
             player.setOnMoonlight(true);
             if (board.isCollectable(px, py) && timeOnMoonlight > MOONLIGHT_COLLECT_TIME) {
-                player.collectMoonlight();
+                player.collectMoonlight(levelContainer);
                 remainingMoonlight--;
                 timeOnMoonlight = 0;
                 board.setCollected(px, py);

@@ -48,6 +48,7 @@ public class BoxObstacle extends SimpleObstacle {
     public enum POSITIONED {
         CENTERED, BOTTOM_LEFT
     }
+
     protected POSITIONED positioned = POSITIONED.CENTERED;
 
     protected Vector2 scale = new Vector2(1, 1);
