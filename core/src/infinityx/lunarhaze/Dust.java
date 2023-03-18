@@ -1,20 +1,47 @@
 package infinityx.lunarhaze;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool;
+import infinityx.util.Drawable;
 
-public class Dust implements Pool.Poolable {
-    /** How many pixels the particle moves per animation frame */
-    public static final float PARTICLE_SPEED = 2.0f;
-
-    /** The particle position */
+public class Dust implements Drawable {
+    /** The particle position in world coordinates */
     private Vector2 position;
 
-    /** The particle velocity (not directly accessible) */
+    /** The particle velocity */
     private Vector2 velocity;
 
-    /** The particle angle of movement (according to initial position) */
-    private float angle;
+    /** The current rotation of texture, affected by rps */
+    private float textureRot = 0;
+
+    /** Rotations per second */
+    private float rps;
+
+    /**
+     * Track the current state of this dust particle.
+     */
+    public enum DustState {
+        APPEARING, ALIVE, DECAYING
+    }
+    private DustState state;
+
+    private float elapsed = 0;
+    private static final float FADE_TIME = 2;
+
+    /**
+     * Easing in function, easing out is reversed
+     */
+    private static final Interpolation EAS_FN = Interpolation.exp5Out;
+
+    /**
+     * alpha tint, corresponds to state
+     */
+    private float alpha = 0;
+
+    private Texture texture;
 
     /**
      * Returns the position of this particle.
@@ -65,28 +92,25 @@ public class Dust implements Pool.Poolable {
     }
 
     /**
-     * Returns the angle of this particle
+     * Sets the angle (radians) of velocity for this particle.
      *
-     * The particle velocity is (PARTICLE_SPEED,angle) in polar-coordinates.
-     *
-     * @return the angle of this particle
+     * @param angle the angle of this particle (radians)
+     * @param speed the speed
      */
-    public float getAngle() {
-        return angle;
+    public void setVelocity(float angle, float speed) {
+        velocity.set((float)(speed*Math.cos(angle)),
+                (float)(speed*Math.sin(angle)));
     }
 
     /**
-     * Sets the angle of this particle
-     *
-     * When the angle is set, the particle will change its velocity
-     * to (PARTICLE_SPEED,angle) in polar-coordinates.
-     *
-     * @param angle  the angle of this particle
+     * Sets the rotations per second of this particle
      */
-    public void setAngle(float angle) {
-        this.angle = angle;
-        velocity.set((float)(PARTICLE_SPEED*Math.cos(angle)),
-                (float)(PARTICLE_SPEED*Math.sin(angle)));
+    public void setRPS(float rps) {
+       this.rps = rps;
+    }
+
+    public void setTexture(Texture texture) {
+        this.texture = texture;
     }
 
     /**
@@ -103,17 +127,58 @@ public class Dust implements Pool.Poolable {
     /**
      * Move the particle one frame, adding the velocity to the position.
      */
-    public void update() {
-        position.add(velocity);
+    public void update(float delta) {
+        switch (state) {
+            case APPEARING:
+                elapsed += delta;
+                // progress along fade-in
+                float inProg = Math.min(1f, elapsed / FADE_TIME);
+                alpha = EAS_FN.apply(inProg);
+                if (inProg == 1f) {
+                    state = DustState.ALIVE;
+                    elapsed = 0;
+                }
+                break;
+            case DECAYING:
+                elapsed += delta;
+                // progress along fade-out
+                float outProg = Math.min(1f, elapsed / FADE_TIME);
+                alpha = EAS_FN.apply(1 - outProg);
+                if (outProg == 1f) {
+                    this.reset();
+                }
+        }
+        position.add(velocity.scl(delta));
+        textureRot += rps * delta;
     }
 
     /**
      * Resets the object for reuse. Object references should be nulled and fields may be set to default values.
      */
-    @Override
     public void reset() {
         position.set(0,0);
         velocity.set(0,0);
-        angle = 0;
+    }
+
+    /**
+     * Simple depth buffer, object-wise instead of pixel-wise.
+     *
+     * @return depth of object from camera
+     */
+    @Override
+    public float getDepth() {
+       return getY();
+    }
+
+    /**
+     * Draws this object to the given canvas
+     *
+     * @param canvas The drawing context
+     */
+    @Override
+    public void draw(GameCanvas canvas) {
+            canvas.draw(texture, alpha, texture.getWidth() / 2, texture.getHeight() / 2,
+                    canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y), 0.0f,
+                    1, 1);
     }
 }

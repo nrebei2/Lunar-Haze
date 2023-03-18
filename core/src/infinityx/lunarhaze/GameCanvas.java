@@ -80,19 +80,18 @@ public class GameCanvas {
         OPAQUE
     }
 
-
     /**
      * Drawing context to handle textures AND POLYGONS as sprites
      */
     private PolygonSpriteBatch spriteBatch;
 
     /**
-     * Rendering context for drawing moonlight bar;
+     * Rendering context for drawing shapes NOT affected by global matrix
      */
     private final ShapeRenderer barRender;
 
     /**
-     * Rendering context for drawing shapes affected by global matrix;
+     * Rendering context for drawing shapes affected by global matrix
      */
     private final ShapeRenderer shapeRenderer;
 
@@ -121,6 +120,8 @@ public class GameCanvas {
     int height;
 
     // CACHE OBJECTS
+    /** Color cache for setting alpha on sprites */
+    private Color alphaCache;
     /**
      * Affine cache for current sprite to draw
      */
@@ -166,7 +167,8 @@ public class GameCanvas {
     }
 
     /**
-     * Both functions represent a map from screen coordinates to world coordinates
+     * Both functions represent a map from screen coordinates to world coordinates.
+     * This function also takes into account the view translation from the previous call.
      */
     public float ScreenToWorldX(float s_x) {
         return (s_x - viewCache.x) / worldToScreen.x;
@@ -203,6 +205,7 @@ public class GameCanvas {
         global = new Matrix4();
         vertex = new Vector2();
         viewCache = new Vector2(0, 0);
+        alphaCache = new Color(1, 1, 1, 1);
     }
 
     /**
@@ -615,7 +618,7 @@ public class GameCanvas {
             return;
         }
 
-        // Call the master drawing method (more efficient that base method)
+        // Call the master drawing method (more efficient than base method)
         holder.setRegion(image);
         draw(holder, tint, x - ox, y - oy, width, height);
     }
@@ -654,6 +657,42 @@ public class GameCanvas {
         // Call the master drawing method (more efficient that base method)
         holder.setRegion(image);
         draw(holder, tint, ox, oy, x, y, angle, sx, sy);
+    }
+
+    /**
+     * Draws the tinted texture with the given transformations
+     * <p>
+     * The texture colors will be multiplied by the given color.  This will turn
+     * any white into the given color.  Other colors will be similarly affected.
+     * <p>
+     * The transformations are BEFORE after the global transform (@see begin(Affine2)).
+     * As a result, the specified texture origin will be applied to all transforms
+     * (both the local and global).
+     * <p>
+     * The local transformations in this method are applied in the following order:
+     * scaling, then rotation, then translation (e.g. placement at (sx,sy)).
+     *
+     * @param image The texture to draw
+     * @param alpha The alpha tint
+     * @param ox    The x-coordinate of texture origin (in pixels)
+     * @param oy    The y-coordinate of texture origin (in pixels)
+     * @param x     The x-coordinate of the texture origin (on screen)
+     * @param y     The y-coordinate of the texture origin (on screen)
+     * @param angle The rotation angle (in degrees) about the origin.
+     * @param sx    The x-axis scaling factor
+     * @param sy    The y-axis scaling factor
+     */
+    public void draw(Texture image, float alpha, float ox, float oy,
+                     float x, float y, float angle, float sx, float sy) {
+        if (active != DrawPass.STANDARD) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+            return;
+        }
+
+        // Call the master drawing method (more efficient that base method)
+        holder.setRegion(image);
+        alphaCache.a = alpha;
+        draw(holder, alphaCache, ox, oy, x, y, angle, sx, sy);
     }
 
     /**

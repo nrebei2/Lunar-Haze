@@ -208,17 +208,6 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
     }
 
     /**
-     * Returns the radius of this object's shadow.
-     * <p>
-     * All of our objects are circles, to make collision detection easy.
-     *
-     * @return the radius of this object's shadow.
-     */
-    public float getRadius() {
-        return this.getWidth();
-    }
-
-    /**
      * Returns the type of this object.
      * <p>
      * We use this instead of runtime-typing for performance reasons.
@@ -240,7 +229,6 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
         return this.getY();
     }
 
-    @Override
     public void draw(GameCanvas canvas) {
         canvas.draw(filmstrip, Color.WHITE, origin.x, origin.y,
                 canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y), 0.0f,

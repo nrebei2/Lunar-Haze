@@ -85,8 +85,6 @@ public class LevelContainer {
 
     private int remainingMoonlight;
 
-    private PointLight ambienceMoonlight;
-
     /**
      * Keeps player centered
      */
@@ -165,7 +163,7 @@ public class LevelContainer {
     /**
      * @param enemy Enemy to append to enemy list
      * @return Enemy added with updated id
-     */
+     */, rgb should be 1 as we are only changing transparency
     public Enemy addEnemy(Enemy enemy) {
         enemies.addEnemy(enemy);
         drawables.add(enemy);
@@ -189,6 +187,20 @@ public class LevelContainer {
         enemy.setPosition(x, y);
 
         return addEnemy(enemy);
+    }
+
+    /**
+     * Add object for this container to draw.
+     */
+    public void addDrawable(Drawable drawable) {
+        drawables.add(drawable);
+    }
+
+    /**
+     * Add objects for this container to draw.
+     */
+    public void addDrawables(Drawable... drawable) {
+        drawables.addAll(drawable);
     }
 
     /**
@@ -316,8 +328,6 @@ public class LevelContainer {
      * @param canvas The drawing context
      */
     public void drawLevel(GameCanvas canvas) {
-
-        //System.out.printf("Width: %d, Height: %d\n", Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         canvas.beginT(view.x, view.y);
 
         // Debug prints
