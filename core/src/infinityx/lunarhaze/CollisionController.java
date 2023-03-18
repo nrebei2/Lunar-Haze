@@ -30,16 +30,29 @@ public class CollisionController implements ContactListener {
         GameObject obj1 = (GameObject) body1.getUserData();
         GameObject obj2 = (GameObject) body2.getUserData();
 
+
         if(obj1.getType() == GameObject.ObjectType.WEREWOLF && obj2.getType() == GameObject.ObjectType.ENEMY) {
-            resolveAttack(obj1, obj2, ((Enemy)obj2).getAttackDamage(), ((Enemy)obj2).getAttackKnockback());
+            Werewolf player = (Werewolf) obj1;
+            Enemy enemy = (Enemy) obj2;
+            if(player.isAttacking()) {
+                resolvePlayerAttack(player, enemy);
+            } else {
+                resolveEnemyAttack(player, enemy, enemy.getAttackDamage(), enemy.getAttackKnockback());
+            }
         }
         else if (obj1.getType() == GameObject.ObjectType.ENEMY && obj2.getType() == GameObject.ObjectType.WEREWOLF) {
-            resolveAttack(obj2, obj1, ((Enemy)obj1).getAttackDamage(), ((Enemy)obj1).getAttackKnockback());
+            Werewolf player = (Werewolf) obj2;
+            Enemy enemy = (Enemy) obj1;
+            if(player.isAttacking()) {
+                resolvePlayerAttack(player, enemy);
+            } else {
+                resolveEnemyAttack(player, enemy, enemy.getAttackDamage(), enemy.getAttackKnockback());
+            }
         }
 
     }
 
-    public void resolveAttack(GameObject player, GameObject enemy, float damage, float knockback) {
+    public void resolveEnemyAttack(GameObject player, GameObject enemy, float damage, float knockback) {
 
         Body body = player.getBody();
         Body enemyBody = enemy.getBody();
@@ -52,6 +65,18 @@ public class CollisionController implements ContactListener {
         ((Werewolf)player).setCanMove(false);
         body.applyLinearImpulse(direction.scl(knockback), body.getWorldCenter(), true);
         ((Werewolf)player).setHp((int) (((Werewolf)player).getHp() - damage));
+    }
+
+    public void resolvePlayerAttack(Werewolf player, Enemy enemy) {
+        // Apply damage to the enemy
+        enemy.setHp(enemy.getHp() - 1);
+
+        // Apply knockback to the enemy
+        Body enemyBody = enemy.getBody();
+        Vector2 playerPos = player.getBody().getPosition();
+        Vector2 enemyPos = enemyBody.getPosition();
+        Vector2 knockbackDirection = enemyPos.sub(playerPos).nor();
+        enemyBody.applyLinearImpulse(knockbackDirection.scl(20f), enemyBody.getWorldCenter(), true);
     }
 
     @Override

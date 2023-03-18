@@ -117,6 +117,8 @@ public class Werewolf extends GameObject {
 
     private final Vector2 forceCache = new Vector2();
 
+    private boolean isAttacking;
+
     /**
      * Returns the type of this object.
      * <p>
@@ -257,6 +259,9 @@ public class Werewolf extends GameObject {
 
     public void setCanMove(boolean value) { canMove = value; }
 
+    public void setAttacking(boolean value) { isAttacking = value; }
+    public boolean isAttacking() { return isAttacking; }
+
     /**
      * Initialize a werewolf.
      */
@@ -271,6 +276,7 @@ public class Werewolf extends GameObject {
         stealth = 0.0f;
         moonlightCollected = 0;
         levelContainer = new LevelContainer();
+        isAttacking = false;
     }
 
     /**

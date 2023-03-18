@@ -210,7 +210,7 @@ public class LevelContainer {
      *
      * @param canvas The drawing context
      */
-    public void drawLevel(GameCanvas canvas) {
+    public void drawLevel(GameCanvas canvas, GameplayController.Phase phase) {
         // Puts player at center of canvas
 
         view.setToTranslation(
@@ -245,8 +245,10 @@ public class LevelContainer {
         raycamera.update();
         rayHandler.setCombinedMatrix(raycamera);
 
-        // Finally, draw lights
-        rayHandler.updateAndRender();
+        if(phase == GameplayController.Phase.NIGHT) {
+            // Finally, draw lights if it is nighttime
+            rayHandler.updateAndRender();
+        }
     }
 }
 

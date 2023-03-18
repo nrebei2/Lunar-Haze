@@ -30,6 +30,8 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+import infinityx.lunarhaze.entity.Enemy;
+import infinityx.lunarhaze.entity.EnemyList;
 import infinityx.lunarhaze.entity.Werewolf;
 
 /**
@@ -1089,6 +1091,30 @@ public class GameCanvas {
         barRender.end();
     }
 
+    public void drawEnemyHpBars(float barWidth, float barHeight, EnemyList enemyList) {
+        if (active != DrawPass.STANDARD) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+            return;
+        }
+
+        for (Enemy e : enemyList) {
+            float x = WorldToScreenX(e.getPosition().x) - (barWidth/4.0f);
+            float y = WorldToScreenY(e.getPosition().y) + 10.0f;
+
+            // Draw border
+            barRender.begin(ShapeRenderer.ShapeType.Filled);
+            barRender.setColor(Color.BLACK);
+            barRender.rect(x - 1, y - 1, barWidth + 2, barHeight + 2);
+            barRender.end();
+
+            // Draw the actual health bar
+            barRender.begin(ShapeRenderer.ShapeType.Filled);
+            barRender.setColor(Color.RED);
+            barRender.rect(x, y, barWidth * e.getHealthPercentage(), barHeight);
+            barRender.end();
+        }
+    }
+
     public void drawStealthBar(float width, float height, float stealth) {
         if (active != DrawPass.STANDARD) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
@@ -1136,6 +1162,22 @@ public class GameCanvas {
         barRenderer.setColor(Color.YELLOW);
         float x = getWidth() - width;
         float y = getHeight() - height * 4;
+        barRenderer.rect(x, y, width, height);
+        barRenderer.end();
+    }
+
+    /**
+     * Draws a solid rectangle at the specified position with the specified width and height
+     *
+     * @param x The x-coordinate of the rectangle's lower left corner
+     * @param y The y-coordinate of the rectangle's lower left corner
+     * @param width The width of the rectangle
+     * @param height The height of the rectangle
+     */
+    public void drawRecAt(float x, float y, float width, float height) {
+        ShapeRenderer barRenderer = new ShapeRenderer();
+        barRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        barRenderer.setColor(Color.YELLOW);
         barRenderer.rect(x, y, width, height);
         barRenderer.end();
     }

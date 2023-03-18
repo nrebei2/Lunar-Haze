@@ -184,11 +184,16 @@ public class GameMode extends ScreenObservable implements Screen {
             case NIGHT:
                 play(delta);
                 if (gameplayController.isGameWon()) {
-                    gameState = GameState.WIN;
+                    gameState = GameState.DAY;
                 } else if (gameplayController.isGameLost()) {
                     gameState = GameState.OVER;
                 }
                 break;
+            case DAY:
+                play(delta);
+                if(gameplayController.isGameLost()) {
+                    gameState = GameState.OVER;
+                }
             default:
                 break;
         }
@@ -255,7 +260,7 @@ public class GameMode extends ScreenObservable implements Screen {
         canvas.clear();
 
         // Draw the level
-        levelContainer.drawLevel(canvas);
+        levelContainer.drawLevel(canvas, gameplayController.getCurrentPhase());
 
         switch (gameState) {
             case WIN:
@@ -277,6 +282,7 @@ public class GameMode extends ScreenObservable implements Screen {
                         BAR_HEIGHT, gameplayController.getPlayerController().getPlayerLight());
                 canvas.drawHpBar(BAR_WIDTH,
                         BAR_HEIGHT, gameplayController.getPlayerController().getPlayerHp());
+                canvas.drawEnemyHpBars(BAR_WIDTH/4.0f, BAR_HEIGHT/4.0f, levelContainer.getEnemies());
                 canvas.drawStealthBar(BAR_WIDTH,
                         BAR_HEIGHT, gameplayController.getPlayerController().getPlayerStealth());
                 canvas.end();

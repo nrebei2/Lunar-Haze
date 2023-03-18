@@ -514,6 +514,7 @@ public class EnemyController {
     public static void resolveEnemies(EnemyController[] controls, Werewolf player, EnemyList enemies) {
         //board.clearVisibility();
         for (Enemy en : enemies) {
+            if(en.getHp() == 0); // need to remove enemy here
             if (controls[en.getId()] != null) {
                 EnemyController curEnemyController = controls[en.getId()];
                 int action = curEnemyController.getAction();

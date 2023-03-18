@@ -1,5 +1,8 @@
 package infinityx.lunarhaze;
 
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.EnemyList;
 import infinityx.lunarhaze.entity.Werewolf;
@@ -57,12 +60,14 @@ public class PlayerController {
      */
     private boolean gameWon;
 
-    private boolean isAttacking;
-
     private float attackCounter;
     private float attackLength;
     private float attackCooldownCounter;
     private float attackCooldown;
+
+    private GameplayController.Phase phase;
+
+    private Vector2 attackDirection;
 
     /**
      * Get the player HP in PlayerController to enforce encapsulation.
@@ -109,11 +114,11 @@ public class PlayerController {
         this.levelContainer = levelContainer;
         remainingMoonlight = levelContainer.getRemainingMoonlight();
         gameWon = false;
-        isAttacking = false;
         attackCounter = 0f;
-        attackLength = 0.75f;
-        attackCooldown = 2f;
+        attackLength = 0.6f;
+        attackCooldown = 4f;
         attackCooldownCounter = 0f;
+        attackDirection = new Vector2();
     }
 
     /**
@@ -123,10 +128,11 @@ public class PlayerController {
      * @param input InputController that controls the player
      * @param delta Number of seconds since last animation frame
      */
-    public void resolvePlayer(InputController input, float delta) {
+    public void resolvePlayer(InputController input, float delta, GameplayController.Phase currPhase) {
         player.setMovementH(input.getHorizontal());
         player.setMovementV(input.getVertical());
         player.update(delta);
+        phase = currPhase;
     }
 
     /**
@@ -174,7 +180,7 @@ public class PlayerController {
      *
      * @param input InputController that controls the player
      */
-    public void resolveSealthBar(InputController input) {
+    public void resolveStealthBar(InputController input) {
         if (Math.abs(input.getHorizontal()) == input.getWalkSpeed() ||
                 Math.abs(input.getVertical()) == input.getWalkSpeed()){
             player.setStealth(WALK_STEALTH);
@@ -186,29 +192,37 @@ public class PlayerController {
         }
     }
 
-    public void attack(float delta) {
-
-        // Check if we can attack based on the attack cooldown
-        if(attackCooldownCounter > attackCooldown) {
-            if (attackCounter < attackLength) {
-                isAttacking = true;
+    public void attack(float delta, InputController input) {
+        if(phase == GameplayController.Phase.DAY) {
+            if (player.isAttacking()) {
+                player.setCanMove(false);
                 attackCounter += delta;
+                if (attackCounter >= attackLength) {
+                    player.setAttacking(false);
+                    player.setCanMove(true);
+                    attackCounter = 0f;
+                }
             } else {
-                attackCounter = 0f;
-                attackCooldownCounter = 0f;
+                attackCooldownCounter += delta;
+                if (attackCooldownCounter >= attackCooldown) {
+                    attackCooldownCounter = 0f;
+                }
             }
-        } else {
-            attackCooldownCounter += delta;
+            if (!player.isAttacking() && attackCooldownCounter >= 0f && input.didAttack()) {
+                System.out.println("Attacking");
+                player.setAttacking(true);
+                attackCooldownCounter = attackCooldown;
+                attackDirection.set(input.getHorizontal(), input.getVertical()).nor().scl(125);
+                player.setLinearVelocity(attackDirection);
+            }
         }
-        
     }
 
-    public boolean isAttacking() { return isAttacking; }
-
-    public void update(InputController input, float delta){
-        resolvePlayer(input, delta);
+    public void update(InputController input, float delta, GameplayController.Phase currPhase){
+        resolvePlayer(input, delta, currPhase);
         resolveMoonlight(delta);
-        resolveSealthBar(input);
+        resolveStealthBar(input);
+        attack(delta, input);
     }
 
     public void loseHp() {

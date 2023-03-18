@@ -20,6 +20,11 @@ public class GameplayController {
 
     private EnemyList enemies;
 
+    public enum Phase {
+        NIGHT,
+        DAY
+    }
+
     /**
      * The currently active object
      */
@@ -38,14 +43,22 @@ public class GameplayController {
     private boolean gameLost;
     private LevelContainer levelContainer;
 
+    private Phase currentPhase;
+
+    private static final float NIGHT_DURATION = 10f;
+    private static final float DAY_DURATION = 10f;
+    private float phaseTimer;
+
     /**This is the collision controller (handels collisions between all objects in our world*/
     private CollisionController collisionController;
+
 
     public GameplayController() {
         player = null;
         enemies = null;
         board = null;
         objects = new Array<GameObject>();
+        currentPhase = Phase.NIGHT;
     }
 
     /**
@@ -104,6 +117,7 @@ public class GameplayController {
         board = levelContainer.getBoard();
         this.playerController = new PlayerController(player, board, levelContainer);
         controls = new EnemyController[enemies.size()];
+        phaseTimer = NIGHT_DURATION;
 
         gameWon = false;
         gameLost = false;
@@ -140,11 +154,33 @@ public class GameplayController {
     public void resolveActions(InputController input, float delta) {
         // Process the player only when the game is in play
         if (player != null && !(gameLost || gameWon)) {
-            playerController.update(input, delta);
+            playerController.update(input, delta, currentPhase);
             gameWon = playerController.isGameWon();
             gameLost = playerController.getPlayerHp() <= 0;
         }
         EnemyController.resolveEnemies(controls,player,enemies);
+
+        // Update the phase timer and switch phases if necessary
+        phaseTimer -= delta;
+        if (phaseTimer <= 0) {
+            switchPhase();
+        }
+    }
+
+    /**
+     * Changes the current phase of the game between NIGHT and DAY.
+     * When switching from NIGHT to DAY, it resets the phase timer to the duration
+     * of the DAY phase. Similarly, when switching from DAY to NIGHT, it resets
+     * the phase timer to the duration of the NIGHT phase.
+     */
+    public void switchPhase() {
+        if (currentPhase == Phase.NIGHT) {
+            currentPhase = Phase.DAY;
+            phaseTimer = DAY_DURATION;
+        } else {
+            currentPhase = Phase.NIGHT;
+            phaseTimer = NIGHT_DURATION;
+        }
     }
 
 
@@ -170,6 +206,8 @@ public class GameplayController {
     public boolean isGameWon() {
         return gameWon;
     }
+
+    public Phase getCurrentPhase() { return currentPhase; }
 
     public void setWin(boolean win) {
         if (win) this.gameWon = true;
