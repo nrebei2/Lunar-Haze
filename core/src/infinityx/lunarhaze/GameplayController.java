@@ -208,14 +208,22 @@ public class GameplayController {
 
     public boolean detectPlayer(Enemy enemy){
         Vector2 point1 = enemy.getPosition();
-        float dist = enemy.getFlashlight().getDistance();
+        ConeSource flashlight = enemy.getFlashlight();
+        float light_dis = flashlight.getDistance();
+
         float vx = enemy.getVX();
         float vy = enemy.getVY();
-        if (vx == 0 && vy ==0) return false;
-        Vector2 direction = new Vector2(vx, vy).nor();
-        Vector2 point2 = new Vector2(point1.x + dist*direction.x, point1.y + dist*direction.y);
+        Vector2 enemy_direction = new Vector2(vx,vy).nor();
+
+        Vector2 direction = new Vector2(player.getX()-point1.x, player.getY()-point1.y).nor();
+        Vector2 point2 = new Vector2(point1.x+light_dis*direction.x, player.getY()+light_dis*direction.y);
         RaycastInfo info = raycast(enemy, point1, point2);
-        return info.hit && info.hitObject == player;
+
+//        System.out.println(enemy_direction.dot(direction));
+        double degree = Math.toDegrees(Math.acos(enemy_direction.dot(direction)));
+
+
+        return info.hit && info.hitObject == player && degree <= flashlight.getConeDegree();
     }
 
     // TODO: THIS SHOULD BE IN ENEMYCONTROLLER, also this code is a mess
@@ -225,7 +233,7 @@ public class GameplayController {
             if (controls[en.getId()] != null) {
                 EnemyController curEnemyController = controls[en.getId()];
                 boolean detect = detectPlayer(en);
-                int action = curEnemyController.getAction();
+                int action = curEnemyController.getAction(detect);
 //                boolean attacking = (action & EnemyController.CONTROL_ATTACK) != 0;
                 en.update(action);
 

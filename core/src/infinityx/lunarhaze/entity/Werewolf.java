@@ -2,7 +2,8 @@ package infinityx.lunarhaze.entity;
 
 import box2dLight.PointLight;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.JsonValue;
 import infinityx.lunarhaze.GameObject;
 import infinityx.lunarhaze.LevelContainer;
 
@@ -239,6 +240,30 @@ public class Werewolf extends GameObject {
         canMove = false;
         body.applyLinearImpulse(direction.scl(knockback), body.getWorldCenter(), true);
         setHp(hp - damage);
+    }
+
+    @Override
+    public boolean activatePhysics(World world) {
+        if (!super.activatePhysics(world)) {
+            return false;
+        }
+
+        // Define the shape of the player's fixture
+        PolygonShape playerShape = new PolygonShape();
+        playerShape.setAsBox(0.5f, 1.0f);
+
+        // Define the properties of the player's fixture
+        fixture.shape = playerShape;
+        fixture.density = 1.0f;
+        fixture.friction = 0.5f;
+        fixture.restitution = 0.0f;
+        Fixture fix = body.createFixture(fixture);
+        fix.setUserData(this);
+//        fixture = getBody().createFixture(fixtureDef);
+        playerShape.dispose();
+
+
+        return true;
     }
 
     /**

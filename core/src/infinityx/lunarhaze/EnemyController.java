@@ -304,14 +304,14 @@ public class EnemyController {
      *
      * @return the action selected by this InputController
      */
-    public int getAction() {
+    public int getAction(boolean detect) {
         // Increment the number of ticks.
         ticks++;
 
         // Do not need to rework ourselves every frame. Just every 10 ticks.
         if ((enemy.getId() + ticks) % 10 == 0) {
             // Process the FSM
-            changeStateIfApplicable();
+            changeStateIfApplicable(detect);
             changeDetectionIfApplicable();
 
             // Pathfinding
@@ -338,13 +338,13 @@ public class EnemyController {
      * in the ATTACK state, we may want to switch to the CHASE state if the
      * target gets out of range.
      */
-    private void changeStateIfApplicable() {
+    private void changeStateIfApplicable(boolean detect) {
         switch (state) {
             case SPAWN:
                 state = FSMState.PATROL;
                 break;
             case PATROL:
-                if (detectedPlayer()) {
+                if (detect) {
                     state = FSMState.CHASE;
                     enemy.setIsAlerted(true);
                 }
