@@ -6,6 +6,7 @@ import com.badlogic.gdx.utils.Array;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.EnemyList;
 import infinityx.lunarhaze.entity.Werewolf;
+import infinityx.lunarhaze.physics.ConeSource;
 import infinityx.lunarhaze.physics.RaycastInfo;
 
 
@@ -200,33 +201,13 @@ public class GameplayController {
         }
     }
 
-    public RaycastInfo raycast(GameObject requestingObject, Vector2 point1, Vector2 point2) {
-        RaycastInfo callback = new RaycastInfo(requestingObject);
-        World world = levelContainer.getWorld();
-        world.rayCast(callback, new Vector2(point1.x, point1.y), new Vector2(point2.x, point2.y));
-        return callback;
-    }
-
-    public boolean detectPlayer(Enemy enemy) {
-        Vector2 point1 = enemy.getPosition();
-        float dist = enemy.getFlashlight().getDistance();
-        float vx = enemy.getVX();
-        float vy = enemy.getVY();
-        if (vx == 0 && vy == 0) return false;
-        Vector2 direction = new Vector2(vx, vy).nor();
-        Vector2 point2 = new Vector2(point1.x + dist * direction.x, point1.y + dist * direction.y);
-        RaycastInfo info = raycast(enemy, point1, point2);
-        return info.hit && info.hitObject == player;
-    }
-
     // TODO: THIS SHOULD BE IN ENEMYCONTROLLER, also this code is a mess
     public void resolveEnemies() {
         //board.clearVisibility();
         for (Enemy en : enemies) {
             if (controls[en.getId()] != null) {
                 EnemyController curEnemyController = controls[en.getId()];
-                boolean detect = detectPlayer(en);
-                int action = curEnemyController.getAction();
+                int action = curEnemyController.getAction(levelContainer);
 //                boolean attacking = (action & EnemyController.CONTROL_ATTACK) != 0;
                 en.update(action);
 
