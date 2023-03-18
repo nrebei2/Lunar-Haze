@@ -26,7 +26,7 @@ public class Dust implements Drawable {
     public enum DustState {
         APPEARING, ALIVE, DECAYING
     }
-    private DustState state;
+    private DustState state = DustState.APPEARING;
 
     private float elapsed = 0;
     private static final float FADE_TIME = 2;
@@ -41,7 +41,13 @@ public class Dust implements Drawable {
      */
     private float alpha = 0;
 
+    /** May be null */
     private Texture texture;
+
+    /**
+     * Whether or not the object should be removed at next timestep.
+     */
+    protected boolean destroyed = false;
 
     /**
      * Returns the position of this particle.
@@ -113,6 +119,18 @@ public class Dust implements Drawable {
         this.texture = texture;
     }
 
+    /** Once called this particle will begin decaying (disappearing) then become destroyed. */
+    public void beginDecay() {
+        this.state = DustState.DECAYING;
+    }
+
+    /**
+     * Returns true if this object should be destroyed.
+     */
+    public boolean isDestroyed() {
+        return destroyed;
+    }
+
     /**
      * Creates a new (unitialized) Particle.
      *
@@ -125,7 +143,7 @@ public class Dust implements Drawable {
     }
 
     /**
-     * Move the particle one frame, adding the velocity to the position.
+     * Update attributes of this dust particle
      */
     public void update(float delta) {
         switch (state) {
@@ -145,7 +163,7 @@ public class Dust implements Drawable {
                 float outProg = Math.min(1f, elapsed / FADE_TIME);
                 alpha = EAS_FN.apply(1 - outProg);
                 if (outProg == 1f) {
-                    this.reset();
+                    this.destroyed = true;
                 }
         }
         position.add(velocity.scl(delta));
@@ -156,8 +174,10 @@ public class Dust implements Drawable {
      * Resets the object for reuse. Object references should be nulled and fields may be set to default values.
      */
     public void reset() {
-        position.set(0,0);
-        velocity.set(0,0);
+        this.state = DustState.APPEARING;
+        this.textureRot = 0;
+        this.alpha = 0;
+        this.elapsed = 0;
     }
 
     /**
@@ -178,7 +198,7 @@ public class Dust implements Drawable {
     @Override
     public void draw(GameCanvas canvas) {
             canvas.draw(texture, alpha, texture.getWidth() / 2, texture.getHeight() / 2,
-                    canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y), 0.0f,
+                    canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y), textureRot,
                     1, 1);
     }
 }

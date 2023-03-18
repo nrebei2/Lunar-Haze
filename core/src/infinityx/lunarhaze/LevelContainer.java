@@ -163,7 +163,7 @@ public class LevelContainer {
     /**
      * @param enemy Enemy to append to enemy list
      * @return Enemy added with updated id
-     */, rgb should be 1 as we are only changing transparency
+     */
     public Enemy addEnemy(Enemy enemy) {
         enemies.addEnemy(enemy);
         drawables.add(enemy);
@@ -227,6 +227,10 @@ public class LevelContainer {
     public void setPlayer(Werewolf player) {
         drawables.add(player);
         this.player = player;
+    }
+
+    public AssetDirectory getDirectory() {
+        return this.directory;
     }
 
     /**

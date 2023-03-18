@@ -118,6 +118,13 @@ public class Board {
     }
 
     /**
+     * @return tile height and width in world length.
+     */
+    public Vector2 getTileWorldDim() {
+        return this.tileWorldDim;
+    }
+
+    /**
      * Returns the number of tiles horizontally across the board.
      *
      * @return the number of tiles horizontally across the board.
@@ -278,7 +285,7 @@ public class Board {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 canvas.drawRecOutline(
-                        canvas.WorldToScreenX(boardToWorld(x, y).x), canvas.WorldToScreenY(boardToWorld(x, y).y),
+                        canvas.WorldToScreenX(boardToWorldX(x)), canvas.WorldToScreenY(boardToWorldY(y)),
                         tileScreenDim.x, tileScreenDim.y, Color.RED
                 );
             }
@@ -331,6 +338,22 @@ public class Board {
             return null;
         }
         return new Vector2(x * tileWorldDim.x, y * tileWorldDim.y);
+    }
+
+    /**
+     * @param x The x index for the Tile cell
+     * @return the world x-position coordinates of the bottom left corner.
+     */
+    public float boardToWorldX(int x) {
+        return x * tileWorldDim.x;
+    }
+
+    /**
+     * @param y The y index for the Tile cell
+     * @return the world y-position coordinates of the bottom left corner.
+     */
+    public float boardToWorldY(int y) {
+        return y * tileWorldDim.y;
     }
 
     /**
