@@ -7,6 +7,11 @@
       "soft":			false,
       "degrees": 30
     },
+    "texture": {
+      "name": "villager.movement",
+      "origin": [75, 22],
+      "scale": 1
+    },
     "collider": {
       "width": 0.5,
       "height": 0.5
@@ -18,11 +23,6 @@
     "damping": 0.0,
     "speed": 2,
     "startframe": 0,
-    "texture": {
-      "name": "villager.movement",
-      "origin": [75, 22],
-      "scale": 1
-    },
     "attack": {
       "knockback": 3.0,
       "damage": 25.0

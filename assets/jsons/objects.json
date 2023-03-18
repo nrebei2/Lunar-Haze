@@ -3,32 +3,33 @@
     "texture": {
       "name": "house.static",
       "origin": [3, 10],
-      "scale": 1,
-      "positioned": "bottom-left"
+      "positioned": "bottom-left",
+      "scale": 4
+    },
+    "collider": {
+      "width": 3,
+      "height": 3
     },
     "bodytype": "static",
-    "collider": {
-      "width": 0.75,
-      "height": 0.75
-    },
     "density": 0.0,
     "friction": 0.0,
     "restitution": 0.0,
     "damping": 0.0
   },
   "tree": {
-    "bodytype": "static",
-    "collider": {
-      "width": 0.1,
-      "height": 0.05
+    "texture": {
+      "name": "tree.static",
+      "origin": [30, 10],
+      "scale": 4
     },
+    "collider": {
+      "width": 0.4,
+      "height": 0.2
+    },
+    "bodytype": "static",
     "density": 0.0,
     "friction": 0.0,
     "restitution": 0.0,
-    "damping": 0.0,
-    "texture": {
-      "name": "tree.static",
-      "origin": [30, 10]
-    }
+    "damping": 0.0
   }
 }

@@ -73,6 +73,9 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
      */
     private FilmStrip filmstrip;
 
+    /** How much the texture of this object should be scaled when drawn */
+    private float textureScale;
+
     /**
      * Creates game object at (0, 0)
      */
@@ -126,6 +129,7 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
                             BoxObstacle.POSITIONED.BOTTOM_LEFT : BoxObstacle.POSITIONED.CENTERED
             );
         }
+        this.textureScale = texInfo.getFloat("scale");
     }
 
     /**
@@ -239,7 +243,8 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
     @Override
     public void draw(GameCanvas canvas) {
         canvas.draw(filmstrip, Color.WHITE, origin.x, origin.y,
-                canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y), 0.0f,  scale.x, scale.y);
+                canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y), 0.0f,
+                textureScale * scale.x, textureScale * scale.y);
     }
 
 
