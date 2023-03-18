@@ -131,7 +131,6 @@ public class PlayerController {
         player.addMoonlightCollected();
         remainingMoonlight--;
         player.setLight(player.getLight() + (Werewolf.MAX_LIGHT / levelContainer.getTotalMoonlight()));
-        System.out.println(levelContainer.getRemainingMoonlight());
     }
 
     /**
@@ -149,8 +148,6 @@ public class PlayerController {
             player.setOnMoonlight(true);
             if (board.isCollectable(px, py) && (timeOnMoonlight > MOONLIGHT_COLLECT_TIME)) {
                 collectMoonlight();
-                System.out.println(player.getLight());
-                System.out.println("Remaining moonlight: " + remainingMoonlight);
                 timeOnMoonlight = 0;
                 board.setCollected(px, py);
             }

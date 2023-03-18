@@ -5,16 +5,9 @@ import box2dLight.RayHandler;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.utils.IntArray;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
-import infinityx.lunarhaze.entity.Enemy;
-import infinityx.lunarhaze.entity.SceneObject;
-import infinityx.lunarhaze.entity.Werewolf;
-import infinityx.lunarhaze.physics.BoxObstacle;
-import infinityx.lunarhaze.physics.ConeSource;
-import infinityx.util.FilmStrip;
 
 import java.util.ArrayList;
 
@@ -46,31 +39,33 @@ public class LevelParser {
         return instance;
     }
 
-
-    /**
-     * Constants from asset directory
-     */
-    JsonValue enemiesJson;
-    JsonValue objectsJson;
-    JsonValue playerJson;
     float[] wSize;
     int[] sSize;
+
+    /**
+     * Access to current container since it can be flushed upon re-initialization.
+     */
+    private LevelContainer levelContainer;
 
     /**
      * Caches all constants (between levels) from directory
      *
      * @param directory asset manager holding list of ... assets
+     * @param canvas
      */
-    public void loadConstants(AssetDirectory directory) {
-        // TODO: create and cache player and board? not sure if that would do much
-        // There is not a lot constant between levels
-        JsonValue boardJson = directory.getEntry("board", JsonValue.class);
-        wSize = boardJson.get("tileWorldSize").asFloatArray();
-        sSize = boardJson.get("tileScreenSize").asIntArray();
+    public void loadConstants(AssetDirectory directory, GameCanvas canvas) {
+        JsonValue dimensions = directory.getEntry("dimensions", JsonValue.class);
+        wSize = dimensions.get("tileWorldSize").asFloatArray();
+        sSize = dimensions.get("tileScreenSize").asIntArray();
 
-        enemiesJson = directory.getEntry("enemies", JsonValue.class);
-        objectsJson = directory.getEntry("objects", JsonValue.class);
-        playerJson = directory.getEntry("player", JsonValue.class);
+        canvas.setWorldToScreen(new Vector2(sSize[0] / wSize[0], sSize[1] / wSize[1]));
+
+        levelContainer = new LevelContainer(
+                directory,
+                directory.getEntry("enemies", JsonValue.class),
+                directory.getEntry("objects", JsonValue.class),
+                directory.getEntry("player", JsonValue.class)
+        );
     }
 
     /**
@@ -83,8 +78,7 @@ public class LevelParser {
      */
     public LevelContainer loadLevel(AssetDirectory directory, JsonValue levelContents) {
         // LevelContainer empty at this point
-        LevelContainer levelContainer = new LevelContainer();
-        levelContainer.worldToScreen.set(sSize[0] / wSize[0], sSize[1] / wSize[1]);
+        levelContainer.flush();
 
         // Ambient light
         parseLighting(levelContents.get("ambient"), levelContainer.getRayHandler());
@@ -98,8 +92,7 @@ public class LevelParser {
 
         // Generate player
         JsonValue player = scene.get("player");
-        Werewolf playerModel = parsePlayer(directory, player, levelContainer);
-        levelContainer.setPlayer(playerModel);
+        levelContainer.getPlayer().setPosition(player.getFloat(0), player.getFloat(1));
 
         // Generate enemies
         JsonValue enemies = scene.get("enemies");
@@ -108,9 +101,20 @@ public class LevelParser {
             JsonValue enemyInfo = enemies.get(curId);
             if (enemyInfo == null) break;
 
-            Enemy enemy = parseEnemy(curId, directory, enemyInfo, levelContainer);
+            JsonValue enemyPos = enemyInfo.get("position");
 
-            levelContainer.addEnemy(enemy);
+            ArrayList<Vector2> patrol = new ArrayList<>();
+            for (JsonValue patrolPos : enemyInfo.get("patrol")) {
+                patrol.add(new Vector2(patrolPos.getInt(0), patrolPos.getInt(1)));
+            }
+
+            levelContainer.addEnemy(
+                    enemyInfo.getString("type"),
+                    enemyPos.getFloat(0),
+                    enemyPos.getFloat(1),
+                    patrol
+            );
+
             curId++;
         }
 
@@ -121,143 +125,40 @@ public class LevelParser {
             JsonValue objInfo = objects.get(objId);
             if (objInfo == null) break;
 
-            SceneObject object = parseSceneObject(directory, objInfo, levelContainer);
+            JsonValue objPos = objInfo.get("position");
+            float objScale = objInfo.getFloat("scale");
 
-            levelContainer.addSceneObject(object);
+            levelContainer.addSceneObject(
+                    objInfo.getString("type"), objPos.getFloat(0),
+                    objPos.getFloat(1), objScale
+            );
+
             objId++;
         }
         return levelContainer;
     }
 
     /**
-     * Creates a scene object for the level
-     *
-     * @param objectFormat the JSON tree defining the object
+     * Creates an empty level to be filled in the level editor.
+     * You gotta call loadConstants before calling this method.
      */
-    private SceneObject parseSceneObject(AssetDirectory directory, JsonValue objectFormat, LevelContainer container) {
-        System.out.printf("parsing %s!\n", objectFormat.get("type").asString());
-        JsonValue json = objectsJson.get(objectFormat.get("type").asString());
-        JsonValue objPos = objectFormat.get("position");
-        SceneObject object = new SceneObject(objPos.getFloat(0), objPos.getFloat(1));
-        parseGameObject(object, directory, json);
+    public LevelContainer loadEmpty() {
+        // LevelContainer empty at this point
+        levelContainer.flush();
 
-        float objScale = objectFormat.getFloat("scale");
+        Board board = new Board(10, 10);
 
-        object.setScale(objScale, objScale);
-        object.activatePhysics(container.getWorld());
+        board.setTileScreenDim(sSize[0], sSize[1]);
+        board.setTileWorldDim(wSize[0], wSize[1]);
 
-        System.out.printf("finished parsing %s!\n", objectFormat.get("type").asString());
-        return object;
-    }
+        levelContainer.setBoard(board);
+        levelContainer.hidePlayer();
 
-    private void parseGameObject(GameObject object, AssetDirectory directory, JsonValue json) {
-        JsonValue p_dim = json.get("collider");
-        object.setDimension(p_dim.get("width").asFloat(), p_dim.get("height").asFloat());
-
-        // TODO: bother with error checking?
-        object.setBodyType(json.get("bodytype").asString().equals("static") ? BodyDef.BodyType.StaticBody : BodyDef.BodyType.DynamicBody);
-        object.setLinearDamping(json.get("damping").asFloat());
-        object.setDensity(json.get("density").asFloat());
-        object.setFriction(json.get("friction").asFloat());
-        object.setRestitution(json.get("restitution").asFloat());
-        if (!json.has("speed")) {
-            object.setSpeed(0);
-        } else {
-            object.setSpeed(json.get("speed").asFloat());
-        }
-        //object.setStartFrame(json.get("startframe").asInt());
-        JsonValue texInfo = json.get("texture");
-        object.setTexture(directory.getEntry(texInfo.get("name").asString(), FilmStrip.class));
-        int[] texOrigin = texInfo.get("origin").asIntArray();
-        object.setOrigin(texOrigin[0], texOrigin[1]);
-        if (texInfo.has("positioned")) {
-            object.setPositioned(
-                    texInfo.getString("positioned").equals("bottom-left") ?
-                            BoxObstacle.POSITIONED.BOTTOM_LEFT : BoxObstacle.POSITIONED.CENTERED
-            );
-        }
+        return levelContainer;
     }
 
     /**
-     * Creates a player for the level
-     *
-     * @param playerFormat the JSON tree defining the player
-     */
-    private Werewolf parsePlayer(AssetDirectory directory, JsonValue playerFormat, LevelContainer container) {
-        System.out.printf("in json: (%f, %f)\n", playerFormat.get(0).asFloat(), playerFormat.get(1).asFloat());
-        Werewolf player = new Werewolf(playerFormat.get(0).asFloat(), playerFormat.get(1).asFloat());
-        System.out.printf("after init: (%f, %f)\n", player.getPosition().x, player.getPosition().y);
-
-        parseGameObject(player, directory, playerJson);
-
-        JsonValue light = playerJson.get("spotlight");
-        float[] color = light.get("color").asFloatArray();
-        float dist = light.getFloat("distance");
-        int rays = light.getInt("rays");
-
-        int health = playerJson.getInt("health");
-        float lockout = playerJson.getFloat("lockout");
-
-        player.initHp(health);
-        player.initLockout(lockout);
-
-        PointLight spotLight = new PointLight(
-                container.getRayHandler(), rays, Color.WHITE, dist,
-                0, 0
-        );
-        spotLight.setColor(color[0], color[1], color[2], color[3]);
-        spotLight.setSoft(light.getBoolean("soft"));
-        player.activatePhysics(container.getWorld());
-        player.setSpotLight(spotLight);
-
-        return player;
-    }
-
-    /**
-     * Creates an enemy for the level
-     *
-     * @param enemyFormat the JSON tree defining the enemy
-     */
-    private Enemy parseEnemy(int id, AssetDirectory directory, JsonValue enemyFormat, LevelContainer container) {
-        JsonValue enemyPos = enemyFormat.get("position");
-
-        ArrayList<Vector2> patrol = new ArrayList<>();
-        for (JsonValue patrolPos : enemyFormat.get("patrol")) {
-            patrol.add(new Vector2(patrolPos.getInt(0), patrolPos.getInt(1)));
-        }
-
-        Enemy enemy = new Enemy(id, enemyPos.get(0).asFloat(), enemyPos.get(1).asFloat(), patrol);
-
-        JsonValue json = enemiesJson.get(enemyFormat.get("type").asString());
-        parseGameObject(enemy, directory, json);
-
-        enemy.activatePhysics(container.getWorld());
-
-        JsonValue light = json.get("flashlight");
-        float[] color = light.get("color").asFloatArray();
-        float dist = light.getFloat("distance");
-        int rays = light.getInt("rays");
-        float degrees = light.getFloat("degrees");
-
-        ConeSource flashLight = new ConeSource(
-                container.getRayHandler(), rays, Color.WHITE, dist,
-                enemy.getX(), enemy.getY(), 0f, degrees
-        );
-        flashLight.setColor(color[0], color[1], color[2], color[3]);
-        flashLight.setSoft(light.getBoolean("soft"));
-
-        enemy.setFlashlight(flashLight);
-        enemy.setFlashlightOn(true);
-
-        JsonValue attack = json.get("attack");
-        enemy.setAttackKnockback(attack.getFloat("knockback"));
-        enemy.setAttackDamage(attack.getFloat("damage"));
-
-        return enemy;
-    }
-
-    /**
-     * Creates the Board for the level
+     * Creates the Board for the _specific_ level.
      *
      * @param boardFormat the JSON tree defining the board
      */
@@ -293,11 +194,7 @@ public class LevelParser {
             for (int x = 0; x < board.getWidth(); x++) {
                 int tileNum = tileData.get((board.getHeight() - y - 1) * board.getWidth() + x);
                 board.setTileTexture(x, y,
-                        directory.getEntry(texType + tileNum + "-unlit", Texture.class),
-                        directory.getEntry(texType + tileNum + "-lit", Texture.class),
-                        // currently collected tile is same as uncollected ones
-                        // since we have no assets for collected but lit tiles
-                        directory.getEntry(texType + tileNum + "-lit", Texture.class)
+                        directory.getEntry(texType + tileNum + "-unlit", Texture.class)
                 );
                 board.setTileType(x, y, tileTypeFromNum(tileNum));
                 board.setWalkable(x, y, true);
@@ -327,7 +224,7 @@ public class LevelParser {
 
 
     /**
-     * Creates the ambient lighting for the level
+     * Creates the ambient lighting for the _specific_ level
      *
      * @param light the JSON tree defining the light
      */

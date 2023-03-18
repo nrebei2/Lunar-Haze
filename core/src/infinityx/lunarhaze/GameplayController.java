@@ -1,9 +1,15 @@
 package infinityx.lunarhaze;
 
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.RayCastCallback;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.EnemyList;
 import infinityx.lunarhaze.entity.Werewolf;
+import infinityx.lunarhaze.physics.ConeSource;
+import infinityx.lunarhaze.physics.RaycastInfo;
 
 
 /**
@@ -112,7 +118,7 @@ public class GameplayController {
         }
 
         // Intialize lighting
-        lightingController = new LightingController(enemies, board);
+        lightingController = new LightingController(levelContainer);
 
         /*PointLight light = new PointLight(getRayHandler(), 512, new Color(0.5f, 0.5f, 1f, 0.3f), 2000f, 0, 0);
          */
@@ -144,18 +150,45 @@ public class GameplayController {
         resolveEnemies();
     }
 
+    public RaycastInfo raycast(GameObject requestingObject, Vector2 point1, Vector2 point2){
+        RaycastInfo callback = new RaycastInfo(requestingObject);
+        World world = levelContainer.getWorld();
+        world.rayCast(callback, new Vector2(point1.x, point1.y), new Vector2(point2.x, point2.y));
+        return callback;
+    }
+
+    public boolean detectPlayer(Enemy enemy){
+        Vector2 point1 = enemy.getPosition();
+        ConeSource flashlight = enemy.getFlashlight();
+        float light_dis = flashlight.getDistance();
+
+        float vx = enemy.getVX();
+        float vy = enemy.getVY();
+        Vector2 enemy_direction = new Vector2(vx,vy).nor();
+
+        Vector2 direction = new Vector2(player.getX()-point1.x, player.getY()-point1.y).nor();
+        Vector2 point2 = new Vector2(point1.x+light_dis*direction.x, player.getY()+light_dis*direction.y);
+        RaycastInfo info = raycast(enemy, point1, point2);
+
+//        System.out.println(enemy_direction.dot(direction));
+        double degree = Math.toDegrees(Math.acos(enemy_direction.dot(direction)));
+
+
+        return info.hit && info.hitObject == player && degree <= flashlight.getConeDegree();
+    }
+
     // TODO: THIS SHOULD BE IN ENEMYCONTROLLER, also this code is a mess
     public void resolveEnemies() {
         //board.clearVisibility();
         for (Enemy en : enemies) {
             if (controls[en.getId()] != null) {
                 EnemyController curEnemyController = controls[en.getId()];
-                int action = curEnemyController.getAction();
-                //curEnemyController.setVisibleTiles();
+                boolean detect = detectPlayer(en);
+                int action = curEnemyController.getAction(detect);
 //                boolean attacking = (action & EnemyController.CONTROL_ATTACK) != 0;
                 en.update(action);
 
-                // TODO: make more interesting actions
+                // TODO: make more interesting actions                //curEnemyController.setVisibleTiles();
                 if (en.getIsAlerted()) {
                     // angle between enemy and player
                     double ang = Math.atan2(player.getPosition().y - en.getPosition().y, player.getPosition().x - en.getPosition().y);

@@ -11,25 +11,45 @@ import infinityx.assets.AssetDirectory;
  * This class supports keyboard controller.
  */
 public class InputController {
-    /** Input key for moving up */
+    /**
+     * Input key for moving up
+     */
     private static final int UP = Input.Keys.W;
-    /** Input key for moving down */
+    /**
+     * Input key for moving down
+     */
     private static final int DOWN = Input.Keys.S;
-    /** Input key for moving left */
+    /**
+     * Input key for moving left
+     */
     private static final int LEFT = Input.Keys.A;
-    /** Input key for moving right */
+    /**
+     * Input key for moving right
+     */
     private static final int RIGHT = Input.Keys.D;
-    /** Input key for attacking */
+    /**
+     * Input key for attacking
+     */
     private static final int ATTACK = Input.Keys.SPACE;
-    /** Input key for collecting resource */
+    /**
+     * Input key for collecting resource
+     */
     private static final int COLLECT = Input.Keys.E;
-    /** Input key for using resource */
+    /**
+     * Input key for using resource
+     */
     private static final int USE = Input.Keys.F;
-    /** Input key for running */
+    /**
+     * Input key for running
+     */
     private static final int RUN = Input.Keys.SHIFT_LEFT;
-    /** Input key for resetting the current level */
+    /**
+     * Input key for resetting the current level
+     */
     private static final int RESET = Input.Keys.R;
-    /** Input key for exiting the current level; */
+    /**
+     * Input key for exiting the current level;
+     */
     private static final int EXIT = Input.Keys.ESCAPE;
 
     /**
@@ -165,7 +185,9 @@ public class InputController {
      *
      * @return true if the run button was pressed.
      */
-    public boolean didRun() {return runPressed;}
+    public boolean didRun() {
+        return runPressed;
+    }
 
     /**
      * Returns true if the reset button was pressed.
@@ -212,9 +234,9 @@ public class InputController {
 
         // Directional controls
         float move;
-        if(runPressed){
+        if (runPressed) {
             move = runSpeed;
-        }else{
+        } else {
             move = walkSpeed;
         }
 

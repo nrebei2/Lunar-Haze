@@ -48,6 +48,7 @@ public class BoxObstacle extends SimpleObstacle {
     public enum POSITIONED {
         CENTERED, BOTTOM_LEFT
     }
+
     protected POSITIONED positioned = POSITIONED.CENTERED;
 
     protected Vector2 scale = new Vector2(1, 1);
@@ -127,7 +128,7 @@ public class BoxObstacle extends SimpleObstacle {
      * converts the physics units to pixels.
      *
      * @param width  The object width in physics units
-     * @param height The object width in physics units
+     * @param height The object height in physics units
      */
     public BoxObstacle(float width, float height) {
         this(0, 0, width, height);

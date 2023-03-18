@@ -20,6 +20,7 @@
   "startframe": 0,
   "texture": {
     "name" : "werewolf.movement",
-    "origin" : [64, 10]
+    "origin" : [64, 10],
+    "scale": 1
   }
 }
