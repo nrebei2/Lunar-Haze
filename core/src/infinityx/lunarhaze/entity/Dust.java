@@ -258,12 +258,12 @@ public class Dust implements Drawable {
     public void reset() {
         this.state = DustState.APPEARING;
         this.condition = Condition.CONTINUE;
+        this.reset = false;
+        this.destroyed = false;
         this.textureRot = 0;
         this.alpha = 0;
         this.elapsed = 0;
-        this.reset = false;
         this.scale = 1;
-        this.destroyed = false;
         this.fadeTime = MathUtils.random(fadeMin, fadeMax);
     }
 

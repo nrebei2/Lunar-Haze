@@ -93,6 +93,9 @@ public class LevelContainer {
     private Array<Drawable> drawables;
     private final DrawableCompare drawComp = new DrawableCompare();
 
+    /** The backing set for garbage collection */
+    private Array<Drawable> backing;
+
     /**
      * Constants for enemy initialization
      */
@@ -126,8 +129,10 @@ public class LevelContainer {
         rayHandler = new RayHandler(world, Gdx.graphics.getWidth(), Gdx.graphics.getWidth());
         rayHandler.setAmbientLight(1);
 
-        drawables = new Array<Drawable>();
+        drawables = new Array<>();
+        backing = new Array<>();
 
+        // There will always be a player so it's fine to initialize now
         Werewolf player = new Werewolf(0, 0);
         player.initialize(directory, playerJson, this);
         setPlayer(player);
@@ -217,8 +222,6 @@ public class LevelContainer {
     public void addDrawables(Drawable... drawable) {
         drawables.addAll(drawable);
     }
-
-
 
     /**
      * Return world held by this container
@@ -344,6 +347,7 @@ public class LevelContainer {
      * @param canvas The drawing context
      */
     public void drawLevel(GameCanvas canvas) {
+        garbageCollect();
         canvas.beginT(view.x, view.y);
 
         // Debug prints
@@ -378,9 +382,25 @@ public class LevelContainer {
 
     }
 
+    /**
+     * Garbage collects all deleted drawables.
+     */
+    public void garbageCollect() {
+        // INVARIANT: backing and objects are disjoint
+        for (Drawable o : drawables) {
+            if (!o.isDestroyed()) {
+                backing.add(o);
+            }
+        }
 
+        // stop-and-copy garbage collection
+        // no removal which is nice since each removal is worst case O(n)
+        Array<Drawable> tmp = backing;
+        backing = drawables;
+        drawables = tmp;
+        backing.clear();
+    }
 }
-
 
 /**
  * Depth comparison function used for drawing
