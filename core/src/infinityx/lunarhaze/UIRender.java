@@ -41,14 +41,12 @@ public class UIRender {
 
 
     /**
-     * This method draw the following staff: Player Hp, Enemies Hp, Player Moonlight progress, and
-     * player stealth state.
-     * @param canvas
-     * @param level
-     * @param phase
+     * Draws any needed UI on screen during gameplay
+     * @param canvas drawing canvas
+     * @param level container holding all models
+     * @param phase current phase of the game
      * */
     public void drawUI(GameCanvas canvas, LevelContainer level, GameplayController.Phase phase ) {
-        System.out.println(phase);
         displayFont.setColor(Color.YELLOW);
         canvas.begin(); // DO NOT SCALE
         canvas.drawLightBar(BAR_WIDTH,

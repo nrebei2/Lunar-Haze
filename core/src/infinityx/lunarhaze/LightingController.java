@@ -4,18 +4,16 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.JsonValue;
-import infinityx.lunarhaze.entity.EnemyList;
+import infinityx.lunarhaze.entity.Dust;
+
+import java.util.Iterator;
 
 public class LightingController {
-    /**
-     * List of enemies
-     */
-    private final EnemyList enemies;
-
     /**
      * Reference of board from container
      */
     private final Board board;
+    private final LevelContainer container;
 
     /**
      * Contains constants for dust particle system settings
@@ -39,13 +37,12 @@ public class LightingController {
      * @param container level
      */
     public LightingController(LevelContainer container) {
-        this.enemies = container.getEnemies();
         this.board = container.getBoard();
-
-        // Parses specific GameObject (collider info, etc.) attributes.
+        this.container = container;
 
         dustInfo = container.getDirectory().getEntry("dust", JsonValue.class);
         JsonValue texInfo = dustInfo.get("texture");
+        JsonValue fade = dustInfo.get("fade-time");
 
         // Initialize pools
         dustPools = new IntMap<>();
@@ -55,10 +52,12 @@ public class LightingController {
                     Dust[] dusts = new Dust[POOL_CAPACITY];
                     for (int ii = 0; ii < POOL_CAPACITY; ii++) {
                         Dust dust = new Dust();
+                        // Set main attributes once
                         dust.setTexture(
                                 container.getDirectory().getEntry(texInfo.getString("name"), Texture.class)
                         );
                         dust.setTextureScale(texInfo.getFloat("scale"));
+                        dust.setFadeRange(fade.getFloat(0), fade.getFloat(1));
                         initializeDust(i, j, dust);
                         dusts[ii] = dust;
                     }
@@ -78,15 +77,23 @@ public class LightingController {
      * Reinitialize all dust particles set to destroy.
      */
     public void updateDust(float delta) {
-        for (IntMap.Entry<Dust[]> entry : dustPools) {
+        Iterator<IntMap.Entry<Dust[]>> iterator = dustPools.iterator();
+        while (iterator.hasNext()) {
+            IntMap.Entry<Dust[]> entry = iterator.next();
             int x = entry.key % board.getWidth();
             int y = (entry.key - x) / board.getWidth();
+            if (!board.isCollectable(x, y)) {
+                iterator.remove();
+                for (Dust dust : entry.value) dust.beginDestruction();
+                // TODO: maybe add dust to free list if moonlight updates
+                continue;
+            }
             for (Dust dust : entry.value) {
                 dust.update(delta);
                 if (board.worldToBoardX(dust.getX()) != x || board.worldToBoardY(dust.getY()) != y) {
-                    dust.beginDecay();
+                    dust.beginReset();
                 }
-                if (dust.isDestroyed()) {
+                if (dust.shouldReset()) {
                     initializeDust(x, y, dust);
                 }
             }

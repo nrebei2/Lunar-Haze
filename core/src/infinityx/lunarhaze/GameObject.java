@@ -74,6 +74,9 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
      */
     private float textureScale;
 
+    /** Whether the object should be drawn at next timestep. */
+    private boolean destroyed;
+
     /**
      * Creates game object at (0, 0)
      */
@@ -126,6 +129,16 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
             );
         }
         this.textureScale = texInfo.getFloat("scale");
+    }
+
+    @Override
+    public void setDestroyed() {
+        this.destroyed = true;
+    }
+
+    @Override
+    public boolean isDestroyed() {
+        return destroyed;
     }
 
     /**

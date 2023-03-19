@@ -124,6 +124,7 @@ public class PlayerController {
             timeOnMoonlight += delta; // Increase variable by time
             player.setOnMoonlight(true);
             if (board.isCollectable(px, py) && (timeOnMoonlight > MOONLIGHT_COLLECT_TIME)) {
+                System.out.println("HAJDSAD");
                 collectMoonlight();
                 timeOnMoonlight = 0;
                 board.setCollected(px, py);

@@ -1,8 +1,10 @@
-package infinityx.lunarhaze;
+package infinityx.lunarhaze.entity;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import infinityx.lunarhaze.GameCanvas;
 import infinityx.util.Drawable;
 
 public class Dust implements Drawable {
@@ -30,17 +32,29 @@ public class Dust implements Drawable {
      * Track the current state of this dust particle.
      */
     public enum DustState {
-        APPEARING, ALIVE, DECAYING
+        APPEARING, DECAYING
+    }
+
+    /** What should the particle do after it finished decaying */
+    private enum Condition {
+        RESET, CONTINUE, DESTROY
     }
 
     private DustState state;
 
+    private Condition condition;
 
     /**
      * Used for fading in/out
      */
     private float elapsed;
-    private static final float FADE_TIME = 5f;
+
+    /** time range for fading in/out */
+    private float fadeMin;
+    private float fadeMax;
+
+    /** The current fade time */
+    private float fadeTime;
 
     /**
      * Easing in function, easing out is reversed
@@ -62,16 +76,18 @@ public class Dust implements Drawable {
      */
     private float textureScale;
 
-
     /**
-     * Whether or not the object should be reset at next timestep.
+     * Whether the object should be reset at next timestep.
      */
-    private boolean destroyed = false;
+    private boolean reset = false;
 
     /**
      * Scale of specific dust particle (on top of texture scale)
      */
     private float scale;
+
+    /** Whether this particle should be destroyed (not drawn) next frame */
+    private boolean destroyed;
 
     /**
      * Returns the position of this particle.
@@ -158,17 +174,34 @@ public class Dust implements Drawable {
     }
 
     /**
-     * Once called this particle will begin decaying (disappearing) then become destroyed.
+     * Set time range for fading in/out
+     * @param min minimum time
+     * @param max maximum time
      */
-    public void beginDecay() {
-        this.state = DustState.DECAYING;
+    public void setFadeRange(float min, float max) {
+        fadeMin = min;
+        fadeMax = max;
     }
 
     /**
-     * Returns true if this object should be destroyed.
+     * Once called this particle will begin decaying (disappearing) then become reset.
      */
-    public boolean isDestroyed() {
-        return destroyed;
+    public void beginReset() {
+        this.condition = Condition.RESET;
+    }
+
+    /**
+     * Once called this particle will begin decaying (disappearing) then become destroyed.
+     */
+    public void beginDestruction() {
+        this.condition = Condition.DESTROY;
+    }
+
+    /**
+     * Returns true if this object should be reset.
+     */
+    public boolean shouldReset() {
+        return reset;
     }
 
     /**
@@ -187,24 +220,31 @@ public class Dust implements Drawable {
      * Update attributes of this dust particle
      */
     public void update(float delta) {
+        elapsed += delta;
         switch (state) {
             case APPEARING:
-                elapsed += delta;
                 // progress along fade-in
-                float inProg = Math.min(1f, elapsed / FADE_TIME);
+                float inProg = Math.min(1f, elapsed / fadeTime);
                 alpha = EAS_FN.apply(inProg);
                 if (inProg == 1f) {
-                    state = DustState.ALIVE;
+                    state = DustState.DECAYING;
+                    this.fadeTime = MathUtils.random(fadeMin, fadeMax);
                     elapsed = 0;
                 }
                 break;
             case DECAYING:
-                elapsed += delta;
                 // progress along fade-out
-                float outProg = Math.min(1f, elapsed / FADE_TIME);
+                float outProg = Math.min(1f, elapsed / fadeTime);
                 alpha = EAS_FN.apply(1 - outProg);
                 if (outProg == 1f) {
-                    this.destroyed = true;
+                    switch (condition) {
+                        case RESET: reset = true;
+                        case DESTROY: setDestroyed();
+                        case CONTINUE: {
+                            this.state = DustState.APPEARING;
+                            this.fadeTime = MathUtils.random(fadeMin, fadeMax);
+                        }
+                    }
                 }
                 break;
         }
@@ -217,11 +257,14 @@ public class Dust implements Drawable {
      */
     public void reset() {
         this.state = DustState.APPEARING;
+        this.condition = Condition.CONTINUE;
         this.textureRot = 0;
         this.alpha = 0;
         this.elapsed = 0;
-        this.destroyed = false;
+        this.reset = false;
         this.scale = 1;
+        this.destroyed = false;
+        this.fadeTime = MathUtils.random(fadeMin, fadeMax);
     }
 
     /**
@@ -244,5 +287,23 @@ public class Dust implements Drawable {
         canvas.draw(texture, alpha, texture.getWidth() / 2, texture.getHeight() / 2,
                 canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y), textureRot,
                 textureScale * scale, textureScale * scale);
+    }
+
+    /**
+     * Returns true if this object is destroyed.
+     *
+     * @return true if this object is destroyed
+     */
+    @Override
+    public boolean isDestroyed() {
+        return destroyed;
+    }
+
+    /**
+     * Sets this object as destroyed. Will be removed from drawing next timestep.
+     */
+    @Override
+    public void setDestroyed() {
+        destroyed = true;
     }
 }

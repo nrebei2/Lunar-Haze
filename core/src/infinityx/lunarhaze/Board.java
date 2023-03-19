@@ -459,7 +459,7 @@ public class Board {
         }
         Tile t = getTile(x, y);
 
-        return !t.isCollectable();
+        return t.isCollectable();
     }
 
     /**
@@ -491,7 +491,7 @@ public class Board {
         // update number of collectable moonlight tiles
         // as a safeguard only change if it changes the status of the tile
         if (t.isCollectable() != collectable) moonlightTiles += collectable ? 1 : -1;
-        t.setCollectable(false);
+        t.setCollectable(collectable);
     }
 
     /**

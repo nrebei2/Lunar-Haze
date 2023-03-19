@@ -121,7 +121,6 @@ public class GameMode extends ScreenObservable implements Screen {
     public void update(float delta) {
         // Process the game input
         inputController.readKeyboard();
-        System.out.println(gameplayController.getPhase());
 
         switch (gameplayController.getState()) {
             case OVER:
@@ -166,7 +165,6 @@ public class GameMode extends ScreenObservable implements Screen {
      * Draw the game mode.
      */
     public void draw(float delta) {
-
         canvas.clear();
 
         // Puts player at center of canvas

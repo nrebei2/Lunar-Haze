@@ -73,7 +73,7 @@ public class GameplayController {
 
 
     // someone edit this sometime pls too many magic numbers
-    private static final float NIGHT_DURATION = 10f;
+    private static final float NIGHT_DURATION = 30f;
     private static final float PHASE_TRANSITION_TIME = 3f;
 
     private static final float[] DAY_COLOR = {1f, 1f, 1f, 1f};

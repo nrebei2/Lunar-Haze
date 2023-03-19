@@ -15,7 +15,6 @@ import infinityx.lunarhaze.GameObject;
 import infinityx.lunarhaze.LevelContainer;
 
 public class Werewolf extends GameObject {
-
     /**
      * Initial light value of the werewolf is 0.0
      **/

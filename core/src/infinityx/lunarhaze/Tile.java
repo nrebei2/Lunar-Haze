@@ -110,7 +110,7 @@ public class Tile {
     }
 
     public void setCollectable(boolean collectable) {
-        collectable = true;
+        this.collectable = collectable;
     }
 
     /**
