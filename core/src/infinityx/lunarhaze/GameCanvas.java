@@ -374,7 +374,9 @@ public class GameCanvas {
         camera = new OrthographicCamera(getWidth(), getHeight());
         camera.setToOrtho(false);
 
-        Gdx.gl.glViewport(0, 0, getWidth(), getHeight());
+        System.out.printf("(%d, %d)\n", Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
+
+//        Gdx.gl.glViewport(0, 0, );
     }
 
     /**

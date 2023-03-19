@@ -28,6 +28,11 @@ public class PlayerController {
     private static final float RUN_STEALTH = 0.6f;
 
     /**
+     * Stealth value if the player is on the moonlight
+     */
+    private static final float MOON_STEALTH = 1.0f;
+
+    /**
      * Remaining moonlight on the map
      */
     private int remainingMoonlight;
@@ -174,6 +179,10 @@ public class PlayerController {
             player.setStealth(RUN_STEALTH);
         } else if (input.getHorizontal() == 0 || input.getVertical() == 0 ){
             player.setStealth(STILL_STEALTH);
+        }
+
+        if (player.isOnMoonlight()){
+            player.setStealth(MOON_STEALTH);
         }
     }
 

@@ -238,6 +238,7 @@ public class GameMode extends ScreenObservable implements Screen {
      * prefer this in lecture.
      */
     public void draw(float delta) {
+        System.out.printf("Dimensions: (%d, %d)\n", canvas.getWidth(), canvas.getHeight());
         canvas.clear();
 
         // Puts player at center of canvas
