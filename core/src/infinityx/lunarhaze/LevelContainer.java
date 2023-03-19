@@ -245,10 +245,8 @@ public class LevelContainer {
         raycamera.update();
         rayHandler.setCombinedMatrix(raycamera);
 
-        if(phase == GameplayController.Phase.NIGHT) {
-            // Finally, draw lights if it is nighttime
-            rayHandler.updateAndRender();
-        }
+        rayHandler.updateAndRender();
+
     }
 }
 

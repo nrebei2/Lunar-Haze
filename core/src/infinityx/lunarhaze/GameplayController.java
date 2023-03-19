@@ -1,5 +1,7 @@
 package infinityx.lunarhaze;
 
+import box2dLight.RayHandler;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
@@ -7,6 +9,8 @@ import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.EnemyList;
 import infinityx.lunarhaze.entity.Werewolf;
 import infinityx.lunarhaze.physics.RaycastInfo;
+
+import java.awt.*;
 
 
 /**
@@ -47,7 +51,15 @@ public class GameplayController {
 
     private static final float NIGHT_DURATION = 10f;
     private static final float DAY_DURATION = 10f;
+
+    private static final float PHASE_TRANSITION_TIME = 3f;
+
+    private static final float[] DAY_COLOR = {1f, 1f, 1f, 1f};
+    private static final float[] NIGHT_COLOR = {0.55f, 0.52f, 0.62f, 0.55f};
+    private float ambientLightTransitionTimer;
     private float phaseTimer;
+
+    private Color ambientLight;
 
     /**This is the collision controller (handels collisions between all objects in our world*/
     private CollisionController collisionController;
@@ -59,6 +71,8 @@ public class GameplayController {
         board = null;
         objects = new Array<GameObject>();
         currentPhase = Phase.NIGHT;
+        ambientLightTransitionTimer = PHASE_TRANSITION_TIME;
+        ambientLight = new Color(0.55f, 0.52f, 0.62f, 0.55f);
     }
 
     /**
@@ -165,6 +179,7 @@ public class GameplayController {
         if (phaseTimer <= 0) {
             switchPhase();
         }
+        updateAmbientLight(delta);
     }
 
     /**
@@ -180,6 +195,27 @@ public class GameplayController {
         } else {
             currentPhase = Phase.NIGHT;
             phaseTimer = NIGHT_DURATION;
+        }
+        ambientLightTransitionTimer = 0;
+    }
+
+    // New method to update the ambient light during the transition
+    private void updateAmbientLight(float delta) {
+        if (ambientLightTransitionTimer < PHASE_TRANSITION_TIME) {
+            ambientLightTransitionTimer += delta;
+            float progress = Math.min(ambientLightTransitionTimer / PHASE_TRANSITION_TIME, 1);
+
+            // Define the start and end colors for the transition
+            float[] startColor = currentPhase == Phase.DAY ? NIGHT_COLOR : DAY_COLOR;
+            float[] endColor = currentPhase == Phase.DAY ? DAY_COLOR : NIGHT_COLOR;
+
+            // Perform the LERP for each color component
+            float r = startColor[0] * (1 - progress) + endColor[0] * progress;
+            float g = startColor[1] * (1 - progress) + endColor[1] * progress;
+            float b = startColor[2] * (1 - progress) + endColor[2] * progress;
+            float a = startColor[3] * (1 - progress) + endColor[3] * progress;
+
+            levelContainer.getRayHandler().setAmbientLight(r, g, b, a);
         }
     }
 
