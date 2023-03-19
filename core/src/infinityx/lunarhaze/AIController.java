@@ -1,56 +1,169 @@
 package infinityx.lunarhaze;
 
-//public class AIController implements InputController {
-//    Board board;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+//public class AIController {
+//    private BehaviorNode root;
 //
-//    Werewolf target;
+//    public AIController() {
+//        // Initialize the behavior tree
+//        root = new SequenceNode(
+//                // Check if the player is visible
+//                new SelectorNode(
+//                        new IsPlayerVisibleCondition(),
+//                        new ChasePlayerAction()
+//                ),
+//                // Move to cover and alert nearby enemies
+//                new SelectorNode(
+//                        new IsCoverNearbyCondition(),
+//                        new SequenceNode(
+//                                new MoveToCoverAction(),
+//                                new SelectorNode(
+//                                        new IsPlayerVisibleFromCoverCondition(),
+//                                        new AlertNearbyEnemiesAction()
+//                                )
+//                        )
+//                ),
+//                // Search for the player
+//                new SearchForPlayerAction()
+//        );
+//    }
 //
-//    FSMState state;
+//    public void update() {
+//        // Update the behavior tree every frame
+//        root.execute(this);
+//    }
 //
-//    public AIController(Board board, Werewolf target, Enemy enemy,  FSMState state){
-//        this.board = board;
-//        this.target = target;
-//        this.state = state;
+//    // Methods for detecting objects in the game world
+//
+//    public boolean isPlayerVisible() {
+//        // TODO: Implement this method
+//        return false;
+//    }
+//
+//    public boolean isCoverNearby() {
+//        // TODO: Implement this method
+//        return false;
+//    }
+//
+//    public boolean isPlayerVisibleFromCover() {
+//        // TODO: Implement this method
+//        return false;
+//    }
+//
+//    // Methods for moving the AI in the game world
+//
+//    public void moveToCover() {
+//        // TODO: Implement this method
+//    }
+//
+//    public void chasePlayer() {
+//        // TODO: Implement this method
+//    }
+//
+//    public void searchForPlayer() {
+//        // TODO: Implement this method
+//    }
+//
+//    // Methods for alerting nearby enemies
+//
+//    public void alertNearbyEnemies() {
+//        // TODO: Implement this method
 //    }
 //
 //
-//    public void setState(FSMState state){
-//        this.state = state;
+//
+//    // Classes for behavior tree nodes
+//
+//    public abstract class BTNode {
+//
+//        public abstract NodeState tick();
+//
 //    }
 //
-//    /**
-//     * Returns the action selected by this InputController
-//     *
-//     * The returned int is a bit-vector of more than one possible input
-//     * option. This is why we do not use an enumeration of Control Codes;
-//     * Java does not (nicely) provide bitwise operation support for enums.
-//     *
-//     * This function tests the environment and uses the FSM to chose the next
-//     * action of the ship. This function SHOULD NOT need to be modified.  It
-//     * just contains code that drives the functions that you need to implement.
-//     *
-//     * @return the action selected by this InputController
-//     */
-//    public int getAction() {
-//        markGoalTiles();
-//        int action = getMoveAlongPathToGoalTile();
-//
-//        return action;
+//    public enum NodeState {
+//        RUNNING,
+//        SUCCESS,
+//        FAILURE
 //    }
 //
+//    public class Selector extends BTNode {
 //
-//    /**
-//     * Mark all desirable tiles to move to.
-//     *
-//     * This method implements pathfinding through the use of goal tiles.
-//     * It searches for all desirable tiles to move to (there may be more than
-//     * one), and marks each one as a goal. Then, the pathfinding method
-//     * getMoveAlongPathToGoalTile() moves the ship towards the closest one.
-//     *
-//     * POSTCONDITION: There is guaranteed to be at least one goal tile
-//     * when completed.
-//     */
+//        private final List<BTNode> children;
 //
+//        public Selector(List<BTNode> children) {
+//            this.children = children;
+//        }
+//
+//        @Override
+//        public NodeState tick() {
+//            for (BTNode child : children) {
+//                NodeState state = child.tick();
+//                if (state != NodeState.FAILURE) {
+//                    return state;
+//                }
+//            }
+//            return NodeState.FAILURE;
+//        }
+//
+//    }
+//
+//    public class Sequence extends BTNode {
+//
+//        private final List<BTNode> children;
+//
+//        public Sequence(List<BTNode> children) {
+//            this.children = children;
+//        }
+//
+//        @Override
+//        public NodeState tick() {
+//            for (BTNode child : children) {
+//                NodeState state = child.tick();
+//                if (state != NodeState.SUCCESS) {
+//                    return state;
+//                }
+//            }
+//            return NodeState.SUCCESS;
+//        }
+//
+//    }
+//
+//    public class Condition extends BTNode {
+//
+//        private final Predicate<Object> condition;
+//
+//        public Condition(Predicate<Object> condition) {
+//            this.condition = condition;
+//        }
+//
+//        @Override
+//        public NodeState tick() {
+//            if (condition.test(null)) {
+//                return NodeState.SUCCESS;
+//            }
+//            return NodeState.FAILURE;
+//        }
+//
+//    }
+//
+//    public class Action extends BTNode {
+//
+//        private final Consumer<Object> action;
+//
+//        public Action(Consumer<Object> action) {
+//            this.action = action;
+//        }
+//
+//        @Override
+//        public NodeState tick() {
+//            action.accept(null);
+//            return NodeState.SUCCESS;
+//        }
+//
+//    }
 //
 //
 //
