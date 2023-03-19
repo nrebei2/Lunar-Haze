@@ -82,10 +82,6 @@ public class LevelContainer {
      */
     private Board board;
 
-    private int totalMoonlight;
-
-    private int remainingMoonlight;
-
     /**
      * Keeps player centered
      */
@@ -118,6 +114,11 @@ public class LevelContainer {
     private boolean hidden;
 
     /**
+     * the total amount of collectable moonlight on the board at initialization
+     */
+    private int totalMoonlight;
+
+    /**
      * Initialize attributes
      */
     private void initialize() {
@@ -134,8 +135,6 @@ public class LevelContainer {
         board = null;
         enemies = new EnemyList();
         sceneObjects = new Array<>(true, 5);
-
-        remainingMoonlight = 0;
     }
 
     /**
@@ -167,6 +166,13 @@ public class LevelContainer {
      */
     public EnemyList getEnemies() {
         return enemies;
+    }
+
+    /**
+     * @return the total amount of collectable moonlight on the board at initialization
+     */
+    public float getTotalMoonlight() {
+        return totalMoonlight;
     }
 
     /**
@@ -260,22 +266,6 @@ public class LevelContainer {
         drawables.add(player);
     }
 
-    public void addMoonlight() {
-        remainingMoonlight++;
-    }
-
-    public int getRemainingMoonlight() {
-        return remainingMoonlight;
-    }
-
-    public int getTotalMoonlight() {
-        return totalMoonlight;
-    }
-
-    public void setTotalMoonlight(int value) {
-        totalMoonlight = value;
-    }
-
     /**
      * @return Scene board holding all background tiles
      */
@@ -288,6 +278,7 @@ public class LevelContainer {
      */
     public void setBoard(Board board) {
         this.board = board;
+        this.totalMoonlight = board.getRemainingMoonlight();
     }
 
     /**

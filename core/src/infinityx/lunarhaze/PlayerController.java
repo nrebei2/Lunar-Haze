@@ -1,6 +1,7 @@
 package infinityx.lunarhaze;
 
 import com.badlogic.gdx.math.Vector2;
+import infinityx.lunarhaze.GameplayController.Phase;
 import infinityx.lunarhaze.entity.Werewolf;
 
 public class PlayerController {
@@ -31,11 +32,6 @@ public class PlayerController {
     private static final float MOON_STEALTH = 1.0f;
 
     /**
-     * Remaining moonlight on the map
-     */
-    private int remainingMoonlight;
-
-    /**
      * The player being controlled by this AIController
      */
     private final Werewolf player;
@@ -54,11 +50,6 @@ public class PlayerController {
      * LevelContainer that contains moonlight information
      */
     private LevelContainer levelContainer;
-
-    /**
-     * Whether the player won the game
-     */
-    private boolean gameWon;
 
     /**
      * Attacks the player has already made
@@ -80,50 +71,7 @@ public class PlayerController {
      */
     private float attackCooldown;
 
-    private GameplayController.Phase phase;
-
     private Vector2 attackDirection;
-
-    /**
-     * Get the player HP in PlayerController to enforce encapsulation.
-     *
-     * Return HP of the player, int ranging from 0~5.
-     */
-    public int getPlayerHp(){
-        return player.getHp();
-    }
-
-    /**
-     * Get the player light in PlayerController to enforce encapsulation.
-     *
-     * Return light collected of the player, float ranging from 0~100.
-     */
-    public float getPlayerLight(){
-        return player.getLight();
-    }
-
-    /**
-     * Get the player stealth in PlayerController to enforce encapsulation.
-     *
-     * Return stealth of the player, float ranging from 0~1.
-     */
-    public float getPlayerStealth(){
-        return player.getStealth();
-    }
-
-    /**
-     * Get whether player achieves the condition to win.
-     */
-    public Boolean isGameWon() {
-        return gameWon;
-    }
-
-    /**
-     * Set whether player achieves the condition to win.
-     */
-    public void setGameWon(Boolean value) {
-        gameWon = value;
-    }
 
     /**
      * Initializer of a PlayerController
@@ -133,8 +81,6 @@ public class PlayerController {
         this.board = board;
         timeOnMoonlight = 0;
         this.levelContainer = levelContainer;
-        remainingMoonlight = levelContainer.getRemainingMoonlight();
-        gameWon = false;
         attackCounter = 0f;
         attackLength = 0.6f;
         attackCooldown = 4f;
@@ -149,11 +95,10 @@ public class PlayerController {
      * @param input InputController that controls the player
      * @param delta Number of seconds since last animation frame
      */
-    public void resolvePlayer(InputController input, float delta, GameplayController.Phase currPhase) {
+    public void resolvePlayer(InputController input, float delta) {
         player.setMovementH(input.getHorizontal());
         player.setMovementV(input.getVertical());
         player.update(delta);
-        phase = currPhase;
     }
 
     /**
@@ -162,7 +107,6 @@ public class PlayerController {
      */
     public void collectMoonlight() {
         player.addMoonlightCollected();
-        remainingMoonlight--;
         player.setLight(player.getLight() + (Werewolf.MAX_LIGHT / levelContainer.getTotalMoonlight()));
     }
 
@@ -174,7 +118,7 @@ public class PlayerController {
      */
     public void resolveMoonlight(float delta) {
         int px = board.worldToBoardX(player.getPosition().x);
-        int py = board.worldToBoardX(player.getPosition().y);
+        int py = board.worldToBoardY(player.getPosition().y);
 
         if (board.isLit(px, py)) {
             timeOnMoonlight += delta; // Increase variable by time
@@ -184,8 +128,6 @@ public class PlayerController {
                 timeOnMoonlight = 0;
                 board.setCollected(px, py);
             }
-            // Check if game is won here
-            if (remainingMoonlight == 0) gameWon = true;
         } else {
             timeOnMoonlight = 0;
             player.setOnMoonlight(false);
@@ -214,8 +156,8 @@ public class PlayerController {
         }
     }
 
-    public void attack(float delta, InputController input) {
-        if(phase == GameplayController.Phase.BATTLE) {
+    public void attack(float delta, InputController input, Phase phase) {
+        if (phase == GameplayController.Phase.BATTLE) {
             if (player.isAttacking()) {
                 player.setCanMove(false);
                 attackCounter += delta;
@@ -241,9 +183,9 @@ public class PlayerController {
     }
 
     public void update(InputController input, float delta, GameplayController.Phase currPhase){
-        resolvePlayer(input, delta, currPhase);
+        resolvePlayer(input, delta);
         resolveMoonlight(delta);
         resolveStealthBar(input);
-        attack(delta, input);
+        attack(delta, input, currPhase);
     }
 }

@@ -75,14 +75,11 @@ public class GameMode extends ScreenObservable implements Screen {
      */
     private int level;
 
-    private GameplayController.GameState gameState;
-
     public GameMode(GameCanvas canvas) {
         this.canvas = canvas;
         // Create the controllers:
         inputController = new InputController();
         gameplayController = new GameplayController();
-        gameState = GameplayController.GameState.PLAY;
     }
 
     /**
@@ -93,7 +90,6 @@ public class GameMode extends ScreenObservable implements Screen {
     public void setLevel(int level) {
         //TODO DELETE ONE OF THESE
         this.level = level;
-        // must reload level container and controllers
     }
 
     /**
@@ -110,6 +106,7 @@ public class GameMode extends ScreenObservable implements Screen {
         inputController.loadConstants(directory);
         levelFormat = directory.getEntry("levels", JsonValue.class);
         displayFont = directory.getEntry("retro", BitmapFont.class);
+        uiRender = new UIRender(displayFont, directory);
     }
 
     /**
@@ -126,13 +123,12 @@ public class GameMode extends ScreenObservable implements Screen {
         inputController.readKeyboard();
         System.out.println(gameplayController.getPhase());
 
-        // Test whether to reset the game.
-        switch (gameState) {
+        switch (gameplayController.getState()) {
             case OVER:
                 // TODO: make seperate screen
             case WIN:
                 if (inputController.didReset()) {
-                    gameplayController.reset();
+                    setupLevel();
                 } else {
                     play(delta);
                 }
@@ -146,11 +142,12 @@ public class GameMode extends ScreenObservable implements Screen {
     }
 
     /**
-     * Initializes the levelContainer given the set level
+     * Initializes the levelContainer given level.
      */
     private void setupLevel() {
         LevelParser ps = LevelParser.LevelParser();
         levelContainer = ps.loadLevel(directory, levelFormat.get(String.valueOf(level)));
+        gameplayController.start(levelContainer);
     }
 
     /**
@@ -205,8 +202,6 @@ public class GameMode extends ScreenObservable implements Screen {
      */
     public void show() {
         setupLevel();
-        gameplayController.start(levelContainer);
-        gameState = GameplayController.GameState.PLAY;
     }
 
     /**
@@ -224,14 +219,6 @@ public class GameMode extends ScreenObservable implements Screen {
             observer.exitScreen(this, GO_MENU);
         }
 
-        // TODO: for convenience,
-        if (Gdx.input.isKeyPressed(Input.Keys.PERIOD)) {
-            gameState = GameplayController.GameState.WIN;
-        }
-
-        if (Gdx.input.isKeyPressed(Input.Keys.COMMA)) {
-            gameState = GameplayController.GameState.OVER;
-        }
     }
 
     /**

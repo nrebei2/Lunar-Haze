@@ -48,9 +48,9 @@ public class Board {
     private Vector2 tileScreenDim = new Vector2(128, 96);
 
     /**
-     * Cache holding set of moonlight tiles, (n, m) is lit iff m*width + n is in moonlightTiles
+     * Cache holding the number of tiles with collectable moonlight
      */
-    private final IntSet moonlightTiles;
+    private int moonlightTiles;
 
     /**
      * Used in editor
@@ -79,7 +79,7 @@ public class Board {
      * @param height Board height in tiles
      */
     public Board(int width, int height) {
-        moonlightTiles = new IntSet();
+        moonlightTiles = 0;
         this.width = width;
         this.height = height;
         tiles = new Tile[width * height];
@@ -441,12 +441,6 @@ public class Board {
             return;
         }
         getTile(x, y).setLit(lit);
-
-        if (lit) {
-            moonlightTiles.add(x + y * width);
-        } else {
-            moonlightTiles.remove(x + y * width);
-        }
     }
 
     /**
@@ -465,29 +459,39 @@ public class Board {
         }
         Tile t = getTile(x, y);
 
-        return !t.isCollected();
+        return !t.isCollectable();
     }
 
     /**
-     * Sets a tile as collected but still lit.
+     * Sets a tile as collected (still lit).
      * <p>
      *
      * @param x The x index for the Tile cell
      * @param y The y index for the Tile cell
      */
     public void setCollected(int x, int y) {
+        setCollectable(x, y, false);
+    }
+
+    /**
+     * Sets a tile as (moonlight) collectable or not.
+     * <p>
+     *
+     * @param x The x index for the Tile cell
+     * @param y The y index for the Tile cell
+     * @param collectable the player can collect moonlight on this tile (true) or not (false)
+     */
+    public void setCollectable(int x, int y, boolean collectable) {
         if (!inBounds(x, y)) {
             Gdx.app.error("Board", "Illegal tile " + x + "," + y, new IndexOutOfBoundsException());
             return;
         }
         Tile t = getTile(x, y);
-        if (t.getSpotLight() == null) {
-            Gdx.app.error("Board", "This should never happen! Talk to me if this pops up for you.");
-            return;
-        }
-        if (getTile(x, y).isLit()) {
-            getTile(x, y).setCollected();
-        }
+
+        // update number of collectable moonlight tiles
+        // as a safeguard only change if it changes the status of the tile
+        if (t.isCollectable() != collectable) moonlightTiles += collectable ? 1 : -1;
+        t.setCollectable(false);
     }
 
     /**
@@ -681,11 +685,9 @@ public class Board {
     }
 
     /**
-     * Please don't modify the return value
-     *
-     * @return set of moonlight tile indices
+     * @return the number of tiles on this board with collectable moonlight
      */
-    public IntSet getMoonlightTiles() {
+    public int getRemainingMoonlight() {
         return moonlightTiles;
     }
 }

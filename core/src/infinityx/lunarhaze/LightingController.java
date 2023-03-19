@@ -51,7 +51,7 @@ public class LightingController {
         dustPools = new IntMap<>();
         for (int i = 0; i < board.getWidth(); i++) {
             for (int j = 0; j < board.getHeight(); j++) {
-                if (board.isCollectable(i, j) && board.isLit(i, j)) {
+                if (board.isCollectable(i, j)) {
                     Dust[] dusts = new Dust[POOL_CAPACITY];
                     for (int ii = 0; ii < POOL_CAPACITY; ii++) {
                         Dust dust = new Dust();

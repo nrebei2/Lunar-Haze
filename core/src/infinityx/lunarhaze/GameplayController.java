@@ -1,5 +1,7 @@
 package infinityx.lunarhaze;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.EnemyList;
 import infinityx.lunarhaze.entity.Werewolf;
@@ -9,13 +11,28 @@ import infinityx.lunarhaze.entity.Werewolf;
  */
 public class GameplayController {
     /**
-     * Current game phase;
+     * We are separating our main game into two phases:
+     * - Stealth: Collect moonlight
+     * - Battle: Hack-n-slash
      */
-    private Phase gamePhase;
+    public enum Phase {
+        STEALTH,
+        BATTLE
+    }
+    private Phase currentPhase;
 
     /**
-     * Current game state;
-     * */
+     * Track the current state of the game for the update loop.
+     * - Play: The player could play the game
+     * - Over: The werewolf has been killed by an enemy!!
+     * - Win: The player has killed all the enemies. Should only be set when the phase is DAY
+     */
+    public enum GameState {
+        PLAY,
+        OVER,
+        WIN
+    }
+
     private GameState gameState;
 
     /** Reference to level container, acts as a nice interface for all level models */
@@ -55,6 +72,7 @@ public class GameplayController {
     private CollisionController collisionController;
 
 
+    // someone edit this sometime pls too many magic numbers
     private static final float NIGHT_DURATION = 10f;
     private static final float PHASE_TRANSITION_TIME = 3f;
 
@@ -63,12 +81,15 @@ public class GameplayController {
     private float ambientLightTransitionTimer;
     private float phaseTimer;
 
-
+    /**
+     * Creates a new GameplayController with no active elements.
+     */
     public GameplayController() {
         player = null;
         enemies = null;
         board = null;
         currentPhase = Phase.STEALTH;
+        gameState = GameState.PLAY;
         ambientLightTransitionTimer = PHASE_TRANSITION_TIME;
     }
 
@@ -87,9 +108,9 @@ public class GameplayController {
     }
 
     /**
-     * Starts a new game.
+     * Starts a new game, reinitializing relevant controllers.
      * <p>
-     * This method creates a single player, but does nothing else.
+     * @param levelContainer container holding model objects in level
      */
     public void start(LevelContainer levelContainer) {
         this.levelContainer = levelContainer;
@@ -100,7 +121,6 @@ public class GameplayController {
         this.playerController = new PlayerController(player, board, levelContainer);
         controls = new EnemyController[enemies.size()];
         phaseTimer = NIGHT_DURATION;
-
 
         for (int ii = 0; ii < enemies.size(); ii++) {
             controls[ii] = new EnemyController(ii, player, enemies, board);
@@ -125,31 +145,32 @@ public class GameplayController {
         if (gameState == GameState.PLAY) {
             // Process the player only when the game is in play
             playerController.update(input, delta, currentPhase);
-            switch (gamePhase) {
-                case BATTLE:
-                    if (levelContainer.getRemainingMoonlight() == 0 || phaseTimer <= 0) gamePhase = Phase.STEALTH;
-                    break;
+            switch (currentPhase) {
                 case STEALTH:
+                    if (levelContainer.getBoard().getRemainingMoonlight() == 0 || phaseTimer <= 0) switchPhase();
+                    break;
+                case BATTLE:
                     if (enemies.size() == 0) gameState = GameState.WIN;
             }
-            if (playerController.getPlayerHp() <= 0) gameState = GameState.OVER;
+            if (player.getHp() <= 0) gameState = GameState.OVER;
         }
         // Enemies should still update even when game is outside play
         resolveEnemies();
-
-        if (phaseTimer <= 0) {
-            switchPhase();
-        }
         updateAmbientLight(delta);
+
+        // TODO: for convenience, remove later
+        if (Gdx.input.isKeyPressed(Input.Keys.PERIOD)) {
+            gameState = GameState.WIN;
+        }
+
+        if (Gdx.input.isKeyPressed(Input.Keys.COMMA)) {
+            gameState = GameState.OVER;
+        }
     }
 
     /**
-     * Changes the current phase of the game between NIGHT and DAY.
-     * When switching from NIGHT to DAY, it resets the phase timer to the duration
-     * of the DAY phase. Similarly, when switching from DAY to NIGHT, it resets
-     * the phase timer to the duration of the NIGHT phase.
+     * Performs all necessary computations to change the current phase of the game from STEALTH to BATTLE.
      */
-
     public void switchPhase() {
         currentPhase = Phase.BATTLE;
         ambientLightTransitionTimer = 0;
@@ -172,14 +193,6 @@ public class GameplayController {
             levelContainer.getRayHandler().setAmbientLight(r, g, b, a);
         }
     }
-    /**
-     * Resets the game, deleting all objects.
-     */
-    public void reset() {
-        player = null;
-
-    }
-
 
     // TODO: THIS SHOULD BE IN ENEMYCONTROLLER, also this code is a mess
     public void resolveEnemies() {

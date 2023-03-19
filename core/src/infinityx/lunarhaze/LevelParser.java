@@ -214,6 +214,7 @@ public class LevelParser {
             int t_y = moonlightPos.getInt(1);
 
             board.setLit(t_x, t_y, true);
+            board.setCollectable(t_x, t_y, true);
         }
 
         return board;
