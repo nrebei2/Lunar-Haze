@@ -6,6 +6,10 @@ import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.GameplayController.Phase;
 
+/**
+ * This is a class used for drawing player and enemies' game UI state: HP, Stealth, MoonLight
+ * Collection
+ */
 public class UIRender {
     /**
      * Need an ongoing reference to the asset directory
@@ -26,8 +30,7 @@ public class UIRender {
     protected BitmapFont displayFont;
 
     /**
-     * This is a class used for drawing player and enemies' game state: HP, Stealth, MoonLight
-     * Collection
+     * Create a new UIRender with font and directory assigned.
      * @param font
      * @param directory
      */
@@ -37,7 +40,13 @@ public class UIRender {
     }
 
 
-    /**  */
+    /**
+     * This method draw the following staff: Player Hp, Enemies Hp, Player Moonlight progress, and
+     * player stealth state.
+     * @param canvas
+     * @param level
+     * @param phase
+     * */
     public void drawUI(GameCanvas canvas, LevelContainer level, GameplayController.Phase phase ) {
         System.out.println(phase);
         displayFont.setColor(Color.YELLOW);

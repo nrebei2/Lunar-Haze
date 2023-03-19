@@ -947,13 +947,13 @@ public class GameCanvas {
         }
 
         for (Enemy e : enemyList) {
-            float x = WorldToScreenX(e.getPosition().x) - (barWidth/4.0f);
-            float y = WorldToScreenY(e.getPosition().y) + 10.0f;
+            float x = WorldToScreenX(e.getPosition().x);
+            float y = WorldToScreenY(e.getPosition().y);
 
             // Draw border
             barRender.begin(ShapeRenderer.ShapeType.Filled);
             barRender.setColor(Color.BLACK);
-            barRender.rect(x - 1, y - 1, barWidth + 2, barHeight + 2);
+            barRender.rect(x, y, barWidth, barHeight);
             barRender.end();
 
             // Draw the actual health bar

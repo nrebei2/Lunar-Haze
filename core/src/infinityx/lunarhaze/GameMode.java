@@ -124,6 +124,7 @@ public class GameMode extends ScreenObservable implements Screen {
     public void update(float delta) {
         // Process the game input
         inputController.readKeyboard();
+        System.out.println(gameplayController.getPhase());
 
         // Test whether to reset the game.
         switch (gameState) {
