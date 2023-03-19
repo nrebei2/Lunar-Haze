@@ -1,5 +1,7 @@
 package infinityx.lunarhaze;
 
+import box2dLight.RayHandler;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.RayCastCallback;
@@ -10,6 +12,8 @@ import infinityx.lunarhaze.entity.EnemyList;
 import infinityx.lunarhaze.entity.Werewolf;
 import infinityx.lunarhaze.physics.ConeSource;
 import infinityx.lunarhaze.physics.RaycastInfo;
+
+import java.awt.*;
 
 
 /**
@@ -22,6 +26,11 @@ public class GameplayController {
     private Werewolf player;
 
     private EnemyList enemies;
+
+    public enum Phase {
+        NIGHT,
+        DAY
+    }
 
     /**
      * The currently active object
@@ -41,14 +50,33 @@ public class GameplayController {
     private boolean gameLost;
     private LevelContainer levelContainer;
 
+    private Phase currentPhase;
+
+    private static final float NIGHT_DURATION = 10f;
+    private static final float DAY_DURATION = 10f;
+
+    private static final float PHASE_TRANSITION_TIME = 3f;
+
+    private static final float[] DAY_COLOR = {1f, 1f, 1f, 1f};
+    private static final float[] NIGHT_COLOR = {0.55f, 0.52f, 0.62f, 0.55f};
+    private float ambientLightTransitionTimer;
+    private float phaseTimer;
+
+    private Color ambientLight;
+
     /**This is the collision controller (handels collisions between all objects in our world*/
+
     private CollisionController collisionController;
+
 
     public GameplayController() {
         player = null;
         enemies = null;
         board = null;
         objects = new Array<GameObject>();
+        currentPhase = Phase.NIGHT;
+        ambientLightTransitionTimer = PHASE_TRANSITION_TIME;
+        ambientLight = new Color(0.55f, 0.52f, 0.62f, 0.55f);
     }
 
     /**
@@ -107,6 +135,7 @@ public class GameplayController {
         board = levelContainer.getBoard();
         this.playerController = new PlayerController(player, board, levelContainer);
         controls = new EnemyController[enemies.size()];
+        phaseTimer = NIGHT_DURATION;
 
         gameWon = false;
         gameLost = false;
@@ -142,13 +171,58 @@ public class GameplayController {
      */
     public void resolveActions(InputController input, float delta) {
         // Process the player only when the game is in play
+        lightingController.updateDust(delta);
         if (player != null && !(gameLost || gameWon)) {
-            playerController.update(input, delta);
+            playerController.update(input, delta, currentPhase);
             gameWon = playerController.isGameWon();
             gameLost = playerController.getPlayerHp() <= 0;
         }
-        resolveEnemies();
+
+        // Update the phase timer and switch phases if necessary
+        phaseTimer -= delta;
+        if (phaseTimer <= 0) {
+            switchPhase();
+        }
+        updateAmbientLight(delta);
     }
+
+    public RaycastInfo raycast(GameObject requestingObject, Vector2 point1, Vector2 point2){
+    /**
+     * Changes the current phase of the game between NIGHT and DAY.
+     * When switching from NIGHT to DAY, it resets the phase timer to the duration
+     * of the DAY phase. Similarly, when switching from DAY to NIGHT, it resets
+     * the phase timer to the duration of the NIGHT phase.
+     */
+
+    public void switchPhase() {
+        if (currentPhase == Phase.NIGHT) {
+            currentPhase = Phase.DAY;
+            phaseTimer = DAY_DURATION;
+        } else {
+            currentPhase = Phase.NIGHT;
+            phaseTimer = NIGHT_DURATION;
+        }
+        ambientLightTransitionTimer = 0;
+    }
+
+    private void updateAmbientLight(float delta) {
+        if (ambientLightTransitionTimer < PHASE_TRANSITION_TIME) {
+            ambientLightTransitionTimer += delta;
+            float progress = Math.min(ambientLightTransitionTimer / PHASE_TRANSITION_TIME, 1);
+
+            float[] startColor = currentPhase == Phase.DAY ? NIGHT_COLOR : DAY_COLOR;
+            float[] endColor = currentPhase == Phase.DAY ? DAY_COLOR : NIGHT_COLOR;
+
+            // LERP performed here
+            float r = startColor[0] * (1 - progress) + endColor[0] * progress;
+            float g = startColor[1] * (1 - progress) + endColor[1] * progress;
+            float b = startColor[2] * (1 - progress) + endColor[2] * progress;
+            float a = startColor[3] * (1 - progress) + endColor[3] * progress;
+
+            levelContainer.getRayHandler().setAmbientLight(r, g, b, a);
+        }
+    }
+
 
     public RaycastInfo raycast(GameObject requestingObject, Vector2 point1, Vector2 point2){
         RaycastInfo callback = new RaycastInfo(requestingObject);
@@ -159,22 +233,14 @@ public class GameplayController {
 
     public boolean detectPlayer(Enemy enemy){
         Vector2 point1 = enemy.getPosition();
-        ConeSource flashlight = enemy.getFlashlight();
-        float light_dis = flashlight.getDistance();
-
+        float dist = enemy.getFlashlight().getDistance();
         float vx = enemy.getVX();
         float vy = enemy.getVY();
-        Vector2 enemy_direction = new Vector2(vx,vy).nor();
-
-        Vector2 direction = new Vector2(player.getX()-point1.x, player.getY()-point1.y).nor();
-        Vector2 point2 = new Vector2(point1.x+light_dis*direction.x, player.getY()+light_dis*direction.y);
+        if (vx == 0 && vy ==0) return false;
+        Vector2 direction = new Vector2(vx, vy).nor();
+        Vector2 point2 = new Vector2(point1.x + dist*direction.x, point1.y + dist*direction.y);
         RaycastInfo info = raycast(enemy, point1, point2);
-
-//        System.out.println(enemy_direction.dot(direction));
-        double degree = Math.toDegrees(Math.acos(enemy_direction.dot(direction)));
-
-
-        return info.hit && info.hitObject == player && degree <= flashlight.getConeDegree();
+        return info.hit && info.hitObject == player;
     }
 
     // TODO: THIS SHOULD BE IN ENEMYCONTROLLER, also this code is a mess
@@ -183,8 +249,8 @@ public class GameplayController {
         for (Enemy en : enemies) {
             if (controls[en.getId()] != null) {
                 EnemyController curEnemyController = controls[en.getId()];
-                boolean detect = detectPlayer(en);
-                int action = curEnemyController.getAction(detect);
+                boolean detect = detectPlayer(levelContainer);
+                int action = curEnemyController.getAction(levelContainer);
 //                boolean attacking = (action & EnemyController.CONTROL_ATTACK) != 0;
                 en.update(action);
 
@@ -201,12 +267,13 @@ public class GameplayController {
                 en.update(EnemyController.CONTROL_NO_ACTION);
             }
         }
-
     }
 
     public boolean isGameWon() {
         return gameWon;
     }
+
+    public Phase getCurrentPhase() { return currentPhase; }
 
     public void setWin(boolean win) {
         if (win) this.gameWon = true;

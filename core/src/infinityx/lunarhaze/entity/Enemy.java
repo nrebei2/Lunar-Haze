@@ -1,10 +1,13 @@
 package infinityx.lunarhaze.entity;
 
 import com.badlogic.gdx.graphics.Color;
+
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.EnemyController;
+import infinityx.lunarhaze.GameCanvas;
 import infinityx.lunarhaze.GameObject;
 import infinityx.lunarhaze.LevelContainer;
 import infinityx.lunarhaze.physics.ConeSource;
@@ -54,6 +57,8 @@ public class Enemy extends GameObject {
     private float attackKnockback;
 
     private int attackDamage;
+
+    private float hp;
 
     public enum Direction {
         NORTH(1), SOUTH(3), WEST(2), EAST(0);
@@ -116,6 +121,7 @@ public class Enemy extends GameObject {
         animeframe = 0.0f;
         isAlerted = false;
         direction = Direction.NORTH;
+        hp = 3f;
     }
 
     /**
@@ -254,6 +260,16 @@ public class Enemy extends GameObject {
 
     public void setAttackDamage(int dmg) {
         attackDamage = dmg;
+    }
+
+    public float getHp() { return hp; }
+    public void setHp(float value) { hp = value; }
+
+    private static ShapeRenderer shapeRenderer = new ShapeRenderer();
+
+    public float getHealthPercentage() {
+        float maxHp = 3f;
+        return Math.max(0, Math.min(hp / maxHp, 1));
     }
 
     /**

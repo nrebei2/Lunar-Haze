@@ -85,7 +85,7 @@ public class LevelParser {
 
         // Generate board
         JsonValue tiles = levelContents.get("tiles");
-        Board board = parseBoard(directory, tiles, levelContainer.getRayHandler(), levelContainer);
+        Board board = parseBoard(directory, tiles, levelContainer.getRayHandler());
         levelContainer.setBoard(board);
 
         JsonValue scene = levelContents.get("scene");
@@ -162,7 +162,7 @@ public class LevelParser {
      *
      * @param boardFormat the JSON tree defining the board
      */
-    private Board parseBoard(AssetDirectory directory, JsonValue boardFormat, RayHandler rayHandler, LevelContainer levelContainer) {
+    private Board parseBoard(AssetDirectory directory, JsonValue boardFormat, RayHandler rayHandler) {
         JsonValue tiles = boardFormat.get("layout");
         JsonValue moonlightData = boardFormat.get("moonlight");
         String texType = boardFormat.get("type").asString();
@@ -214,10 +214,7 @@ public class LevelParser {
             int t_y = moonlightPos.getInt(1);
 
             board.setLit(t_x, t_y, true);
-            levelContainer.addMoonlight();
         }
-
-        levelContainer.setTotalMoonlight(levelContainer.getRemainingMoonlight());
 
         return board;
     }

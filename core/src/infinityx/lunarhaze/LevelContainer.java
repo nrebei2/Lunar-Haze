@@ -381,8 +381,8 @@ public class LevelContainer {
         }
         rayHandler.setCombinedMatrix(raycamera);
 
-        // Finally, draw lights
         rayHandler.updateAndRender();
+
     }
 
 

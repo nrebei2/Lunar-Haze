@@ -45,7 +45,7 @@ public class RaycastInfo implements RayCastCallback {
      * */
     @Override
     public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
-        if (fixture.getUserData() == requestingObject){
+        if (fixture.getUserData() == requestingObject) {
             return 1;
         }
 
