@@ -18,28 +18,6 @@ public class GameplayController {
      * */
     private GameState gameState;
 
-    /**
-     * We are separating our main game into two phases:
-     * - Stealth: Collect moonlight
-     * - Battle: Hack-n-slash
-     */
-    public enum Phase {
-        STEALTH,
-        BATTLE
-    }
-    private Phase currentPhase;
-
-    /**
-     * Track the current state of the game for the update loop.
-     */
-    enum GameState {
-        PLAY,
-        /** The werewolf has been killed by an enemy!! */
-        OVER,
-        /** The player has killed all the enemies. Should only be set when the phase is DAY */
-        WIN
-    }
-
     /** Reference to level container, acts as a nice interface for all level models */
     private LevelContainer levelContainer;
 
@@ -95,30 +73,17 @@ public class GameplayController {
     }
 
     /**
-     * Returns a reference to the currently active player.
-     * <p>
-     * This property needs to be modified if you want multiple players.
-     *
-     * @return a reference to the currently active player.
+     * @return the current state of the game
      */
-    public Werewolf getPlayer() {
-        return player;
+    public GameState getState() {
+        return gameState;
     }
 
     /**
-     * Returns a reference to the current PlayerController.
+     * @return the current phase of the game
      */
-    public PlayerController getPlayerController() {
-        return playerController;
-    }
-
-    /**
-     * Returns true if the currently active player is alive.
-     *
-     * @return true if the currently active player is alive.
-     */
-    public boolean isAlive() {
-        return player != null;
+    public Phase getPhase() {
+        return currentPhase;
     }
 
     /**
@@ -186,7 +151,7 @@ public class GameplayController {
      */
 
     public void switchPhase() {
-        currentPhase = BAT
+        currentPhase = Phase.BATTLE;
         ambientLightTransitionTimer = 0;
     }
 

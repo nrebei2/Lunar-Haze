@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
+import infinityx.lunarhaze.GameplayController.Phase;
 import infinityx.util.ScreenObservable;
 
 
@@ -40,6 +41,8 @@ public class GameMode extends ScreenObservable implements Screen {
      * Owns the GameplayController
      */
     private GameplayController gameplayController;
+
+    private UIRender uiRender;
     /**
      * Reference to drawing context to display graphics (VIEW CLASS)
      */
@@ -73,7 +76,6 @@ public class GameMode extends ScreenObservable implements Screen {
     private int level;
 
     private GameplayController.GameState gameState;
-
 
     public GameMode(GameCanvas canvas) {
         this.canvas = canvas;
@@ -166,6 +168,7 @@ public class GameMode extends ScreenObservable implements Screen {
      * Draw the game mode.
      */
     public void draw(float delta) {
+
         canvas.clear();
 
         // Puts player at center of canvas
@@ -176,7 +179,7 @@ public class GameMode extends ScreenObservable implements Screen {
         // Draw the level
         levelContainer.drawLevel(canvas);
 
-        switch (gameState) {
+        switch (gameplayController.getState()) {
             case WIN:
                 displayFont.setColor(Color.YELLOW);
                 canvas.begin();
@@ -190,16 +193,8 @@ public class GameMode extends ScreenObservable implements Screen {
                 canvas.end();
                 break;
             case PLAY:
-                displayFont.setColor(Color.YELLOW);
-                canvas.begin(); // DO NOT SCALE
-                canvas.drawLightBar(BAR_WIDTH,
-                        BAR_HEIGHT, gameplayController.getPlayerController().getPlayerLight());
-                canvas.drawEnemyHpBars(BAR_WIDTH/4.0f, BAR_HEIGHT/4.0f, levelContainer.getEnemies());
-                canvas.drawHpBar(BAR_WIDTH,
-                        BAR_HEIGHT, gameplayController.getPlayerController().getPlayerHp());
-                canvas.drawStealthBar(BAR_WIDTH,
-                        BAR_HEIGHT, gameplayController.getPlayerController().getPlayerStealth());
-                canvas.end();
+                Phase phase = gameplayController.getPhase();
+                uiRender.drawUI(canvas, levelContainer, phase);
                 break;
         }
     }
