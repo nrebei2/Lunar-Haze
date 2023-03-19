@@ -581,33 +581,6 @@ public class EnemyController {
         return CONTROL_NO_ACTION;
     }
 
-    public static void resolveEnemies(EnemyController[] controls, Werewolf player, EnemyList enemies) {
-        //board.clearVisibility();
-        for (Enemy en : enemies) {
-            if(en.getHp() == 0); // need to remove enemy here
-            if (controls[en.getId()] != null) {
-                EnemyController curEnemyController = controls[en.getId()];
-                int action = curEnemyController.getAction();
-                //curEnemyController.setVisibleTiles();
-//                boolean attacking = (action & EnemyController.CONTROL_ATTACK) != 0;
-                en.update(action);
-
-                // TODO: make more interesting actions
-                if (en.getIsAlerted()) {
-                    // angle between enemy and player
-                    double ang = Math.atan2(player.getPosition().y - en.getPosition().y, player.getPosition().x - en.getPosition().y);
-                    en.setFlashLightRot((float) ang);
-                } else {
-                    en.setFlashLightRotAlongDir();
-                }
-            } else {
-
-                en.update(EnemyController.CONTROL_NO_ACTION);
-            }
-        }
-
-    }
-
     // Add any auxiliary methods or data structures here
     //#region PUT YOUR CODE HERE
 
@@ -644,5 +617,3 @@ public class EnemyController {
     public final int[][] directions = new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
 
 }
-
-

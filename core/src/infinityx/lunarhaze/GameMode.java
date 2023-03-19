@@ -255,7 +255,7 @@ public class GameMode extends ScreenObservable implements Screen {
                 -canvas.WorldToScreenY(levelContainer.getPlayer().getPosition().y) + canvas.getHeight() / 2
         );
         // Draw the level
-        levelContainer.drawLevel(canvas, gameplayController.getCurrentPhase());
+        levelContainer.drawLevel(canvas);
 
         switch (gameState) {
             case WIN:
@@ -275,8 +275,6 @@ public class GameMode extends ScreenObservable implements Screen {
                 canvas.begin(); // DO NOT SCALE
                 canvas.drawLightBar(BAR_WIDTH,
                         BAR_HEIGHT, gameplayController.getPlayerController().getPlayerLight());
-                canvas.drawHpBar(BAR_WIDTH,
-                        BAR_HEIGHT, gameplayController.getPlayerController().getPlayerHp());
                 canvas.drawEnemyHpBars(BAR_WIDTH/4.0f, BAR_HEIGHT/4.0f, levelContainer.getEnemies());
                 canvas.drawStealthBar(BAR_WIDTH,
                         BAR_HEIGHT, gameplayController.getPlayerController().getPlayerStealth());

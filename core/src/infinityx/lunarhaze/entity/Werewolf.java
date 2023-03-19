@@ -41,7 +41,7 @@ public class Werewolf extends GameObject {
      **/
     public static final float MAX_LIGHT = 100.0f;
 
-    private float maxHp;
+    private int maxHp;
 
     /* Returns whether the werewolf can move or not; the werewolf can't move
        if its being knocked back by an attack.
@@ -90,7 +90,7 @@ public class Werewolf extends GameObject {
      * Health point (hp) of the werewolf
      */
 
-    private float hp;
+    private int hp;
 
     /**
      * Light collected of the werewolf.
@@ -273,7 +273,7 @@ public class Werewolf extends GameObject {
 
     public void collectMoonlight(LevelContainer container) {
         moonlightCollected++;
-        hp = hp + maxHp * 1 / (moonlightCollected + container.getRemainingMoonlight());
+        hp = (int)(hp + maxHp * 1 / (moonlightCollected + container.getRemainingMoonlight()));
     }
 
     /**
@@ -301,7 +301,6 @@ public class Werewolf extends GameObject {
         hp = INITIAL_HP;
         stealth = 0.0f;
         moonlightCollected = 0;
-        levelContainer = new LevelContainer();
         isAttacking = false;
         canMove = true;
     }
@@ -322,7 +321,7 @@ public class Werewolf extends GameObject {
         float health = json.getFloat("health");
         float lockout = json.getFloat("lockout");
 
-        initHp(health);
+        initHp((int)(health));
         initLockout(lockout);
 
         PointLight spotLight = new PointLight(
@@ -370,7 +369,7 @@ public class Werewolf extends GameObject {
 
         canMove = false;
         body.applyLinearImpulse(direction.scl(knockback), body.getWorldCenter(), true);
-        setHp(hp - damage);
+        setHp((int)(hp - damage));
     }
 
     @Override

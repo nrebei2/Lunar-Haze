@@ -174,7 +174,6 @@ public class GameplayController {
             gameWon = playerController.isGameWon();
             gameLost = playerController.getPlayerHp() <= 0;
         }
-        EnemyController.resolveEnemies(controls,player,enemies);
 
         // Update the phase timer and switch phases if necessary
         phaseTimer -= delta;
@@ -245,29 +244,6 @@ public class GameplayController {
 
         player.setMovementV(input.getVertical());
         player.update(delta);
-    }
-
-    public void resolveMoonlight(float delta) {
-        int px = board.worldToBoardX(player.getPosition().x);
-        int py = board.worldToBoardX(player.getPosition().y);
-
-        if (board.isLit(px, py)) {
-            if (board.isCollectable(px, py)) {
-                timeOnMoonlight += delta; // Increase variable by time
-            }
-            player.setOnMoonlight(true);
-            if (board.isCollectable(px, py) && timeOnMoonlight > MOONLIGHT_COLLECT_TIME) {
-                player.collectMoonlight(levelContainer);
-                remainingMoonlight--;
-                timeOnMoonlight = 0;
-                board.setCollected(px, py);
-            }
-            // Check if game is won here
-            if (remainingMoonlight == 0) gameWon = true;
-        } else {
-            timeOnMoonlight = 0;
-            player.setOnMoonlight(false);
-        }
     }
 
     // TODO: THIS SHOULD BE IN ENEMYCONTROLLER, also this code is a mess
