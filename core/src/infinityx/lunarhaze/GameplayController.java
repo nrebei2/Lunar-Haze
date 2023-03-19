@@ -199,17 +199,15 @@ public class GameplayController {
         ambientLightTransitionTimer = 0;
     }
 
-    // New method to update the ambient light during the transition
     private void updateAmbientLight(float delta) {
         if (ambientLightTransitionTimer < PHASE_TRANSITION_TIME) {
             ambientLightTransitionTimer += delta;
             float progress = Math.min(ambientLightTransitionTimer / PHASE_TRANSITION_TIME, 1);
 
-            // Define the start and end colors for the transition
             float[] startColor = currentPhase == Phase.DAY ? NIGHT_COLOR : DAY_COLOR;
             float[] endColor = currentPhase == Phase.DAY ? DAY_COLOR : NIGHT_COLOR;
 
-            // Perform the LERP for each color component
+            // LERP performed here
             float r = startColor[0] * (1 - progress) + endColor[0] * progress;
             float g = startColor[1] * (1 - progress) + endColor[1] * progress;
             float b = startColor[2] * (1 - progress) + endColor[2] * progress;
