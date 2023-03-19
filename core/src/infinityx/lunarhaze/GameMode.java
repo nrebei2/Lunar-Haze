@@ -213,7 +213,7 @@ public class GameMode extends ScreenObservable implements Screen {
         }
         //this.preUpdate(delta);
         levelContainer.getWorld().step(delta, 6, 2);
-//        if (!inBounds(levelContainer.getPlayer())) handleBounds(levelContainer.getPlayer());
+        //if (!inBounds(levelContainer.getPlayer())) handleBounds(levelContainer.getPlayer());
 //        for (GameObject obj : levelContainer.getEnemies()) {
 //            if (!inBounds(obj)) handleBounds(obj);
 //        }
