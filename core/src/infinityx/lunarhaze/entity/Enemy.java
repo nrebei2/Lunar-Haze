@@ -1,5 +1,8 @@
 package infinityx.lunarhaze.entity;
 
+import com.badlogic.gdx.ai.steer.Steerable;
+import com.badlogic.gdx.ai.steer.SteeringBehavior;
+import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
@@ -8,10 +11,18 @@ import infinityx.lunarhaze.EnemyController;
 import infinityx.lunarhaze.GameObject;
 import infinityx.lunarhaze.LevelContainer;
 import infinityx.lunarhaze.physics.ConeSource;
+import com.badlogic.gdx.ai.steer.SteeringAcceleration;
+import com.badlogic.gdx.ai.steer.behaviors.Arrive;
+import com.badlogic.gdx.ai.steer.behaviors.Wander;
+import infinityx.util.Box2dLocation;
+import infinityx.util.Box2dSteeringUtils;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 
 import java.util.ArrayList;
+import java.math.*;
 
-public class Enemy extends GameObject {
+public class Enemy extends GameObject implements Steerable<Vector2> {
 // Instance Attributes
     /**
      * A unique identifier; used to decouple classes.
@@ -54,6 +65,255 @@ public class Enemy extends GameObject {
     private float attackKnockback;
 
     private float attackDamage;
+
+    /** -----------------------------------------------------START---------------------------------------------*/
+
+    /** LIBGDX AI */
+    private final float boundingRadius = 1f;
+    private boolean tagged;
+    private float maxLinearAcceleration;
+    private float maxAngularAcceleration;
+    private float maxLinearSpeed = 100f;
+    private float maxAngularSpeed = 200f;
+
+    private float zeroLinearSpeedThreshold;
+
+    private SteeringBehavior<Vector2> steeringBehavior;
+    private final SteeringAcceleration<Vector2> steeringOutput = new SteeringAcceleration<>(new Vector2());
+
+
+    /** LIBGDX AI */
+
+    /** -----------------------------------------------------START---------------------------------------------*/
+
+    // behavior
+    public static final int WANDER_BEHAVIOR = 0;
+    public static final int ARRIVE_BEHAVIOR = 1;
+
+
+    // Define the enemy's behaviors
+    //TODO CHANGE IT LATER
+    private Arrive<Vector2> arriveBehavior;
+    private Wander<Vector2> wanderBehavior;
+
+    public Arrive<Vector2> getArriveBehavior() {
+        return arriveBehavior;
+    }
+
+    public Wander<Vector2> getWanderBehavior() {
+        return wanderBehavior;
+    }
+
+    @Override
+    public Vector2 getLinearVelocity() {
+        return body.getLinearVelocity();
+    }
+
+    @Override
+    public float getAngularVelocity() {
+        return body.getAngularVelocity();
+    }
+
+    @Override
+    public float getBoundingRadius() {
+        return boundingRadius;
+    }
+
+    @Override
+    public boolean isTagged() {
+        return tagged;
+    }
+
+    @Override
+    public void setTagged(boolean tagged) {
+        this.tagged = tagged;
+    }
+
+    @Override
+    public Vector2 getPosition() {
+        return body.getPosition();
+    }
+
+    @Override
+    public float getOrientation() {
+        return body.getAngle();
+    }
+
+    @Override
+    public void setOrientation(float orientation) {
+        body.setTransform(getPosition(), orientation);
+    }
+
+    @Override
+    public float vectorToAngle(Vector2 vector) {
+        return Box2dSteeringUtils.vectorToAngle(vector);
+    }
+
+    @Override
+    public Vector2 angleToVector(Vector2 outVector, float angle) {
+        return Box2dSteeringUtils.angleToVector(outVector, angle);
+
+    }
+
+    @Override
+    public Location<Vector2> newLocation() {
+        return new Box2dLocation(new Vector2(0,0));
+    }
+
+    @Override
+    public float getZeroLinearSpeedThreshold() {
+        return zeroLinearSpeedThreshold;
+    }
+
+    @Override
+    public void setZeroLinearSpeedThreshold(float value) {
+        this.zeroLinearSpeedThreshold = value;
+    }
+
+    @Override
+    public float getMaxLinearSpeed() {
+        return maxLinearSpeed;
+    }
+
+    @Override
+    public void setMaxLinearSpeed(float maxLinearSpeed) {
+        this.maxLinearSpeed = maxLinearSpeed;
+    }
+
+    @Override
+    public float getMaxLinearAcceleration() {
+        return maxLinearAcceleration;
+    }
+
+    @Override
+    public void setMaxLinearAcceleration(float maxLinearAcceleration) {
+        this.maxLinearAcceleration = maxLinearAcceleration;
+    }
+
+    @Override
+    public float getMaxAngularSpeed() {
+        return maxAngularSpeed;
+    }
+
+    @Override
+    public void setMaxAngularSpeed(float maxAngularSpeed) {
+        this.maxAngularSpeed = maxAngularSpeed;
+    }
+
+    @Override
+    public float getMaxAngularAcceleration() {
+        return maxAngularAcceleration;
+    }
+
+    @Override
+    public void setMaxAngularAcceleration(float maxAngularAcceleration) {
+        this.maxAngularAcceleration = maxAngularAcceleration;
+    }
+
+
+    /**
+     * Initialize an enemy not alerted.
+     */
+    public Enemy(int id, float x, float y) {
+        super(x, y);
+        this.id = id;
+        isAlive = true;
+        animeframe = 0.0f;
+        isAlerted = false;
+        direction = Direction.NORTH;
+    }
+
+    private void createWanderBehavior() {
+        wanderBehavior = new Wander<>(this)
+                .setEnabled(true)
+                .setWanderRadius(2f)
+                .setWanderRate((float) (Math.PI * 4))
+                .setWanderOffset(2f)
+                .setWanderOrientation(0);
+    }
+
+
+    /**
+     * Initialize an enemy with dummy position, id, and patrol path
+     */
+    public Enemy() {
+        super(0, 0);
+        isAlive = true;
+        this.patrolPath = new ArrayList<>();
+        animeframe = 0.0f;
+        isAlerted = false;
+        direction = Direction.NORTH;
+
+        tagged = false;
+        maxAngularAcceleration = 1.0f;
+        maxLinearAcceleration = 1.0f;
+        maxLinearSpeed = 2f;
+        maxAngularSpeed = 1.0f;
+
+    }
+
+    public void setBehavior(int behavior, Location target) {
+        switch (behavior) {
+            case ARRIVE_BEHAVIOR:
+                if (arriveBehavior == null) {
+                    if (target != null) {
+                        arriveBehavior = new Arrive<>(this, target)
+                                .setEnabled(true)
+                                .setTimeToTarget(0.1f)
+                                .setArrivalTolerance(0.5f);
+                        steeringBehavior = arriveBehavior;
+                    }
+                } else {
+                    steeringBehavior = arriveBehavior;
+                }
+                break;
+            case WANDER_BEHAVIOR:
+                steeringBehavior = wanderBehavior;
+            default:
+                break;
+        }
+    }
+
+
+
+    // Apply the steering acceleration to the werewolf's velocity and position
+    private void applySteering() {
+        boolean anyAcceleration = false;
+
+        if (!steeringOutput.linear.isZero()) {
+            body.applyForceToCenter(steeringOutput.linear, true);
+            anyAcceleration = true;
+        }
+
+        if (anyAcceleration) {
+
+            // cap the linear speed
+            Vector2 velocity = body.getLinearVelocity();
+            float currentSpeedSquare = velocity.len2();
+            if (currentSpeedSquare > maxLinearSpeed * maxLinearSpeed) {
+                body.setLinearVelocity(velocity.scl(maxLinearSpeed / (float) Math.sqrt(currentSpeedSquare)));
+            }
+        }
+    }
+
+    /**
+     * Updates the animation frame and position of this enemy.
+     * <p>
+     * Notice how little this method does.  It does not actively fire the weapon.  It
+     * only manages the cooldown and indicates whether the weapon is currently firing.
+     * The result of weapon fire is managed by the GameplayController.
+     */
+    public void update() {
+
+        if (steeringBehavior != null) {
+            steeringBehavior.calculateSteering(steeringOutput);
+            this.applySteering();
+            //applyingSteering(deltaTime);
+        }
+    }
+
+    /** -----------------------------------------------------END---------------------------------------------*/
+
 
     public enum Direction {
         NORTH(1), SOUTH(3), WEST(2), EAST(0);
@@ -118,17 +378,17 @@ public class Enemy extends GameObject {
         direction = Direction.NORTH;
     }
 
-    /**
-     * Initialize an enemy with dummy position, id, and patrol path
-     */
-    public Enemy() {
-        super(0, 0);
-        isAlive = true;
-        this.patrolPath = new ArrayList<>();
-        animeframe = 0.0f;
-        isAlerted = false;
-        direction = Direction.NORTH;
-    }
+//    /**
+//     * Initialize an enemy with dummy position, id, and patrol path
+//     */
+//    public Enemy() {
+//        super(0, 0);
+//        isAlive = true;
+//        this.patrolPath = new ArrayList<>();
+//        animeframe = 0.0f;
+//        isAlerted = false;
+//        direction = Direction.NORTH;
+//    }
 
     /**
      * Initalize the enemy with the given data
@@ -161,6 +421,9 @@ public class Enemy extends GameObject {
         JsonValue attack = json.get("attack");
         setAttackKnockback(attack.getFloat("knockback"));
         setAttackDamage(attack.getFloat("damage"));
+
+        createWanderBehavior();
+
     }
 
     /**

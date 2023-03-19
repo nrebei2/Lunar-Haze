@@ -8,7 +8,12 @@ import infinityx.lunarhaze.entity.EnemyList;
 import infinityx.lunarhaze.entity.Werewolf;
 import infinityx.lunarhaze.physics.ConeSource;
 import infinityx.lunarhaze.physics.RaycastInfo;
-
+import com.badlogic.gdx.ai.steer.SteeringAcceleration;
+import com.badlogic.gdx.ai.steer.behaviors.Arrive;
+import com.badlogic.gdx.ai.steer.behaviors.Wander;
+import com.badlogic.gdx.ai.steer.Steerable;
+import com.badlogic.gdx.ai.steer.SteeringBehavior;
+import com.badlogic.gdx.ai.utils.Location;
 
 /**
  * Controller to handle gameplay interactions.
@@ -208,8 +213,10 @@ public class GameplayController {
             if (controls[en.getId()] != null) {
                 EnemyController curEnemyController = controls[en.getId()];
                 int action = curEnemyController.getAction(levelContainer);
+                System.out.println(en.getBody());
+                curEnemyController.updateSteering(levelContainer);
 //                boolean attacking = (action & EnemyController.CONTROL_ATTACK) != 0;
-                en.update(action);
+                en.update();
 
                 // TODO: make more interesting actions                //curEnemyController.setVisibleTiles();
                 if (en.getIsAlerted()) {

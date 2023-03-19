@@ -8,6 +8,13 @@ import infinityx.lunarhaze.entity.EnemyList;
 import infinityx.lunarhaze.entity.Werewolf;
 import infinityx.lunarhaze.physics.ConeSource;
 import infinityx.lunarhaze.physics.RaycastInfo;
+import com.badlogic.gdx.ai.steer.SteeringAcceleration;
+import com.badlogic.gdx.ai.steer.behaviors.Arrive;
+import com.badlogic.gdx.ai.steer.behaviors.Wander;
+import com.badlogic.gdx.ai.steer.Steerable;
+import com.badlogic.gdx.ai.steer.SteeringBehavior;
+import com.badlogic.gdx.ai.utils.Location;
+import infinityx.util.Box2dLocation;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -137,6 +144,38 @@ public class EnemyController {
      */
     private long ticks;
 
+    /** LIBGDX AI */
+
+    /** -----------------------------------------------------START---------------------------------------------*/
+
+    // Update the enemy's steering acceleration based on its current behavior
+    public void updateSteering(LevelContainer container) {
+//        SteeringAcceleration<Vector2> steeringOutput = new SteeringAcceleration<>(new Vector2());
+        Box2dLocation target = new Box2dLocation(container.getPlayer().getPosition());
+        if (detectedPlayer(container)) {
+            enemy.setBehavior(Enemy.ARRIVE_BEHAVIOR, target);
+//          enemy.getArriveBehavior().calculateSteering(steeringOutput);
+        } else {
+            enemy.setBehavior(Enemy.WANDER_BEHAVIOR, target);
+//          enemy.getWanderBehavior().calculateSteering(steeringOutput);
+        }
+    }
+
+//    // Determine whether the enemy should pursue the target
+//    // Implement the shouldPursue() method to determine whether the werewolf should pursue the target
+//    private boolean shouldPursue() {
+//        // Implement your own logic here, such as checking if the target is within a certain distance
+//        return false;
+//    }
+//    // Determine whether the enemy should arrive at the target
+//    private boolean shouldArrive() {
+//        // Implement your own logic here, such as checking if the target is within a certain distance
+//        return false;
+//    }
+
+
+    /** -----------------------------------------------------END---------------------------------------------*/
+
 
     /**
      * Creates an EnemyController for the enemy with the given id.
@@ -152,7 +191,7 @@ public class EnemyController {
         this.state = FSMState.SPAWN;
         this.enemies = enemies;
         this.detection = Detection.LIGHT;
-
+        Box2dLocation loc = new Box2dLocation(target.getPosition());
     }
 
     /**
@@ -220,23 +259,6 @@ public class EnemyController {
             return boardDistance(enemy.getX(), enemy.getY(), target.getX(),
                     target.getY()) <= DETECT_DIST;
         } else if (detection == Detection.MOON) {
-            System.out.println("detection moon");
-//            switch (direction) {
-//                case NORTH:
-//                    blind = target.getY() < enemy.getY();
-//                    break;
-//                case SOUTH:
-//                    blind = target.getY() > enemy.getY();
-//                    break;
-//                case EAST:
-//                    blind = target.getX() < enemy.getX();
-//                    break;
-//                case WEST:
-//                    blind = target.getX() > enemy.getX();
-//                    break;
-//                default:
-//                    throw new NotImplementedException();
-//            }
             return boardDistance(enemy.getX(), enemy.getY(), target.getX(),
                     target.getY()) <= DETECT_DIST_MOONLIGHT;
         } else {
