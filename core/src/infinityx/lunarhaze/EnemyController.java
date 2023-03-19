@@ -9,43 +9,57 @@ import infinityx.lunarhaze.entity.Werewolf;
 import infinityx.lunarhaze.physics.ConeSource;
 import infinityx.lunarhaze.physics.RaycastInfo;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.PriorityQueue;
-
 // TODO: move all this stuff into AI controller, EnemyController should hold other enemy actions
 public class EnemyController {
 
-    // Constants for the control codes
-    // We would normally use an enum here, but Java enums do not bitmask nicely
     /**
      * Do not do anything
      */
     public static final int CONTROL_NO_ACTION = 0x00;
+
     /**
      * Move the ship to the left
      */
     public static final int CONTROL_MOVE_LEFT = 0x01;
+
     /**
      * Move the ship to the right
      */
     public static final int CONTROL_MOVE_RIGHT = 0x02;
+
     /**
      * Move the ship to the up
      */
     public static final int CONTROL_MOVE_UP = 0x04;
+
     /**
      * Move the ship to the down
      */
     public static final int CONTROL_MOVE_DOWN = 0x08;
+
     /**
      * Fire the ship weapon
      */
     public static final int CONTROL_ATTACK = 0x10;
 
+    /**
+     * Distance for enemy to detect the player
+     */
     private static final float DETECT_DIST = 2;
+
+    /**
+     * Distance for enemy to detect the player if the player in on moonlight
+     */
     private static final float DETECT_DIST_MOONLIGHT = 5;
+
+    /**
+     * Distance from which the enemy chases the player
+     */
     private static final float CHASE_DIST = 3f;
+
+    /**
+     * Distance from which the enemy can attack the player
+     */
     private static final int ATTACK_DIST = 1;
 
     /**
@@ -187,14 +201,10 @@ public class EnemyController {
         float vy = enemy.getVY();
         Vector2 enemy_direction = new Vector2(vx,vy).nor();
 
-
         Vector2 direction = new Vector2(player.getX()-point1.x, player.getY()-point1.y).nor();
         Vector2 point2 = new Vector2(point1.x+light_dis*direction.x, player.getY()+light_dis*direction.y);
         RaycastInfo info = raycast(enemy, point1, point2, container.getWorld());
-
-//        System.out.println(enemy_direction.dot(direction));
         double degree = Math.toDegrees(Math.acos(enemy_direction.dot(direction)));
-
 
         return info.hit && info.hitObject == player && degree <= flashlight.getConeDegree();
     }
@@ -220,56 +230,10 @@ public class EnemyController {
             return boardDistance(enemy.getX(), enemy.getY(), target.getX(),
                     target.getY()) <= DETECT_DIST;
         } else if (detection == Detection.MOON) {
-            System.out.println("detection moon");
-//            switch (direction) {
-//                case NORTH:
-//                    blind = target.getY() < enemy.getY();
-//                    break;
-//                case SOUTH:
-//                    blind = target.getY() > enemy.getY();
-//                    break;
-//                case EAST:
-//                    blind = target.getX() < enemy.getX();
-//                    break;
-//                case WEST:
-//                    blind = target.getX() > enemy.getX();
-//                    break;
-//                default:
-//                    throw new NotImplementedException();
-//            }
             return boardDistance(enemy.getX(), enemy.getY(), target.getX(),
                     target.getY()) <= DETECT_DIST_MOONLIGHT;
         } else {
             return false;
-        }
-    }
-
-    /**
-     * Sets the tiles seen by this enemy's line of sight as visible.
-     */
-    public void setVisibleTiles() {
-        int x = board.worldToBoardX(enemy.getPosition().x);
-        int y = board.worldToBoardY(enemy.getPosition().y);
-
-        switch (enemy.getDirection()) {
-            case NORTH:
-                board.setVisible(x, y - 1, true);
-                board.setVisible(x, y - 2, true);
-                break;
-            case SOUTH:
-                board.setVisible(x, y + 1, true);
-                board.setVisible(x, y + 2, true);
-                break;
-            case WEST:
-                board.setVisible(x - 1, y, true);
-                board.setVisible(x - 2, y, true);
-                break;
-            case EAST:
-                board.setVisible(x + 1, y, true);
-                board.setVisible(x + 2, y, true);
-                break;
-            default:
-                break;
         }
     }
 
@@ -364,16 +328,11 @@ public class EnemyController {
                 }
                 break;
             case CHASE:
-//                if (canHitTarget()){
-//                    state = FSMState.ATTACK;
-//                }
                 if (!canChase() && !target.isOnMoonlight()) {
                     state = FSMState.PATROL;
                     enemy.setIsAlerted(false);
                 }
                 break;
-//            case WANDER:
-//                break;
             case ATTACK:
                 if (!canHitTarget()) {
                     state = FSMState.CHASE;
@@ -382,7 +341,7 @@ public class EnemyController {
             default:
                 // Unknown or unhandled state, should never get here
                 assert (false);
-                state = FSMState.WANDER; // If debugging is off
+                state = FSMState.WANDER;
                 break;
         }
     }
@@ -395,8 +354,6 @@ public class EnemyController {
         } else {
             detection = Detection.LIGHT;
         }
-
-
     }
 
     private void markGoalTiles() {

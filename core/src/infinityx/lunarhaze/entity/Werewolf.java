@@ -17,16 +17,6 @@ import infinityx.lunarhaze.LevelContainer;
 public class Werewolf extends GameObject {
 
     /**
-     * The frame number for a ship that is not turning
-     */
-    public static final int SHIP_IMG_FLAT = 9;
-
-    /**
-     * How fast we change frames (one frame per 4 calls to update)
-     */
-    private static final float ANIMATION_SPEED = 0.25f;
-
-    /**
      * Initial light value of the werewolf is 0.0
      **/
     private static final float INITIAL_LIGHT = 0.0f;
@@ -41,20 +31,15 @@ public class Werewolf extends GameObject {
      **/
     public static final float MAX_LIGHT = 100.0f;
 
-    private int maxHp;
-
-    /* Returns whether the werewolf can move or not; the werewolf can't move
-       if its being knocked back by an attack.
-     */
+    /** Returns whether the werewolf can move or not; the werewolf can't move
+     * if its being knocked back by an attack.
+     **/
     private boolean canMove;
 
     /** Controls how long the werewolf gets knocked back by an attack and the window of the
      *  damage animation.
      */
     private float lockout;
-
-    /** Reference to werewolf's sprite for drawing */
-    //private FilmStrip werewolfSprite;
 
     /**
      * The right/left movement of the werewolf
@@ -70,11 +55,6 @@ public class Werewolf extends GameObject {
      * Whether the  player stands on a moonlight tile
      **/
     private Boolean moonlight;
-
-    /**
-     * Whether the  player face right or not
-     **/
-    private Boolean faceRight;
 
     /**
      * Number of moonlight tiles collected
@@ -111,18 +91,6 @@ public class Werewolf extends GameObject {
      */
 
     private float lockoutTime;
-
-//    /**
-//     * Returns the image filmstrip for this ship
-//     *
-//     * This value should be loaded by the GameMode and set there. However, we
-//     * have to be prepared for this to be null at all times
-//     *
-//     * @return the image texture for this ship
-//     */
-//    public FilmStrip getFilmStrip() {
-//        return werewolfSprite;
-//    }
 
     private LevelContainer levelContainer;
 
@@ -271,8 +239,9 @@ public class Werewolf extends GameObject {
         moonlightCollected ++;
     }
 
-    public int getMoonlightCollected(){
+    public int getMoonlightCollected() {
         return moonlightCollected;
+    }
 
     public void setCanMove(boolean value) { canMove = value; }
 

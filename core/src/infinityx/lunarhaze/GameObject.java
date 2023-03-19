@@ -191,6 +191,4 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
                 canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y), 0.0f,
                 textureScale * scale.x, textureScale * scale.y);
     }
-
-
 }

@@ -1,13 +1,8 @@
 package infinityx.lunarhaze;
 
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import infinityx.lunarhaze.entity.Enemy;
-import infinityx.lunarhaze.entity.EnemyList;
 import infinityx.lunarhaze.entity.Werewolf;
 
-// TODO: Rainney needs to add stealth bar and hp bar
 public class PlayerController {
 
     /**
@@ -65,9 +60,24 @@ public class PlayerController {
      */
     private boolean gameWon;
 
+    /**
+     * Attacks the player has already made
+     */
     private float attackCounter;
+
+    /**
+     * Maximum attacks player can make before cooldown
+     */
     private float attackLength;
+
+    /**
+     *
+     */
     private float attackCooldownCounter;
+
+    /**
+     *
+     */
     private float attackCooldown;
 
     private GameplayController.Phase phase;
@@ -205,7 +215,7 @@ public class PlayerController {
     }
 
     public void attack(float delta, InputController input) {
-        if(phase == GameplayController.Phase.DAY) {
+        if(phase == GameplayController.Phase.BATTLE) {
             if (player.isAttacking()) {
                 player.setCanMove(false);
                 attackCounter += delta;
@@ -236,13 +246,4 @@ public class PlayerController {
         resolveStealthBar(input);
         attack(delta, input);
     }
-
-    /**
-     * Let the player lose 1 HP point. This function should be called by CollisionController
-     * when the player collides with one of the enemies.
-     */
-    public void loseHp() {
-        player.setHp(player.getHp() - 1);
-    }
-
 }

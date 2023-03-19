@@ -49,10 +49,6 @@ public class Tile {
      */
     private PointLight spotLight;
 
-    // No need for constructor, levelContainer will set attributes of all tiles through Board
-    public Tile() {
-    }
-
     /**
      * Type of tile should match with sprite texture
      *

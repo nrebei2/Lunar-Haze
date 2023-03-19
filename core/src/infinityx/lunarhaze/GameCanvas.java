@@ -376,7 +376,7 @@ public class GameCanvas {
         camera = new OrthographicCamera(getWidth(), getHeight());
         camera.setToOrtho(false);
 
-        Gdx.gl.glViewport(0, 0, getWidth(), getHeight());
+//        Gdx.gl.glViewport(0, 0, getWidth(), getHeight());
     }
 
     /**
@@ -921,32 +921,25 @@ public class GameCanvas {
         barRender.end();
     }
 
-    public void drawHPBar(String text, BitmapFont font, float offset, float width, float height, float hp) {
+    public void drawHpBar(float width, float height, float hp) {
         if (active != DrawPass.STANDARD) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
             return;
         }
 
-        GlyphLayout layout = new GlyphLayout(font, text);
-        float x = getWidth() - layout.width - width * 1.2f;
-        float y = getHeight() - layout.height / 2.0f;
-        font.draw(spriteBatch, layout, x, y + offset);
+        barRender.begin(ShapeRenderer.ShapeType.Line);
+        barRender.setColor(Color.WHITE);
+        float x = getWidth() - width;
+        float y = getHeight() - height * 2.25f;
+        barRender.rect(x, y, width, height);
+        barRender.end();
 
-        ShapeRenderer barRenderer = new ShapeRenderer();
-        barRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        barRenderer.setColor(Color.YELLOW);
-        x = getWidth() - width;
-        y = getHeight() - layout.height;
-        barRenderer.rect(x, y, width * hp / 100, height);
-        barRenderer.end();
-
-        barRenderer.begin(ShapeRenderer.ShapeType.Line);
-        barRenderer.setColor(Color.WHITE);
-        x = getWidth() - width;
-        y = getHeight() - layout.height;
-        barRenderer.rect(x, y, width, height);
-        barRenderer.end();
+        barRender.begin(ShapeRenderer.ShapeType.Filled);
+        barRender.setColor(Color.RED);
+        barRender.rect(x, y, width * hp / Werewolf.INITIAL_HP, height);
+        barRender.end();
     }
+
     public void drawEnemyHpBars(float barWidth, float barHeight, EnemyList enemyList) {
         if (active != DrawPass.STANDARD) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
