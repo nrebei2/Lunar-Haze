@@ -56,7 +56,6 @@ public class EnemyList implements Iterable<Enemy> {
      * @return id of the added enemy
      */
     public int addEnemy(Enemy enemy) {
-        System.out.println("EnemyList addEnemy");
         enemies.add(enemy);
         return enemies.size - 1;
     }

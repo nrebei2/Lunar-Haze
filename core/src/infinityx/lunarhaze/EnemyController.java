@@ -1,10 +1,17 @@
 package infinityx.lunarhaze;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Queue;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.EnemyList;
 import infinityx.lunarhaze.entity.Werewolf;
+import infinityx.lunarhaze.physics.ConeSource;
+import infinityx.lunarhaze.physics.RaycastInfo;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.PriorityQueue;
 
 // TODO: move all this stuff into AI controller, EnemyController should hold other enemy actions
 public class EnemyController {
@@ -75,7 +82,7 @@ public class EnemyController {
         /**
          * The enemy can only detect the player in a straight line
          */
-        LINE,
+        LIGHT,
         /**
          * The enemy can detect the player in an area
          * The enemy can detect the player in an area
@@ -144,7 +151,7 @@ public class EnemyController {
         this.target = target;
         this.state = FSMState.SPAWN;
         this.enemies = enemies;
-        this.detection = Detection.LINE;
+        this.detection = Detection.LIGHT;
 
     }
 
@@ -163,43 +170,50 @@ public class EnemyController {
         return (float) Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
     }
 
+    public RaycastInfo raycast(GameObject requestingObject, Vector2 point1, Vector2 point2, World world) {
+        RaycastInfo callback = new RaycastInfo(requestingObject);
+        world.rayCast(callback, new Vector2(point1.x, point1.y), new Vector2(point2.x, point2.y));
+        return callback;
+    }
+
+    public boolean lightDetect(LevelContainer container){
+        Werewolf player = container.getPlayer();
+
+        Vector2 point1 = enemy.getPosition();
+        ConeSource flashlight = enemy.getFlashlight();
+        float light_dis = flashlight.getDistance();
+
+        float vx = enemy.getVX();
+        float vy = enemy.getVY();
+        Vector2 enemy_direction = new Vector2(vx,vy).nor();
+
+
+        Vector2 direction = new Vector2(player.getX()-point1.x, player.getY()-point1.y).nor();
+        Vector2 point2 = new Vector2(point1.x+light_dis*direction.x, player.getY()+light_dis*direction.y);
+        RaycastInfo info = raycast(enemy, point1, point2, container.getWorld());
+
+//        System.out.println(enemy_direction.dot(direction));
+        double degree = Math.toDegrees(Math.acos(enemy_direction.dot(direction)));
+
+
+        return info.hit && info.hitObject == player && degree <= flashlight.getConeDegree();
+    }
+
 
     /**
      * Returns true if we detected the player (when the player walks in line of sight)
      *
      * @return true if we can both fire and hit our target
      */
-    private boolean detectedPlayer() {
+    private boolean detectedPlayer(LevelContainer container) {
         Enemy.Direction direction = enemy.getDirection();
         if (direction == null) {
             return false;
         }
-        boolean inLine = false;
-        boolean blind;
-        int target_pos_x = board.worldToBoardX(target.getX());
-        int target_pos_y = board.worldToBoardY(target.getY());
-        int enemy_pos_x = board.worldToBoardX(enemy.getX());
-        int enemy_pos_y = board.worldToBoardY(enemy.getY());
-
 
         /**Enemy must be in a line and less than detection distance away*/
-        if (detection == Detection.LINE) {
-            switch (direction) {
-                case NORTH:
-                    inLine = (target_pos_x == enemy_pos_x) && (target_pos_y > enemy_pos_y);
-                    break;
-                case SOUTH:
-                    inLine = (target_pos_x == enemy_pos_x) && (target_pos_y < enemy_pos_y);
-                    break;
-                case EAST:
-                    inLine = (target_pos_x > enemy_pos_x) && (target_pos_y == enemy_pos_y);
-                    break;
-                case WEST:
-                    inLine = (target_pos_x < enemy_pos_x) && (target_pos_y == enemy_pos_y);
-                    break;
-            }
-            return boardDistance(enemy.getX(), enemy.getY(), target.getX(),
-                    target.getY()) <= DETECT_DIST && inLine;
+        if (detection == Detection.LIGHT) {
+            return lightDetect(container);
         }
         /**Enemy only need to be less than detection distance away, enemy can see in an area*/
         else if (detection == Detection.AREA) {
@@ -304,14 +318,14 @@ public class EnemyController {
      *
      * @return the action selected by this InputController
      */
-    public int getAction() {
+    public int getAction(LevelContainer container) {
         // Increment the number of ticks.
         ticks++;
 
         // Do not need to rework ourselves every frame. Just every 10 ticks.
         if ((enemy.getId() + ticks) % 10 == 0) {
             // Process the FSM
-            changeStateIfApplicable();
+            changeStateIfApplicable(container);
             changeDetectionIfApplicable();
 
             // Pathfinding
@@ -338,13 +352,13 @@ public class EnemyController {
      * in the ATTACK state, we may want to switch to the CHASE state if the
      * target gets out of range.
      */
-    private void changeStateIfApplicable() {
+    private void changeStateIfApplicable(LevelContainer container) {
         switch (state) {
             case SPAWN:
                 state = FSMState.PATROL;
                 break;
             case PATROL:
-                if (detectedPlayer()) {
+                if (detectedPlayer(container)) {
                     state = FSMState.CHASE;
                     enemy.setIsAlerted(true);
                 }
@@ -379,7 +393,7 @@ public class EnemyController {
         } else if (state == FSMState.CHASE) {
             detection = Detection.AREA;
         } else {
-            detection = Detection.LINE;
+            detection = Detection.LIGHT;
         }
 
 
@@ -389,7 +403,7 @@ public class EnemyController {
         board.clearMarks();
         Vector2 cur_pos = enemy.getPosition();
         int curr_x = board.worldToBoardX(cur_pos.x);
-        int curr_y = board.worldToBoardX(cur_pos.y);
+        int curr_y = board.worldToBoardY(cur_pos.y);
         boolean setGoal = false; // Until we find a goal
         switch (state) {
             case SPAWN:
@@ -494,6 +508,62 @@ public class EnemyController {
         return CONTROL_NO_ACTION;
         //#endregion
     }
+//
+//    private int getMoveAlongPathToGoalTile() {
+//        //#region PUT YOUR CODE HERE
+//        int x = board.worldToBoardX(enemy.getX());
+//        int y = board.worldToBoardY(enemy.getY());
+//        if (board.isGoal(x, y)) {
+//            return CONTROL_NO_ACTION;
+//        }
+//
+//        PriorityQueue<TileData> openSet = new PriorityQueue<TileData>();
+//        HashSet<TileData> closedSet = new HashSet<TileData>();
+//        HashMap<TileData, TileData> cameFrom = new HashMap<TileData, TileData>();
+//        HashMap<TileData, Double> gScore = new HashMap<TileData, Double>();
+//        HashMap<TileData, Double> fScore = new HashMap<TileData, Double>();
+//
+//
+//        board.setVisited(x, y);
+//        gScore.put(, 0.0);
+//        fScore.put(start, heuristic(start, end));
+//        openSet.add(start);
+//
+//        while (!openSet.isEmpty()) {
+//            Node current = openSet.poll();
+//
+//            if (current == end) {
+//                return reconstructPath(cameFrom, end);
+//            }
+//
+//            closedSet.add(current);
+//
+//            for (Node neighbor : current.getNeighbors()) {
+//                if (closedSet.contains(neighbor)) {
+//                    continue;
+//                }
+//
+//                double tentativeGScore = gScore.get(current) + current.distanceTo(neighbor);
+//
+//                if (!openSet.contains(neighbor) || tentativeGScore < gScore.get(neighbor)) {
+//                    cameFrom.put(neighbor, current);
+//                    gScore.put(neighbor, tentativeGScore);
+//                    fScore.put(neighbor, tentativeGScore + heuristic(neighbor, end) + hidingSpotHeuristic(neighbor));
+//
+//                    if (!openSet.contains(neighbor)) {
+//                        openSet.add(neighbor);
+//                    }
+//                }
+//            }
+//        }
+//
+//        return null;
+//    }
+//
+//    private double heuristic(Node a, Node b) {
+//        return ;
+//    }
+
 
     private int getDirection(TileData t) {
         while (t.prev.prev != null) {
@@ -574,3 +644,5 @@ public class EnemyController {
     public final int[][] directions = new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
 
 }
+
+

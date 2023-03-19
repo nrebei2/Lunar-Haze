@@ -87,7 +87,6 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
      * @param canvas The game canvas to draw to
      */
     public MenuMode(GameCanvas canvas) {
-        Gdx.input.setInputProcessor(this);
         this.canvas = canvas;
     }
 
@@ -133,7 +132,7 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
     private void draw() {
         canvas.begin();
         Color alphaTint = Color.WHITE;
-        canvas.drawOverlay(background,alphaTint,true);
+        canvas.drawOverlay(background, alphaTint, true);
 //        canvas.draw(background, 0, 0);
         Color tint = (pressState == 1 ? Color.GRAY : Color.WHITE);
         canvas.draw(playButton, tint, playButton.getWidth() / 2, playButton.getHeight() / 2,
@@ -215,6 +214,7 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
         // Useless if called in outside animation loop
         active = true;
         pressState = 0;
+        Gdx.input.setInputProcessor(this);
     }
 
     /**

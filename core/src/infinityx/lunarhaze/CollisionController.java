@@ -17,7 +17,7 @@ public class CollisionController implements ContactListener {
     private LevelContainer level;
 
 
-    public CollisionController(LevelContainer level){
+    public CollisionController(LevelContainer level) {
         this.level = level;
         level.getWorld().setContactListener(this);
     }

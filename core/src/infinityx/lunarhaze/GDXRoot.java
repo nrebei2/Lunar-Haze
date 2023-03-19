@@ -63,6 +63,7 @@ public class GDXRoot extends Game implements ScreenObserver {
         loading.setObserver(this);
         game.setObserver(this);
         menu.setObserver(this);
+        editor.setObserver(this);
 
         setScreen(loading);
     }
@@ -119,7 +120,11 @@ public class GDXRoot extends Game implements ScreenObserver {
             directory = loading.getAssets();
             menu.gatherAssets(directory);
             game.gatherAssets(directory);
+            editor.gatherAssets(directory);
             setScreen(menu);
+
+            LevelParser ps = LevelParser.LevelParser();
+            ps.loadConstants(directory, canvas);
 
             loading.dispose();
             loading = null;
@@ -138,7 +143,10 @@ public class GDXRoot extends Game implements ScreenObserver {
             if (exitCode == GameMode.GO_MENU) {
                 setScreen(menu);
             }
-
+        } else if (screen == editor) {
+            if (exitCode == EditorMode.GO_MENU) {
+                setScreen(menu);
+            }
         } else {
             Gdx.app.exit();
         }

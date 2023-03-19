@@ -1,11 +1,15 @@
 package infinityx.lunarhaze.entity;
 
 import com.badlogic.gdx.graphics.Color;
+
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.JsonValue;
+import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.EnemyController;
 import infinityx.lunarhaze.GameCanvas;
 import infinityx.lunarhaze.GameObject;
+import infinityx.lunarhaze.LevelContainer;
 import infinityx.lunarhaze.physics.ConeSource;
 
 import java.util.ArrayList;
@@ -15,7 +19,7 @@ public class Enemy extends GameObject {
     /**
      * A unique identifier; used to decouple classes.
      */
-    private final int id;
+    private int id;
     /**
      * Movement of the enemy
      **/
@@ -42,7 +46,9 @@ public class Enemy extends GameObject {
     /**
      * points (in Tile index) in the enemy's patrolPath
      */
-    private final ArrayList<Vector2> patrolPath;
+    // TODO: if we wanna be fancy use a bezier
+    // Not that bad since we can easily compute the tangent and add force on enemy along it
+    private ArrayList<Vector2> patrolPath;
 
     private Direction direction;
 
@@ -91,6 +97,10 @@ public class Enemy extends GameObject {
         return this.direction;
     }
 
+    public ConeSource getFlashlight() {
+        return flashlight;
+    }
+
     /**
      * Sets whether the enemy is alerted.
      */
@@ -115,6 +125,76 @@ public class Enemy extends GameObject {
     }
 
     /**
+     * Initialize an enemy with dummy position, id, and patrol path
+     */
+    public Enemy() {
+        super(0, 0);
+        isAlive = true;
+        this.patrolPath = new ArrayList<>();
+        animeframe = 0.0f;
+        isAlerted = false;
+        direction = Direction.NORTH;
+    }
+
+    /**
+     * Initalize the enemy with the given data
+     */
+    public void initialize(AssetDirectory directory, JsonValue json, LevelContainer container) {
+        JsonValue p_dim = json.get("collider");
+        setDimension(p_dim.get("width").asFloat(), p_dim.get("height").asFloat());
+
+        super.initialize(directory, json, container);
+
+        JsonValue light = json.get("flashlight");
+        float[] color = light.get("color").asFloatArray();
+        float dist = light.getFloat("distance");
+        int rays = light.getInt("rays");
+        float degrees = light.getFloat("degrees");
+
+        ConeSource flashLight = new ConeSource(
+                container.getRayHandler(), rays, Color.WHITE, dist,
+                getX(), getY(), 0f, degrees
+        );
+        flashLight.setColor(color[0], color[1], color[2], color[3]);
+        flashLight.setSoft(light.getBoolean("soft"));
+
+        activatePhysics(container.getWorld());
+        setFlashlight(flashLight);
+
+        setFlashlightOn(true);
+        //getBody().setActive(false);
+
+        JsonValue attack = json.get("attack");
+        setAttackKnockback(attack.getFloat("knockback"));
+        setAttackDamage(attack.getFloat("damage"));
+    }
+
+    /**
+     * Deep clones enemy, can be used independently of this
+     *
+     * @return new enemy
+     */
+    public Enemy deepClone(LevelContainer container) {
+        Enemy enemy = new Enemy();
+        enemy.setSpeed(speed);
+        enemy.setTexture(getTexture());
+        enemy.setOrigin((int) origin.x, (int) origin.y);
+        ConeSource flashLight = new ConeSource(
+                container.getRayHandler(), this.flashlight.getRayNum(), this.flashlight.getColor(), this.flashlight.getDistance(),
+                0, 0, this.flashlight.getDirection(), this.flashlight.getConeDegree()
+        );
+        flashLight.setSoft(this.flashlight.isSoft());
+        enemy.setBodyState(body);
+        enemy.activatePhysics(container.getWorld());
+        enemy.setFlashlight(flashlight);
+        enemy.setFlashlightOn(true);
+
+        enemy.setDimension(getDimension().x, getDimension().y);
+        enemy.setPositioned(positioned);
+        return enemy;
+    }
+
+    /**
      * get the next patrol point of the enemy
      */
     public Vector2 getNextPatrol() {
@@ -131,6 +211,10 @@ public class Enemy extends GameObject {
      */
     public Vector2 getCurrentPatrol() {
         return patrolPath.get(currentWayPoint);
+    }
+
+    public void setPatrolPath(ArrayList<Vector2> path) {
+        this.patrolPath = path;
     }
 
     /**
@@ -152,12 +236,8 @@ public class Enemy extends GameObject {
     public void setFlashlight(ConeSource cone) {
         flashlight = cone;
         flashlight.attachToBody(getBody(), 0.5f, 0, flashlight.getDirection());
+        flashlight.setActive(false);
     }
-
-    public ConeSource getFlashlight(){
-        return this.flashlight;
-    }
-
 
     /**
      * @param on Whether to turn the flashlight on (true) or off (false)
@@ -166,13 +246,21 @@ public class Enemy extends GameObject {
         flashlight.setActive(on);
     }
 
-    public float getAttackKnockback() { return attackKnockback; }
+    public float getAttackKnockback() {
+        return attackKnockback;
+    }
 
-    public float getAttackDamage() { return attackDamage; }
+    public float getAttackDamage() {
+        return attackDamage;
+    }
 
-    public void setAttackKnockback(float knockback) { attackKnockback = knockback; }
+    public void setAttackKnockback(float knockback) {
+        attackKnockback = knockback;
+    }
 
-    public void setAttackDamage(float dmg) { attackDamage = dmg; }
+    public void setAttackDamage(float dmg) {
+        attackDamage = dmg;
+    }
 
     public float getHp() { return hp; }
     public void setHp(float value) { hp = value; }
@@ -238,4 +326,7 @@ public class Enemy extends GameObject {
         return this.id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
 }

@@ -1,7 +1,16 @@
 package infinityx.lunarhaze.entity;
 
 import box2dLight.PointLight;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
+
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.JsonValue;
+import infinityx.assets.AssetDirectory;
+
 import infinityx.lunarhaze.GameObject;
 import infinityx.lunarhaze.LevelContainer;
 
@@ -80,7 +89,8 @@ public class Werewolf extends GameObject {
     /**
      * Health point (hp) of the werewolf
      */
-    private int hp;
+
+    private float hp;
 
     /**
      * Light collected of the werewolf.
@@ -93,6 +103,12 @@ public class Werewolf extends GameObject {
      * The value is a float between 0 and 1.
      */
     private float stealth;
+
+
+    /**
+     * Controls how long the werewolf gets knocked back by an attack and the window of the
+     * damage animation.
+     */
 
     private float lockoutTime;
 
@@ -186,7 +202,9 @@ public class Werewolf extends GameObject {
         INITIAL_HP = value;
     }
 
-    public void initLockout(float value) { lockout = value; }
+    public void initLockout(float value) {
+        lockout = value;
+    }
 
     /**
      * Returns the current stealth of the werewolf.
@@ -253,8 +271,16 @@ public class Werewolf extends GameObject {
         moonlightCollected ++;
     }
 
-    public int getMoonlightCollected(){
-        return moonlightCollected;
+    public void collectMoonlight(LevelContainer container) {
+        moonlightCollected++;
+        hp = hp + maxHp * 1 / (moonlightCollected + container.getRemainingMoonlight());
+    }
+
+    /**
+     * Initialize a werewolf with dummy position.
+     */
+    public Werewolf() {
+        this(0, 0);
     }
 
     public void setCanMove(boolean value) { canMove = value; }
@@ -277,6 +303,98 @@ public class Werewolf extends GameObject {
         moonlightCollected = 0;
         levelContainer = new LevelContainer();
         isAttacking = false;
+        canMove = true;
+    }
+
+    /**
+     * Initialize the werewolf with the given data
+     *
+     * @param container LevelContainer which this player is placed in
+     */
+    public void initialize(AssetDirectory directory, JsonValue json, LevelContainer container) {
+        super.initialize(directory, json, container);
+
+        JsonValue light = json.get("spotlight");
+        float[] color = light.get("color").asFloatArray();
+        float dist = light.getFloat("distance");
+        int rays = light.getInt("rays");
+
+        float health = json.getFloat("health");
+        float lockout = json.getFloat("lockout");
+
+        initHp(health);
+        initLockout(lockout);
+
+        PointLight spotLight = new PointLight(
+                container.getRayHandler(), rays, Color.WHITE, dist,
+                0, 0
+        );
+        spotLight.setColor(color[0], color[1], color[2], color[3]);
+        spotLight.setSoft(light.getBoolean("soft"));
+        activatePhysics(container.getWorld());
+        setSpotLight(spotLight);
+    }
+
+    /**
+     * Deep clones player, can be used independently of this
+     *
+     * @return new player
+     */
+    public Werewolf deepClone(LevelContainer container) {
+        Werewolf werewolf = new Werewolf();
+        werewolf.setSpeed(speed);
+        werewolf.setTexture(getTexture());
+        werewolf.initHp(maxHp);
+        werewolf.initLockout(lockout);
+        werewolf.setOrigin((int) origin.x, (int) origin.y);
+        PointLight spotLight = new PointLight(
+                container.getRayHandler(), this.spotLight.getRayNum(), this.spotLight.getColor(), this.spotLight.getDistance(),
+                0, 0
+        );
+        werewolf.setBodyState(body);
+        spotLight.setSoft(this.spotLight.isSoft());
+        werewolf.activatePhysics(container.getWorld());
+        werewolf.setSpotLight(spotLight);
+
+        werewolf.setDimension(getDimension().x, getDimension().y);
+        werewolf.setPositioned(positioned);
+        return werewolf;
+    }
+
+    public void resolveAttack(GameObject enemy, float damage, float knockback) {
+
+        Body enemyBody = enemy.getBody();
+        Vector2 pos = body.getPosition();
+        Vector2 enemyPos = enemyBody.getPosition();
+        Vector2 direction = pos.sub(enemyPos).nor();
+
+        canMove = false;
+        body.applyLinearImpulse(direction.scl(knockback), body.getWorldCenter(), true);
+        setHp(hp - damage);
+    }
+
+    @Override
+    public boolean activatePhysics(World world) {
+        if (!super.activatePhysics(world)) {
+            return false;
+        }
+
+        // Define the shape of the player's fixture
+        PolygonShape playerShape = new PolygonShape();
+        playerShape.setAsBox(0.5f, 1.0f);
+
+        // Define the properties of the player's fixture
+        fixture.shape = playerShape;
+        fixture.density = 1.0f;
+        fixture.friction = 0.5f;
+        fixture.restitution = 0.0f;
+        Fixture fix = body.createFixture(fixture);
+        fix.setUserData(this);
+//        fixture = getBody().createFixture(fixtureDef);
+        playerShape.dispose();
+
+
+        return true;
     }
 
     /**
@@ -285,18 +403,16 @@ public class Werewolf extends GameObject {
      * @param delta Number of seconds since last animation frame
      */
     public void update(float delta) {
-        // Check if being hit by an attack. If being hit by an attack we can't move
-        if(canMove) {
-            // get the current velocity of the player's Box2D body
-            Vector2 velocity = body.getLinearVelocity();
+        // get the current velocity of the player's Box2D body
+        Vector2 velocity = body.getLinearVelocity();
+        if (canMove) {
             // update the velocity based on the input from the player
             velocity.x = movementH * speed;
             velocity.y = movementV * speed;
 
             // set the updated velocity to the player's Box2D body
             body.setLinearVelocity(velocity);
-        }
-        else if(lockoutTime >= lockout) {
+        } else if (lockoutTime >= lockout) {
             canMove = true;
             lockoutTime = 0f;
         } else {

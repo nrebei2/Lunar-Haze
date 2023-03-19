@@ -7,6 +7,11 @@
       "soft":			false,
       "degrees": 30
     },
+    "texture": {
+      "name": "villager.movement",
+      "origin": [75, 22],
+      "scale": 1
+    },
     "collider": {
       "width": 0.5,
       "height": 0.5
@@ -14,14 +19,10 @@
     "bodytype": "dynamic",
     "density": 1.0,
     "friction": 0.0,
-    "restitution": 0.0,
+    "restitution": 1.0,
     "damping": 0.0,
     "speed": 2,
     "startframe": 0,
-    "texture": {
-      "name": "villager.movement",
-      "origin": [75, 22]
-    },
     "attack": {
       "knockback": 3.0,
       "damage": 1.0

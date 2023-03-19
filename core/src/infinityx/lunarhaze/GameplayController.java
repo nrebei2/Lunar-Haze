@@ -62,6 +62,7 @@ public class GameplayController {
     private Color ambientLight;
 
     /**This is the collision controller (handels collisions between all objects in our world*/
+
     private CollisionController collisionController;
 
 
@@ -143,7 +144,7 @@ public class GameplayController {
         }
 
         // Intialize lighting
-        lightingController = new LightingController(enemies, board);
+        lightingController = new LightingController(levelContainer);
 
         /*PointLight light = new PointLight(getRayHandler(), 512, new Color(0.5f, 0.5f, 1f, 0.3f), 2000f, 0, 0);
          */
@@ -167,6 +168,7 @@ public class GameplayController {
      */
     public void resolveActions(InputController input, float delta) {
         // Process the player only when the game is in play
+        lightingController.updateDust(delta);
         if (player != null && !(gameLost || gameWon)) {
             playerController.update(input, delta, currentPhase);
             gameWon = playerController.isGameWon();
@@ -188,6 +190,7 @@ public class GameplayController {
      * of the DAY phase. Similarly, when switching from DAY to NIGHT, it resets
      * the phase timer to the duration of the NIGHT phase.
      */
+
     public void switchPhase() {
         if (currentPhase == Phase.NIGHT) {
             currentPhase = Phase.DAY;
@@ -235,6 +238,61 @@ public class GameplayController {
         Vector2 point2 = new Vector2(point1.x + dist*direction.x, point1.y + dist*direction.y);
         RaycastInfo info = raycast(enemy, point1, point2);
         return info.hit && info.hitObject == player;
+    }
+    
+    public void resolvePlayer(InputController input, float delta) {
+        player.setMovementH(input.getHorizontal());
+
+        player.setMovementV(input.getVertical());
+        player.update(delta);
+    }
+
+    public void resolveMoonlight(float delta) {
+        int px = board.worldToBoardX(player.getPosition().x);
+        int py = board.worldToBoardX(player.getPosition().y);
+
+        if (board.isLit(px, py)) {
+            if (board.isCollectable(px, py)) {
+                timeOnMoonlight += delta; // Increase variable by time
+            }
+            player.setOnMoonlight(true);
+            if (board.isCollectable(px, py) && timeOnMoonlight > MOONLIGHT_COLLECT_TIME) {
+                player.collectMoonlight(levelContainer);
+                remainingMoonlight--;
+                timeOnMoonlight = 0;
+                board.setCollected(px, py);
+            }
+            // Check if game is won here
+            if (remainingMoonlight == 0) gameWon = true;
+        } else {
+            timeOnMoonlight = 0;
+            player.setOnMoonlight(false);
+        }
+    }
+
+    // TODO: THIS SHOULD BE IN ENEMYCONTROLLER, also this code is a mess
+    public void resolveEnemies() {
+        //board.clearVisibility();
+        for (Enemy en : enemies) {
+            if (controls[en.getId()] != null) {
+                EnemyController curEnemyController = controls[en.getId()];
+                int action = curEnemyController.getAction(levelContainer);
+//                boolean attacking = (action & EnemyController.CONTROL_ATTACK) != 0;
+                en.update(action);
+
+                // TODO: make more interesting actions                //curEnemyController.setVisibleTiles();
+                if (en.getIsAlerted()) {
+                    // angle between enemy and player
+                    double ang = Math.atan2(player.getPosition().y - en.getPosition().y, player.getPosition().x - en.getPosition().y);
+                    en.setFlashLightRot((float) ang);
+                } else {
+                    en.setFlashLightRotAlongDir();
+                }
+            } else {
+
+                en.update(EnemyController.CONTROL_NO_ACTION);
+            }
+        }
     }
 
     public boolean isGameWon() {
