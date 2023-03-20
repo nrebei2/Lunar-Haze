@@ -206,6 +206,13 @@ public class Werewolf extends GameObject {
     }
 
     /**
+     * Returns the attack power of werewolf during battle phase.
+     */
+    public float getAttackPower() {
+        return light / MAX_LIGHT;
+    }
+
+    /**
      * @return Point light on player
      */
     public PointLight getSpotlight() {

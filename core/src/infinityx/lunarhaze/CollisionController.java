@@ -12,6 +12,11 @@ import infinityx.lunarhaze.entity.Werewolf;
 public class CollisionController implements ContactListener {
 
     /**
+     * Maximum killing power of the player
+     */
+    private final float MAX_KILL_POWER = 5.0f;
+
+    /**
      * Reference to level container holding all game objects
      */
     private LevelContainer level;
@@ -69,7 +74,7 @@ public class CollisionController implements ContactListener {
 
     public void resolvePlayerAttack(Werewolf player, Enemy enemy) {
         // Apply damage to the enemy
-        enemy.setHp(enemy.getHp() - 1);
+        enemy.setHp(enemy.getHp() - MAX_KILL_POWER * player.getAttackPower());
 
         // Apply knockback to the enemy
         Body enemyBody = enemy.getBody();
