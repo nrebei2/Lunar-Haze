@@ -82,20 +82,23 @@ public class LightingController {
             IntMap.Entry<Dust[]> entry = iterator.next();
             int x = entry.key % board.getWidth();
             int y = (entry.key - x) / board.getWidth();
-            if (!board.isCollectable(x, y)) {
-                iterator.remove();
-                for (Dust dust : entry.value) dust.beginDestruction();
-                // TODO: maybe add dust to free list if moonlight updates
-                continue;
-            }
+
+            boolean allDestroyed = true;
             for (Dust dust : entry.value) {
                 dust.update(delta);
+                if (!dust.isDestroyed()) allDestroyed = false;
+                if (dust.inDestruction()) continue;
                 if (board.worldToBoardX(dust.getX()) != x || board.worldToBoardY(dust.getY()) != y) {
                     dust.beginReset();
                 }
                 if (dust.shouldReset()) {
                     initializeDust(x, y, dust);
                 }
+            }
+            // Remove from iterator if all destroyed
+            // TODO: maybe add dust to some free list if moonlight updates
+            if (allDestroyed) {
+                iterator.remove();
             }
         }
     }
@@ -119,5 +122,15 @@ public class LightingController {
         dust.setRPS(MathUtils.random(rps.getFloat(0), rps.getFloat(1)));
         dust.setVelocity(MathUtils.random() * MathUtils.PI2, MathUtils.random(spd.getFloat(0), spd.getFloat(1)));
         dust.setScale(MathUtils.random(scl.getFloat(0), scl.getFloat(1)));
+    }
+
+    /**
+     * Begin removal of all dust particles on given board tile
+     *
+     * @param x board x-position
+     * @param y board y-position
+     */
+    public void removeDust(int x, int y) {
+        for (Dust dust : dustPools.get(x + y * board.getWidth())) dust.beginDestruction();
     }
 }

@@ -132,7 +132,8 @@ public class LevelContainer {
         drawables = new Array<>();
         backing = new Array<>();
 
-        // There will always be a player so it's fine to initialize now
+        // There will always be a player
+        // So it's fine to initialize now
         Werewolf player = new Werewolf(0, 0);
         player.initialize(directory, playerJson, this);
         setPlayer(player);
@@ -390,6 +391,8 @@ public class LevelContainer {
         for (Drawable o : drawables) {
             if (!o.isDestroyed()) {
                 backing.add(o);
+            } else {
+                System.out.println("adding object to backing");
             }
         }
 

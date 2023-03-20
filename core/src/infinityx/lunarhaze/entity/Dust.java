@@ -198,6 +198,13 @@ public class Dust implements Drawable {
     }
 
     /**
+     * The dust particle is in the process of being destroyed.
+     */
+    public boolean inDestruction() {
+        return this.condition == Condition.DESTROY;
+    }
+
+    /**
      * Returns true if this object should be reset.
      */
     public boolean shouldReset() {
@@ -220,6 +227,8 @@ public class Dust implements Drawable {
      * Update attributes of this dust particle
      */
     public void update(float delta) {
+        if (isDestroyed()) return;
+
         elapsed += delta;
         switch (state) {
             case APPEARING:
@@ -238,12 +247,16 @@ public class Dust implements Drawable {
                 alpha = EAS_FN.apply(1 - outProg);
                 if (outProg == 1f) {
                     switch (condition) {
-                        case RESET: reset = true;
-                        case DESTROY: setDestroyed();
-                        case CONTINUE: {
+                        case RESET:
+                            reset = true;
+                            break;
+                        case DESTROY:
+                            setDestroyed();
+                            break;
+                        case CONTINUE:
                             this.state = DustState.APPEARING;
                             this.fadeTime = MathUtils.random(fadeMin, fadeMax);
-                        }
+                            break;
                     }
                 }
                 break;
@@ -304,6 +317,7 @@ public class Dust implements Drawable {
      */
     @Override
     public void setDestroyed() {
+        System.out.println("destroyed");
         destroyed = true;
     }
 }

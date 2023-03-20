@@ -144,7 +144,7 @@ public class GameplayController {
         // FSM for state and phase
         if (gameState == GameState.PLAY) {
             // Process the player only when the game is in play
-            playerController.update(input, delta, currentPhase);
+            playerController.update(input, delta, currentPhase, lightingController);
             switch (currentPhase) {
                 case STEALTH:
                     if (levelContainer.getBoard().getRemainingMoonlight() == 0 || phaseTimer <= 0) switchPhase();

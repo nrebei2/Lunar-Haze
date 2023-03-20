@@ -114,9 +114,10 @@ public class PlayerController {
      * Process the player's interaction with moonlight tile.
      * <p>
      *
-     * @param delta Number of seconds since last animation frame
+     * @param delta              Number of seconds since last animation frame
+     * @param lightingController
      */
-    public void resolveMoonlight(float delta) {
+    public void resolveMoonlight(float delta, LightingController lightingController) {
         int px = board.worldToBoardX(player.getPosition().x);
         int py = board.worldToBoardY(player.getPosition().y);
 
@@ -124,10 +125,10 @@ public class PlayerController {
             timeOnMoonlight += delta; // Increase variable by time
             player.setOnMoonlight(true);
             if (board.isCollectable(px, py) && (timeOnMoonlight > MOONLIGHT_COLLECT_TIME)) {
-                System.out.println("HAJDSAD");
                 collectMoonlight();
                 timeOnMoonlight = 0;
                 board.setCollected(px, py);
+                lightingController.removeDust(px, py);
             }
         } else {
             timeOnMoonlight = 0;
@@ -183,9 +184,9 @@ public class PlayerController {
         }
     }
 
-    public void update(InputController input, float delta, GameplayController.Phase currPhase){
+    public void update(InputController input, float delta, Phase currPhase, LightingController lightingController){
         resolvePlayer(input, delta);
-        resolveMoonlight(delta);
+        resolveMoonlight(delta, lightingController);
         resolveStealthBar(input);
         attack(delta, input, currPhase);
     }
