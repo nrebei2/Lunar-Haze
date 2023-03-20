@@ -98,11 +98,6 @@
         },
         {
           "type": "stone",
-          "scale": 1.2,
-          "position": [9, 4]
-        },
-        {
-          "type": "stone",
           "scale": 0.9,
           "position": [12, 2]
         },

@@ -67,6 +67,7 @@ public class Enemy extends GameObject implements Pool.Poolable {
         return alerted;
     }
 
+
     /**
      * Initialize an enemy with dummy position, id, and patrol path
      */
@@ -84,7 +85,6 @@ public class Enemy extends GameObject implements Pool.Poolable {
     public void reset() {
         hp = maxHp;
         alerted = false;
-        destroyed = false;
     }
 
     /**
@@ -112,7 +112,8 @@ public class Enemy extends GameObject implements Pool.Poolable {
         flashLight.setColor(color[0], color[1], color[2], color[3]);
         flashLight.setSoft(light.getBoolean("soft"));
 
-        activatePhysics(container.getWorld());
+        // Body may already exist since enemy is pooled
+        if (body == null) activatePhysics(container.getWorld());
         setFlashlight(flashLight);
 
         setFlashlightOn(true);

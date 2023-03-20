@@ -167,7 +167,7 @@ public class LevelContainer {
         setPlayer(player);
 
         board = null;
-        enemies = new EnemyPool(10);
+        enemies = new EnemyPool(20);
         activeEnemies = new Array<>(10);
         sceneObjects = new Array<>(true, 5);
     }
@@ -226,19 +226,18 @@ public class LevelContainer {
     }
 
     /**
-     * Removes enemy from the level. Be careful as the enemy may have an active enemy controller.
+     * Removes enemy from the level.
      *
      * @param enemy enemy to remove
      */
     public void removeEnemy(Enemy enemy) {
         enemies.free(enemy);
         activeEnemies.removeValue(enemy, true);
-        enemy.setDestroyed();
+        drawables.removeValue(enemy, true);
     }
 
     /**
-     * Be careful in using this method as there should always be a corresponding Enemy controller
-     * for an active enemy.
+     * Adds an enemy to the level
      *
      * @param type   type of Enemy to append to enemy list (e.g. villager)
      * @param x      world x-position

@@ -209,6 +209,7 @@ public class BoxObstacle extends SimpleObstacle {
             vertices[7] = 0;
         }
         shape.set(vertices);
+        createFixtures();
     }
 
     /**

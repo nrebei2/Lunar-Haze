@@ -221,9 +221,8 @@ public class GameplayController {
       */
     public void resolveEnemies() {
         if (getPhase() == Phase.BATTLE) {
-            if (MathUtils.random() <= 0.1) {
+            if (MathUtils.random() <= 0.01) {
                 // TODO: enemies in battle phase should not use patrol path
-
                 container.addEnemy("villager", 0, 0,
                         new ArrayList<>(Arrays.asList(new Vector2(), new Vector2()))
                 );

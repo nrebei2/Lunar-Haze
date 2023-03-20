@@ -4,12 +4,14 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.ObjectSet;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.Werewolf;
 import infinityx.lunarhaze.physics.ConeSource;
 import infinityx.lunarhaze.physics.RaycastInfo;
 
+import java.util.Iterator;
 import java.util.Random;
 
 
@@ -35,6 +37,8 @@ public class EnemyController {
      */
     private static final int ATTACK_DIST = 1;
 
+    private static final int ALERT_DIST = 20;
+
     /**
      * Enumeration to encode the finite state machine.
      */
@@ -58,7 +62,7 @@ public class EnemyController {
         /**
          * The enemy has a target and is attacking it
          */
-        ATTACK,
+        ALERT,
         /**
          * The enemy lost its target and is returnng to its patrolling path
          */
@@ -140,6 +144,18 @@ public class EnemyController {
     private Vector2 end_chase_pos;
 
     /**
+     * Where the player was seen when an enemy alerts other enemies
+     */
+    public Vector2 alert_pos;
+
+    private boolean isAtAlertLocation = false;
+
+    /**
+     * Reference of model-contoller map originially from EnemyPool
+     */
+    private ObjectMap<Enemy, EnemyController> controls;
+
+    /**
      * Creates an EnemyController for the enemy with the given id.
      *
      * @param enemy   The enemy being controlled by this AIController
@@ -170,22 +186,8 @@ public class EnemyController {
         board = container.getBoard();
         target = container.getPlayer();
         enemies = container.getEnemies();
+        controls = container.getEnemyControllers();
         //map = container.getMap();
-    }
-
-    /**
-     * Returns the distance between two board coordinates given two world coordinates
-     *
-     * @param x  x-coord in screen coord of first ship
-     * @param y  y-coord in screen coord of first ship
-     * @param tx x-coord in screen coord of second ship
-     * @param tx y-coord in screen coord of second ship
-     * @return
-     */
-    private float boardDistance(float x, float y, float tx, float ty) {
-        int dx = board.worldToBoardX(tx) - board.worldToBoardX(x);
-        int dy = board.worldToBoardX(ty) - board.worldToBoardX(y);
-        return (float) Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
     }
 
     public RaycastInfo raycast(GameObject requestingObject, Vector2 point1, Vector2 point2, World world) {
@@ -228,11 +230,11 @@ public class EnemyController {
         }
         /**Enemy only need to be less than detection distance away, enemy can see in an area*/
         else if (detection == Detection.AREA) {
-            return boardDistance(enemy.getX(), enemy.getY(), target.getX(),
-                    target.getY()) <= DETECT_DIST;
+            return enemy.getPosition().dst(target.getPosition()) <= DETECT_DIST;
         } else if (detection == Detection.MOON) {
-            return boardDistance(enemy.getX(), enemy.getY(), target.getX(),
-                    target.getY()) <= DETECT_DIST_MOONLIGHT;
+            return enemy.getPosition().dst(target.getPosition()) <= DETECT_DIST_MOONLIGHT;
+        } else if (detection == Detection.FULL_MOON) {
+            return true;
         } else {
             return false;
         }
@@ -251,7 +253,7 @@ public class EnemyController {
         }
         int pos_x = board.worldToBoardX(target.getX());
         int pos_y = board.worldToBoardX(target.getY());
-        return boardDistance(x, y, pos_x, pos_y) <= ATTACK_DIST;
+        return Vector2.dst(x, y, pos_x, pos_y) <= ATTACK_DIST;
     }
 
     /**
@@ -268,7 +270,7 @@ public class EnemyController {
 
     private boolean canChase() {
         // This is radial
-        return (boardDistance(enemy.getX(), enemy.getY(), target.getX(), target.getY()) <= CHASE_DIST);
+        return enemy.getPosition().dst(target.getPosition()) <= CHASE_DIST;
     }
 
 
@@ -299,6 +301,16 @@ public class EnemyController {
     }
 
     private void alertAllies() {
+        Iterator<Enemy> enemyIterator = enemies.iterator();
+        while (enemyIterator.hasNext()){
+            Enemy curr_enemy = enemyIterator.next();
+            if (!curr_enemy.equals(enemy)){
+                if (curr_enemy.getPosition().dst(enemy.getPosition()) <= ALERT_DIST){
+                    curr_enemy.setAlerted(true);
+                    controls.get(curr_enemy).alert_pos = (new Vector2(target.getX(), target.getY()));
+                }
+            }
+        }
 
     }
 
@@ -318,45 +330,33 @@ public class EnemyController {
                 break;
             case PATROL:
                 if (detectedPlayer(container)) {
-                    state = FSMState.CHASE;
-                    enemy.setIsAlerted(true);
                     alertAllies();
+                    state = FSMState.CHASE;
                 }
-
+                if (enemy.getAlerted()){
+                    state = FSMState.ALERT;
+                }
 
                 break;
             case CHASE:
                 if (!canChase() && !target.isOnMoonlight()) {
                     state = FSMState.WANDER;
-                    enemy.setIsAlerted(false);
                     chased_ticks = ticks;
                     end_chase_pos = new Vector2(enemy.getPosition().x, enemy.getPosition().y);
                     goal = getRandomPointtoWander(2f);
                 }
-//                Vector2 temp = new Vector2(enemy.getBody().getTransform().getOrientation());
-//                Vector2 direction = new Vector2(target.getX()-enemy.getX(),target.getY()-enemy.getY()).nor();
-//                Vector2 enemy_direction = temp.nor();
-//                if (direction.x < enemy_direction.x){
-//                    enemy.getBody().setAngularVelocity(-1f);
-//                }
-//                else if (direction.x > enemy_direction.x){
-//                    enemy.getBody().setAngularVelocity(1f);
-//                }
-//                else{
-//                    enemy.getBody().setAngularVelocity(0);
-//
-//                }
                 break;
             case WANDER:
                 if (detectedPlayer(container)) {
                     state = FSMState.CHASE;
-                    enemy.setIsAlerted(true);
                 } else if (!canChase() && !target.isOnMoonlight() && (ticks - chased_ticks >= 30)) {
                     state = FSMState.PATROL;
-                    enemy.setIsAlerted(false);
                 }
                 break;
             case IDLE:
+                if (enemy.getAlerted()){
+                    state = FSMState.ALERT;
+                }
                 idle_ticks++;
                 if (idle_ticks >= 15) {
                     enemy.getBody().setAngularVelocity(0);
@@ -365,7 +365,7 @@ public class EnemyController {
                     break;
                 }
                 if (lightDetect(container)) {
-                    System.out.println("detected");
+                    alertAllies();
                     enemy.getBody().setAngularVelocity(0);
                     state = FSMState.CHASE;
                     break;
@@ -380,6 +380,13 @@ public class EnemyController {
 
                 }
                 break;
+            case ALERT:
+                if (lightDetect(container)){
+                    state = FSMState.CHASE;
+                }
+                if (isAtAlertLocation){
+                    state = FSMState.IDLE;
+                }
             default:
                 // Unknown or unhandled state, should never get here
                 assert (false);
@@ -394,10 +401,13 @@ public class EnemyController {
         } else if (state == FSMState.CHASE) {
             detection = Detection.AREA;
             enemy.getFlashlight().setConeDegree(0);
+        }else if (currentPhase == GameplayController.Phase.BATTLE){
+            enemy.getFlashlight().setConeDegree(0);
+            detection = Detection.FULL_MOON;
+            state = FSMState.CHASE;
         } else {
             detection = Detection.LIGHT;
             enemy.getFlashlight().setConeDegree(30);
-
 
         }
     }
@@ -441,7 +451,6 @@ public class EnemyController {
                 return new Vector2(goal.x - cur_pos.x, goal.y - cur_pos.y).nor();
             case CHASE:
                 Vector2 target_pos = new Vector2(target.getPosition());
-
                 return (target_pos.sub(cur_pos)).nor();
             case WANDER:
                 Vector2 temp_cur_pos2 = new Vector2(cur_pos.x, cur_pos.y);
@@ -451,6 +460,15 @@ public class EnemyController {
                 return new Vector2(goal.x - cur_pos.x, goal.y - cur_pos.y).nor();
             case IDLE:
                 return new Vector2(0, 0);
+            case ALERT:
+                //alert_pos = target.getPosition();
+                Vector2 temp_cur_pos3 = new Vector2(cur_pos.x, cur_pos.y);
+                if (temp_cur_pos3.sub(alert_pos).len() <= 0.2f) {
+                    enemy.setAlerted(false);
+                    this.isAtAlertLocation = true;
+                    return new Vector2(0,0);
+                }
+                return new Vector2(alert_pos.x - cur_pos.x, alert_pos.y - cur_pos.y).nor();
         }
         return new Vector2(0, 0);
     }
