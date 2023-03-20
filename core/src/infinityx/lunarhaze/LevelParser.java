@@ -135,6 +135,10 @@ public class LevelParser {
 
             objId++;
         }
+
+        // Generate level settings
+        JsonValue settings = levelContents.get("settings");
+
         return levelContainer;
     }
 
@@ -235,6 +239,18 @@ public class LevelParser {
         int blur = light.getInt("blur");
         rayhandler.setBlur(blur > 0);
         rayhandler.setBlurNum(blur);
+    }
+
+    /**
+     * Creates the settings for the _specific_ level
+     *
+     * @param settings the JSON tree defining the settings
+     */
+    private void parseSettings(JsonValue settings) {
+        float transitionTime = settings.getFloat("transition");
+        float phaseLength = settings.getFloat("phaseLength");
+        levelContainer.setPhaseLength(phaseLength);
+        levelContainer.setPhaseTransitionTime(transitionTime);
     }
 
     /**
