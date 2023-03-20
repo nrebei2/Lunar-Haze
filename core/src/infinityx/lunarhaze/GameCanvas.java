@@ -940,29 +940,28 @@ public class GameCanvas {
         barRender.end();
     }
 
-    public void drawEnemyHpBars(float barWidth, float barHeight, EnemyList enemyList) {
+    public void drawEnemyHpBars(float barWidth, float barHeight, Enemy enemy) {
         if (active != DrawPass.STANDARD) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
             return;
         }
+            float x = WorldToScreenX(enemy.getPosition().x);
 
-        for (Enemy e : enemyList) {
-            float x = WorldToScreenX(e.getPosition().x);
-            float y = WorldToScreenY(e.getPosition().y);
+            float y = WorldToScreenY(enemy.getPosition().y);
 
             // Draw border
-            barRender.begin(ShapeRenderer.ShapeType.Filled);
-            barRender.setColor(Color.BLACK);
-            barRender.rect(x, y, barWidth, barHeight);
-            barRender.end();
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+            shapeRenderer.setColor(Color.BLACK);
+            shapeRenderer.rect(x- 0.7f*barWidth, y+2*barWidth, barWidth, barHeight);
+            shapeRenderer.end();
 
             // Draw the actual health bar
-            barRender.begin(ShapeRenderer.ShapeType.Filled);
-            barRender.setColor(Color.RED);
-            barRender.rect(x, y, barWidth * e.getHealthPercentage(), barHeight);
-            barRender.end();
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+            shapeRenderer.setColor(Color.RED);
+
+            shapeRenderer.rect(x- 0.7f*barWidth, y+2*barWidth, barWidth * enemy.getHealthPercentage(), barHeight);
+            shapeRenderer.end();
         }
-    }
 
     public void drawStealthBar(float width, float height, float stealth) {
         if (active != DrawPass.STANDARD) {

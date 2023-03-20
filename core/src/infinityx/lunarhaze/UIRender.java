@@ -5,6 +5,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.GameplayController.Phase;
+import infinityx.lunarhaze.entity.Enemy;
+import infinityx.lunarhaze.entity.EnemyList;
 
 /**
  * This is a class used for drawing player and enemies' game UI state: HP, Stealth, MoonLight
@@ -56,8 +58,12 @@ public class UIRender {
         canvas.drawStealthBar(BAR_WIDTH,
                 BAR_HEIGHT, level.getPlayer().getStealth());
         if (phase == Phase.BATTLE) {
-            canvas.drawEnemyHpBars(BAR_WIDTH / 4.0f, BAR_HEIGHT / 4.0f,
-                    level.getEnemies());
+            EnemyList enemyList = level.getEnemies();
+            for(Enemy enemy : enemyList) {
+                canvas.drawEnemyHpBars(
+                        BAR_WIDTH / 4.0f, BAR_HEIGHT / 4.0f, enemy
+                );
+            }
         }
         canvas.end();
     }
