@@ -2,6 +2,7 @@ package infinityx.lunarhaze;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.EnemyList;
 import infinityx.lunarhaze.entity.Werewolf;
@@ -199,19 +200,19 @@ public class GameplayController {
         for (Enemy en : enemies) {
             if (controls[en.getId()] != null) {
                 EnemyController curEnemyController = controls[en.getId()];
-                int action = curEnemyController.getAction(levelContainer);
-                en.update(action);
-
+//                int action = curEnemyController.getAction(levelContainer);
+                Vector2 movement = curEnemyController.getMovement(levelContainer);
+                en.update(movement);
                 // TODO: make more interesting actions                //curEnemyController.setVisibleTiles();
-                if (en.getIsAlerted()) {
-                    // angle between enemy and player
-                    double ang = Math.atan2(player.getPosition().y - en.getPosition().y, player.getPosition().x - en.getPosition().y);
-                    en.setFlashLightRot((float) ang);
-                } else {
-                    en.setFlashLightRotAlongDir();
-                }
+//                if (en.getIsAlerted()) {
+//                    // angle between enemy and player
+//                    double ang = Math.atan2(player.getPosition().y - en.getPosition().y, player.getPosition().x - en.getPosition().y);
+//                    en.setFlashLightRot((float) ang);
+//                } else {
+//                    en.setFlashLightRot();
+//                }
             } else {
-                en.update(EnemyController.CONTROL_NO_ACTION);
+                en.update(new Vector2());
             }
         }
     }

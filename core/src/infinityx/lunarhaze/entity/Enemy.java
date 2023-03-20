@@ -217,6 +217,13 @@ public class Enemy extends GameObject {
         this.patrolPath = path;
     }
 
+    public Vector2 getBottomLeftOfRegion(){
+        return this.patrolPath.get(0);
+    }
+    public Vector2 getTopRightOfRegion(){
+        return this.patrolPath.get(1);
+    }
+
     /**
      * Returns whether or not the ship is alive.
      * <p>
@@ -279,29 +286,14 @@ public class Enemy extends GameObject {
      * only manages the cooldown and indicates whether the weapon is currently firing.
      * The result of weapon fire is managed by the GameplayController.
      */
-    public void update(int controlCode) {
-        boolean movingLeft = (controlCode & EnemyController.CONTROL_MOVE_LEFT) != 0;
-        boolean movingRight = (controlCode & EnemyController.CONTROL_MOVE_RIGHT) != 0;
-        boolean movingDown = (controlCode & EnemyController.CONTROL_MOVE_DOWN) != 0;
-        boolean movingUp = (controlCode & EnemyController.CONTROL_MOVE_UP) != 0;
+    public void update(Vector2 move) {
+        body.applyLinearImpulse(move.scl(speed),new Vector2(),true);
 
-        float xVelocity = 0.0f;
-        float yVelocity = 0.0f;
-        if (movingLeft) {
-            xVelocity = -speed;
-            direction = Direction.WEST;
-        } else if (movingRight) {
-            xVelocity = speed;
-            direction = Direction.EAST;
+        //Limits maximum speed
+        if (body.getLinearVelocity().len() > 1f) {
+            body.setLinearVelocity(body.getLinearVelocity().clamp(0f,1f));
         }
-        if (movingDown) {
-            yVelocity = -speed;
-            direction = Direction.SOUTH;
-        } else if (movingUp) {
-            yVelocity = speed;
-            direction = Direction.NORTH;
-        }
-        body.setLinearVelocity(xVelocity, yVelocity);
+
     }
 
     /**

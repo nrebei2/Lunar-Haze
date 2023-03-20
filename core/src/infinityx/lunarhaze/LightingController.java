@@ -65,7 +65,6 @@ public class LightingController {
                     dustPools.put(map_pos, dusts);
 
                     // add to level container so they draw
-                    System.out.println("Adding pool");
                     container.addDrawables(dustPools.get(map_pos));
                 }
             }
