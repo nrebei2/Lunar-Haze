@@ -437,7 +437,7 @@ public class EnemyController {
                 break;
             case PATROL:
                 Vector2 temp_cur_pos = new Vector2(cur_pos.x, cur_pos.y);
-                if (temp_cur_pos.sub(goal).len() <= 0.1f){
+                if (temp_cur_pos.sub(goal).len() <= 0.2f){
                     goal = getRandomPointinRegion();
                     state = FSMState.IDLE;
                     enemy.setVX(0);
