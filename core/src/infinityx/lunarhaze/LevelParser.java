@@ -157,7 +157,6 @@ public class LevelParser {
         board.setTileWorldDim(wSize[0], wSize[1]);
 
         levelContainer.setBoard(board);
-        levelContainer.hidePlayer();
 
         return levelContainer;
     }

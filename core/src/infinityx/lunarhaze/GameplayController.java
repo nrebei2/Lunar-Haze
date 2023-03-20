@@ -2,6 +2,7 @@ package infinityx.lunarhaze;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
@@ -24,7 +25,8 @@ public class GameplayController {
      */
     public enum Phase {
         STEALTH,
-        BATTLE
+        BATTLE,
+        TRANSITION
     }
 
     public Phase currentPhase;
@@ -93,6 +95,12 @@ public class GameplayController {
      */
     private float phaseTimer;
 
+    /** Tick number for when we add a new enemy in battle mode */
+    private int enemyAddTick = 1000;
+
+    /** Number of ticks (frames) since battle began */
+    private int battleTicks;
+
     /**
      * Creates a new GameplayController with no active elements.
      */
@@ -100,8 +108,6 @@ public class GameplayController {
         player = null;
         enemies = null;
         board = null;
-        currentPhase = Phase.STEALTH;
-        gameState = GameState.PLAY;
     }
 
     /**
@@ -136,10 +142,11 @@ public class GameplayController {
         this.playerController = new PlayerController(player, board, levelContainer);
 
         phaseTimer = levelContainer.getPhaseLength();
-        ambientLightTransitionTimer = levelContainer.getPhaseTransitionTime();
+        ambientLightTransitionTimer = 0;
 
         enemies = levelContainer.getEnemies();
         controls = levelContainer.getEnemyControllers();
+        battleTicks = 0;
     }
 
     /**
@@ -151,7 +158,6 @@ public class GameplayController {
      */
     public void resolveActions(InputController input, float delta) {
         // Update the phase timer
-        phaseTimer -= delta;
         lightingController.updateDust(delta);
 
         // FSM for state and phase
@@ -160,16 +166,21 @@ public class GameplayController {
             playerController.update(input, delta, currentPhase, lightingController);
             switch (currentPhase) {
                 case STEALTH:
-                    if (container.getBoard().getRemainingMoonlight() == 0 || phaseTimer <= 0) switchPhase();
+                    phaseTimer -= delta;
+                    if (container.getBoard().getRemainingMoonlight() == 0 || phaseTimer <= 0) currentPhase = Phase.TRANSITION;
                     break;
                 case BATTLE:
+                    battleTicks += 1;
                     if (enemies.size == 0) gameState = GameState.WIN;
+                    break;
+                case TRANSITION:
+                    switchPhase(delta);
+                    break;
             }
             if (player.getHp() <= 0) gameState = GameState.OVER;
         }
         // Enemies should still update even when game is outside play
         resolveEnemies();
-        updateAmbientLight(delta);
 
         // TODO: for convenience, remove later
         if (Gdx.input.isKeyPressed(Input.Keys.PERIOD)) {
@@ -188,29 +199,30 @@ public class GameplayController {
     /**
      * Performs all necessary computations to change the current phase of the game from STEALTH to BATTLE.
      */
-    public void switchPhase() {
-        currentPhase = Phase.BATTLE;
-        ambientLightTransitionTimer = 0;
+    public void switchPhase(float delta) {
+        updateAmbientLight(delta);
+        if (ambientLightTransitionTimer >= container.getPhaseTransitionTime()) currentPhase = Phase.BATTLE;
     }
 
     /**
-     * ADD DOMUNEMTAION DONNY IDK WHAT THIS DOES
-     *
-     * @param delta
+     * Interpolate between stealth ambiance and battle ambiance
+     * @param delta delta time
      */
     private void updateAmbientLight(float delta) {
         if (ambientLightTransitionTimer < container.getPhaseTransitionTime()) {
             ambientLightTransitionTimer += delta;
             float progress = Math.min(ambientLightTransitionTimer / container.getPhaseTransitionTime(), 1);
 
-            float[] startColor = currentPhase == Phase.BATTLE ? container.getBattleAmbience() : container.getStealthAmbience();
-            float[] endColor = currentPhase == Phase.BATTLE ? container.getStealthAmbience() : container.getBattleAmbience();
+            float[] startColor = container.getStealthAmbience();
+            float[] endColor = container.getBattleAmbience();
 
-            // LERP performed here
-            float r = startColor[0] * (1 - progress) + endColor[0] * progress;
-            float g = startColor[1] * (1 - progress) + endColor[1] * progress;
-            float b = startColor[2] * (1 - progress) + endColor[2] * progress;
-            float a = startColor[3] * (1 - progress) + endColor[3] * progress;
+            // Interpolation function
+            Interpolation erp = Interpolation.fade;
+
+            float r = erp.apply(startColor[0], endColor[0], progress);
+            float g = erp.apply(startColor[1], endColor[1], progress);
+            float b = erp.apply(startColor[2], endColor[2], progress);
+            float a = erp.apply(startColor[3], endColor[3], progress);
 
             container.getRayHandler().setAmbientLight(r, g, b, a);
         }
@@ -220,12 +232,14 @@ public class GameplayController {
      * Resolve any updates for the active enemies through their controllers.
       */
     public void resolveEnemies() {
-        if (getPhase() == Phase.BATTLE) {
-            if (MathUtils.random() <= 0.01) {
+        // add enemies during battle stage and in play
+        if (getPhase() == Phase.BATTLE && gameState == GameState.PLAY) {
+            if (battleTicks % enemyAddTick == 0) {
                 // TODO: enemies in battle phase should not use patrol path
                 container.addEnemy("villager", 0, 0,
                         new ArrayList<>(Arrays.asList(new Vector2(), new Vector2()))
                 );
+                enemyAddTick = MathUtils.random(400, 800);
             }
         }
         for (int i = 0; i < enemies.size; i++) {

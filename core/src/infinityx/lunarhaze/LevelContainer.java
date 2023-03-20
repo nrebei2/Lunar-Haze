@@ -189,7 +189,6 @@ public class LevelContainer {
      */
     public void flush() {
         initialize();
-        // The player object can be carried over!
     }
 
     public RayHandler getRayHandler() {
