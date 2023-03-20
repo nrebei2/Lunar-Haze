@@ -2,10 +2,16 @@ package infinityx.lunarhaze;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.ObjectSet;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.Werewolf;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Controller to handle gameplay interactions.
@@ -40,7 +46,7 @@ public class GameplayController {
     /**
      * Reference to level container, acts as a nice interface for all level models
      */
-    private LevelContainer levelContainer;
+    private LevelContainer container;
 
     /**
      * Reference to player from container
@@ -50,7 +56,7 @@ public class GameplayController {
     /**
      * Reference to active enemies from container
      */
-    private ObjectSet<Enemy> enemies;
+    private Array<Enemy> enemies;
 
     /**
      * Reference to board from container
@@ -58,9 +64,9 @@ public class GameplayController {
     public Board board;
 
     /**
-     * Owns the enemy controllers, controls[id] controls the enemy with that id
+     * Reference of model-contoller map originially from EnemyPool
      */
-    private EnemyController[] controls;
+    private ObjectMap<Enemy, EnemyController> controls;
 
     /**
      * Owns the lighting controller
@@ -121,7 +127,7 @@ public class GameplayController {
     public void start(LevelContainer levelContainer) {
         this.gameState = GameState.PLAY;
         this.currentPhase = Phase.STEALTH;
-        this.levelContainer = levelContainer;
+        this.container = levelContainer;
         this.collisionController = new CollisionController(levelContainer);
         lightingController = new LightingController(levelContainer);
 
@@ -133,13 +139,7 @@ public class GameplayController {
         ambientLightTransitionTimer = levelContainer.getPhaseTransitionTime();
 
         enemies = levelContainer.getEnemies();
-        controls = new EnemyController[enemies.size];
-
-        int i = 0;
-        for (Enemy enemy : enemies) {
-            controls[i] = new EnemyController(player, enemies, board, enemy);
-            i++;
-        }
+        controls = levelContainer.getEnemyControllers();
     }
 
     /**
@@ -160,7 +160,7 @@ public class GameplayController {
             playerController.update(input, delta, currentPhase, lightingController);
             switch (currentPhase) {
                 case STEALTH:
-                    if (levelContainer.getBoard().getRemainingMoonlight() == 0 || phaseTimer <= 0) switchPhase();
+                    if (container.getBoard().getRemainingMoonlight() == 0 || phaseTimer <= 0) switchPhase();
                     break;
                 case BATTLE:
                     if (enemies.size == 0) gameState = GameState.WIN;
@@ -199,12 +199,12 @@ public class GameplayController {
      * @param delta
      */
     private void updateAmbientLight(float delta) {
-        if (ambientLightTransitionTimer < levelContainer.getPhaseTransitionTime()) {
+        if (ambientLightTransitionTimer < container.getPhaseTransitionTime()) {
             ambientLightTransitionTimer += delta;
-            float progress = Math.min(ambientLightTransitionTimer / levelContainer.getPhaseTransitionTime(), 1);
+            float progress = Math.min(ambientLightTransitionTimer / container.getPhaseTransitionTime(), 1);
 
-            float[] startColor = currentPhase == Phase.BATTLE ? levelContainer.getBattleAmbience() : levelContainer.getStealthAmbience();
-            float[] endColor = currentPhase == Phase.BATTLE ? levelContainer.getStealthAmbience() : levelContainer.getBattleAmbience();
+            float[] startColor = currentPhase == Phase.BATTLE ? container.getBattleAmbience() : container.getStealthAmbience();
+            float[] endColor = currentPhase == Phase.BATTLE ? container.getStealthAmbience() : container.getBattleAmbience();
 
             // LERP performed here
             float r = startColor[0] * (1 - progress) + endColor[0] * progress;
@@ -212,7 +212,7 @@ public class GameplayController {
             float b = startColor[2] * (1 - progress) + endColor[2] * progress;
             float a = startColor[3] * (1 - progress) + endColor[3] * progress;
 
-            levelContainer.getRayHandler().setAmbientLight(r, g, b, a);
+            container.getRayHandler().setAmbientLight(r, g, b, a);
         }
     }
 
@@ -220,8 +220,17 @@ public class GameplayController {
      * Resolve any updates for the active enemies through their controllers.
       */
     public void resolveEnemies() {
-        for (EnemyController controller: controls) {
-            controller.update(levelContainer);
+        if (getPhase() == Phase.BATTLE) {
+            if (MathUtils.random() <= 0.1) {
+                // TODO: enemies in battle phase should not use patrol path
+
+                container.addEnemy("villager", 0, 0,
+                        new ArrayList<>(Arrays.asList(new Vector2(), new Vector2()))
+                );
+            }
+        }
+        for (int i = 0; i < enemies.size; i++) {
+            controls.get(enemies.get(i)).update(container, currentPhase);
         }
     }
 }

@@ -3,6 +3,7 @@ package infinityx.lunarhaze;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectSet;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.Werewolf;
@@ -96,12 +97,12 @@ public class EnemyController {
     /**
      * Set of active enemies on the current level
      */
-    ObjectSet<Enemy> enemies;
+    Array<Enemy> enemies;
 
     /**
      * The game board; used for pathfinding
      */
-    private final Board board;
+    private Board board;
 
     /**
      * The enemies current state in the FSM
@@ -111,7 +112,7 @@ public class EnemyController {
     /**
      * The target (to chase or attack).
      */
-    private final Werewolf target;
+    private Werewolf target;
 
     /**
      * The number of ticks since we started this controller
@@ -134,29 +135,42 @@ public class EnemyController {
     private Vector2 goal;
 
     /**
-     * The number of ticks since we started this controller
+     * Where the player was last seen before WANDER
      */
     private Vector2 end_chase_pos;
 
     /**
      * Creates an EnemyController for the enemy with the given id.
      *
-     * @param board   The game board (for pathfinding)
-     * @param enemies The list of enemies (for alerting)
      * @param enemy   The enemy being controlled by this AIController
      */
-    public EnemyController(Werewolf target, ObjectSet<Enemy> enemies, Board board, Enemy enemy) {
+    public EnemyController(Enemy enemy) {
         this.enemy = enemy;
-        this.board = board;
-        this.target = target;
         this.state = FSMState.SPAWN;
-        this.enemies = enemies;
         this.detection = Detection.LIGHT;
         this.ticks = 0;
         this.chased_ticks = 0;
         this.idle_ticks = 0;
-        this.goal = getRandomPointinRegion();
         this.end_chase_pos = new Vector2();
+    }
+
+    /**
+     * (re)initialize attributes of this controller given the enemy.
+     * This must be called when the enemy is reused from its pool.
+     */
+    public void initialize() {
+        this.goal = getRandomPointinRegion();
+    }
+
+    /**
+     * Populate
+     * @param container holding surrounding model objects
+     */
+    public void populateSurroundings(LevelContainer container) {
+        board = container.getBoard();
+        target = container.getPlayer();
+        enemies = container.getEnemies();
+        //map = container.getMap();
     }
 
     /**
@@ -260,16 +274,20 @@ public class EnemyController {
 
     /**
      * Updates the enemy being controlled by this controller
+     *
      * @param container
+     * @param currentPhase of the game
      */
-    public void update(LevelContainer container) {
+    public void update(LevelContainer container, GameplayController.Phase currentPhase) {
         ticks++;
+        if (enemy.isDestroyed()) return;
+        if (enemy.getHp() <= 0) container.removeEnemy(enemy);
 
         // Do not need to rework ourselves every frame. Just every 10 ticks.
         if (ticks % 10 == 0) {
             // Process the FSM
             changeStateIfApplicable(container, ticks);
-            changeDetectionIfApplicable();
+            changeDetectionIfApplicable(currentPhase);
 
             // Pathfinding
             Vector2 next_move = findPath();
@@ -365,13 +383,12 @@ public class EnemyController {
             default:
                 // Unknown or unhandled state, should never get here
                 assert (false);
-                state = FSMState.WANDER;
                 break;
         }
     }
 
 
-    private void changeDetectionIfApplicable() {
+    private void changeDetectionIfApplicable(GameplayController.Phase currentPhase) {
         if (target.isOnMoonlight()) {
             detection = Detection.MOON;
         } else if (state == FSMState.CHASE) {
@@ -387,7 +404,6 @@ public class EnemyController {
 
 
     private Vector2 getRandomPointinRegion() {
-        Random rand = new Random();
         //Calculates the two point coordinates in a world base
         Vector2 bottom_left = board.boardToWorld((int) enemy.getBottomLeftOfRegion().x, (int) enemy.getBottomLeftOfRegion().y);
         Vector2 top_right = board.boardToWorld((int) enemy.getTopRightOfRegion().x, (int) enemy.getTopRightOfRegion().y);

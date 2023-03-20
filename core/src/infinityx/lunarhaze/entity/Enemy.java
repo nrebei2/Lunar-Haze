@@ -23,7 +23,7 @@ public class Enemy extends GameObject implements Pool.Poolable {
     /**
      * Whether the enemy is alerted.
      */
-    private Boolean isAlerted;
+    private Boolean alerted;
 
     /**
      * rectangular region represented by [[b_lx, b_ly], [t_rx, t_ry]]
@@ -61,13 +61,20 @@ public class Enemy extends GameObject implements Pool.Poolable {
     }
 
     /**
+     * @return whether the enemy is alerted
+     */
+    public boolean getAlerted () {
+        return alerted;
+    }
+
+    /**
      * Initialize an enemy with dummy position, id, and patrol path
      */
     public Enemy() {
         super(0, 0);
         this.patrolPath = new ArrayList<>();
         animeframe = 0.0f;
-        isAlerted = false;
+        alerted = false;
     }
 
     /**
@@ -76,7 +83,7 @@ public class Enemy extends GameObject implements Pool.Poolable {
     @Override
     public void reset() {
         hp = maxHp;
-        isAlerted = false;
+        alerted = false;
         destroyed = false;
     }
 
@@ -123,8 +130,8 @@ public class Enemy extends GameObject implements Pool.Poolable {
     /**
      * Sets whether the enemy is alerted.
      */
-    public void setIsAlerted(Boolean value) {
-        isAlerted = value;
+    public void setAlerted(Boolean value) {
+        alerted = value;
     }
 
     public Vector2 getBottomLeftOfRegion() {

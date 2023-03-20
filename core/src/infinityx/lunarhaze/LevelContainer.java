@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.ObjectSet;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.entity.Enemy;
@@ -71,7 +72,7 @@ public class LevelContainer {
     /**
      * List of active enemies
      */
-    private ObjectSet<Enemy> activeEnemies;
+    private Array<Enemy> activeEnemies;
     /**
      * Stores SceneObjects
      */
@@ -167,7 +168,7 @@ public class LevelContainer {
 
         board = null;
         enemies = new EnemyPool(10);
-        activeEnemies = new ObjectSet<>(10);
+        activeEnemies = new Array<>(10);
         sceneObjects = new Array<>(true, 5);
     }
 
@@ -198,7 +199,7 @@ public class LevelContainer {
     /**
      * @return All active enemies in level.
      */
-    public ObjectSet<Enemy> getEnemies() {
+    public Array<Enemy> getEnemies() {
         return activeEnemies;
     }
 
@@ -217,18 +218,22 @@ public class LevelContainer {
         activeEnemies.add(enemy);
         addDrawable(enemy);
 
+        // Update enemy controller assigned to the new enemy
+        getEnemyControllers().get(enemy).populateSurroundings(this);
+        getEnemyControllers().get(enemy).initialize();
+
         return enemy;
     }
 
     /**
-     * Removes enemy from the level. Be careful as `enemy` may have an active enemy controller.
+     * Removes enemy from the level. Be careful as the enemy may have an active enemy controller.
      *
      * @param enemy enemy to remove
      */
     public void removeEnemy(Enemy enemy) {
         enemies.free(enemy);
-        activeEnemies.remove(enemy);
-        drawables.removeValue(enemy, true);
+        activeEnemies.removeValue(enemy, true);
+        enemy.setDestroyed();
     }
 
     /**
@@ -239,7 +244,7 @@ public class LevelContainer {
      * @param x      world x-position
      * @param y      world y-position
      * @param patrol patrol path for this enemy
-     * @return Enemy added with updated id
+     * @return Enemy added
      */
     public Enemy addEnemy(String type, float x, float y, ArrayList<Vector2> patrol) {
         Enemy enemy = enemies.obtain();
@@ -249,6 +254,13 @@ public class LevelContainer {
         enemy.setPosition(x, y);
 
         return addEnemy(enemy);
+    }
+
+    /**
+     * @return Mapping of all enemies (dead too) with their controllers
+     */
+    public ObjectMap<Enemy, EnemyController> getEnemyControllers() {
+        return enemies.controls;
     }
 
     /**
@@ -481,7 +493,6 @@ public class LevelContainer {
         for (Drawable o : drawables) {
             if (!o.isDestroyed()) {
                 backing.add(o);
-            } else {
             }
         }
 
