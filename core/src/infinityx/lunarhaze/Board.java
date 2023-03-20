@@ -5,7 +5,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.IntSet;
 
 import java.util.ArrayList;
 
@@ -17,7 +16,6 @@ import java.util.ArrayList;
  * Ref: https://libgdx.com/wiki/graphics/2d/tile-maps
  */
 public class Board {
-    // Instance attributes
     /**
      * The board width (in number of tiles)
      */
@@ -468,8 +466,8 @@ public class Board {
      * Sets a tile as (moonlight) collectable or not.
      * <p>
      *
-     * @param x The x index for the Tile cell
-     * @param y The y index for the Tile cell
+     * @param x           The x index for the Tile cell
+     * @param y           The y index for the Tile cell
      * @param collectable the player can collect moonlight on this tile (true) or not (false)
      */
     public void setCollectable(int x, int y, boolean collectable) {

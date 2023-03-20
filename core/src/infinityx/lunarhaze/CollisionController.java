@@ -16,14 +16,7 @@ public class CollisionController implements ContactListener {
      */
     private final float MAX_KILL_POWER = 5.0f;
 
-    /**
-     * Reference to level container holding all game objects
-     */
-    private LevelContainer level;
-
-
     public CollisionController(LevelContainer level) {
-        this.level = level;
         level.getWorld().setContactListener(this);
     }
 
@@ -36,19 +29,18 @@ public class CollisionController implements ContactListener {
         GameObject obj2 = (GameObject) body2.getUserData();
 
 
-        if(obj1.getType() == GameObject.ObjectType.WEREWOLF && obj2.getType() == GameObject.ObjectType.ENEMY) {
+        if (obj1.getType() == GameObject.ObjectType.WEREWOLF && obj2.getType() == GameObject.ObjectType.ENEMY) {
             Werewolf player = (Werewolf) obj1;
             Enemy enemy = (Enemy) obj2;
-            if(player.isAttacking()) {
+            if (player.isAttacking()) {
                 resolvePlayerAttack(player, enemy);
             } else {
                 resolveEnemyAttack(player, enemy, enemy.getAttackDamage(), enemy.getAttackKnockback());
             }
-        }
-        else if (obj1.getType() == GameObject.ObjectType.ENEMY && obj2.getType() == GameObject.ObjectType.WEREWOLF) {
+        } else if (obj1.getType() == GameObject.ObjectType.ENEMY && obj2.getType() == GameObject.ObjectType.WEREWOLF) {
             Werewolf player = (Werewolf) obj2;
             Enemy enemy = (Enemy) obj1;
-            if(player.isAttacking()) {
+            if (player.isAttacking()) {
                 resolvePlayerAttack(player, enemy);
             } else {
                 resolveEnemyAttack(player, enemy, enemy.getAttackDamage(), enemy.getAttackKnockback());
@@ -67,9 +59,9 @@ public class CollisionController implements ContactListener {
         // Get direction
         Vector2 direction = pos.sub(enemyPos).nor();
 
-        ((Werewolf)player).setCanMove(false);
+        ((Werewolf) player).setCanMove(false);
         body.applyLinearImpulse(direction.scl(knockback), body.getWorldCenter(), true);
-        ((Werewolf)player).setHp((int) (((Werewolf)player).getHp() - damage));
+        ((Werewolf) player).setHp((int) (((Werewolf) player).getHp() - damage));
     }
 
     public void resolvePlayerAttack(Werewolf player, Enemy enemy) {

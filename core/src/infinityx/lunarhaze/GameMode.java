@@ -1,7 +1,5 @@
 package infinityx.lunarhaze;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -13,8 +11,7 @@ import infinityx.util.ScreenObservable;
 
 /**
  * The primary controller class for the game.
- * This is the player mode class for running the game. In initializes all
- * of the other classes in the game and hooks them together.  It also provides the
+ * This is the player mode class for running the game. It provides the
  * basic game loop (update-draw).
  */
 public class GameMode extends ScreenObservable implements Screen {
@@ -27,15 +24,6 @@ public class GameMode extends ScreenObservable implements Screen {
      * User requested to go to menu
      */
     public final static int GO_MENU = 0;
-
-    /**
-     * Width of the HP bar
-     */
-    private final static float BAR_WIDTH = 300f;
-    /**
-     * Height of the HP bar
-     */
-    private final static float BAR_HEIGHT = 40.0f;
 
     /**
      * Owns the GameplayController
@@ -67,12 +55,6 @@ public class GameMode extends ScreenObservable implements Screen {
     protected BitmapFont UIFont_large;
 
     protected BitmapFont UIFont_small;
-
-    /**
-     * Variable to track total time played in milliseconds (SIMPLE FIELDS)
-     * TODO: use this for timer
-     */
-    private float totalTime = 0;
 
     // TODO: Maybe change to enum if there are not that many levels, or string maybe?
     /**
@@ -164,8 +146,6 @@ public class GameMode extends ScreenObservable implements Screen {
     protected void play(float delta) {
         levelContainer.getWorld().step(delta, 6, 2);
         gameplayController.resolveActions(inputController, delta);
-
-        totalTime += (delta * 1000); // Seconds to milliseconds
     }
 
     /**

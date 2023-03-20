@@ -24,9 +24,11 @@ public interface Drawable {
 
     /**
      * Returns true if this object is destroyed.
+     *
      * @return true if this object is destroyed
      */
     boolean isDestroyed();
+
     /**
      * Sets this object as destroyed. Will be removed from drawing next timestep.
      */

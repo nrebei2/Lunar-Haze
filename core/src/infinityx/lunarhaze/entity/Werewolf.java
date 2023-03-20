@@ -3,17 +3,15 @@ package infinityx.lunarhaze.entity;
 import box2dLight.PointLight;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
-
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
-
 import infinityx.lunarhaze.GameObject;
 import infinityx.lunarhaze.LevelContainer;
 
+/**
+ * Model class representing the player.
+ */
 public class Werewolf extends GameObject {
     /**
      * Initial light value of the werewolf is 0.0
@@ -30,13 +28,15 @@ public class Werewolf extends GameObject {
      **/
     public static final float MAX_LIGHT = 100.0f;
 
-    /** Returns whether the werewolf can move or not; the werewolf can't move
+    /**
+     * Whether the werewolf can move or not; the werewolf can't move
      * if its being knocked back by an attack.
      **/
     private boolean canMove;
 
-    /** Controls how long the werewolf gets knocked back by an attack and the window of the
-     *  damage animation.
+    /**
+     * Controls how long the werewolf gets knocked back by an attack and the window of the
+     * damage animation.
      */
     private float lockout;
 
@@ -239,18 +239,25 @@ public class Werewolf extends GameObject {
         moonlight = b;
     }
 
-    public void addMoonlightCollected(){
-        moonlightCollected ++;
+    public void addMoonlightCollected() {
+        moonlightCollected++;
     }
 
     public int getMoonlightCollected() {
         return moonlightCollected;
     }
 
-    public void setCanMove(boolean value) { canMove = value; }
+    public void setCanMove(boolean value) {
+        canMove = value;
+    }
 
-    public void setAttacking(boolean value) { isAttacking = value; }
-    public boolean isAttacking() { return isAttacking; }
+    public void setAttacking(boolean value) {
+        isAttacking = value;
+    }
+
+    public boolean isAttacking() {
+        return isAttacking;
+    }
 
     /**
      * Initialize a werewolf.
@@ -295,32 +302,6 @@ public class Werewolf extends GameObject {
         spotLight.setSoft(light.getBoolean("soft"));
         activatePhysics(container.getWorld());
         setSpotLight(spotLight);
-    }
-
-    /**
-     * Deep clones player, can be used independently of this
-     *
-     * @return new player
-     */
-    public Werewolf deepClone(LevelContainer container) {
-        Werewolf werewolf = new Werewolf(container.getPlayer().getWidth(), container.getPlayer().getHeight());
-        werewolf.setSpeed(speed);
-        werewolf.setTexture(getTexture());
-        werewolf.initHp(INITIAL_HP);
-        werewolf.initLockout(lockout);
-        werewolf.setOrigin((int) origin.x, (int) origin.y);
-        PointLight spotLight = new PointLight(
-                container.getRayHandler(), this.spotLight.getRayNum(), this.spotLight.getColor(), this.spotLight.getDistance(),
-                0, 0
-        );
-        werewolf.setBodyState(body);
-        spotLight.setSoft(this.spotLight.isSoft());
-        werewolf.activatePhysics(container.getWorld());
-        werewolf.setSpotLight(spotLight);
-
-        werewolf.setDimension(getDimension().x, getDimension().y);
-        werewolf.setPositioned(positioned);
-        return werewolf;
     }
 
     public void resolveAttack(GameObject enemy, int damage, float knockback) {

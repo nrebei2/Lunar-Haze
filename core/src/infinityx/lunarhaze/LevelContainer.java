@@ -98,7 +98,9 @@ public class LevelContainer {
     private Array<Drawable> drawables;
     private final DrawableCompare drawComp = new DrawableCompare();
 
-    /** The backing set for garbage collection */
+    /**
+     * The backing set for garbage collection
+     */
     private Array<Drawable> backing;
 
     /**
@@ -145,7 +147,7 @@ public class LevelContainer {
      * Ambient lighting values during battle phase
      */
     private float[] battleAmbience;
-    
+
     /**
      * Initialize attributes
      */
@@ -220,6 +222,7 @@ public class LevelContainer {
 
     /**
      * Removes enemy from the level. Be careful as `enemy` may have an active enemy controller.
+     *
      * @param enemy enemy to remove
      */
     public void removeEnemy(Enemy enemy) {
@@ -285,37 +288,51 @@ public class LevelContainer {
         return phaseTransitionTime;
     }
 
-    /** Sets the time it takes to transition from stealth to battle */
+    /**
+     * Sets the time it takes to transition from stealth to battle
+     */
     public void setPhaseTransitionTime(float phaseTransitionTime) {
         this.phaseTransitionTime = phaseTransitionTime;
     }
 
-    /** @return the length of a stealth cycle */
+    /**
+     * @return the length of a stealth cycle
+     */
     public float getPhaseLength() {
         return phaseLength;
     }
 
-    /** Sets the length of a stealth cycle */
+    /**
+     * Sets the length of a stealth cycle
+     */
     public void setPhaseLength(float phaseLength) {
         this.phaseLength = phaseLength;
     }
 
-    /** Sets Ambient lighting values during stealth phase */
+    /**
+     * Sets Ambient lighting values during stealth phase
+     */
     public void setStealthAmbience(float[] stealthAmbience) {
         this.stealthAmbience = stealthAmbience;
     }
 
-    /** Sets Ambient lighting values during battle phase */
+    /**
+     * Sets Ambient lighting values during battle phase
+     */
     public void setBattleAmbience(float[] battleAmbience) {
         this.battleAmbience = battleAmbience;
     }
 
-    /** @return Ambient lighting values during stealth phase */
+    /**
+     * @return Ambient lighting values during stealth phase
+     */
     public float[] getStealthAmbience() {
         return stealthAmbience;
     }
 
-    /** @return Ambient lighting values during battle phase */
+    /**
+     * @return Ambient lighting values during battle phase
+     */
     public float[] getBattleAmbience() {
         return battleAmbience;
     }

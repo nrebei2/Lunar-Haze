@@ -2,11 +2,9 @@ package infinityx.lunarhaze;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.math.Vector2;
-import infinityx.lunarhaze.*;
+import com.badlogic.gdx.utils.ObjectSet;
 import infinityx.lunarhaze.entity.Enemy;
-import infinityx.lunarhaze.entity.EnemyPool;
 import infinityx.lunarhaze.entity.Werewolf;
 
 /**
@@ -22,6 +20,7 @@ public class GameplayController {
         STEALTH,
         BATTLE
     }
+
     public Phase currentPhase;
 
     /**
@@ -38,7 +37,9 @@ public class GameplayController {
 
     private GameState gameState;
 
-    /** Reference to level container, acts as a nice interface for all level models */
+    /**
+     * Reference to level container, acts as a nice interface for all level models
+     */
     private LevelContainer levelContainer;
 
     /**
@@ -51,7 +52,9 @@ public class GameplayController {
      */
     private ObjectSet<Enemy> enemies;
 
-    /** Reference to board from container */
+    /**
+     * Reference to board from container
+     */
     public Board board;
 
     /**
@@ -80,7 +83,7 @@ public class GameplayController {
     private float ambientLightTransitionTimer;
 
     /**
-     * Timer for the phase transition
+     * Timer for the phase transition, goes down
      */
     private float phaseTimer;
 
@@ -110,8 +113,9 @@ public class GameplayController {
     }
 
     /**
-     * Starts a new game, reinitializing relevant controllers.
+     * Starts a new game, (re)initializing relevant controllers and attributes.
      * <p>
+     *
      * @param levelContainer container holding model objects in level
      */
     public void start(LevelContainer levelContainer) {
@@ -119,22 +123,23 @@ public class GameplayController {
         this.currentPhase = Phase.STEALTH;
         this.levelContainer = levelContainer;
         this.collisionController = new CollisionController(levelContainer);
-        player = levelContainer.getPlayer();
-        enemies = levelContainer.getEnemies();
+        lightingController = new LightingController(levelContainer);
+
         board = levelContainer.getBoard();
+        player = levelContainer.getPlayer();
         this.playerController = new PlayerController(player, board, levelContainer);
-        controls = new EnemyController[enemies.size];
+
         phaseTimer = levelContainer.getPhaseLength();
         ambientLightTransitionTimer = levelContainer.getPhaseTransitionTime();
 
+        enemies = levelContainer.getEnemies();
+        controls = new EnemyController[enemies.size];
+
         int i = 0;
-        for (Enemy enemy: enemies) {
-            enemy.setId(i);
+        for (Enemy enemy : enemies) {
             controls[i] = new EnemyController(player, enemies, board, enemy);
             i++;
         }
-
-        lightingController = new LightingController(levelContainer);
     }
 
     /**
@@ -182,7 +187,6 @@ public class GameplayController {
 
     /**
      * Performs all necessary computations to change the current phase of the game from STEALTH to BATTLE.
-     *
      */
     public void switchPhase() {
         currentPhase = Phase.BATTLE;
@@ -191,6 +195,7 @@ public class GameplayController {
 
     /**
      * ADD DOMUNEMTAION DONNY IDK WHAT THIS DOES
+     *
      * @param delta
      */
     private void updateAmbientLight(float delta) {
@@ -211,25 +216,12 @@ public class GameplayController {
         }
     }
 
-    // TODO: THIS SHOULD BE IN ENEMYCONTROLLER, also this code is a mess
+    /**
+     * Resolve any updates for the active enemies through their controllers.
+      */
     public void resolveEnemies() {
-        for (Enemy en : enemies) {
-            if (controls[en.getId()] != null) {
-                EnemyController curEnemyController = controls[en.getId()];
-//                int action = curEnemyController.getAction(levelContainer);
-                Vector2 movement = curEnemyController.getMovement(levelContainer);
-                en.update(movement);
-                // TODO: make more interesting actions                //curEnemyController.setVisibleTiles();
-//                if (en.getIsAlerted()) {
-//                    // angle between enemy and player
-//                    double ang = Math.atan2(player.getPosition().y - en.getPosition().y, player.getPosition().x - en.getPosition().y);
-//                    en.setFlashLightRot((float) ang);
-//                } else {
-//                    en.setFlashLightRot();
-//                }
-            } else {
-                en.update(new Vector2());
-            }
+        for (EnemyController controller: controls) {
+            controller.update(levelContainer);
         }
     }
 }

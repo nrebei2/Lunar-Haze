@@ -67,15 +67,17 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
     /**
      * FilmStrip pointer to the texture region
      */
-    private FilmStrip filmstrip;
+    protected FilmStrip filmstrip;
 
     /**
      * How much the texture of this object should be scaled when drawn
      */
-    private float textureScale;
+    protected float textureScale;
 
-    /** Whether the object should be drawn at next timestep. */
-    private boolean destroyed;
+    /**
+     * Whether the object should be drawn at next timestep.
+     */
+    protected boolean destroyed;
 
     /**
      * Creates game object at (0, 0)

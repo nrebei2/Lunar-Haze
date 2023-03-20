@@ -144,16 +144,16 @@ public class PlayerController {
      */
     public void resolveStealthBar(InputController input) {
         if (Math.abs(input.getHorizontal()) == input.getWalkSpeed() ||
-                Math.abs(input.getVertical()) == input.getWalkSpeed()){
+                Math.abs(input.getVertical()) == input.getWalkSpeed()) {
             player.setStealth(WALK_STEALTH);
         } else if (Math.abs(input.getHorizontal()) == input.getRunSpeed() ||
-                Math.abs(input.getVertical()) == input.getRunSpeed()){
+                Math.abs(input.getVertical()) == input.getRunSpeed()) {
             player.setStealth(RUN_STEALTH);
-        } else if (input.getHorizontal() == 0 || input.getVertical() == 0 ){
+        } else if (input.getHorizontal() == 0 || input.getVertical() == 0) {
             player.setStealth(STILL_STEALTH);
         }
 
-        if (player.isOnMoonlight()){
+        if (player.isOnMoonlight()) {
             player.setStealth(MOON_STEALTH);
         }
     }
@@ -183,7 +183,7 @@ public class PlayerController {
         }
     }
 
-    public void update(InputController input, float delta, Phase currPhase, LightingController lightingController){
+    public void update(InputController input, float delta, Phase currPhase, LightingController lightingController) {
         resolvePlayer(input, delta);
         resolveMoonlight(delta, lightingController);
         resolveStealthBar(input);

@@ -1,74 +1,49 @@
 package infinityx.lunarhaze.entity;
 
 import com.badlogic.gdx.graphics.Color;
-
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Pool;
 import infinityx.assets.AssetDirectory;
-import infinityx.lunarhaze.EnemyController;
-import infinityx.lunarhaze.GameCanvas;
 import infinityx.lunarhaze.GameObject;
 import infinityx.lunarhaze.LevelContainer;
 import infinityx.lunarhaze.physics.ConeSource;
 
 import java.util.ArrayList;
 
+/**
+ * Model class representing an enemy.
+ */
 public class Enemy extends GameObject implements Pool.Poolable {
-// Instance Attributes
-    /**
-     * Movement of the enemy
-     **/
-    private float movement;
-
-    private Boolean faceRight;
-
     /**
      * Current animation frame for this werewolf
      */
     private final float animeframe;
 
     /**
-     * Whether the enemy is alerted. Once alerted,
-     * the enemy start chasing werewolf
+     * Whether the enemy is alerted.
      */
     private Boolean isAlerted;
 
     /**
-     * points (in Tile index) in the enemy's patrolPath
+     * rectangular region represented by [[b_lx, b_ly], [t_rx, t_ry]]
      */
-    // TODO: if we wanna be fancy use a bezier
-    // Not that bad since we can easily compute the tangent and add force on enemy along it
     private ArrayList<Vector2> patrolPath;
 
-    private Direction direction;
-
+    /**
+     * The light source on this enemy representing the flashlight
+     */
     private ConeSource flashlight;
 
     private float attackKnockback;
 
     private int attackDamage;
 
+    /** The maximum amount of hit-points for this enemy */
+    private float maxHp;
+
+    /** The current amount of hit-points for this enemy */
     private float hp;
-
-    private int id;
-
-
-    public enum Direction {
-        NORTH(1), SOUTH(3), WEST(2), EAST(0);
-
-        private final int scale;
-
-        private Direction(int scale) {
-            this.scale = scale;
-        }
-
-        public int getRotScale() {
-            return scale;
-        }
-    }
-
 
     /**
      * Returns the type of this object.
@@ -81,29 +56,9 @@ public class Enemy extends GameObject implements Pool.Poolable {
         return ObjectType.ENEMY;
     }
 
-    /**
-     * Returns whether the enemy is alerted.
-     */
-    public Boolean getIsAlerted() {
-        return isAlerted;
-    }
-
-    public Direction getDirection() {
-        return this.direction;
-    }
-
     public ConeSource getFlashlight() {
         return flashlight;
     }
-
-    /**
-     * Sets whether the enemy is alerted.
-     */
-    public void setIsAlerted(Boolean value) {
-        isAlerted = value;
-    }
-
-    private int currentWayPoint;
 
     /**
      * Initialize an enemy with dummy position, id, and patrol path
@@ -113,17 +68,16 @@ public class Enemy extends GameObject implements Pool.Poolable {
         this.patrolPath = new ArrayList<>();
         animeframe = 0.0f;
         isAlerted = false;
-        direction = Direction.NORTH;
-        hp = 10.0f;
     }
 
     /**
-     * Resets the object for reuse. Object references should be nulled and fields may be set to default values.
+     * Resets the object for reuse.
      */
     @Override
     public void reset() {
-        hp = 10.0f;
+        hp = maxHp;
         isAlerted = false;
+        destroyed = false;
     }
 
     /**
@@ -159,35 +113,25 @@ public class Enemy extends GameObject implements Pool.Poolable {
         JsonValue attack = json.get("attack");
         setAttackKnockback(attack.getFloat("knockback"));
         setAttackDamage(attack.getInt("damage"));
-    }
-
-    /**
-     * get the next patrol point of the enemy
-     */
-    public Vector2 getNextPatrol() {
-        Vector2 next = patrolPath.get(currentWayPoint);
-        currentWayPoint++;
-        if (currentWayPoint > patrolPath.size() - 1) {
-            currentWayPoint = 0;
-        }
-        return next;
-    }
-
-    /**
-     * get the patrol point this enemy is currently moving to
-     */
-    public Vector2 getCurrentPatrol() {
-        return patrolPath.get(currentWayPoint);
+        setMaxHp(json.getFloat("hp"));
     }
 
     public void setPatrolPath(ArrayList<Vector2> path) {
         this.patrolPath = path;
     }
 
-    public Vector2 getBottomLeftOfRegion(){
+    /**
+     * Sets whether the enemy is alerted.
+     */
+    public void setIsAlerted(Boolean value) {
+        isAlerted = value;
+    }
+
+    public Vector2 getBottomLeftOfRegion() {
         return this.patrolPath.get(0);
     }
-    public Vector2 getTopRightOfRegion(){
+
+    public Vector2 getTopRightOfRegion() {
         return this.patrolPath.get(1);
     }
 
@@ -223,57 +167,55 @@ public class Enemy extends GameObject implements Pool.Poolable {
         attackDamage = dmg;
     }
 
-    public float getHp() { return hp; }
-    public void setHp(float value) { hp = value; }
+    public float getHp() {
+        return hp;
+    }
 
+    /**
+     * Sets the new hp of this enemy. Clamped to always be non-negative.
+     * @param value the hp to set
+     */
+    public void setHp(float value) {
+        hp = Math.max(0, value);
+    }
+
+    /**
+     * Sets the max hp (and starting current hp) of this enemy.
+     * @param value the hp to set
+     */
+    public void setMaxHp(float value) {
+        maxHp = value;
+        hp = maxHp;
+    }
+
+    /**
+     * @return percentage of current hp to maximum hp
+     */
     public float getHealthPercentage() {
-        float maxHp = 3f;
-        float currenthp = Math.max(0,hp);
-        //System.out.println(currenthp);
-        //System.out.println(currenthp/maxHp);
-        return currenthp/maxHp;
+        return hp / maxHp;
     }
 
     /**
      * Updates the animation frame and position of this enemy.
-     * <p>
-     * Notice how little this method does.  It does not actively fire the weapon.  It
-     * only manages the cooldown and indicates whether the weapon is currently firing.
-     * The result of weapon fire is managed by the GameplayController.
+     * @param move impulse to apply
      */
     public void update(Vector2 move) {
-        body.applyLinearImpulse(move.scl(speed),new Vector2(),true);
+        body.applyLinearImpulse(move.scl(speed), new Vector2(), true);
 
         //Limits maximum speed
         if (body.getLinearVelocity().len() > 1f) {
-            body.setLinearVelocity(body.getLinearVelocity().clamp(0f,1f));
+            body.setLinearVelocity(body.getLinearVelocity().clamp(0f, 1f));
         }
 
     }
 
     /**
-     * As the name suggests.
-     * Can someone think of a better name? Im too tired for this rn
-     */
-    public void setFlashLightRotAlongDir() {
-        flashlight.getBody().setTransform(body.getPosition(), getDirection().getRotScale() * (float) (Math.PI / 2f));
-    }
-
-    /**
-     * Sets the specific angle of the flashlight on this enemy
+     * Sets the specific angle of the enemy (and thus flashlight)
      *
-     * @param ang the angle...
+     * @param ang the angle
      */
     public void setFlashLightRot(float ang) {
         body.setTransform(body.getPosition(), ang);
-
     }
 
-    public void setId(int id){
-        this.id = id;
-    }
-
-    public int getId(){
-        return this.id;
-    }
 }

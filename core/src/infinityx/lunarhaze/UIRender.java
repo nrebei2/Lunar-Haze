@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.GameplayController.Phase;
 import infinityx.lunarhaze.entity.Enemy;
-import infinityx.lunarhaze.entity.EnemyPool;
 
 /**
  * This is a class used for drawing player and enemies' game UI state: HP, Stealth, MoonLight
@@ -52,6 +51,7 @@ public class UIRender {
 
     /**
      * Create a new UIRender with font and directory assigned.
+     *
      * @param font1
      * @param font2
      * @param directory
@@ -74,11 +74,12 @@ public class UIRender {
 
     /**
      * Draws any needed UI on screen during gameplay
+     *
      * @param canvas drawing canvas
-     * @param level container holding all models
-     * @param phase current phase of the game
-     * */
-    public void drawUI(GameCanvas canvas, LevelContainer level, GameplayController.Phase phase, GameplayController gameplayController ) {
+     * @param level  container holding all models
+     * @param phase  current phase of the game
+     */
+    public void drawUI(GameCanvas canvas, LevelContainer level, GameplayController.Phase phase, GameplayController gameplayController) {
         UIFont_large.setColor(Color.WHITE);
         UIFont_small.setColor(Color.WHITE);
         canvas.begin(); // DO NOT SCALE
@@ -98,15 +99,15 @@ public class UIRender {
         }
         canvas.end();
         canvas.begin();
-        canvas.draw(counter, Color.WHITE, canvas.getWidth()/2 - COUNTER_WIDTH/2, canvas.getHeight() - COUNTER_HEIGHT, COUNTER_WIDTH, COUNTER_HEIGHT);
-        canvas.drawText("Level", UIFont_small, canvas.getWidth()/2 - 13, canvas.getHeight() - COUNTER_HEIGHT/4);
-        canvas.drawText("1", UIFont_large, canvas.getWidth()/2, canvas.getHeight() - COUNTER_HEIGHT/2);
-        canvas.drawText(String.valueOf(Math.max((int) gameplayController.getRemainingTime(), 0)), UIFont_large, canvas.getWidth()/2 - COUNTER_WIDTH/3, canvas.getHeight() - COUNTER_HEIGHT/2.5f);
-        canvas.draw(dusk_icon, canvas.getWidth()/2 + COUNTER_WIDTH/2 - dusk_icon.getWidth() * 1.5f, canvas.getHeight() - COUNTER_HEIGHT * 2/3);
+        canvas.draw(counter, Color.WHITE, canvas.getWidth() / 2 - COUNTER_WIDTH / 2, canvas.getHeight() - COUNTER_HEIGHT, COUNTER_WIDTH, COUNTER_HEIGHT);
+        canvas.drawText("Level", UIFont_small, canvas.getWidth() / 2 - 13, canvas.getHeight() - COUNTER_HEIGHT / 4);
+        canvas.drawText("1", UIFont_large, canvas.getWidth() / 2, canvas.getHeight() - COUNTER_HEIGHT / 2);
+        canvas.drawText(String.valueOf(Math.max((int) gameplayController.getRemainingTime(), 0)), UIFont_large, canvas.getWidth() / 2 - COUNTER_WIDTH / 3, canvas.getHeight() - COUNTER_HEIGHT / 2.5f);
+        canvas.draw(dusk_icon, canvas.getWidth() / 2 + COUNTER_WIDTH / 2 - dusk_icon.getWidth() * 1.5f, canvas.getHeight() - COUNTER_HEIGHT * 2 / 3);
 
-        canvas.draw(moon_icon,Color.WHITE, moon_icon.getWidth()/2, moon_icon.getHeight()/2, canvas.getWidth()- BAR_WIDTH - moon_icon.getWidth() * 1.4f,canvas.getHeight() - BAR_HEIGHT/2 - GAP_DIST,0,0.7f, 0.7f);
-        canvas.draw(health_icon,Color.WHITE, moon_icon.getWidth()/2, moon_icon.getHeight()/2, canvas.getWidth()- BAR_WIDTH- health_icon.getWidth() * 1.2f,canvas.getHeight() - 4.9f* BAR_HEIGHT/2 - GAP_DIST,0,0.7f, 0.7f);
-        canvas.draw(stealth_icon,Color.WHITE, moon_icon.getWidth()/2, moon_icon.getHeight()/2, canvas.getWidth()- BAR_WIDTH- stealth_icon.getWidth() * 1.2f,canvas.getHeight() - 7.4f * BAR_HEIGHT/2 - GAP_DIST,0,0.7f, 0.7f);
+        canvas.draw(moon_icon, Color.WHITE, moon_icon.getWidth() / 2, moon_icon.getHeight() / 2, canvas.getWidth() - BAR_WIDTH - moon_icon.getWidth() * 1.4f, canvas.getHeight() - BAR_HEIGHT / 2 - GAP_DIST, 0, 0.7f, 0.7f);
+        canvas.draw(health_icon, Color.WHITE, moon_icon.getWidth() / 2, moon_icon.getHeight() / 2, canvas.getWidth() - BAR_WIDTH - health_icon.getWidth() * 1.2f, canvas.getHeight() - 4.9f * BAR_HEIGHT / 2 - GAP_DIST, 0, 0.7f, 0.7f);
+        canvas.draw(stealth_icon, Color.WHITE, moon_icon.getWidth() / 2, moon_icon.getHeight() / 2, canvas.getWidth() - BAR_WIDTH - stealth_icon.getWidth() * 1.2f, canvas.getHeight() - 7.4f * BAR_HEIGHT / 2 - GAP_DIST, 0, 0.7f, 0.7f);
         canvas.end();
     }
 

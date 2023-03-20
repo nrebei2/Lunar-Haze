@@ -914,11 +914,11 @@ public class GameCanvas {
         barRender.end();
 
         barRender.begin(ShapeRenderer.ShapeType.Filled);
-        Color yellow = new Color(244.0f/255.0f,208.0f/255.0f,63.0f/255.0f,1.0f);
+        Color yellow = new Color(244.0f / 255.0f, 208.0f / 255.0f, 63.0f / 255.0f, 1.0f);
         barRender.setColor(yellow);
         barRender.rect(x, y, width * light / Werewolf.MAX_LIGHT, height);
         barRender.end();
-        
+
 //        draw(icon, Color.WHITE, x - width, y, width, width);
 //        canvas.draw(playButton, tint, playButton.getWidth() / 2, playButton.getHeight() / 2,
 //                centerX, 0.7f*centerY, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
@@ -939,9 +939,9 @@ public class GameCanvas {
         barRender.end();
         Color health;
         barRender.begin(ShapeRenderer.ShapeType.Filled);
-        if(hp / Werewolf.INITIAL_HP < 0.5) {
+        if (hp / Werewolf.INITIAL_HP < 0.5) {
             health = new Color(169.0f / 255.0f, 50.0f / 255.0f, 38.0f / 255.0f, 1.0f);
-        }else{
+        } else {
             health = new Color(20.0f / 255.0f, 142.0f / 255.0f, 119.0f / 255.0f, 1.0f);
         }
         barRender.setColor(health);
@@ -956,23 +956,23 @@ public class GameCanvas {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
             return;
         }
-            float x = WorldToScreenX(enemy.getPosition().x);
+        float x = WorldToScreenX(enemy.getPosition().x);
 
-            float y = WorldToScreenY(enemy.getPosition().y);
+        float y = WorldToScreenY(enemy.getPosition().y);
 
-            // Draw border
-            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-            shapeRenderer.setColor(Color.BLACK);
-            shapeRenderer.rect(x- 0.7f*barWidth, y+2*barWidth, barWidth, barHeight);
-            shapeRenderer.end();
+        // Draw border
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(Color.BLACK);
+        shapeRenderer.rect(x - 0.7f * barWidth, y + 2 * barWidth, barWidth, barHeight);
+        shapeRenderer.end();
 
-            // Draw the actual health bar
-            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-            shapeRenderer.setColor(Color.RED);
+        // Draw the actual health bar
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(Color.RED);
 
-            shapeRenderer.rect(x- 0.7f*barWidth, y+2*barWidth, barWidth * enemy.getHealthPercentage(), barHeight);
-            shapeRenderer.end();
-        }
+        shapeRenderer.rect(x - 0.7f * barWidth, y + 2 * barWidth, barWidth * enemy.getHealthPercentage(), barHeight);
+        shapeRenderer.end();
+    }
 
     public void drawStealthBar(Texture icon, float width, float height, float stealth) {
         if (active != DrawPass.STANDARD) {
@@ -988,7 +988,7 @@ public class GameCanvas {
         barRender.end();
 
         barRender.begin(ShapeRenderer.ShapeType.Filled);
-        Color blue = new Color(40.0f/255.0f,116.0f/255.0f,166.0f/255.0f,1.0f);
+        Color blue = new Color(40.0f / 255.0f, 116.0f / 255.0f, 166.0f / 255.0f, 1.0f);
         barRender.setColor(blue);
         barRender.rect(x, y, width * stealth / 1.0f, height);
         barRender.end();
@@ -1029,12 +1029,11 @@ public class GameCanvas {
     }
 
     /**
-
      * Draws a solid rectangle at the specified position with the specified width and height
      *
-     * @param x The x-coordinate of the rectangle's lower left corner
-     * @param y The y-coordinate of the rectangle's lower left corner
-     * @param width The width of the rectangle
+     * @param x      The x-coordinate of the rectangle's lower left corner
+     * @param y      The y-coordinate of the rectangle's lower left corner
+     * @param width  The width of the rectangle
      * @param height The height of the rectangle
      */
     public void drawRecAt(float x, float y, float width, float height) {
@@ -1062,7 +1061,7 @@ public class GameCanvas {
      * Start the debug drawing sequence.
      * <p>
      * Nothing is flushed to the graphics card until the method end() is called.
-=======
+     * =======
      * Draws a rectangle outline affected by global transform.
      *
      * @param x bottom-left screen x

@@ -4,12 +4,11 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.ObjectSet;
-import com.badlogic.gdx.utils.Queue;
 import infinityx.lunarhaze.entity.Enemy;
-import infinityx.lunarhaze.entity.EnemyPool;
 import infinityx.lunarhaze.entity.Werewolf;
 import infinityx.lunarhaze.physics.ConeSource;
 import infinityx.lunarhaze.physics.RaycastInfo;
+
 import java.util.Random;
 
 
@@ -34,7 +33,6 @@ public class EnemyController {
      * Distance from which the enemy can attack the player
      */
     private static final int ATTACK_DIST = 1;
-
 
     /**
      * Enumeration to encode the finite state machine.
@@ -89,11 +87,6 @@ public class EnemyController {
     }
 
     /**
-     * Enumeration to describe what direction the enemy is facing
-     */
-
-    // Instance Attributes
-    /**
      * The enemy being controlled by this AIController
      */
     private final Enemy enemy;
@@ -109,21 +102,16 @@ public class EnemyController {
      * The game board; used for pathfinding
      */
     private final Board board;
+
     /**
-     * The ship's current state in the FSM
+     * The enemies current state in the FSM
      */
     private FSMState state;
+
     /**
-     * The target ship (to chase or attack).
+     * The target (to chase or attack).
      */
     private final Werewolf target;
-
-    /**
-     * The enemy next action (may include firing).
-     */
-    private int move; // A ControlCode
-
-    /** The direction the enemy is facing*/
 
     /**
      * The number of ticks since we started this controller
@@ -131,17 +119,17 @@ public class EnemyController {
     private long ticks;
 
     /**
-     * The number of ticks since we started this controller
+     * The last time the enemy was in the CHASING state.
      */
     private long chased_ticks;
 
     /**
-     * The number of ticks since we started this controller
+     * The last time the enemy was in the IDLE state.
      */
     private long idle_ticks;
 
     /**
-     * The number of ticks since we started this controller
+     * The current goal (world) position
      */
     private Vector2 goal;
 
@@ -150,14 +138,12 @@ public class EnemyController {
      */
     private Vector2 end_chase_pos;
 
-
     /**
      * Creates an EnemyController for the enemy with the given id.
      *
      * @param board   The game board (for pathfinding)
      * @param enemies The list of enemies (for alerting)
-     * @param enemy The enemy being controlled by this AIController
-     *
+     * @param enemy   The enemy being controlled by this AIController
      */
     public EnemyController(Werewolf target, ObjectSet<Enemy> enemies, Board board, Enemy enemy) {
         this.enemy = enemy;
@@ -194,7 +180,7 @@ public class EnemyController {
         return callback;
     }
 
-    public boolean lightDetect(LevelContainer container){
+    public boolean lightDetect(LevelContainer container) {
         Werewolf player = container.getPlayer();
 
         Vector2 point1 = enemy.getPosition();
@@ -205,9 +191,8 @@ public class EnemyController {
         Vector2 enemy_direction = temp.nor();
 
 
-
-        Vector2 direction = new Vector2(player.getX()-point1.x, player.getY()-point1.y).nor();
-        Vector2 point2 = new Vector2(point1.x+light_dis*direction.x, player.getY()+light_dis*direction.y);
+        Vector2 direction = new Vector2(player.getX() - point1.x, player.getY() - point1.y).nor();
+        Vector2 point2 = new Vector2(point1.x + light_dis * direction.x, player.getY() + light_dis * direction.y);
         RaycastInfo info = raycast(enemy, point1, point2, container.getWorld());
 
         double degree = Math.toDegrees(Math.acos(enemy_direction.dot(direction)));
@@ -274,42 +259,28 @@ public class EnemyController {
 
 
     /**
-     * Returns the action selected by this InputController
-     * <p>
-     * The returned int is a bit-vector of more than one possible input
-     * option. This is why we do not use an enumeration of Control Codes;
-     * Java does not (nicely) provide bitwise operation support for enums.
-     * <p>
-     * This function tests the environment and uses the FSM to chose the next
-     * action of the ship. This function SHOULD NOT need to be modified.  It
-     * just contains code that drives the functions that you need to implement.
-     *
-     * @return the action selected by this InputController
+     * Updates the enemy being controlled by this controller
+     * @param container
      */
-    public Vector2 getMovement(LevelContainer container) {
-        //TODO CHANGE
-        // Increment the number of ticks.
+    public void update(LevelContainer container) {
         ticks++;
 
         // Do not need to rework ourselves every frame. Just every 10 ticks.
-        if ((enemy.getId() + ticks) % 10 == 0) {
+        if (ticks % 10 == 0) {
             // Process the FSM
-//            if (state==FSMState.WANDER) System.out.println(state);
             changeStateIfApplicable(container, ticks);
             changeDetectionIfApplicable();
 
             // Pathfinding
-            /**Code that gives you the next Vector2*/
             Vector2 next_move = findPath();
-            return next_move;
-
+            enemy.update(next_move);
         }
 
         //other things?
-        return new Vector2();
+        enemy.update(new Vector2());
     }
 
-    private void alertAllies(){
+    private void alertAllies() {
 
     }
 
@@ -359,30 +330,29 @@ public class EnemyController {
 //                }
                 break;
             case WANDER:
-                if (detectedPlayer(container)){
+                if (detectedPlayer(container)) {
                     state = FSMState.CHASE;
                     enemy.setIsAlerted(true);
-                }
-                else if (!canChase() && !target.isOnMoonlight() && (ticks - chased_ticks >= 30)) {
+                } else if (!canChase() && !target.isOnMoonlight() && (ticks - chased_ticks >= 30)) {
                     state = FSMState.PATROL;
                     enemy.setIsAlerted(false);
                 }
                 break;
             case IDLE:
                 idle_ticks++;
-                if (idle_ticks >= 15){
+                if (idle_ticks >= 15) {
                     enemy.getBody().setAngularVelocity(0);
                     state = FSMState.PATROL;
-                    idle_ticks=0;
+                    idle_ticks = 0;
                     break;
                 }
-                if (lightDetect(container)){
+                if (lightDetect(container)) {
                     System.out.println("detected");
                     enemy.getBody().setAngularVelocity(0);
                     state = FSMState.CHASE;
                     break;
                 }
-                if (idle_ticks % 5 == 0){
+                if (idle_ticks % 5 == 0) {
                     Random rand = new Random();
                     if ((rand.nextInt(10) >= 5)) {
                         enemy.getBody().setAngularVelocity(1f);
@@ -416,21 +386,21 @@ public class EnemyController {
     }
 
 
-    private Vector2 getRandomPointinRegion(){
+    private Vector2 getRandomPointinRegion() {
         Random rand = new Random();
         //Calculates the two point coordinates in a world base
-        Vector2 bottom_left =  board.boardToWorld((int)enemy.getBottomLeftOfRegion().x, (int)enemy.getBottomLeftOfRegion().y);
-        Vector2 top_right =  board.boardToWorld((int)enemy.getTopRightOfRegion().x, (int)enemy.getTopRightOfRegion().y);
-        Vector2 random_point = new Vector2 (MathUtils.random(bottom_left.x,top_right.x), MathUtils.random(bottom_left.y,top_right.y));
+        Vector2 bottom_left = board.boardToWorld((int) enemy.getBottomLeftOfRegion().x, (int) enemy.getBottomLeftOfRegion().y);
+        Vector2 top_right = board.boardToWorld((int) enemy.getTopRightOfRegion().x, (int) enemy.getTopRightOfRegion().y);
+        Vector2 random_point = new Vector2(MathUtils.random(bottom_left.x, top_right.x), MathUtils.random(bottom_left.y, top_right.y));
         //System.out.println("I found a point with x: "+ random_point.x+", y: "+random_point.y+"!");
         return random_point;
     }
 
-    private Vector2 getRandomPointtoWander(float offset){
+    private Vector2 getRandomPointtoWander(float offset) {
         //Calculates the two point coordinates in a world base
-        Vector2 bottom_left = new Vector2 (this.end_chase_pos.x - offset, this.end_chase_pos.y - offset);
-        Vector2 top_right = new Vector2 (this.end_chase_pos.x + offset, this.end_chase_pos.y + offset);
-        Vector2 random_point = new Vector2 (MathUtils.random(bottom_left.x,top_right.x), MathUtils.random(bottom_left.y,top_right.y));
+        Vector2 bottom_left = new Vector2(this.end_chase_pos.x - offset, this.end_chase_pos.y - offset);
+        Vector2 top_right = new Vector2(this.end_chase_pos.x + offset, this.end_chase_pos.y + offset);
+        Vector2 random_point = new Vector2(MathUtils.random(bottom_left.x, top_right.x), MathUtils.random(bottom_left.y, top_right.y));
         //System.out.println("I found a point with x: "+ random_point.x+", y: "+random_point.y+"!");
         return random_point;
     }
@@ -444,7 +414,7 @@ public class EnemyController {
                 break;
             case PATROL:
                 Vector2 temp_cur_pos = new Vector2(cur_pos.x, cur_pos.y);
-                if (temp_cur_pos.sub(goal).len() <= 0.2f){
+                if (temp_cur_pos.sub(goal).len() <= 0.2f) {
                     goal = getRandomPointinRegion();
                     state = FSMState.IDLE;
                     enemy.setVX(0);
@@ -452,56 +422,20 @@ public class EnemyController {
                     return new Vector2();
                     /**stay there for a while*/
                 }
-                return new Vector2(goal.x - cur_pos.x, goal.y-cur_pos.y).nor();
+                return new Vector2(goal.x - cur_pos.x, goal.y - cur_pos.y).nor();
             case CHASE:
                 Vector2 target_pos = new Vector2(target.getPosition());
 
                 return (target_pos.sub(cur_pos)).nor();
             case WANDER:
                 Vector2 temp_cur_pos2 = new Vector2(cur_pos.x, cur_pos.y);
-                if (temp_cur_pos2.sub(goal).len() <= 0.3f){
+                if (temp_cur_pos2.sub(goal).len() <= 0.3f) {
                     goal = getRandomPointtoWander(1f);
                 }
-                return new Vector2(goal.x - cur_pos.x, goal.y-cur_pos.y).nor();
+                return new Vector2(goal.x - cur_pos.x, goal.y - cur_pos.y).nor();
             case IDLE:
-                return new Vector2(0,0);
+                return new Vector2(0, 0);
         }
-        return new Vector2(0,0);
+        return new Vector2(0, 0);
     }
-
-    // Add any auxiliary methods or data structures here
-    //#region PUT YOUR CODE HERE
-
-    private class TileData {
-        private final int x;
-        private final int y;
-
-        public int[] prevDirection = null;
-
-        public TileData prev = null;
-
-        private TileData(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
-
-        public int getX() {
-            return x;
-        }
-
-        public int getY() {
-            return y;
-        }
-
-        public void setPrevDirection(int[] prev_direction) {
-            this.prevDirection = prev_direction;
-        }
-
-        public void setPrev(TileData prev) {
-            this.prev = prev;
-        }
-    }
-
-    public final int[][] directions = new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
-
 }

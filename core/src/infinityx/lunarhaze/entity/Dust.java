@@ -7,6 +7,10 @@ import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.GameCanvas;
 import infinityx.util.Drawable;
 
+/**
+ * Instance is a single dust particle.
+ * Many attributes must be set, including position, (linear/angular) velocity.
+ */
 public class Dust implements Drawable {
     /**
      * The particle position in world coordinates
@@ -34,26 +38,32 @@ public class Dust implements Drawable {
     public enum DustState {
         APPEARING, DECAYING
     }
+    private DustState state;
 
-    /** What should the particle do after it finished decaying */
+    /**
+     * What should the particle do after it finished decaying.
+     */
     private enum Condition {
         RESET, CONTINUE, DESTROY
     }
-
-    private DustState state;
-
     private Condition condition;
+
+
 
     /**
      * Used for fading in/out
      */
     private float elapsed;
 
-    /** time range for fading in/out */
+    /**
+     * time range for fading in/out
+     */
     private float fadeMin;
     private float fadeMax;
 
-    /** The current fade time */
+    /**
+     * The current fade time
+     */
     private float fadeTime;
 
     /**
@@ -67,7 +77,7 @@ public class Dust implements Drawable {
     private float alpha;
 
     /**
-     * May be null
+     * May be null, texture drawn on canvas
      */
     private Texture texture;
 
@@ -86,7 +96,9 @@ public class Dust implements Drawable {
      */
     private float scale;
 
-    /** Whether this particle should be destroyed (not drawn) next frame */
+    /**
+     * Whether this particle should be destroyed (not drawn) next frame
+     */
     private boolean destroyed;
 
     /**
@@ -175,6 +187,7 @@ public class Dust implements Drawable {
 
     /**
      * Set time range for fading in/out
+     *
      * @param min minimum time
      * @param max maximum time
      */
@@ -214,8 +227,7 @@ public class Dust implements Drawable {
     /**
      * Creates a new (uninitialized) Particle.
      * <p>
-     * The position and velocity are initially 0.  To initialize
-     * the particle, use the appropriate setters.
+     * Many attributes of this particle should be set; use the appropriate setters.
      */
     public Dust() {
         position = new Vector2();
