@@ -7,9 +7,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectSet;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.entity.Enemy;
-import infinityx.lunarhaze.entity.EnemyList;
+import infinityx.lunarhaze.entity.EnemyPool;
 import infinityx.lunarhaze.entity.SceneObject;
 import infinityx.lunarhaze.entity.Werewolf;
 import infinityx.lunarhaze.physics.LightSource;
@@ -64,9 +65,13 @@ public class LevelContainer {
      */
     private World world;
     /**
-     * Stores Enemies
+     * Memory pool for efficient storage of Enemies
      */
-    private EnemyList enemies;
+    private EnemyPool enemies;
+    /**
+     * List of active enemies
+     */
+    private ObjectSet<Enemy> activeEnemies;
     /**
      * Stores SceneObjects
      */
@@ -130,6 +135,16 @@ public class LevelContainer {
      * the length of a stealth cycle
      */
     private float phaseLength;
+
+    /**
+     * Ambient lighting values during stealth phase
+     */
+    private float[] stealthAmbience;
+
+    /**
+     * Ambient lighting values during battle phase
+     */
+    private float[] battleAmbience;
     
     /**
      * Initialize attributes
@@ -149,7 +164,8 @@ public class LevelContainer {
         setPlayer(player);
 
         board = null;
-        enemies = new EnemyList();
+        enemies = new EnemyPool(10);
+        activeEnemies = new ObjectSet<>(10);
         sceneObjects = new Array<>(true, 5);
     }
 
@@ -178,10 +194,10 @@ public class LevelContainer {
     }
 
     /**
-     * @return All enemies in level. Note EnemyList contains dead ones too.
+     * @return All active enemies in level.
      */
-    public EnemyList getEnemies() {
-        return enemies;
+    public ObjectSet<Enemy> getEnemies() {
+        return activeEnemies;
     }
 
     /**
@@ -196,14 +212,26 @@ public class LevelContainer {
      * @return Enemy added with updated id
      */
     public Enemy addEnemy(Enemy enemy) {
-        enemies.addEnemy(enemy);
-        drawables.add(enemy);
+        activeEnemies.add(enemy);
+        addDrawable(enemy);
 
-        enemy.setId(enemies.size() - 1);
         return enemy;
     }
 
     /**
+     * Removes enemy from the level. Be careful as `enemy` may have an active enemy controller.
+     * @param enemy enemy to remove
+     */
+    public void removeEnemy(Enemy enemy) {
+        enemies.free(enemy);
+        activeEnemies.remove(enemy);
+        drawables.removeValue(enemy, true);
+    }
+
+    /**
+     * Be careful in using this method as there should always be a corresponding Enemy controller
+     * for an active enemy.
+     *
      * @param type   type of Enemy to append to enemy list (e.g. villager)
      * @param x      world x-position
      * @param y      world y-position
@@ -211,8 +239,7 @@ public class LevelContainer {
      * @return Enemy added with updated id
      */
     public Enemy addEnemy(String type, float x, float y, ArrayList<Vector2> patrol) {
-        Enemy enemy = new Enemy();
-        enemies.
+        Enemy enemy = enemies.obtain();
         enemy.initialize(directory, enemiesJson.get(type), this);
 
         enemy.setPatrolPath(patrol);
@@ -273,6 +300,25 @@ public class LevelContainer {
         this.phaseLength = phaseLength;
     }
 
+    /** Sets Ambient lighting values during stealth phase */
+    public void setStealthAmbience(float[] stealthAmbience) {
+        this.stealthAmbience = stealthAmbience;
+    }
+
+    /** Sets Ambient lighting values during battle phase */
+    public void setBattleAmbience(float[] battleAmbience) {
+        this.battleAmbience = battleAmbience;
+    }
+
+    /** @return Ambient lighting values during stealth phase */
+    public float[] getStealthAmbience() {
+        return stealthAmbience;
+    }
+
+    /** @return Ambient lighting values during battle phase */
+    public float[] getBattleAmbience() {
+        return battleAmbience;
+    }
 
     /**
      * Set the active player for this level
@@ -385,11 +431,6 @@ public class LevelContainer {
         garbageCollect();
         canvas.beginT(view.x, view.y);
 
-        // Debug prints
-        //System.out.printf(
-        //        "Player pos: (%f, %f), Spotlight pos: (%f, %f) \n",
-        //        player.getPosition().x, player.getPosition().y, player.getSpotlight().getPosition().x, player.getSpotlight().getPosition().y);
-
         // Render order: Board tiles -> (players, enemies, scene objects) sorted by depth (y coordinate)
         board.draw(canvas);
         // Uses timsort, so O(n) if already sorted, which is nice since it usually will be
@@ -412,9 +453,7 @@ public class LevelContainer {
             raycamera.update();
         }
         rayHandler.setCombinedMatrix(raycamera);
-
         rayHandler.updateAndRender();
-
     }
 
     /**

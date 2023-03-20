@@ -1,17 +1,13 @@
 package infinityx.lunarhaze.entity;
 
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.Pool;
 
 import java.util.Iterator;
 
-public class EnemyList extends Pool<Enemy> {
-    /** Default number of particles (low to show off how this works) */
-    public static final int DEFAULT_CAPACITY = 16;
-
+public class EnemyPool extends Pool<Enemy> {
     /**
-     * The preallocated arraylist of enemies
+     * The pre-allocated arraylist of enemies. All instantiated enemies must be from this list.
      */
     private Array<Enemy> enemies;
 
@@ -23,7 +19,7 @@ public class EnemyList extends Pool<Enemy> {
      *
      * @param capacity  The number of particles to preallocate
      */
-    public EnemyList(int capacity) {
+    public EnemyPool(int capacity) {
         super(capacity);
         assert capacity > 0;
 
@@ -51,9 +47,11 @@ public class EnemyList extends Pool<Enemy> {
      * @return A new particle object
      */
     protected Enemy newObject() {
+        // Add if we are outside the array
         if (next == enemies.size) {
             return null;
         }
+        Enemy enemy = new Enemy();
         next++;
         return enemies.get(next-1);
     }

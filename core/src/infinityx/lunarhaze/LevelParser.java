@@ -138,6 +138,7 @@ public class LevelParser {
 
         // Generate level settings
         JsonValue settings = levelContents.get("settings");
+        parseSettings(settings);
 
         return levelContainer;
     }
@@ -236,6 +237,8 @@ public class LevelParser {
 
         float[] color = light.get("color").asFloatArray();
         rayhandler.setAmbientLight(color[0], color[1], color[2], color[3]);
+        levelContainer.setStealthAmbience(color);
+
         int blur = light.getInt("blur");
         rayhandler.setBlur(blur > 0);
         rayhandler.setBlurNum(blur);
@@ -251,6 +254,7 @@ public class LevelParser {
         float phaseLength = settings.getFloat("phaseLength");
         levelContainer.setPhaseLength(phaseLength);
         levelContainer.setPhaseTransitionTime(transitionTime);
+        levelContainer.setBattleAmbience(settings.get("battle-ambiance").asFloatArray());
     }
 
     /**

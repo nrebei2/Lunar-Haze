@@ -18,10 +18,6 @@ import java.util.ArrayList;
 public class Enemy extends GameObject implements Pool.Poolable {
 // Instance Attributes
     /**
-     * A unique identifier; used to decouple classes.
-     */
-    private int id;
-    /**
      * Movement of the enemy
      **/
     private float movement;
@@ -124,7 +120,8 @@ public class Enemy extends GameObject implements Pool.Poolable {
      */
     @Override
     public void reset() {
-
+        hp = 10.0f;
+        isAlerted = false;
     }
 
     /**
@@ -276,13 +273,5 @@ public class Enemy extends GameObject implements Pool.Poolable {
     public void setFlashLightRot(float ang) {
         body.setTransform(body.getPosition(), ang);
 
-    }
-
-    public int getId() {
-        return this.id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 }

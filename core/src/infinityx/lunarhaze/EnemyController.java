@@ -2,9 +2,10 @@ package infinityx.lunarhaze;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.Queue;
 import infinityx.lunarhaze.entity.Enemy;
-import infinityx.lunarhaze.entity.EnemyList;
+import infinityx.lunarhaze.entity.EnemyPool;
 import infinityx.lunarhaze.entity.Werewolf;
 import infinityx.lunarhaze.physics.ConeSource;
 import infinityx.lunarhaze.physics.RaycastInfo;
@@ -121,9 +122,9 @@ public class EnemyController {
     private Detection detection;
 
     /**
-     * The other enemies; used to find targets
+     * Set of active enemies on the current level
      */
-    private final EnemyList enemies;
+     ObjectSet<Enemy> enemies;
 
     /**
      * The game board; used for pathfinding
@@ -158,7 +159,7 @@ public class EnemyController {
      * @param enemy The enemy being controlled by this AIController
      *
      */
-    public EnemyController(Werewolf target, EnemyList enemies, Board board, Enemy enemy) {
+    public EnemyController(Werewolf target, ObjectSet<Enemy> enemies, Board board, Enemy enemy) {
         this.enemy = enemy;
         this.board = board;
         this.target = target;
@@ -285,7 +286,7 @@ public class EnemyController {
         ticks++;
 
         // Do not need to rework ourselves every frame. Just every 10 ticks.
-        if ((enemy.getId() + ticks) % 10 == 0) {
+        if (ticks % 10 == 0) {
             // Process the FSM
             changeStateIfApplicable(container);
             changeDetectionIfApplicable();

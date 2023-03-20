@@ -1,5 +1,10 @@
 {
   "1": {
+    "settings": {
+      "transition": 60,
+      "phaseLength": 60,
+      "battle-ambiance": [1, 1, 1, 1]
+    },
     "ambient": {
       "color":	  	[0.55, 0.52, 0.62, 0.55],
       "gamma":		true,

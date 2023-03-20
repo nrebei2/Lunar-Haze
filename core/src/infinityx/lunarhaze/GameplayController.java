@@ -2,8 +2,9 @@ package infinityx.lunarhaze;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.utils.ObjectSet;
 import infinityx.lunarhaze.entity.Enemy;
-import infinityx.lunarhaze.entity.EnemyList;
+import infinityx.lunarhaze.entity.EnemyPool;
 import infinityx.lunarhaze.entity.Werewolf;
 
 /**
@@ -44,9 +45,9 @@ public class GameplayController {
     private Werewolf player;
 
     /**
-     * Reference to enemies from container
+     * Reference to active enemies from container
      */
-    private EnemyList enemies;
+    private ObjectSet<Enemy> enemies;
 
     /** Reference to board from container */
     public Board board;
@@ -71,11 +72,14 @@ public class GameplayController {
      */
     private CollisionController collisionController;
 
-    // someone edit this sometime pls too many magic numbers
-
-    private static final float[] DAY_COLOR = {1f, 1f, 1f, 1f};
-    private  float[] stealthColor;
+    /**
+     * Timer for the ambient light transition
+     */
     private float ambientLightTransitionTimer;
+
+    /**
+     * Timer for the phase transition
+     */
     private float phaseTimer;
 
     /**
@@ -87,7 +91,6 @@ public class GameplayController {
         board = null;
         currentPhase = Phase.STEALTH;
         gameState = GameState.PLAY;
-        ambientLightTransitionTimer = levelContainer.getPhaseTransitionTime();
     }
 
     /**
@@ -118,11 +121,14 @@ public class GameplayController {
         enemies = levelContainer.getEnemies();
         board = levelContainer.getBoard();
         this.playerController = new PlayerController(player, board, levelContainer);
-        controls = new EnemyController[enemies.size()];
+        controls = new EnemyController[enemies.size];
         phaseTimer = levelContainer.getPhaseLength();
+        ambientLightTransitionTimer = levelContainer.getPhaseTransitionTime();
 
-        for (int ii = 0; ii < enemies.size(); ii++) {
-            controls[ii] = new EnemyController(ii, player, enemies, board);
+        int i = 0;
+        for (Enemy enemy: enemies) {
+            controls[i] = new EnemyController(player, enemies, board, enemy);
+            i++;
         }
 
         lightingController = new LightingController(levelContainer);
@@ -149,7 +155,7 @@ public class GameplayController {
                     if (levelContainer.getBoard().getRemainingMoonlight() == 0 || phaseTimer <= 0) switchPhase();
                     break;
                 case BATTLE:
-                    if (enemies.size() == 0) gameState = GameState.WIN;
+                    if (enemies.size == 0) gameState = GameState.WIN;
             }
             if (player.getHp() <= 0) gameState = GameState.OVER;
         }
@@ -167,21 +173,31 @@ public class GameplayController {
         }
     }
 
+    public float getRemainingTime() {
+        return phaseTimer;
+    }
+
     /**
      * Performs all necessary computations to change the current phase of the game from STEALTH to BATTLE.
+     *
      */
     public void switchPhase() {
         currentPhase = Phase.BATTLE;
         ambientLightTransitionTimer = 0;
     }
 
+    /**
+     * ADD DOMUNEMTAION DONNY IDK WHAT THIS DOES
+     * @param delta
+     */
     private void updateAmbientLight(float delta) {
         if (ambientLightTransitionTimer < levelContainer.getPhaseTransitionTime()) {
             ambientLightTransitionTimer += delta;
+//            System.out.println(ambientLightTransitionTimer);
             float progress = Math.min(ambientLightTransitionTimer / levelContainer.getPhaseTransitionTime(), 1);
 
-            float[] startColor = currentPhase == Phase.BATTLE ? NIGHT_COLOR : DAY_COLOR;
-            float[] endColor = currentPhase == Phase.BATTLE ? DAY_COLOR : NIGHT_COLOR;
+            float[] startColor = currentPhase == Phase.BATTLE ? levelContainer.getBattleAmbience() : levelContainer.getStealthAmbience();
+            float[] endColor = currentPhase == Phase.BATTLE ? levelContainer.getStealthAmbience() : levelContainer.getBattleAmbience();
 
             // LERP performed here
             float r = startColor[0] * (1 - progress) + endColor[0] * progress;
@@ -193,25 +209,21 @@ public class GameplayController {
         }
     }
 
-    // TODO: THIS SHOULD BE IN ENEMYCONTROLLER, also this code is a mess
+    /**
+     * Resolve all enemy actions.
+     */
     public void resolveEnemies() {
-        for (Enemy en : enemies) {
-            if (controls[en.getId()] != null) {
-                EnemyController curEnemyController = controls[en.getId()];
-                int action = curEnemyController.getAction(levelContainer);
-                en.update(action);
-
-                // TODO: make more interesting actions                //curEnemyController.setVisibleTiles();
-                if (en.getIsAlerted()) {
-                    // angle between enemy and player
-                    double ang = Math.atan2(player.getPosition().y - en.getPosition().y, player.getPosition().x - en.getPosition().y);
-                    en.setFlashLightRot((float) ang);
-                } else {
-                    en.setFlashLightRotAlongDir();
-                }
-            } else {
-                en.update(EnemyController.CONTROL_NO_ACTION);
-            }
-        }
+//        for (EnemyController controller: controls) {
+//            controller.update(levelContainer);
+//        }
+//        // TODO: move to enemy controller
+//        if (en.getIsAlerted()) {
+//            // angle between enemy and player
+//            double ang = Math.atan2(player.getPosition().y - en.getPosition().y, player.getPosition().x - en.getPosition().y);
+//            en.setFlashLightRot((float) ang);
+//        } else {
+//            en.setFlashLightRotAlongDir();
+//        }
+//    }
     }
 }

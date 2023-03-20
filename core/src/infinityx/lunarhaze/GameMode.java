@@ -63,6 +63,11 @@ public class GameMode extends ScreenObservable implements Screen {
      * The font for giving messages to the player
      */
     protected BitmapFont displayFont;
+
+    protected BitmapFont UIFont_large;
+
+    protected BitmapFont UIFont_small;
+
     /**
      * Variable to track total time played in milliseconds (SIMPLE FIELDS)
      * TODO: use this for timer
@@ -106,7 +111,9 @@ public class GameMode extends ScreenObservable implements Screen {
         inputController.loadConstants(directory);
         levelFormat = directory.getEntry("levels", JsonValue.class);
         displayFont = directory.getEntry("retro", BitmapFont.class);
-        uiRender = new UIRender(displayFont, directory);
+        UIFont_large = directory.getEntry("libre-large", BitmapFont.class);
+        UIFont_small = directory.getEntry("libre-small", BitmapFont.class);
+        uiRender = new UIRender(UIFont_large, UIFont_small, directory);
     }
 
     /**
@@ -190,7 +197,7 @@ public class GameMode extends ScreenObservable implements Screen {
                 break;
             case PLAY:
                 Phase phase = gameplayController.getPhase();
-                uiRender.drawUI(canvas, levelContainer, phase);
+                uiRender.drawUI(canvas, levelContainer, phase, gameplayController);
                 break;
         }
     }

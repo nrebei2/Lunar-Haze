@@ -8,6 +8,13 @@
     "grass4": "tiles/grass4.png",
     "grass5": "tiles/grass5.png",
     "grass6": "tiles/grass6.png",
+    "circle-bar": "images/circle_bar.png",
+    "counter": "images/counter.png",
+    "dusk-icon": "images/dusk.png",
+    "health-icon": "images/health_icon.png",
+    "moon-icon": "images/moon_icon.png",
+    "rec-bar": "images/rectangle.png",
+    "stealth-icon": "images/stealth_icon.png",
     "tree1": {
       "file": "images/tree1.png",
       "sprites":	{
@@ -91,6 +98,14 @@
     "retro": {
       "file": "shared/RetroGame.ttf",
       "size": 64
+    },
+    "libre-large": {
+      "file": "shared/LibreBaskerville-Regular.ttf",
+      "size": 20
+    },
+    "libre-small": {
+      "file": "shared/LibreBaskerville-Regular.ttf",
+      "size": 10
     }
   }
 }
