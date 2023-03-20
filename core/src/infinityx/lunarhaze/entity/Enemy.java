@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.Pool;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.EnemyController;
 import infinityx.lunarhaze.GameCanvas;
@@ -50,6 +51,8 @@ public class Enemy extends GameObject implements Pool.Poolable {
     private int attackDamage;
 
     private float hp;
+
+    private int id;
 
 
     public enum Direction {
@@ -189,19 +192,6 @@ public class Enemy extends GameObject implements Pool.Poolable {
     }
 
     /**
-     * Returns whether or not the ship is alive.
-     * <p>
-     * A ship is dead once it has fallen past MAX_FALL_AMOUNT. A dead ship cannot be
-     * targeted, involved in collisions, or drawn.  For all intents and purposes, it
-     * does not exist.
-     *
-     * @return whether or not the ship is alive
-     */
-    public boolean isAlive() {
-        return isAlive;
-    }
-
-    /**
      * Attaches light to enemy as a flashlight
      */
     public void setFlashlight(ConeSource cone) {
@@ -277,5 +267,13 @@ public class Enemy extends GameObject implements Pool.Poolable {
     public void setFlashLightRot(float ang) {
         body.setTransform(body.getPosition(), ang);
 
+    }
+
+    public void setId(int id){
+        this.id = id;
+    }
+
+    public int getId(){
+        return this.id;
     }
 }

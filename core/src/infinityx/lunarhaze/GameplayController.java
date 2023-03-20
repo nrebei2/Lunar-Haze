@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.math.Vector2;
+import infinityx.lunarhaze.*;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.EnemyPool;
 import infinityx.lunarhaze.entity.Werewolf;
@@ -128,6 +129,7 @@ public class GameplayController {
 
         int i = 0;
         for (Enemy enemy: enemies) {
+            enemy.setId(i);
             controls[i] = new EnemyController(player, enemies, board, enemy);
             i++;
         }

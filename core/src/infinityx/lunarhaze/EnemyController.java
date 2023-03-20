@@ -1,6 +1,5 @@
 package infinityx.lunarhaze;
 
-import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.ObjectSet;
@@ -101,7 +100,7 @@ public class EnemyController {
     /**
      * Set of active enemies on the current level
      */
-     ObjectSet<Enemy> enemies;
+    ObjectSet<Enemy> enemies;
 
     /**
      * The game board; used for pathfinding
@@ -288,7 +287,7 @@ public class EnemyController {
         ticks++;
 
         // Do not need to rework ourselves every frame. Just every 10 ticks.
-        if (ticks % 10 == 0) {
+        if ((enemy.getId() + ticks) % 10 == 0) {
             // Process the FSM
 //            if (state==FSMState.WANDER) System.out.println(state);
             changeStateIfApplicable(container, ticks);
