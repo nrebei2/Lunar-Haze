@@ -225,7 +225,11 @@ public class BoxObstacle extends SimpleObstacle {
 
         // Create the fixture
         fixture.shape = shape;
+
         geometry = body.createFixture(fixture);
+
+        // set user data on fixture for raycasts
+        geometry.setUserData(this);
     }
 
     /**

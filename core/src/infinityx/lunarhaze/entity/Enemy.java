@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.Pool;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.EnemyController;
 import infinityx.lunarhaze.GameCanvas;
@@ -14,7 +15,7 @@ import infinityx.lunarhaze.physics.ConeSource;
 
 import java.util.ArrayList;
 
-public class Enemy extends GameObject {
+public class Enemy extends GameObject implements Pool.Poolable {
 // Instance Attributes
     /**
      * A unique identifier; used to decouple classes.
@@ -39,11 +40,6 @@ public class Enemy extends GameObject {
     private Boolean isAlerted;
 
     /**
-     * Whether the enemy is alive.
-     */
-    private final boolean isAlive;
-
-    /**
      * points (in Tile index) in the enemy's patrolPath
      */
     // TODO: if we wanna be fancy use a bezier
@@ -59,6 +55,7 @@ public class Enemy extends GameObject {
     private int attackDamage;
 
     private float hp;
+
 
     public enum Direction {
         NORTH(1), SOUTH(3), WEST(2), EAST(0);
@@ -111,33 +108,30 @@ public class Enemy extends GameObject {
     private int currentWayPoint;
 
     /**
-     * Initialize an enemy not alerted.
-     */
-    public Enemy(int id, float x, float y, ArrayList<Vector2> patrolPath) {
-        super(x, y);
-        this.id = id;
-        isAlive = true;
-        this.patrolPath = patrolPath;
-        animeframe = 0.0f;
-        isAlerted = false;
-        direction = Direction.NORTH;
-        hp = 3f;
-    }
-
-    /**
      * Initialize an enemy with dummy position, id, and patrol path
      */
     public Enemy() {
         super(0, 0);
-        isAlive = true;
         this.patrolPath = new ArrayList<>();
         animeframe = 0.0f;
         isAlerted = false;
         direction = Direction.NORTH;
+        hp = 10.0f;
     }
 
     /**
-     * Initalize the enemy with the given data
+     * Resets the object for reuse. Object references should be nulled and fields may be set to default values.
+     */
+    @Override
+    public void reset() {
+
+    }
+
+    /**
+     * Parse and initialize specific enemy  attributes.
+     *
+     * @param json      Json tree holding enemy information
+     * @param container LevelContainer which this player is placed in
      */
     public void initialize(AssetDirectory directory, JsonValue json, LevelContainer container) {
         JsonValue p_dim = json.get("collider");
@@ -162,36 +156,10 @@ public class Enemy extends GameObject {
         setFlashlight(flashLight);
 
         setFlashlightOn(true);
-        //getBody().setActive(false);
 
         JsonValue attack = json.get("attack");
         setAttackKnockback(attack.getFloat("knockback"));
         setAttackDamage(attack.getInt("damage"));
-    }
-
-    /**
-     * Deep clones enemy, can be used independently of this
-     *
-     * @return new enemy
-     */
-    public Enemy deepClone(LevelContainer container) {
-        Enemy enemy = new Enemy();
-        enemy.setSpeed(speed);
-        enemy.setTexture(getTexture());
-        enemy.setOrigin((int) origin.x, (int) origin.y);
-        ConeSource flashLight = new ConeSource(
-                container.getRayHandler(), this.flashlight.getRayNum(), this.flashlight.getColor(), this.flashlight.getDistance(),
-                0, 0, this.flashlight.getDirection(), this.flashlight.getConeDegree()
-        );
-        flashLight.setSoft(this.flashlight.isSoft());
-        enemy.setBodyState(body);
-        enemy.activatePhysics(container.getWorld());
-        enemy.setFlashlight(flashlight);
-        enemy.setFlashlightOn(true);
-
-        enemy.setDimension(getDimension().x, getDimension().y);
-        enemy.setPositioned(positioned);
-        return enemy;
     }
 
     /**
@@ -215,19 +183,6 @@ public class Enemy extends GameObject {
 
     public void setPatrolPath(ArrayList<Vector2> path) {
         this.patrolPath = path;
-    }
-
-    /**
-     * Returns whether or not the ship is alive.
-     * <p>
-     * A ship is dead once it has fallen past MAX_FALL_AMOUNT. A dead ship cannot be
-     * targeted, involved in collisions, or drawn.  For all intents and purposes, it
-     * does not exist.
-     *
-     * @return whether or not the ship is alive
-     */
-    public boolean isAlive() {
-        return isAlive;
     }
 
     /**
@@ -265,11 +220,12 @@ public class Enemy extends GameObject {
     public float getHp() { return hp; }
     public void setHp(float value) { hp = value; }
 
-    private static ShapeRenderer shapeRenderer = new ShapeRenderer();
-
     public float getHealthPercentage() {
         float maxHp = 3f;
-        return Math.max(0, Math.min(hp / maxHp, 1));
+        float currenthp = Math.max(0,hp);
+        //System.out.println(currenthp);
+        //System.out.println(currenthp/maxHp);
+        return currenthp/maxHp;
     }
 
     /**
@@ -309,7 +265,7 @@ public class Enemy extends GameObject {
      * Can someone think of a better name? Im too tired for this rn
      */
     public void setFlashLightRotAlongDir() {
-        body.setTransform(body.getPosition(), getDirection().getRotScale() * (float) (Math.PI / 2f));
+        flashlight.getBody().setTransform(body.getPosition(), getDirection().getRotScale() * (float) (Math.PI / 2f));
     }
 
     /**

@@ -261,21 +261,12 @@ public class Board {
             return;
         }
 
-        // if moonlight is not collectable, tint with a lighter color
         Texture tiletexture = getTileTexture(x, y);
-        if (isLit(x, y) && !isCollectable(x, y)) {
-            canvas.draw(
-                    tiletexture, Color.GREEN, tiletexture.getWidth() / 2, tiletexture.getHeight() / 2,
-                    canvas.WorldToScreenX(boardCenterToWorld(x, y).x), canvas.WorldToScreenY(boardCenterToWorld(x, y).y), 0.0f,
-                    tileScreenDim.x / tiletexture.getWidth(), tileScreenDim.y / tiletexture.getHeight()
-            );
-        } else {
-            canvas.draw(
-                    tiletexture, Color.WHITE, tiletexture.getWidth() / 2, tiletexture.getHeight() / 2,
-                    canvas.WorldToScreenX(boardCenterToWorld(x, y).x), canvas.WorldToScreenY(boardCenterToWorld(x, y).y), 0.0f,
-                    tileScreenDim.x / tiletexture.getWidth(), tileScreenDim.y / tiletexture.getHeight()
-            );
-        }
+        canvas.draw(
+                tiletexture, Color.WHITE, tiletexture.getWidth() / 2, tiletexture.getHeight() / 2,
+                canvas.WorldToScreenX(boardCenterToWorld(x, y).x), canvas.WorldToScreenY(boardCenterToWorld(x, y).y), 0.0f,
+                tileScreenDim.x / tiletexture.getWidth(), tileScreenDim.y / tiletexture.getHeight()
+        );
     }
 
     /**

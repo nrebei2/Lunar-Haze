@@ -1,24 +1,62 @@
 package infinityx.lunarhaze.entity;
 
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ObjectSet;
+import com.badlogic.gdx.utils.Pool;
 
 import java.util.Iterator;
 
-public class EnemyList implements Iterable<Enemy> {
-    /**
-     * The list of enemies managed by this object.
-     */
-    private final Array<Enemy> enemies;
-
-    private float time;
+public class EnemyList extends Pool<Enemy> {
+    /** Default number of particles (low to show off how this works) */
+    public static final int DEFAULT_CAPACITY = 16;
 
     /**
-     * Create a new EnemyList
+     * The preallocated arraylist of enemies
      */
-    public EnemyList() {
-        enemies = new Array<>(false, 5);
+    private Array<Enemy> enemies;
+
+    /** The next object in the array available for allocation */
+    private int next;
+
+    /**
+     * Creates a EnemyList with the given capacity.
+     *
+     * @param capacity  The number of particles to preallocate
+     */
+    public EnemyList(int capacity) {
+        super(capacity);
+        assert capacity > 0;
+
+        // Preallocate objects
+        enemies = new Array<>();
+        for(int ii = 0; ii < capacity; ii++) {
+            Enemy e = new Enemy();
+            enemies.add(e);
+        }
+
+        next = 0;
     }
 
+    /**
+     * Allocates a new object from the Pool.
+     *
+     * INVARIANT: If this method is called, then the free list is empty.
+     *
+     * This is the lone method that you must implement to create a memory
+     * pool.  This is where you "seed" the memory pool by allocating objects
+     * when the free list is empty.  We preallocated, so we just return
+     * the next object from the list.  But you could put a "new" in here if
+     * you wanted to; in that case the free list is how you manage everything.
+     *
+     * @return A new particle object
+     */
+    protected Enemy newObject() {
+        if (next == enemies.size) {
+            return null;
+        }
+        next++;
+        return enemies.get(next-1);
+    }
 
     /**
      * Returns a ship iterator, satisfying the Iterable interface.
@@ -51,27 +89,4 @@ public class EnemyList implements Iterable<Enemy> {
         return enemies.get(id);
     }
 
-    /**
-     * @param enemy Enemy to append to enemy list
-     * @return id of the added enemy
-     */
-    public int addEnemy(Enemy enemy) {
-        enemies.add(enemy);
-        return enemies.size - 1;
-    }
-
-    /**
-     * Returns the number of enemies alive at the end of an update.
-     *
-     * @return the number of enemies alive at the end of an update.
-     */
-//    public int numActive() {
-//        int enemiesActive = 0;
-//        for (Enemy e : this) {
-//            if (e.isActive()) {
-//                enemiesActive++;
-//            }
-//        }
-//        return enemiesActive;
-//    }
 }

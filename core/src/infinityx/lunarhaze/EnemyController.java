@@ -107,10 +107,10 @@ public class EnemyController {
          */
         MOON
     }
+
     /**
      * Enumeration to describe what direction the enemy is facing
      */
-
 
     // Instance Attributes
     /**
@@ -138,7 +138,6 @@ public class EnemyController {
      */
     private final Werewolf target;
 
-
     /**
      * The enemy next action (may include firing).
      */
@@ -151,22 +150,21 @@ public class EnemyController {
      */
     private long ticks;
 
-
     /**
      * Creates an EnemyController for the enemy with the given id.
      *
-     * @param id      The unique ship identifier
      * @param board   The game board (for pathfinding)
-     * @param enemies The list of enemies (for detection)
+     * @param enemies The list of enemies (for alerting)
+     * @param enemy The enemy being controlled by this AIController
+     *
      */
-    public EnemyController(int id, Werewolf target, EnemyList enemies, Board board) {
-        this.enemy = enemies.get(id);
+    public EnemyController(Werewolf target, EnemyList enemies, Board board, Enemy enemy) {
+        this.enemy = enemy;
         this.board = board;
         this.target = target;
         this.state = FSMState.SPAWN;
         this.enemies = enemies;
         this.detection = Detection.LIGHT;
-
     }
 
     /**

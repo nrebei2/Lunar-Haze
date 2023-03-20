@@ -71,13 +71,10 @@ public class GameplayController {
      */
     private CollisionController collisionController;
 
-
     // someone edit this sometime pls too many magic numbers
-    private static final float NIGHT_DURATION = 30f;
-    private static final float PHASE_TRANSITION_TIME = 3f;
 
     private static final float[] DAY_COLOR = {1f, 1f, 1f, 1f};
-    private static final float[] NIGHT_COLOR = {0.55f, 0.52f, 0.62f, 0.55f};
+    private  float[] stealthColor;
     private float ambientLightTransitionTimer;
     private float phaseTimer;
 
@@ -90,7 +87,7 @@ public class GameplayController {
         board = null;
         currentPhase = Phase.STEALTH;
         gameState = GameState.PLAY;
-        ambientLightTransitionTimer = PHASE_TRANSITION_TIME;
+        ambientLightTransitionTimer = levelContainer.getPhaseTransitionTime();
     }
 
     /**
@@ -113,6 +110,8 @@ public class GameplayController {
      * @param levelContainer container holding model objects in level
      */
     public void start(LevelContainer levelContainer) {
+        this.gameState = GameState.PLAY;
+        this.currentPhase = Phase.STEALTH;
         this.levelContainer = levelContainer;
         this.collisionController = new CollisionController(levelContainer);
         player = levelContainer.getPlayer();
@@ -120,7 +119,7 @@ public class GameplayController {
         board = levelContainer.getBoard();
         this.playerController = new PlayerController(player, board, levelContainer);
         controls = new EnemyController[enemies.size()];
-        phaseTimer = NIGHT_DURATION;
+        phaseTimer = levelContainer.getPhaseLength();
 
         for (int ii = 0; ii < enemies.size(); ii++) {
             controls[ii] = new EnemyController(ii, player, enemies, board);
@@ -177,9 +176,9 @@ public class GameplayController {
     }
 
     private void updateAmbientLight(float delta) {
-        if (ambientLightTransitionTimer < PHASE_TRANSITION_TIME) {
+        if (ambientLightTransitionTimer < levelContainer.getPhaseTransitionTime()) {
             ambientLightTransitionTimer += delta;
-            float progress = Math.min(ambientLightTransitionTimer / PHASE_TRANSITION_TIME, 1);
+            float progress = Math.min(ambientLightTransitionTimer / levelContainer.getPhaseTransitionTime(), 1);
 
             float[] startColor = currentPhase == Phase.BATTLE ? NIGHT_COLOR : DAY_COLOR;
             float[] endColor = currentPhase == Phase.BATTLE ? DAY_COLOR : NIGHT_COLOR;
