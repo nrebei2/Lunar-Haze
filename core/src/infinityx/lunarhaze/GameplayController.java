@@ -3,6 +3,7 @@ package infinityx.lunarhaze;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.utils.ObjectSet;
+import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.EnemyPool;
 import infinityx.lunarhaze.entity.Werewolf;
@@ -208,27 +209,25 @@ public class GameplayController {
         }
     }
 
-    /**
-     * Resolve all enemy actions.
-     */
+    // TODO: THIS SHOULD BE IN ENEMYCONTROLLER, also this code is a mess
     public void resolveEnemies() {
-        for(Enemy en: enemies){
-            EnemyController curEnemyController = controls[0];
-            int action = curEnemyController.getAction(levelContainer);
-            en.update(action);
-
+        for (Enemy en : enemies) {
+            if (controls[en.getId()] != null) {
+                EnemyController curEnemyController = controls[en.getId()];
+//                int action = curEnemyController.getAction(levelContainer);
+                Vector2 movement = curEnemyController.getMovement(levelContainer);
+                en.update(movement);
+                // TODO: make more interesting actions                //curEnemyController.setVisibleTiles();
+//                if (en.getIsAlerted()) {
+//                    // angle between enemy and player
+//                    double ang = Math.atan2(player.getPosition().y - en.getPosition().y, player.getPosition().x - en.getPosition().y);
+//                    en.setFlashLightRot((float) ang);
+//                } else {
+//                    en.setFlashLightRot();
+//                }
+            } else {
+                en.update(new Vector2());
+            }
         }
-//        for (EnemyController controller: controls) {
-//            controller.update(levelContainer);
-//        }
-//        // TODO: move to enemy controller
-//        if (en.getIsAlerted()) {
-//            // angle between enemy and player
-//            double ang = Math.atan2(player.getPosition().y - en.getPosition().y, player.getPosition().x - en.getPosition().y);
-//            en.setFlashLightRot((float) ang);
-//        } else {
-//            en.setFlashLightRotAlongDir();
-//        }
-//    }
     }
 }

@@ -1,5 +1,6 @@
 package infinityx.lunarhaze;
 
+import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.ObjectSet;
@@ -9,40 +10,11 @@ import infinityx.lunarhaze.entity.EnemyPool;
 import infinityx.lunarhaze.entity.Werewolf;
 import infinityx.lunarhaze.physics.ConeSource;
 import infinityx.lunarhaze.physics.RaycastInfo;
+import java.util.Random;
+
 
 // TODO: move all this stuff into AI controller, EnemyController should hold other enemy actions
 public class EnemyController {
-
-    /**
-     * Do not do anything
-     */
-    public static final int CONTROL_NO_ACTION = 0x00;
-
-    /**
-     * Move the ship to the left
-     */
-    public static final int CONTROL_MOVE_LEFT = 0x01;
-
-    /**
-     * Move the ship to the right
-     */
-    public static final int CONTROL_MOVE_RIGHT = 0x02;
-
-    /**
-     * Move the ship to the up
-     */
-    public static final int CONTROL_MOVE_UP = 0x04;
-
-    /**
-     * Move the ship to the down
-     */
-    public static final int CONTROL_MOVE_DOWN = 0x08;
-
-    /**
-     * Fire the ship weapon
-     */
-    public static final int CONTROL_ATTACK = 0x10;
-
     /**
      * Distance for enemy to detect the player
      */
@@ -62,6 +34,7 @@ public class EnemyController {
      * Distance from which the enemy can attack the player
      */
     private static final int ATTACK_DIST = 1;
+
 
     /**
      * Enumeration to encode the finite state machine.
@@ -91,6 +64,10 @@ public class EnemyController {
          * The enemy lost its target and is returnng to its patrolling path
          */
         RETURN,
+        /**
+         * The enemy is not doing idle
+         */
+        IDLE,
     }
 
     private enum Detection {
@@ -152,6 +129,27 @@ public class EnemyController {
     private long ticks;
 
     /**
+     * The number of ticks since we started this controller
+     */
+    private long chased_ticks;
+
+    /**
+     * The number of ticks since we started this controller
+     */
+    private long idle_ticks;
+
+    /**
+     * The number of ticks since we started this controller
+     */
+    private Vector2 goal;
+
+    /**
+     * The number of ticks since we started this controller
+     */
+    private Vector2 end_chase_pos;
+
+
+    /**
      * Creates an EnemyController for the enemy with the given id.
      *
      * @param board   The game board (for pathfinding)
@@ -166,6 +164,11 @@ public class EnemyController {
         this.state = FSMState.SPAWN;
         this.enemies = enemies;
         this.detection = Detection.LIGHT;
+        this.ticks = 0;
+        this.chased_ticks = 0;
+        this.idle_ticks = 0;
+        this.goal = getRandomPointinRegion();
+        this.end_chase_pos = new Vector2();
     }
 
     /**
@@ -196,9 +199,10 @@ public class EnemyController {
         ConeSource flashlight = enemy.getFlashlight();
         float light_dis = flashlight.getDistance();
 
-        float vx = enemy.getVX();
-        float vy = enemy.getVY();
-        Vector2 enemy_direction = new Vector2(vx,vy).nor();
+
+        Vector2 temp = new Vector2(enemy.getBody().getTransform().getOrientation());
+        Vector2 enemy_direction = temp.nor();
+
 
         Vector2 direction = new Vector2(player.getX()-point1.x, player.getY()-point1.y).nor();
         Vector2 point2 = new Vector2(point1.x+light_dis*direction.x, player.getY()+light_dis*direction.y);
@@ -215,11 +219,6 @@ public class EnemyController {
      * @return true if we can both fire and hit our target
      */
     private boolean detectedPlayer(LevelContainer container) {
-        Enemy.Direction direction = enemy.getDirection();
-        if (direction == null) {
-            return false;
-        }
-
         /**Enemy must be in a line and less than detection distance away*/
         if (detection == Detection.LIGHT) {
             return lightDetect(container);
@@ -265,8 +264,10 @@ public class EnemyController {
     }
 
     private boolean canChase() {
+        // This is radial
         return (boardDistance(enemy.getX(), enemy.getY(), target.getX(), target.getY()) <= CHASE_DIST);
     }
+
 
     /**
      * Returns the action selected by this InputController
@@ -281,29 +282,31 @@ public class EnemyController {
      *
      * @return the action selected by this InputController
      */
-    public int getAction(LevelContainer container) {
+    public Vector2 getMovement(LevelContainer container) {
+        //TODO CHANGE
         // Increment the number of ticks.
         ticks++;
 
         // Do not need to rework ourselves every frame. Just every 10 ticks.
         if (ticks % 10 == 0) {
             // Process the FSM
-            changeStateIfApplicable(container);
+//            if (state==FSMState.WANDER) System.out.println(state);
+            changeStateIfApplicable(container, ticks);
             changeDetectionIfApplicable();
 
             // Pathfinding
-            markGoalTiles();
-            move = getMoveAlongPathToGoalTile();
+            /**Code that gives you the next Vector2*/
+            Vector2 next_move = findPath();
+            return next_move;
+
         }
 
-        int action = move;
+        //other things?
+        return new Vector2();
+    }
 
-        // If we're attacking someone and we can shoot him now, then do so.
-        if (state == FSMState.ATTACK && canHitTarget()) {
-            action |= CONTROL_ATTACK;
-        }
+    private void alertAllies(){
 
-        return action;
     }
 
     /**
@@ -315,7 +318,7 @@ public class EnemyController {
      * in the ATTACK state, we may want to switch to the CHASE state if the
      * target gets out of range.
      */
-    private void changeStateIfApplicable(LevelContainer container) {
+    private void changeStateIfApplicable(LevelContainer container, long ticks) {
         switch (state) {
             case SPAWN:
                 state = FSMState.PATROL;
@@ -324,17 +327,64 @@ public class EnemyController {
                 if (detectedPlayer(container)) {
                     state = FSMState.CHASE;
                     enemy.setIsAlerted(true);
+                    alertAllies();
                 }
+
+
                 break;
             case CHASE:
                 if (!canChase() && !target.isOnMoonlight()) {
+                    state = FSMState.WANDER;
+                    enemy.setIsAlerted(false);
+                    chased_ticks = ticks;
+                    end_chase_pos = new Vector2(enemy.getPosition().x, enemy.getPosition().y);
+                    goal = getRandomPointtoWander(2f);
+                }
+//                Vector2 temp = new Vector2(enemy.getBody().getTransform().getOrientation());
+//                Vector2 direction = new Vector2(target.getX()-enemy.getX(),target.getY()-enemy.getY()).nor();
+//                Vector2 enemy_direction = temp.nor();
+//                if (direction.x < enemy_direction.x){
+//                    enemy.getBody().setAngularVelocity(-1f);
+//                }
+//                else if (direction.x > enemy_direction.x){
+//                    enemy.getBody().setAngularVelocity(1f);
+//                }
+//                else{
+//                    enemy.getBody().setAngularVelocity(0);
+//
+//                }
+                break;
+            case WANDER:
+                if (detectedPlayer(container)){
+                    state = FSMState.CHASE;
+                    enemy.setIsAlerted(true);
+                }
+                else if (!canChase() && !target.isOnMoonlight() && (ticks - chased_ticks >= 30)) {
                     state = FSMState.PATROL;
                     enemy.setIsAlerted(false);
                 }
                 break;
-            case ATTACK:
-                if (!canHitTarget()) {
+            case IDLE:
+                idle_ticks++;
+                if (idle_ticks >= 15){
+                    enemy.getBody().setAngularVelocity(0);
+                    state = FSMState.PATROL;
+                    idle_ticks=0;
+                    break;
+                }
+                if (lightDetect(container)){
                     state = FSMState.CHASE;
+                    enemy.getBody().setAngularVelocity(0);
+                    break;
+                }
+                if (idle_ticks % 5 == 0){
+                    Random rand = new Random();
+                    if ((rand.nextInt(10) >= 5)) {
+                        enemy.getBody().setAngularVelocity(1f);
+                    } else {
+                        enemy.getBody().setAngularVelocity(-1f);
+                    }
+
                 }
                 break;
             default:
@@ -345,6 +395,7 @@ public class EnemyController {
         }
     }
 
+
     private void changeDetectionIfApplicable() {
         if (target.isOnMoonlight()) {
             detection = Detection.MOON;
@@ -352,189 +403,64 @@ public class EnemyController {
             detection = Detection.AREA;
         } else {
             detection = Detection.LIGHT;
+
+
         }
     }
 
-    private void markGoalTiles() {
-        board.clearMarks();
+
+    private Vector2 getRandomPointinRegion(){
+        Random rand = new Random();
+        //Calculates the two point coordinates in a world base
+        Vector2 bottom_left =  board.boardToWorld((int)enemy.getBottomLeftOfRegion().x, (int)enemy.getBottomLeftOfRegion().y);
+        Vector2 top_right =  board.boardToWorld((int)enemy.getTopRightOfRegion().x, (int)enemy.getTopRightOfRegion().y);
+        Vector2 random_point = new Vector2 (rand.nextFloat(bottom_left.x,top_right.x), rand.nextFloat(bottom_left.y,top_right.y));
+        //System.out.println("I found a point with x: "+ random_point.x+", y: "+random_point.y+"!");
+        return random_point;
+    }
+
+    private Vector2 getRandomPointtoWander(float offset){
+        Random rand = new Random();
+        //Calculates the two point coordinates in a world base
+        Vector2 bottom_left = new Vector2 (this.end_chase_pos.x - offset, this.end_chase_pos.y - offset);
+        Vector2 top_right = new Vector2 (this.end_chase_pos.x + offset, this.end_chase_pos.y + offset);
+        Vector2 random_point = new Vector2 (rand.nextFloat(bottom_left.x,top_right.x), rand.nextFloat(bottom_left.y,top_right.y));
+        //System.out.println("I found a point with x: "+ random_point.x+", y: "+random_point.y+"!");
+        return random_point;
+    }
+
+    private Vector2 findPath() {
+        //TODO CHANGE--SHOULD GIVE US THE NEXT MOVEMENT
+        //Gets enemy position
         Vector2 cur_pos = enemy.getPosition();
-        int curr_x = board.worldToBoardX(cur_pos.x);
-        int curr_y = board.worldToBoardY(cur_pos.y);
-        boolean setGoal = false; // Until we find a goal
         switch (state) {
             case SPAWN:
                 break;
             case PATROL:
-                Vector2 pos;
-                if (enemy.getCurrentPatrol().x == curr_x && enemy.getCurrentPatrol().y == curr_y) {
-                    pos = enemy.getNextPatrol();
-                } else {
-                    pos = enemy.getCurrentPatrol();
+                Vector2 temp_cur_pos = new Vector2(cur_pos.x, cur_pos.y);
+                if (temp_cur_pos.sub(goal).len() <= 0.1f){
+                    goal = getRandomPointinRegion();
+                    state = FSMState.IDLE;
+                    enemy.setVX(0);
+                    enemy.setVY(0);
+                    return new Vector2();
+                    /**stay there for a while*/
                 }
-                board.setGoal((int) pos.x, (int) pos.y);
-                setGoal = true;
-                break;
-//            case WANDER:
-//
-//                pos = board.worldToBoard(enemy.getX(), enemy.getY());
-//                int x = (int)pos.x;
-//                int y = (int)pos.y;
-//                //#endregion
-//                for (int i = -1; i < 2; i++ ){
-//                    for (int j = -1 ; j <2 ; j++){
-//                        if (board.isWalkable(x+i, y+j) && Math.random() <= (double)(1/9) && !setGoal && board.inBounds(x +i, y+j) ){
-//                            board.setGoal(x+i, y+j);
-//                            setGoal = true;
-//                        }
-//                    }
-//                }
-//                break;
+                return new Vector2(goal.x - cur_pos.x, goal.y-cur_pos.y).nor();
             case CHASE:
-                if (target != null) {
-                    board.setGoal(board.worldToBoardX(target.getX()), board.worldToBoardX(target.getY()));
-                    setGoal = true;
+                Vector2 target_pos = new Vector2(target.getPosition());
+
+                return (target_pos.sub(cur_pos)).nor();
+            case WANDER:
+                Vector2 temp_cur_pos2 = new Vector2(cur_pos.x, cur_pos.y);
+                if (temp_cur_pos2.sub(goal).len() <= 0.3f){
+                    goal = getRandomPointtoWander(1f);
                 }
-                break;
-            case ATTACK:
-                if (target != null) {
-                    int target_x = board.worldToBoardX(target.getX());
-                    int target_y = board.worldToBoardX(target.getY());
-                    //#endregion
-                    for (int i = -4; i < 5; i++) {
-                        for (int j = -4; j < 5; j++) {
-                            if (board.isWalkable(target_x + i, target_y + j) && canHitTargetFrom(target_x + i, target_y + i)
-                                    && board.inBounds(target_x + i, target_y + j)) {
-                                board.setGoal(target_x + i, target_y + j);
-                                setGoal = true;
-                            }
-                        }
-                    }
-
-                }
-                break;
+                return new Vector2(goal.x - cur_pos.x, goal.y-cur_pos.y).nor();
+            case IDLE:
+                return new Vector2(0,0);
         }
-        if (!setGoal) {
-            board.setGoal(board.worldToBoardX(enemy.getX()), board.worldToBoardX(enemy.getY()));
-        }
-    }
-
-
-    /**
-     * Returns a movement direction that moves towards a goal tile.
-     * <p>
-     * This is one of the longest parts of the assignment. Implement
-     * breadth-first search (from 2110) to find the best goal tile
-     * to move to. However, just return the movement direction for
-     * the next step, not the entire path.
-     * <p>
-     * The value returned should be a control code.  See PlayerController
-     * for more information on how to use control codes.
-     *
-     * @return a movement direction that moves towards a goal tile.
-     */
-    private int getMoveAlongPathToGoalTile() {
-        //#region PUT YOUR CODE HERE
-        int x = board.worldToBoardX(enemy.getX());
-        int y = board.worldToBoardY(enemy.getY());
-        if (board.isGoal(x, y)) {
-            return CONTROL_NO_ACTION;
-        }
-
-        Queue<TileData> queue = new Queue<>();
-
-
-        board.setVisited(x, y);
-        queue.addLast(new TileData(x, y));
-        while (!queue.isEmpty()) {
-            TileData head = queue.first();
-            queue.removeFirst();
-            if (board.isGoal(head.x, head.y)) {
-                return getDirection(head);
-            }
-            for (int[] direction : directions) {
-                if (!board.isVisited(head.x + direction[0], head.y + direction[1]) && board.isWalkable(head.x + direction[0], head.y + direction[1])) {
-                    TileData next = new TileData(head.x + direction[0], head.y + direction[1]);
-                    board.setVisited(next.getX(), next.getY());
-                    next.setPrevDirection(new int[]{direction[0], direction[1]});
-                    next.setPrev(head);
-                    queue.addLast(next);
-                }
-            }
-        }
-        return CONTROL_NO_ACTION;
-        //#endregion
-    }
-//
-//    private int getMoveAlongPathToGoalTile() {
-//        //#region PUT YOUR CODE HERE
-//        int x = board.worldToBoardX(enemy.getX());
-//        int y = board.worldToBoardY(enemy.getY());
-//        if (board.isGoal(x, y)) {
-//            return CONTROL_NO_ACTION;
-//        }
-//
-//        PriorityQueue<TileData> openSet = new PriorityQueue<TileData>();
-//        HashSet<TileData> closedSet = new HashSet<TileData>();
-//        HashMap<TileData, TileData> cameFrom = new HashMap<TileData, TileData>();
-//        HashMap<TileData, Double> gScore = new HashMap<TileData, Double>();
-//        HashMap<TileData, Double> fScore = new HashMap<TileData, Double>();
-//
-//
-//        board.setVisited(x, y);
-//        gScore.put(, 0.0);
-//        fScore.put(start, heuristic(start, end));
-//        openSet.add(start);
-//
-//        while (!openSet.isEmpty()) {
-//            Node current = openSet.poll();
-//
-//            if (current == end) {
-//                return reconstructPath(cameFrom, end);
-//            }
-//
-//            closedSet.add(current);
-//
-//            for (Node neighbor : current.getNeighbors()) {
-//                if (closedSet.contains(neighbor)) {
-//                    continue;
-//                }
-//
-//                double tentativeGScore = gScore.get(current) + current.distanceTo(neighbor);
-//
-//                if (!openSet.contains(neighbor) || tentativeGScore < gScore.get(neighbor)) {
-//                    cameFrom.put(neighbor, current);
-//                    gScore.put(neighbor, tentativeGScore);
-//                    fScore.put(neighbor, tentativeGScore + heuristic(neighbor, end) + hidingSpotHeuristic(neighbor));
-//
-//                    if (!openSet.contains(neighbor)) {
-//                        openSet.add(neighbor);
-//                    }
-//                }
-//            }
-//        }
-//
-//        return null;
-//    }
-//
-//    private double heuristic(Node a, Node b) {
-//        return ;
-//    }
-
-
-    private int getDirection(TileData t) {
-        while (t.prev.prev != null) {
-            t = t.prev;
-        }
-        if (t.prevDirection[0] == -1) {
-            return CONTROL_MOVE_LEFT;
-        } else if (t.prevDirection[0] == 1) {
-            return CONTROL_MOVE_RIGHT;
-        } else if (t.prevDirection[1] == -1) {
-            return CONTROL_MOVE_DOWN;
-        } else if (t.prevDirection[1] == 1) {
-            return CONTROL_MOVE_UP;
-        }
-        return CONTROL_NO_ACTION;
+        return new Vector2(0,0);
     }
 
     // Add any auxiliary methods or data structures here
