@@ -8,7 +8,7 @@
     },
     "collider": {
       "width": 4,
-      "height": 1.5
+      "height": 1.8
     },
     "bodytype": "static",
     "density": 0.0,
@@ -23,8 +23,24 @@
       "scale": 0.15
     },
     "collider": {
-      "width": 1,
+      "width": 0.75,
       "height": 0.4
+    },
+    "bodytype": "static",
+    "density": 0.0,
+    "friction": 0.0,
+    "restitution": 0.0,
+    "damping": 0.0
+  },
+  "stone": {
+    "texture": {
+      "name": "stone.static",
+      "origin": [925, 630],
+      "scale": 0.15
+    },
+    "collider": {
+      "width": 1,
+      "height": 0.3
     },
     "bodytype": "static",
     "density": 0.0,

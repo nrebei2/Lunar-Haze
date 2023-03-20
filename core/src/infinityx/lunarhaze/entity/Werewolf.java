@@ -91,8 +91,6 @@ public class Werewolf extends GameObject {
 
     private float lockoutTime;
 
-    private LevelContainer levelContainer;
-
     /**
      * Point light pointed on werewolf at all times
      */
@@ -258,7 +256,6 @@ public class Werewolf extends GameObject {
      * Initialize a werewolf.
      */
     public Werewolf(float x, float y) {
-
         super(x, y);
         animeframe = 0.0f;
         lockoutTime = 0.0f;
@@ -343,21 +340,21 @@ public class Werewolf extends GameObject {
      *
      * @param delta Number of seconds since last animation frame
      */
-        public void update(float delta) {
-            // get the current velocity of the player's Box2D body
-            Vector2 velocity = body.getLinearVelocity();
-            if (canMove) {
-                // update the velocity based on the input from the player
-                velocity.x = movementH * speed;
-                velocity.y = movementV * speed;
+    public void update(float delta) {
+        // get the current velocity of the player's Box2D body
+        Vector2 velocity = body.getLinearVelocity();
+        if (canMove) {
+            // update the velocity based on the input from the player
+            velocity.x = movementH * speed;
+            velocity.y = movementV * speed;
 
-                // set the updated velocity to the player's Box2D body
-                body.setLinearVelocity(velocity);
-            } else if (lockoutTime >= lockout) {
-                canMove = true;
-                lockoutTime = 0f;
-            } else {
-                lockoutTime += delta;
-            }
+            // set the updated velocity to the player's Box2D body
+            body.setLinearVelocity(velocity);
+        } else if (lockoutTime >= lockout) {
+            canMove = true;
+            lockoutTime = 0f;
+        } else {
+            lockoutTime += delta;
         }
+    }
 }

@@ -1,5 +1,6 @@
 package infinityx.lunarhaze;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.ObjectSet;
@@ -420,17 +421,16 @@ public class EnemyController {
         //Calculates the two point coordinates in a world base
         Vector2 bottom_left =  board.boardToWorld((int)enemy.getBottomLeftOfRegion().x, (int)enemy.getBottomLeftOfRegion().y);
         Vector2 top_right =  board.boardToWorld((int)enemy.getTopRightOfRegion().x, (int)enemy.getTopRightOfRegion().y);
-        Vector2 random_point = new Vector2 (rand.nextFloat(bottom_left.x,top_right.x), rand.nextFloat(bottom_left.y,top_right.y));
+        Vector2 random_point = new Vector2 (MathUtils.random(bottom_left.x,top_right.x), MathUtils.random(bottom_left.y,top_right.y));
         //System.out.println("I found a point with x: "+ random_point.x+", y: "+random_point.y+"!");
         return random_point;
     }
 
     private Vector2 getRandomPointtoWander(float offset){
-        Random rand = new Random();
         //Calculates the two point coordinates in a world base
         Vector2 bottom_left = new Vector2 (this.end_chase_pos.x - offset, this.end_chase_pos.y - offset);
         Vector2 top_right = new Vector2 (this.end_chase_pos.x + offset, this.end_chase_pos.y + offset);
-        Vector2 random_point = new Vector2 (rand.nextFloat(bottom_left.x,top_right.x), rand.nextFloat(bottom_left.y,top_right.y));
+        Vector2 random_point = new Vector2 (MathUtils.random(bottom_left.x,top_right.x), MathUtils.random(bottom_left.y,top_right.y));
         //System.out.println("I found a point with x: "+ random_point.x+", y: "+random_point.y+"!");
         return random_point;
     }

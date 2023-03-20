@@ -317,7 +317,6 @@ public class Dust implements Drawable {
      */
     @Override
     public void setDestroyed() {
-        System.out.println("destroyed");
         destroyed = true;
     }
 }
