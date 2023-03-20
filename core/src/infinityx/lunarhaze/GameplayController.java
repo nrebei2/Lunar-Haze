@@ -164,7 +164,7 @@ public class GameplayController {
             resolvePlayer(input, delta);
             resolveMoonlight(delta);
         }
-        resolveEnemies();
+        resolveEnemies(delta);
     }
 
     /**
@@ -207,16 +207,16 @@ public class GameplayController {
     }
 
     // TODO: THIS SHOULD BE IN ENEMYCONTROLLER, also this code is a mess
-    public void resolveEnemies() {
+    public void resolveEnemies(float delta) {
         //board.clearVisibility();
         for (Enemy en : enemies) {
-            if (controls[en.getId()] != null) {
+//            if (controls[en.getId()] != null) {
                 EnemyController curEnemyController = controls[en.getId()];
-                int action = curEnemyController.getAction(levelContainer);
-                System.out.println(en.getBody());
-                curEnemyController.updateSteering(levelContainer);
+                curEnemyController.update(levelContainer, delta);
+//                System.out.println(en.getBody());
+//                curEnemyController.updateSteering(levelContainer);
 //                boolean attacking = (action & EnemyController.CONTROL_ATTACK) != 0;
-                en.update();
+                en.update(delta);
 
                 // TODO: make more interesting actions                //curEnemyController.setVisibleTiles();
                 if (en.getIsAlerted()) {
@@ -224,12 +224,12 @@ public class GameplayController {
                     double ang = Math.atan2(player.getPosition().y - en.getPosition().y, player.getPosition().x - en.getPosition().y);
                     en.setFlashLightRot((float) ang);
                 } else {
-                    en.setFlashLightRotAlongDir();
+//                    en.setFlashLightRotAlongDir();
                 }
-            } else {
+//            } else {
 
-                en.update(EnemyController.CONTROL_NO_ACTION);
-            }
+//                en.update(EnemyController.CONTROL_NO_ACTION);
+//            }
         }
 
     }

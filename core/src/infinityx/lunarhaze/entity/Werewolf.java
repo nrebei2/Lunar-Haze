@@ -1,6 +1,7 @@
 package infinityx.lunarhaze.entity;
 
 import box2dLight.PointLight;
+import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -11,8 +12,10 @@ import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.GameObject;
 import infinityx.lunarhaze.LevelContainer;
+import infinityx.util.Box2dLocation;
+import infinityx.util.Box2dSteeringUtils;
 
-public class Werewolf extends GameObject {
+public class Werewolf extends GameObject implements Location<Vector2> {
 
     /**
      * The frame number for a ship that is not turning
@@ -309,30 +312,6 @@ public class Werewolf extends GameObject {
         setHp(hp - damage);
     }
 
-    @Override
-    public boolean activatePhysics(World world) {
-        if (!super.activatePhysics(world)) {
-            return false;
-        }
-
-        // Define the shape of the player's fixture
-        PolygonShape playerShape = new PolygonShape();
-        playerShape.setAsBox(0.5f, 1.0f);
-
-        // Define the properties of the player's fixture
-        fixture.shape = playerShape;
-        fixture.density = 1.0f;
-        fixture.friction = 0.5f;
-        fixture.restitution = 0.0f;
-        Fixture fix = body.createFixture(fixture);
-        fix.setUserData(this);
-//        fixture = getBody().createFixture(fixtureDef);
-        playerShape.dispose();
-
-
-        return true;
-    }
-
     /**
      * Updates the animation frame and position of this werewolf.
      *
@@ -355,5 +334,35 @@ public class Werewolf extends GameObject {
         } else {
             lockoutTime += delta;
         }
+    }
+
+    @Override
+    public Vector2 getPosition() {
+        return body.getPosition();
+    }
+
+    @Override
+    public float getOrientation() {
+        return body.getAngle();
+    }
+
+    @Override
+    public void setOrientation(float orientation) {
+        body.setTransform(getPosition(), orientation);
+    }
+
+    @Override
+    public float vectorToAngle(Vector2 vector) {
+        return Box2dSteeringUtils.vectorToAngle(vector);
+    }
+
+    @Override
+    public Vector2 angleToVector(Vector2 outVector, float angle) {
+        return Box2dSteeringUtils.angleToVector(outVector, angle);
+    }
+
+    @Override
+    public Location<Vector2> newLocation() {
+        return new Box2dLocation(new Vector2());
     }
 }

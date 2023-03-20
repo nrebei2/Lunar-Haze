@@ -1,5 +1,7 @@
 package infinityx.lunarhaze.entity;
 
+import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
+import com.badlogic.gdx.ai.fsm.StateMachine;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
 import com.badlogic.gdx.ai.utils.Location;
@@ -8,6 +10,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.EnemyController;
+import infinityx.lunarhaze.EnemyState;
 import infinityx.lunarhaze.GameObject;
 import infinityx.lunarhaze.LevelContainer;
 import infinityx.lunarhaze.physics.ConeSource;
@@ -51,15 +54,6 @@ public class Enemy extends GameObject implements Steerable<Vector2> {
      */
     private final boolean isAlive;
 
-    /**
-     * points (in Tile index) in the enemy's patrolPath
-     */
-    // TODO: if we wanna be fancy use a bezier
-    // Not that bad since we can easily compute the tangent and add force on enemy along it
-    private ArrayList<Vector2> patrolPath;
-
-    private Direction direction;
-
     private ConeSource flashlight;
 
     private float attackKnockback;
@@ -75,7 +69,7 @@ public class Enemy extends GameObject implements Steerable<Vector2> {
     private float maxAngularAcceleration;
     private float maxLinearSpeed = 100f;
     private float maxAngularSpeed = 200f;
-
+    private float temp_orient = 0f;
     private float zeroLinearSpeedThreshold;
 
     private SteeringBehavior<Vector2> steeringBehavior;
@@ -87,6 +81,7 @@ public class Enemy extends GameObject implements Steerable<Vector2> {
     /** -----------------------------------------------------START---------------------------------------------*/
 
     // behavior
+
     public static final int WANDER_BEHAVIOR = 0;
     public static final int ARRIVE_BEHAVIOR = 1;
 
@@ -157,7 +152,7 @@ public class Enemy extends GameObject implements Steerable<Vector2> {
 
     @Override
     public Location<Vector2> newLocation() {
-        return new Box2dLocation(new Vector2(0,0));
+        return new Box2dLocation(new Vector2());
     }
 
     @Override
@@ -220,7 +215,6 @@ public class Enemy extends GameObject implements Steerable<Vector2> {
         isAlive = true;
         animeframe = 0.0f;
         isAlerted = false;
-        direction = Direction.NORTH;
     }
 
     private void createWanderBehavior() {
@@ -239,10 +233,8 @@ public class Enemy extends GameObject implements Steerable<Vector2> {
     public Enemy() {
         super(0, 0);
         isAlive = true;
-        this.patrolPath = new ArrayList<>();
         animeframe = 0.0f;
         isAlerted = false;
-        direction = Direction.NORTH;
 
         tagged = false;
         maxAngularAcceleration = 1.0f;
@@ -252,12 +244,13 @@ public class Enemy extends GameObject implements Steerable<Vector2> {
 
     }
 
-    public void setBehavior(int behavior, Location target) {
+    public void setBehavior(int behavior, Werewolf target) {
         switch (behavior) {
             case ARRIVE_BEHAVIOR:
                 if (arriveBehavior == null) {
                     if (target != null) {
-                        arriveBehavior = new Arrive<>(this, target)
+                        Location<Vector2> loc = new Box2dLocation(target.getPosition());
+                        arriveBehavior = new Arrive<>(this, loc)
                                 .setEnabled(true)
                                 .setTimeToTarget(0.1f)
                                 .setArrivalTolerance(0.5f);
@@ -268,6 +261,8 @@ public class Enemy extends GameObject implements Steerable<Vector2> {
                 }
                 break;
             case WANDER_BEHAVIOR:
+                temp_orient = wanderBehavior.getWanderOrientation();
+                Location<Vector2> loc = new Box2dLocation(target.getPosition());
                 steeringBehavior = wanderBehavior;
             default:
                 break;
@@ -303,7 +298,7 @@ public class Enemy extends GameObject implements Steerable<Vector2> {
      * only manages the cooldown and indicates whether the weapon is currently firing.
      * The result of weapon fire is managed by the GameplayController.
      */
-    public void update() {
+    public void update(float delta) {
 
         if (steeringBehavior != null) {
             steeringBehavior.calculateSteering(steeringOutput);
@@ -313,21 +308,6 @@ public class Enemy extends GameObject implements Steerable<Vector2> {
     }
 
     /** -----------------------------------------------------END---------------------------------------------*/
-
-
-    public enum Direction {
-        NORTH(1), SOUTH(3), WEST(2), EAST(0);
-
-        private final int scale;
-
-        private Direction(int scale) {
-            this.scale = scale;
-        }
-
-        public int getRotScale() {
-            return scale;
-        }
-    }
 
 
     /**
@@ -348,10 +328,6 @@ public class Enemy extends GameObject implements Steerable<Vector2> {
         return isAlerted;
     }
 
-    public Direction getDirection() {
-        return this.direction;
-    }
-
     public ConeSource getFlashlight() {
         return flashlight;
     }
@@ -364,31 +340,6 @@ public class Enemy extends GameObject implements Steerable<Vector2> {
     }
 
     private int currentWayPoint;
-
-    /**
-     * Initialize an enemy not alerted.
-     */
-    public Enemy(int id, float x, float y, ArrayList<Vector2> patrolPath) {
-        super(x, y);
-        this.id = id;
-        isAlive = true;
-        this.patrolPath = patrolPath;
-        animeframe = 0.0f;
-        isAlerted = false;
-        direction = Direction.NORTH;
-    }
-
-//    /**
-//     * Initialize an enemy with dummy position, id, and patrol path
-//     */
-//    public Enemy() {
-//        super(0, 0);
-//        isAlive = true;
-//        this.patrolPath = new ArrayList<>();
-//        animeframe = 0.0f;
-//        isAlerted = false;
-//        direction = Direction.NORTH;
-//    }
 
     /**
      * Initalize the enemy with the given data
@@ -451,28 +402,6 @@ public class Enemy extends GameObject implements Steerable<Vector2> {
         return enemy;
     }
 
-    /**
-     * get the next patrol point of the enemy
-     */
-    public Vector2 getNextPatrol() {
-        Vector2 next = patrolPath.get(currentWayPoint);
-        currentWayPoint++;
-        if (currentWayPoint > patrolPath.size() - 1) {
-            currentWayPoint = 0;
-        }
-        return next;
-    }
-
-    /**
-     * get the patrol point this enemy is currently moving to
-     */
-    public Vector2 getCurrentPatrol() {
-        return patrolPath.get(currentWayPoint);
-    }
-
-    public void setPatrolPath(ArrayList<Vector2> path) {
-        this.patrolPath = path;
-    }
 
     /**
      * Returns whether or not the ship is alive.
@@ -518,46 +447,14 @@ public class Enemy extends GameObject implements Steerable<Vector2> {
     public void setAttackDamage(float dmg) {
         attackDamage = dmg;
     }
-
-    /**
-     * Updates the animation frame and position of this enemy.
-     * <p>
-     * Notice how little this method does.  It does not actively fire the weapon.  It
-     * only manages the cooldown and indicates whether the weapon is currently firing.
-     * The result of weapon fire is managed by the GameplayController.
-     */
-    public void update(int controlCode) {
-        boolean movingLeft = (controlCode & EnemyController.CONTROL_MOVE_LEFT) != 0;
-        boolean movingRight = (controlCode & EnemyController.CONTROL_MOVE_RIGHT) != 0;
-        boolean movingDown = (controlCode & EnemyController.CONTROL_MOVE_DOWN) != 0;
-        boolean movingUp = (controlCode & EnemyController.CONTROL_MOVE_UP) != 0;
-
-        float xVelocity = 0.0f;
-        float yVelocity = 0.0f;
-        if (movingLeft) {
-            xVelocity = -speed;
-            direction = Direction.WEST;
-        } else if (movingRight) {
-            xVelocity = speed;
-            direction = Direction.EAST;
-        }
-        if (movingDown) {
-            yVelocity = -speed;
-            direction = Direction.SOUTH;
-        } else if (movingUp) {
-            yVelocity = speed;
-            direction = Direction.NORTH;
-        }
-        body.setLinearVelocity(xVelocity, yVelocity);
-    }
-
-    /**
-     * As the name suggests.
-     * Can someone think of a better name? Im too tired for this rn
-     */
-    public void setFlashLightRotAlongDir() {
-        body.setTransform(body.getPosition(), getDirection().getRotScale() * (float) (Math.PI / 2f));
-    }
+//
+//    /**
+//     * As the name suggests.
+//     * Can someone think of a better name? Im too tired for this rn
+//     */
+//    public void setFlashLightRotAlongDir() {
+//        body.setTransform(body.getPosition(), getDirection().getRotScale() * (float) (Math.PI / 2f));
+//    }
 
     /**
      * Sets the specific angle of the flashlight on this enemy

@@ -8,8 +8,8 @@ public class Box2dLocation implements Location<Vector2>{
     Vector2 position;
     float orientation;
 
-    public Box2dLocation(Vector2 target) {
-        position = target;
+    public Box2dLocation(Vector2 loc) {
+        position = loc;
         orientation = 0;
     }
 
@@ -42,5 +42,4 @@ public class Box2dLocation implements Location<Vector2>{
     public Location<Vector2> newLocation() {
         return new Box2dLocation(new Vector2());
     }
-
 }

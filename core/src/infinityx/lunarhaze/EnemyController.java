@@ -1,5 +1,7 @@
 package infinityx.lunarhaze;
 
+import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
+import com.badlogic.gdx.ai.fsm.StateMachine;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Queue;
@@ -16,74 +18,21 @@ import com.badlogic.gdx.ai.steer.SteeringBehavior;
 import com.badlogic.gdx.ai.utils.Location;
 import infinityx.util.Box2dLocation;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.PriorityQueue;
 
 // TODO: move all this stuff into AI controller, EnemyController should hold other enemy actions
-public class EnemyController {
+public class EnemyController{
 
-    // Constants for the control codes
-    // We would normally use an enum here, but Java enums do not bitmask nicely
-    /**
-     * Do not do anything
-     */
-    public static final int CONTROL_NO_ACTION = 0x00;
-    /**
-     * Move the ship to the left
-     */
-    public static final int CONTROL_MOVE_LEFT = 0x01;
-    /**
-     * Move the ship to the right
-     */
-    public static final int CONTROL_MOVE_RIGHT = 0x02;
-    /**
-     * Move the ship to the up
-     */
-    public static final int CONTROL_MOVE_UP = 0x04;
-    /**
-     * Move the ship to the down
-     */
-    public static final int CONTROL_MOVE_DOWN = 0x08;
-    /**
-     * Fire the ship weapon
-     */
-    public static final int CONTROL_ATTACK = 0x10;
+    public StateMachine<EnemyController, EnemyState> stateMachine;
 
     private static final float DETECT_DIST = 2;
     private static final float DETECT_DIST_MOONLIGHT = 5;
     private static final float CHASE_DIST = 3f;
     private static final int ATTACK_DIST = 1;
 
-    /**
-     * Enumeration to encode the finite state machine.
-     */
-    public enum FSMState {
-        /**
-         * The enemy just spawned
-         */
-        SPAWN,
-        /**
-         * The enemy is patrolling around a set path
-         */
-        PATROL,
-        /**
-         * The enemy is wandering around where target is last seen
-         */
-        WANDER,
-        /**
-         * The enemy has a target, but must get closer
-         */
-        CHASE,
-        /**
-         * The enemy has a target and is attacking it
-         */
-        ATTACK,
-        /**
-         * The enemy lost its target and is returnng to its patrolling path
-         */
-        RETURN,
-    }
 
     private enum Detection {
         /**
@@ -123,10 +72,6 @@ public class EnemyController {
      */
     private final Board board;
     /**
-     * The ship's current state in the FSM
-     */
-    private FSMState state;
-    /**
      * The target ship (to chase or attack).
      */
     private final Werewolf target;
@@ -144,22 +89,24 @@ public class EnemyController {
      */
     private long ticks;
 
+
+
     /** LIBGDX AI */
 
     /** -----------------------------------------------------START---------------------------------------------*/
 
-    // Update the enemy's steering acceleration based on its current behavior
-    public void updateSteering(LevelContainer container) {
-//        SteeringAcceleration<Vector2> steeringOutput = new SteeringAcceleration<>(new Vector2());
-        Box2dLocation target = new Box2dLocation(container.getPlayer().getPosition());
-        if (detectedPlayer(container)) {
-            enemy.setBehavior(Enemy.ARRIVE_BEHAVIOR, target);
-//          enemy.getArriveBehavior().calculateSteering(steeringOutput);
-        } else {
-            enemy.setBehavior(Enemy.WANDER_BEHAVIOR, target);
-//          enemy.getWanderBehavior().calculateSteering(steeringOutput);
-        }
-    }
+//    // Update the enemy's steering acceleration based on its current behavior
+//    public void updateSteering(LevelContainer container) {
+////        SteeringAcceleration<Vector2> steeringOutput = new SteeringAcceleration<>(new Vector2());
+//        Box2dLocation target = new Box2dLocation(container.getPlayer().getPosition());
+//        if (detectedPlayer(container)) {
+//            enemy.setBehavior(Enemy.ARRIVE_BEHAVIOR, target);
+////          enemy.getArriveBehavior().calculateSteering(steeringOutput);
+//        } else {
+//            enemy.setBehavior(Enemy.WANDER_BEHAVIOR, target);
+////          enemy.getWanderBehavior().calculateSteering(steeringOutput);
+//        }
+//    }
 
 //    // Determine whether the enemy should pursue the target
 //    // Implement the shouldPursue() method to determine whether the werewolf should pursue the target
@@ -188,7 +135,7 @@ public class EnemyController {
         this.enemy = enemies.get(id);
         this.board = board;
         this.target = target;
-        this.state = FSMState.SPAWN;
+        this.stateMachine = new DefaultStateMachine<>();
         this.enemies = enemies;
         this.detection = Detection.LIGHT;
         Box2dLocation loc = new Box2dLocation(target.getPosition());
@@ -245,11 +192,6 @@ public class EnemyController {
      * @return true if we can both fire and hit our target
      */
     private boolean detectedPlayer(LevelContainer container) {
-        Enemy.Direction direction = enemy.getDirection();
-        if (direction == null) {
-            return false;
-        }
-
         /**Enemy must be in a line and less than detection distance away*/
         if (detection == Detection.LIGHT) {
             return lightDetect(container);
@@ -263,35 +205,6 @@ public class EnemyController {
                     target.getY()) <= DETECT_DIST_MOONLIGHT;
         } else {
             return false;
-        }
-    }
-
-    /**
-     * Sets the tiles seen by this enemy's line of sight as visible.
-     */
-    public void setVisibleTiles() {
-        int x = board.worldToBoardX(enemy.getPosition().x);
-        int y = board.worldToBoardY(enemy.getPosition().y);
-
-        switch (enemy.getDirection()) {
-            case NORTH:
-                board.setVisible(x, y - 1, true);
-                board.setVisible(x, y - 2, true);
-                break;
-            case SOUTH:
-                board.setVisible(x, y + 1, true);
-                board.setVisible(x, y + 2, true);
-                break;
-            case WEST:
-                board.setVisible(x - 1, y, true);
-                board.setVisible(x - 2, y, true);
-                break;
-            case EAST:
-                board.setVisible(x + 1, y, true);
-                board.setVisible(x + 2, y, true);
-                break;
-            default:
-                break;
         }
     }
 
@@ -327,6 +240,29 @@ public class EnemyController {
         return (boardDistance(enemy.getX(), enemy.getY(), target.getX(), target.getY()) <= CHASE_DIST);
     }
 
+    public Enemy getEnemy(){
+        return this.getEnemy();
+    }
+
+    public Werewolf getTarget(){
+        return this.target;
+    }
+
+    public void updateEnemy(LevelContainer container){
+        if (lightDetect(container)){
+
+            enemy.setIsAlerted(true);
+        }
+        enemy.setIsAlerted(true);
+
+    }
+
+    public void update(LevelContainer container, float delta){
+        updateEnemy(container);
+        System.out.println("updating statemachine");
+        stateMachine.update();
+    }
+
     /**
      * Returns the action selected by this InputController
      * <p>
@@ -340,30 +276,30 @@ public class EnemyController {
      *
      * @return the action selected by this InputController
      */
-    public int getAction(LevelContainer container) {
-        // Increment the number of ticks.
-        ticks++;
-
-        // Do not need to rework ourselves every frame. Just every 10 ticks.
-        if ((enemy.getId() + ticks) % 10 == 0) {
-            // Process the FSM
-            changeStateIfApplicable(container);
-            changeDetectionIfApplicable();
-
-            // Pathfinding
-            markGoalTiles();
-            move = getMoveAlongPathToGoalTile();
-        }
-
-        int action = move;
-
-        // If we're attacking someone and we can shoot him now, then do so.
-        if (state == FSMState.ATTACK && canHitTarget()) {
-            action |= CONTROL_ATTACK;
-        }
-
-        return action;
-    }
+//    public int getAction(LevelContainer container) {
+//        // Increment the number of ticks.
+//        ticks++;
+//
+//        // Do not need to rework ourselves every frame. Just every 10 ticks.
+//        if ((enemy.getId() + ticks) % 10 == 0) {
+//            // Process the FSM
+//            change();
+//            changeDetectionIfApplicable();
+//
+//            // Pathfinding
+//            markGoalTiles();
+//            move = getMoveAlongPathToGoalTile();
+//        }
+//
+//        int action = move;
+//
+//        // If we're attacking someone and we can shoot him now, then do so.
+//        if (state == FSMState.ATTACK && canHitTarget()) {
+//            action |= CONTROL_ATTACK;
+//        }
+//
+//        return action;
+//    }
 
     /**
      * Change the state of the enemy.
@@ -374,45 +310,11 @@ public class EnemyController {
      * in the ATTACK state, we may want to switch to the CHASE state if the
      * target gets out of range.
      */
-    private void changeStateIfApplicable(LevelContainer container) {
-        switch (state) {
-            case SPAWN:
-                state = FSMState.PATROL;
-                break;
-            case PATROL:
-                if (detectedPlayer(container)) {
-                    state = FSMState.CHASE;
-                    enemy.setIsAlerted(true);
-                }
-                break;
-            case CHASE:
-//                if (canHitTarget()){
-//                    state = FSMState.ATTACK;
-//                }
-                if (!canChase() && !target.isOnMoonlight()) {
-                    state = FSMState.PATROL;
-                    enemy.setIsAlerted(false);
-                }
-                break;
-//            case WANDER:
-//                break;
-            case ATTACK:
-                if (!canHitTarget()) {
-                    state = FSMState.CHASE;
-                }
-                break;
-            default:
-                // Unknown or unhandled state, should never get here
-                assert (false);
-                state = FSMState.WANDER; // If debugging is off
-                break;
-        }
-    }
 
     private void changeDetectionIfApplicable() {
         if (target.isOnMoonlight()) {
             detection = Detection.MOON;
-        } else if (state == FSMState.CHASE) {
+        } else if (stateMachine.getCurrentState() == EnemyState.CHASE) {
             detection = Detection.AREA;
         } else {
             detection = Detection.LIGHT;
@@ -421,68 +323,68 @@ public class EnemyController {
 
     }
 
-    private void markGoalTiles() {
-        board.clearMarks();
-        Vector2 cur_pos = enemy.getPosition();
-        int curr_x = board.worldToBoardX(cur_pos.x);
-        int curr_y = board.worldToBoardY(cur_pos.y);
-        boolean setGoal = false; // Until we find a goal
-        switch (state) {
-            case SPAWN:
-                break;
-            case PATROL:
-                Vector2 pos;
-                if (enemy.getCurrentPatrol().x == curr_x && enemy.getCurrentPatrol().y == curr_y) {
-                    pos = enemy.getNextPatrol();
-                } else {
-                    pos = enemy.getCurrentPatrol();
-                }
-                board.setGoal((int) pos.x, (int) pos.y);
-                setGoal = true;
-                break;
-//            case WANDER:
-//
-//                pos = board.worldToBoard(enemy.getX(), enemy.getY());
-//                int x = (int)pos.x;
-//                int y = (int)pos.y;
-//                //#endregion
-//                for (int i = -1; i < 2; i++ ){
-//                    for (int j = -1 ; j <2 ; j++){
-//                        if (board.isWalkable(x+i, y+j) && Math.random() <= (double)(1/9) && !setGoal && board.inBounds(x +i, y+j) ){
-//                            board.setGoal(x+i, y+j);
-//                            setGoal = true;
-//                        }
-//                    }
+//    private void markGoalTiles() {
+//        board.clearMarks();
+//        Vector2 cur_pos = enemy.getPosition();
+//        int curr_x = board.worldToBoardX(cur_pos.x);
+//        int curr_y = board.worldToBoardY(cur_pos.y);
+//        boolean setGoal = false; // Until we find a goal
+//        switch (state) {
+//            case SPAWN:
+//                break;
+//            case PATROL:
+//                Vector2 pos;
+//                if (enemy.getCurrentPatrol().x == curr_x && enemy.getCurrentPatrol().y == curr_y) {
+//                    pos = enemy.getNextPatrol();
+//                } else {
+//                    pos = enemy.getCurrentPatrol();
+//                }
+//                board.setGoal((int) pos.x, (int) pos.y);
+//                setGoal = true;
+//                break;
+////            case WANDER:
+////
+////                pos = board.worldToBoard(enemy.getX(), enemy.getY());
+////                int x = (int)pos.x;
+////                int y = (int)pos.y;
+////                //#endregion
+////                for (int i = -1; i < 2; i++ ){
+////                    for (int j = -1 ; j <2 ; j++){
+////                        if (board.isWalkable(x+i, y+j) && Math.random() <= (double)(1/9) && !setGoal && board.inBounds(x +i, y+j) ){
+////                            board.setGoal(x+i, y+j);
+////                            setGoal = true;
+////                        }
+////                    }
+////                }
+////                break;
+//            case CHASE:
+//                if (target != null) {
+//                    board.setGoal(board.worldToBoardX(target.getX()), board.worldToBoardX(target.getY()));
+//                    setGoal = true;
 //                }
 //                break;
-            case CHASE:
-                if (target != null) {
-                    board.setGoal(board.worldToBoardX(target.getX()), board.worldToBoardX(target.getY()));
-                    setGoal = true;
-                }
-                break;
-            case ATTACK:
-                if (target != null) {
-                    int target_x = board.worldToBoardX(target.getX());
-                    int target_y = board.worldToBoardX(target.getY());
-                    //#endregion
-                    for (int i = -4; i < 5; i++) {
-                        for (int j = -4; j < 5; j++) {
-                            if (board.isWalkable(target_x + i, target_y + j) && canHitTargetFrom(target_x + i, target_y + i)
-                                    && board.inBounds(target_x + i, target_y + j)) {
-                                board.setGoal(target_x + i, target_y + j);
-                                setGoal = true;
-                            }
-                        }
-                    }
-
-                }
-                break;
-        }
-        if (!setGoal) {
-            board.setGoal(board.worldToBoardX(enemy.getX()), board.worldToBoardX(enemy.getY()));
-        }
-    }
+//            case ATTACK:
+//                if (target != null) {
+//                    int target_x = board.worldToBoardX(target.getX());
+//                    int target_y = board.worldToBoardX(target.getY());
+//                    //#endregion
+//                    for (int i = -4; i < 5; i++) {
+//                        for (int j = -4; j < 5; j++) {
+//                            if (board.isWalkable(target_x + i, target_y + j) && canHitTargetFrom(target_x + i, target_y + i)
+//                                    && board.inBounds(target_x + i, target_y + j)) {
+//                                board.setGoal(target_x + i, target_y + j);
+//                                setGoal = true;
+//                            }
+//                        }
+//                    }
+//
+//                }
+//                break;
+//        }
+//        if (!setGoal) {
+//            board.setGoal(board.worldToBoardX(enemy.getX()), board.worldToBoardX(enemy.getY()));
+//        }
+//    }
 
 
     /**
@@ -498,38 +400,38 @@ public class EnemyController {
      *
      * @return a movement direction that moves towards a goal tile.
      */
-    private int getMoveAlongPathToGoalTile() {
-        //#region PUT YOUR CODE HERE
-        int x = board.worldToBoardX(enemy.getX());
-        int y = board.worldToBoardY(enemy.getY());
-        if (board.isGoal(x, y)) {
-            return CONTROL_NO_ACTION;
-        }
-
-        Queue<TileData> queue = new Queue<>();
-
-
-        board.setVisited(x, y);
-        queue.addLast(new TileData(x, y));
-        while (!queue.isEmpty()) {
-            TileData head = queue.first();
-            queue.removeFirst();
-            if (board.isGoal(head.x, head.y)) {
-                return getDirection(head);
-            }
-            for (int[] direction : directions) {
-                if (!board.isVisited(head.x + direction[0], head.y + direction[1]) && board.isWalkable(head.x + direction[0], head.y + direction[1])) {
-                    TileData next = new TileData(head.x + direction[0], head.y + direction[1]);
-                    board.setVisited(next.getX(), next.getY());
-                    next.setPrevDirection(new int[]{direction[0], direction[1]});
-                    next.setPrev(head);
-                    queue.addLast(next);
-                }
-            }
-        }
-        return CONTROL_NO_ACTION;
-        //#endregion
-    }
+//    private int getMoveAlongPathToGoalTile() {
+//        //#region PUT YOUR CODE HERE
+//        int x = board.worldToBoardX(enemy.getX());
+//        int y = board.worldToBoardY(enemy.getY());
+//        if (board.isGoal(x, y)) {
+//            return CONTROL_NO_ACTION;
+//        }
+//
+//        Queue<TileData> queue = new Queue<>();
+//
+//
+//        board.setVisited(x, y);
+//        queue.addLast(new TileData(x, y));
+//        while (!queue.isEmpty()) {
+//            TileData head = queue.first();
+//            queue.removeFirst();
+//            if (board.isGoal(head.x, head.y)) {
+//                return getDirection(head);
+//            }
+//            for (int[] direction : directions) {
+//                if (!board.isVisited(head.x + direction[0], head.y + direction[1]) && board.isWalkable(head.x + direction[0], head.y + direction[1])) {
+//                    TileData next = new TileData(head.x + direction[0], head.y + direction[1]);
+//                    board.setVisited(next.getX(), next.getY());
+//                    next.setPrevDirection(new int[]{direction[0], direction[1]});
+//                    next.setPrev(head);
+//                    queue.addLast(next);
+//                }
+//            }
+//        }
+//        return CONTROL_NO_ACTION;
+//        //#endregion
+//    }
 //
 //    private int getMoveAlongPathToGoalTile() {
 //        //#region PUT YOUR CODE HERE
@@ -586,22 +488,22 @@ public class EnemyController {
 //        return ;
 //    }
 
-
-    private int getDirection(TileData t) {
-        while (t.prev.prev != null) {
-            t = t.prev;
-        }
-        if (t.prevDirection[0] == -1) {
-            return CONTROL_MOVE_LEFT;
-        } else if (t.prevDirection[0] == 1) {
-            return CONTROL_MOVE_RIGHT;
-        } else if (t.prevDirection[1] == -1) {
-            return CONTROL_MOVE_DOWN;
-        } else if (t.prevDirection[1] == 1) {
-            return CONTROL_MOVE_UP;
-        }
-        return CONTROL_NO_ACTION;
-    }
+//
+//    private int getDirection(TileData t) {
+//        while (t.prev.prev != null) {
+//            t = t.prev;
+//        }
+//        if (t.prevDirection[0] == -1) {
+//            return CONTROL_MOVE_LEFT;
+//        } else if (t.prevDirection[0] == 1) {
+//            return CONTROL_MOVE_RIGHT;
+//        } else if (t.prevDirection[1] == -1) {
+//            return CONTROL_MOVE_DOWN;
+//        } else if (t.prevDirection[1] == 1) {
+//            return CONTROL_MOVE_UP;
+//        }
+//        return CONTROL_NO_ACTION;
+//    }
 
     // Add any auxiliary methods or data structures here
     //#region PUT YOUR CODE HERE
