@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
+import infinityx.lunarhaze.GameCanvas;
 import infinityx.lunarhaze.GameObject;
 import infinityx.lunarhaze.LevelContainer;
 
@@ -337,5 +338,6 @@ public class Werewolf extends GameObject {
         } else {
             lockoutTime += delta;
         }
+        filmstrip.setFrame(isAttacking ? 1 : 0);
     }
 }

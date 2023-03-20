@@ -9,8 +9,8 @@
     },
     "texture": {
       "name": "villager.movement",
-      "origin": [75, 22],
-      "scale": 1
+      "origin": [750, 220],
+      "scale": 0.11
     },
     "collider": {
       "width": 0.5,
