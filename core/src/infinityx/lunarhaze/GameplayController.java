@@ -22,7 +22,7 @@ public class GameplayController {
         STEALTH,
         BATTLE
     }
-    private Phase currentPhase;
+    public Phase currentPhase;
 
     /**
      * Track the current state of the game for the update loop.

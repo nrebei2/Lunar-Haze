@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import infinityx.lunarhaze.GameObject;
+import infinityx.lunarhaze.entity.SceneObject;
 
 public class RaycastInfo implements RayCastCallback {
     /**The fixture hit by ray*/
@@ -55,6 +56,9 @@ public class RaycastInfo implements RayCastCallback {
         this.fraction = fraction;
         this.hit = fraction != 0;
         this.hitObject = (GameObject) fixture.getUserData();
+        if (hitObject.getType() == GameObject.ObjectType.SCENE){
+            return -1;
+        }
         return fraction;
     }
 }

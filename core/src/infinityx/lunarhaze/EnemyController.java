@@ -27,7 +27,7 @@ public class EnemyController {
     /**
      * Distance from which the enemy chases the player
      */
-    private static final float CHASE_DIST = 3f;
+    private static final float CHASE_DIST = 4;
 
     /**
      * Distance from which the enemy can attack the player
@@ -82,7 +82,9 @@ public class EnemyController {
         /**
          * The enemy can  detect the player in a half circle
          */
-        MOON
+        MOON,
+
+        FULL_MOON,
     }
 
     /**
@@ -198,15 +200,17 @@ public class EnemyController {
         ConeSource flashlight = enemy.getFlashlight();
         float light_dis = flashlight.getDistance();
 
-
         Vector2 temp = new Vector2(enemy.getBody().getTransform().getOrientation());
         Vector2 enemy_direction = temp.nor();
+
 
 
         Vector2 direction = new Vector2(player.getX()-point1.x, player.getY()-point1.y).nor();
         Vector2 point2 = new Vector2(point1.x+light_dis*direction.x, player.getY()+light_dis*direction.y);
         RaycastInfo info = raycast(enemy, point1, point2, container.getWorld());
+
         double degree = Math.toDegrees(Math.acos(enemy_direction.dot(direction)));
+
 
         return info.hit && info.hitObject == player && degree <= flashlight.getConeDegree();
     }
@@ -372,8 +376,9 @@ public class EnemyController {
                     break;
                 }
                 if (lightDetect(container)){
-                    state = FSMState.CHASE;
+                    System.out.println("detected");
                     enemy.getBody().setAngularVelocity(0);
+                    state = FSMState.CHASE;
                     break;
                 }
                 if (idle_ticks % 5 == 0){
@@ -400,8 +405,10 @@ public class EnemyController {
             detection = Detection.MOON;
         } else if (state == FSMState.CHASE) {
             detection = Detection.AREA;
+            enemy.getFlashlight().setConeDegree(0);
         } else {
             detection = Detection.LIGHT;
+            enemy.getFlashlight().setConeDegree(30);
 
 
         }
