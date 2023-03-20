@@ -465,7 +465,6 @@ public class LevelContainer {
             if (!o.isDestroyed()) {
                 backing.add(o);
             } else {
-                System.out.println("adding object to backing");
             }
         }
 

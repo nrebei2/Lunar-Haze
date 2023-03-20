@@ -237,6 +237,7 @@ public class Enemy extends GameObject implements Pool.Poolable {
         boolean movingRight = (controlCode & EnemyController.CONTROL_MOVE_RIGHT) != 0;
         boolean movingDown = (controlCode & EnemyController.CONTROL_MOVE_DOWN) != 0;
         boolean movingUp = (controlCode & EnemyController.CONTROL_MOVE_UP) != 0;
+        System.out.println(hp);
 
         float xVelocity = 0.0f;
         float yVelocity = 0.0f;

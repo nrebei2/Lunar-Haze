@@ -193,7 +193,6 @@ public class GameplayController {
     private void updateAmbientLight(float delta) {
         if (ambientLightTransitionTimer < levelContainer.getPhaseTransitionTime()) {
             ambientLightTransitionTimer += delta;
-//            System.out.println(ambientLightTransitionTimer);
             float progress = Math.min(ambientLightTransitionTimer / levelContainer.getPhaseTransitionTime(), 1);
 
             float[] startColor = currentPhase == Phase.BATTLE ? levelContainer.getBattleAmbience() : levelContainer.getStealthAmbience();
@@ -213,6 +212,12 @@ public class GameplayController {
      * Resolve all enemy actions.
      */
     public void resolveEnemies() {
+        for(Enemy en: enemies){
+            EnemyController curEnemyController = controls[0];
+            int action = curEnemyController.getAction(levelContainer);
+            en.update(action);
+
+        }
 //        for (EnemyController controller: controls) {
 //            controller.update(levelContainer);
 //        }

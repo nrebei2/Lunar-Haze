@@ -175,7 +175,6 @@ public class PlayerController {
                 }
             }
             if (!player.isAttacking() && attackCooldownCounter >= 0f && input.didAttack()) {
-                System.out.println("Attacking");
                 player.setAttacking(true);
                 attackCooldownCounter = attackCooldown;
                 attackDirection.set(input.getHorizontal(), input.getVertical()).nor().scl(125);
