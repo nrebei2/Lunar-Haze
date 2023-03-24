@@ -1,7 +1,7 @@
 {
   "1": {
     "settings": {
-      "transition": 3,
+      "transition": 5,
       "phaseLength": 30,
       "battle-ambiance": [0.85, 0.75, 0.85, 0.9]
     },

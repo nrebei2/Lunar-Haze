@@ -9,12 +9,15 @@
     "grass5": "tiles/grass5.png",
     "grass6": "tiles/grass6.png",
     "circle-bar": "images/circle_bar.png",
-    "counter": "images/counter.png",
+    "counter": "images/top-paint-stroke.png",
     "dusk-icon": "images/dusk.png",
     "health-icon": "images/health_icon.png",
     "moon-icon": "images/moon_icon.png",
     "rec-bar": "images/rectangle.png",
     "stealth-icon": "images/stealth_icon.png",
+    "health-stroke": "images/health-paint-stroke.png",
+    "moonlight-stroke": "images/moonlight-paint-stroke.png",
+    "stealth-stroke": "images/visibility-paint-stroke.png",
     "tree1": {
       "file": "images/tree1.png",
       "sprites":	{
@@ -101,11 +104,11 @@
     },
     "libre-large": {
       "file": "shared/LibreBaskerville-Regular.ttf",
-      "size": 20
+      "size": 30
     },
     "libre-small": {
       "file": "shared/LibreBaskerville-Regular.ttf",
-      "size": 10
+      "size": 15
     }
   }
 }
