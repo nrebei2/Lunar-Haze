@@ -6,9 +6,10 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
-import com.badlogic.gdx.utils.ObjectSet;
 import infinityx.lunarhaze.entity.Enemy;
+import infinityx.lunarhaze.entity.EnemySpawner;
 import infinityx.lunarhaze.entity.Werewolf;
 
 import java.util.ArrayList;
@@ -76,6 +77,11 @@ public class GameplayController {
     private LightingController lightingController;
 
     /**
+     * Owns the enemy spawner, used for battle phase
+     */
+    private EnemySpawner enemySpawner;
+
+    /**
      * Owns the player controller
      */
     private PlayerController playerController;
@@ -94,9 +100,6 @@ public class GameplayController {
      * Timer for the phase transition, goes down
      */
     private float phaseTimer;
-
-    /** Tick number for when we add a new enemy in battle mode */
-    private int enemyAddTick = 1000;
 
     /** Number of ticks (frames) since battle began */
     private int battleTicks;
@@ -129,12 +132,16 @@ public class GameplayController {
      * <p>
      *
      * @param levelContainer container holding model objects in level
+     * @param jsonValue json value holding level layout
      */
-    public void start(LevelContainer levelContainer) {
+    public void start(LevelContainer levelContainer, JsonValue jsonValue) {
         this.gameState = GameState.PLAY;
         this.currentPhase = Phase.STEALTH;
         this.container = levelContainer;
         this.collisionController = new CollisionController(levelContainer);
+        this.enemySpawner = new EnemySpawner(levelContainer);
+        enemySpawner.initialize(jsonValue.get("settings").get("enemy-spawner"));
+
         lightingController = new LightingController(levelContainer);
 
         board = levelContainer.getBoard();
@@ -234,13 +241,7 @@ public class GameplayController {
     public void resolveEnemies() {
         // add enemies during battle stage and in play
         if (getPhase() == Phase.BATTLE && gameState == GameState.PLAY) {
-            if (battleTicks % enemyAddTick == 0) {
-                // TODO: enemies in battle phase should not use patrol path
-                container.addEnemy("villager", 0, 0,
-                        new ArrayList<>(Arrays.asList(new Vector2(), new Vector2()))
-                );
-                enemyAddTick = MathUtils.random(400, 800);
-            }
+            enemySpawner.update(battleTicks);
         }
         for (int i = 0; i < enemies.size; i++) {
             controls.get(enemies.get(i)).update(container, currentPhase);
