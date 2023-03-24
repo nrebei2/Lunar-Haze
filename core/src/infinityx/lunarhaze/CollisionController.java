@@ -28,7 +28,6 @@ public class CollisionController implements ContactListener {
         GameObject obj1 = (GameObject) body1.getUserData();
         GameObject obj2 = (GameObject) body2.getUserData();
 
-
         if (obj1.getType() == GameObject.ObjectType.WEREWOLF && obj2.getType() == GameObject.ObjectType.ENEMY) {
             Werewolf player = (Werewolf) obj1;
             Enemy enemy = (Enemy) obj2;

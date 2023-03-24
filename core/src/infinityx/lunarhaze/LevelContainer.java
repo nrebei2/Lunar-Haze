@@ -460,7 +460,10 @@ public class LevelContainer {
 
         // Render order: Board tiles -> (players, enemies, scene objects) sorted by depth (y coordinate)
         board.draw(canvas);
+
         // Uses timsort, so O(n) if already sorted, which is nice since it usually will be
+        // TODO: if this ever becomes a bottleneck, we can instead add the
+        //  depth as the z-position so OpenGL's depth buffer can do all the work
         drawables.sort(drawComp);
         for (Drawable d : drawables) {
             d.draw(canvas);
@@ -484,7 +487,7 @@ public class LevelContainer {
     }
 
     /**
-     * Garbage collects all deleted drawables.
+     * Remove all objects set as destroyed from drawing queue.
      */
     public void garbageCollect() {
         // INVARIANT: backing and objects are disjoint

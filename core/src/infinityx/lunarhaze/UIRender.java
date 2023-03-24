@@ -92,7 +92,7 @@ public class UIRender {
      * Top stroke texture
      */
     private Texture counter;
-     */
+
     private Texture dusk_icon;
 
     private Texture health_icon;

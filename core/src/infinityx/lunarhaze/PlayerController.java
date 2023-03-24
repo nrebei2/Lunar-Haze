@@ -178,7 +178,7 @@ public class PlayerController {
                 player.setAttacking(true);
                 attackCooldownCounter = attackCooldown;
                 attackDirection.set(input.getHorizontal(), input.getVertical()).nor().scl(125);
-                player.setLinearVelocity(attackDirection);
+                player.getBody().applyForceToCenter(attackDirection, true);
             }
         }
     }
