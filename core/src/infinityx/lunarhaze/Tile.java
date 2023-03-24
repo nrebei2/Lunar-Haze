@@ -33,9 +33,9 @@ public class Tile {
     private boolean visible = false;
 
     /**
-     * Is the moonlight collected?
+     * Is the moonlight collectable? Should be true only if lit is true.
      */
-    private boolean collected = false;
+    private boolean collectable = false;
 
     /**
      * Texture of tile
@@ -48,10 +48,6 @@ public class Tile {
      * The moonlight pointing on this tile, possibly null
      */
     private PointLight spotLight;
-
-    // No need for constructor, levelContainer will set attributes of all tiles through Board
-    public Tile() {
-    }
 
     /**
      * Type of tile should match with sprite texture
@@ -109,12 +105,12 @@ public class Tile {
     }
 
 
-    public Boolean isCollected() {
-        return collected;
+    public Boolean isCollectable() {
+        return collectable;
     }
 
-    public void setCollected() {
-        collected = true;
+    public void setCollectable(boolean collectable) {
+        this.collectable = collectable;
     }
 
     /**

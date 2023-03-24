@@ -9,8 +9,8 @@
     },
     "texture": {
       "name": "villager.movement",
-      "origin": [75, 22],
-      "scale": 1
+      "origin": [750, 220],
+      "scale": 0.11
     },
     "collider": {
       "width": 0.5,
@@ -22,10 +22,11 @@
     "restitution": 1.0,
     "damping": 0.0,
     "speed": 2,
+    "hp": 10,
     "startframe": 0,
     "attack": {
       "knockback": 3.0,
-      "damage": 25.0
+      "damage": 1.0
     }
   }
 }

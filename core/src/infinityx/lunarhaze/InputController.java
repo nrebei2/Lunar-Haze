@@ -136,6 +136,24 @@ public class InputController {
     }
 
     /**
+     * Returns the walk speed.
+     *
+     * @return the walk speed of the player.
+     */
+    public float getWalkSpeed() {
+        return walkSpeed;
+    }
+
+    /**
+     * Returns the run speed.
+     *
+     * @return the run speed of the player.
+     */
+    public float getRunSpeed() {
+        return runSpeed;
+    }
+
+    /**
      * Returns true if the attack button was pressed.
      *
      * @return true if the attack button was pressed.

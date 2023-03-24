@@ -128,7 +128,7 @@ public class BoxObstacle extends SimpleObstacle {
      * converts the physics units to pixels.
      *
      * @param width  The object width in physics units
-     * @param height The object width in physics units
+     * @param height The object height in physics units
      */
     public BoxObstacle(float width, float height) {
         this(0, 0, width, height);
@@ -209,6 +209,7 @@ public class BoxObstacle extends SimpleObstacle {
             vertices[7] = 0;
         }
         shape.set(vertices);
+        createFixtures();
     }
 
     /**
@@ -225,7 +226,10 @@ public class BoxObstacle extends SimpleObstacle {
 
         // Create the fixture
         fixture.shape = shape;
+
         geometry = body.createFixture(fixture);
+
+        // set user data on fixture for raycasts
         geometry.setUserData(this);
     }
 

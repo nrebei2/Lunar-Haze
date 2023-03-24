@@ -1,38 +1,77 @@
 package infinityx.lunarhaze;
 
-import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
-import com.badlogic.gdx.ai.fsm.StateMachine;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.Queue;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ObjectMap;
+import com.badlogic.gdx.utils.ObjectSet;
 import infinityx.lunarhaze.entity.Enemy;
-import infinityx.lunarhaze.entity.EnemyList;
 import infinityx.lunarhaze.entity.Werewolf;
 import infinityx.lunarhaze.physics.ConeSource;
 import infinityx.lunarhaze.physics.RaycastInfo;
-import com.badlogic.gdx.ai.steer.SteeringAcceleration;
-import com.badlogic.gdx.ai.steer.behaviors.Arrive;
-import com.badlogic.gdx.ai.steer.behaviors.Wander;
-import com.badlogic.gdx.ai.steer.Steerable;
-import com.badlogic.gdx.ai.steer.SteeringBehavior;
-import com.badlogic.gdx.ai.utils.Location;
-import infinityx.util.Box2dLocation;
 
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.PriorityQueue;
+import java.util.Iterator;
+import java.util.Random;
+
 
 // TODO: move all this stuff into AI controller, EnemyController should hold other enemy actions
-public class EnemyController{
-
-    public StateMachine<EnemyController, EnemyState> stateMachine;
-
+public class EnemyController {
+    /**
+     * Distance for enemy to detect the player
+     */
     private static final float DETECT_DIST = 2;
+
+    /**
+     * Distance for enemy to detect the player if the player in on moonlight
+     */
     private static final float DETECT_DIST_MOONLIGHT = 5;
-    private static final float CHASE_DIST = 3f;
+
+    /**
+     * Distance from which the enemy chases the player
+     */
+    private static final float CHASE_DIST = 4;
+
+    /**
+     * Distance from which the enemy can attack the player
+     */
     private static final int ATTACK_DIST = 1;
 
+    private static final int ALERT_DIST = 20;
+
+    /**
+     * Enumeration to encode the finite state machine.
+     */
+    public enum FSMState {
+        /**
+         * The enemy just spawned
+         */
+        SPAWN,
+        /**
+         * The enemy is patrolling around a set path
+         */
+        PATROL,
+        /**
+         * The enemy is wandering around where target is last seen
+         */
+        WANDER,
+        /**
+         * The enemy has a target, but must get closer
+         */
+        CHASE,
+        /**
+         * The enemy has a target and is attacking it
+         */
+        ALERT,
+        /**
+         * The enemy lost its target and is returnng to its patrolling path
+         */
+        RETURN,
+        /**
+         * The enemy is not doing idle
+         */
+        IDLE,
+    }
 
     private enum Detection {
         /**
@@ -47,14 +86,11 @@ public class EnemyController{
         /**
          * The enemy can  detect the player in a half circle
          */
-        MOON
+        MOON,
+
+        FULL_MOON,
     }
-    /**
-     * Enumeration to describe what direction the enemy is facing
-     */
 
-
-    // Instance Attributes
     /**
      * The enemy being controlled by this AIController
      */
@@ -63,97 +99,95 @@ public class EnemyController{
     private Detection detection;
 
     /**
-     * The other enemies; used to find targets
+     * Set of active enemies on the current level
      */
-    private final EnemyList enemies;
+    Array<Enemy> enemies;
 
     /**
      * The game board; used for pathfinding
      */
-    private final Board board;
-    /**
-     * The target ship (to chase or attack).
-     */
-    private final Werewolf target;
-
+    private Board board;
 
     /**
-     * The enemy next action (may include firing).
+     * The enemies current state in the FSM
      */
-    private int move; // A ControlCode
+    private FSMState state;
 
-    /** The direction the enemy is facing*/
+    /**
+     * The target (to chase or attack).
+     */
+    private Werewolf target;
 
     /**
      * The number of ticks since we started this controller
      */
     private long ticks;
 
+    /**
+     * The last time the enemy was in the CHASING state.
+     */
+    private long chased_ticks;
 
+    /**
+     * The last time the enemy was in the IDLE state.
+     */
+    private long idle_ticks;
 
-    /** LIBGDX AI */
+    /**
+     * The current goal (world) position
+     */
+    private Vector2 goal;
 
-    /** -----------------------------------------------------START---------------------------------------------*/
+    /**
+     * Where the player was last seen before WANDER
+     */
+    private Vector2 end_chase_pos;
 
-//    // Update the enemy's steering acceleration based on its current behavior
-//    public void updateSteering(LevelContainer container) {
-////        SteeringAcceleration<Vector2> steeringOutput = new SteeringAcceleration<>(new Vector2());
-//        Box2dLocation target = new Box2dLocation(container.getPlayer().getPosition());
-//        if (detectedPlayer(container)) {
-//            enemy.setBehavior(Enemy.ARRIVE_BEHAVIOR, target);
-////          enemy.getArriveBehavior().calculateSteering(steeringOutput);
-//        } else {
-//            enemy.setBehavior(Enemy.WANDER_BEHAVIOR, target);
-////          enemy.getWanderBehavior().calculateSteering(steeringOutput);
-//        }
-//    }
+    /**
+     * Where the player was seen when an enemy alerts other enemies
+     */
+    public Vector2 alert_pos;
 
-//    // Determine whether the enemy should pursue the target
-//    // Implement the shouldPursue() method to determine whether the werewolf should pursue the target
-//    private boolean shouldPursue() {
-//        // Implement your own logic here, such as checking if the target is within a certain distance
-//        return false;
-//    }
-//    // Determine whether the enemy should arrive at the target
-//    private boolean shouldArrive() {
-//        // Implement your own logic here, such as checking if the target is within a certain distance
-//        return false;
-//    }
+    private boolean isAtAlertLocation = false;
 
-
-    /** -----------------------------------------------------END---------------------------------------------*/
-
+    /**
+     * Reference of model-contoller map originially from EnemyPool
+     */
+    private ObjectMap<Enemy, EnemyController> controls;
 
     /**
      * Creates an EnemyController for the enemy with the given id.
      *
-     * @param id      The unique ship identifier
-     * @param board   The game board (for pathfinding)
-     * @param enemies The list of enemies (for detection)
+     * @param enemy   The enemy being controlled by this AIController
      */
-    public EnemyController(int id, Werewolf target, EnemyList enemies, Board board) {
-        this.enemy = enemies.get(id);
-        this.board = board;
-        this.target = target;
-        this.stateMachine = new DefaultStateMachine<>();
-        this.enemies = enemies;
+    public EnemyController(Enemy enemy) {
+        this.enemy = enemy;
+        this.state = FSMState.SPAWN;
         this.detection = Detection.LIGHT;
-        Box2dLocation loc = new Box2dLocation(target.getPosition());
+        this.ticks = 0;
+        this.chased_ticks = 0;
+        this.idle_ticks = 0;
+        this.end_chase_pos = new Vector2();
     }
 
     /**
-     * Returns the distance between two board coordinates given two world coordinates
-     *
-     * @param x  x-coord in screen coord of first ship
-     * @param y  y-coord in screen coord of first ship
-     * @param tx x-coord in screen coord of second ship
-     * @param tx y-coord in screen coord of second ship
-     * @return
+     * (re)initialize attributes of this controller given the enemy.
+     * This must be called when the enemy is reused from its pool.
      */
-    private float boardDistance(float x, float y, float tx, float ty) {
-        int dx = board.worldToBoardX(tx) - board.worldToBoardX(x);
-        int dy = board.worldToBoardX(ty) - board.worldToBoardX(y);
-        return (float) Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+    public void initialize() {
+        this.goal = getRandomPointinRegion();
+    }
+
+    /**
+     * Populate
+     * @param container holding surrounding model objects
+     */
+    public void populateSurroundings(LevelContainer container) {
+        board = container.getBoard();
+        target = container.getPlayer();
+        enemies = container.getEnemies();
+        controls = container.getEnemyControllers();
+        //map = container.getMap();
     }
 
     public RaycastInfo raycast(GameObject requestingObject, Vector2 point1, Vector2 point2, World world) {
@@ -162,23 +196,21 @@ public class EnemyController{
         return callback;
     }
 
-    public boolean lightDetect(LevelContainer container){
+    public boolean lightDetect(LevelContainer container) {
         Werewolf player = container.getPlayer();
 
         Vector2 point1 = enemy.getPosition();
         ConeSource flashlight = enemy.getFlashlight();
         float light_dis = flashlight.getDistance();
 
-        float vx = enemy.getVX();
-        float vy = enemy.getVY();
-        Vector2 enemy_direction = new Vector2(vx,vy).nor();
+        Vector2 temp = new Vector2(enemy.getBody().getTransform().getOrientation());
+        Vector2 enemy_direction = temp.nor();
 
 
-        Vector2 direction = new Vector2(player.getX()-point1.x, player.getY()-point1.y).nor();
-        Vector2 point2 = new Vector2(point1.x+light_dis*direction.x, player.getY()+light_dis*direction.y);
+        Vector2 direction = new Vector2(player.getX() - point1.x, player.getY() - point1.y).nor();
+        Vector2 point2 = new Vector2(point1.x + light_dis * direction.x, player.getY() + light_dis * direction.y);
         RaycastInfo info = raycast(enemy, point1, point2, container.getWorld());
 
-//        System.out.println(enemy_direction.dot(direction));
         double degree = Math.toDegrees(Math.acos(enemy_direction.dot(direction)));
 
 
@@ -198,11 +230,11 @@ public class EnemyController{
         }
         /**Enemy only need to be less than detection distance away, enemy can see in an area*/
         else if (detection == Detection.AREA) {
-            return boardDistance(enemy.getX(), enemy.getY(), target.getX(),
-                    target.getY()) <= DETECT_DIST;
+            return enemy.getPosition().dst(target.getPosition()) <= DETECT_DIST;
         } else if (detection == Detection.MOON) {
-            return boardDistance(enemy.getX(), enemy.getY(), target.getX(),
-                    target.getY()) <= DETECT_DIST_MOONLIGHT;
+            return enemy.getPosition().dst(target.getPosition()) <= DETECT_DIST_MOONLIGHT;
+        } else if (detection == Detection.FULL_MOON) {
+            return true;
         } else {
             return false;
         }
@@ -221,7 +253,7 @@ public class EnemyController{
         }
         int pos_x = board.worldToBoardX(target.getX());
         int pos_y = board.worldToBoardX(target.getY());
-        return boardDistance(x, y, pos_x, pos_y) <= ATTACK_DIST;
+        return Vector2.dst(x, y, pos_x, pos_y) <= ATTACK_DIST;
     }
 
     /**
@@ -237,69 +269,50 @@ public class EnemyController{
     }
 
     private boolean canChase() {
-        return (boardDistance(enemy.getX(), enemy.getY(), target.getX(), target.getY()) <= CHASE_DIST);
+        // This is radial
+        return enemy.getPosition().dst(target.getPosition()) <= CHASE_DIST;
     }
 
-    public Enemy getEnemy(){
-        return this.getEnemy();
-    }
-
-    public Werewolf getTarget(){
-        return this.target;
-    }
-
-    public void updateEnemy(LevelContainer container){
-        if (lightDetect(container)){
-
-            enemy.setIsAlerted(true);
-        }
-        enemy.setIsAlerted(true);
-
-    }
-
-    public void update(LevelContainer container, float delta){
-        updateEnemy(container);
-        System.out.println("updating statemachine");
-        stateMachine.update();
-    }
 
     /**
-     * Returns the action selected by this InputController
-     * <p>
-     * The returned int is a bit-vector of more than one possible input
-     * option. This is why we do not use an enumeration of Control Codes;
-     * Java does not (nicely) provide bitwise operation support for enums.
-     * <p>
-     * This function tests the environment and uses the FSM to chose the next
-     * action of the ship. This function SHOULD NOT need to be modified.  It
-     * just contains code that drives the functions that you need to implement.
+     * Updates the enemy being controlled by this controller
      *
-     * @return the action selected by this InputController
+     * @param container
+     * @param currentPhase of the game
      */
-//    public int getAction(LevelContainer container) {
-//        // Increment the number of ticks.
-//        ticks++;
-//
-//        // Do not need to rework ourselves every frame. Just every 10 ticks.
-//        if ((enemy.getId() + ticks) % 10 == 0) {
-//            // Process the FSM
-//            change();
-//            changeDetectionIfApplicable();
-//
-//            // Pathfinding
-//            markGoalTiles();
-//            move = getMoveAlongPathToGoalTile();
-//        }
-//
-//        int action = move;
-//
-//        // If we're attacking someone and we can shoot him now, then do so.
-//        if (state == FSMState.ATTACK && canHitTarget()) {
-//            action |= CONTROL_ATTACK;
-//        }
-//
-//        return action;
-//    }
+    public void update(LevelContainer container, GameplayController.Phase currentPhase) {
+        ticks++;
+        if (enemy.isDestroyed()) return;
+        if (enemy.getHp() <= 0) container.removeEnemy(enemy);
+
+        // Do not need to rework ourselves every frame. Just every 10 ticks.
+        if (ticks % 10 == 0) {
+            // Process the FSM
+            changeStateIfApplicable(container, ticks);
+            changeDetectionIfApplicable(currentPhase);
+
+            // Pathfinding
+            Vector2 next_move = findPath();
+            enemy.update(next_move);
+        }
+
+        //other things?
+        enemy.update(new Vector2());
+    }
+
+    private void alertAllies() {
+        Iterator<Enemy> enemyIterator = enemies.iterator();
+        while (enemyIterator.hasNext()){
+            Enemy curr_enemy = enemyIterator.next();
+            if (!curr_enemy.equals(enemy)){
+                if (curr_enemy.getPosition().dst(enemy.getPosition()) <= ALERT_DIST){
+                    curr_enemy.setAlerted(true);
+                    controls.get(curr_enemy).alert_pos = (new Vector2(target.getX(), target.getY()));
+                }
+            }
+        }
+
+    }
 
     /**
      * Change the state of the enemy.
@@ -310,236 +323,153 @@ public class EnemyController{
      * in the ATTACK state, we may want to switch to the CHASE state if the
      * target gets out of range.
      */
+    private void changeStateIfApplicable(LevelContainer container, long ticks) {
+        switch (state) {
+            case SPAWN:
+                state = FSMState.PATROL;
+                break;
+            case PATROL:
+                if (detectedPlayer(container)) {
+                    alertAllies();
+                    state = FSMState.CHASE;
+                }
+                if (enemy.getAlerted()){
+                    state = FSMState.ALERT;
+                }
 
-    private void changeDetectionIfApplicable() {
+                break;
+            case CHASE:
+                if (!canChase() && !target.isOnMoonlight()) {
+                    state = FSMState.WANDER;
+                    chased_ticks = ticks;
+                    end_chase_pos = new Vector2(enemy.getPosition().x, enemy.getPosition().y);
+                    goal = getRandomPointtoWander(2f);
+                }
+                break;
+            case WANDER:
+                if (detectedPlayer(container)) {
+                    state = FSMState.CHASE;
+                } else if (!canChase() && !target.isOnMoonlight() && (ticks - chased_ticks >= 30)) {
+                    state = FSMState.PATROL;
+                }
+                break;
+            case IDLE:
+                if (enemy.getAlerted()){
+                    state = FSMState.ALERT;
+                }
+                idle_ticks++;
+                if (idle_ticks >= 15) {
+                    enemy.getBody().setAngularVelocity(0);
+                    state = FSMState.PATROL;
+                    idle_ticks = 0;
+                    break;
+                }
+                if (lightDetect(container)) {
+                    alertAllies();
+                    enemy.getBody().setAngularVelocity(0);
+                    state = FSMState.CHASE;
+                    break;
+                }
+                if (idle_ticks % 5 == 0) {
+                    Random rand = new Random();
+                    if ((rand.nextInt(10) >= 5)) {
+                        enemy.getBody().setAngularVelocity(1f);
+                    } else {
+                        enemy.getBody().setAngularVelocity(-1f);
+                    }
+
+                }
+                break;
+            case ALERT:
+                if (lightDetect(container)){
+                    state = FSMState.CHASE;
+                }
+                if (isAtAlertLocation){
+                    state = FSMState.IDLE;
+                }
+            default:
+                // Unknown or unhandled state, should never get here
+                assert (false);
+                break;
+        }
+    }
+
+
+    private void changeDetectionIfApplicable(GameplayController.Phase currentPhase) {
         if (target.isOnMoonlight()) {
             detection = Detection.MOON;
-        } else if (stateMachine.getCurrentState() == EnemyState.CHASE) {
+        } else if (state == FSMState.CHASE) {
             detection = Detection.AREA;
+            enemy.getFlashlight().setConeDegree(0);
+        }else if (currentPhase == GameplayController.Phase.BATTLE){
+            enemy.getFlashlight().setConeDegree(0);
+            detection = Detection.FULL_MOON;
+            state = FSMState.CHASE;
         } else {
             detection = Detection.LIGHT;
-        }
+            enemy.getFlashlight().setConeDegree(30);
 
-
-    }
-
-//    private void markGoalTiles() {
-//        board.clearMarks();
-//        Vector2 cur_pos = enemy.getPosition();
-//        int curr_x = board.worldToBoardX(cur_pos.x);
-//        int curr_y = board.worldToBoardY(cur_pos.y);
-//        boolean setGoal = false; // Until we find a goal
-//        switch (state) {
-//            case SPAWN:
-//                break;
-//            case PATROL:
-//                Vector2 pos;
-//                if (enemy.getCurrentPatrol().x == curr_x && enemy.getCurrentPatrol().y == curr_y) {
-//                    pos = enemy.getNextPatrol();
-//                } else {
-//                    pos = enemy.getCurrentPatrol();
-//                }
-//                board.setGoal((int) pos.x, (int) pos.y);
-//                setGoal = true;
-//                break;
-////            case WANDER:
-////
-////                pos = board.worldToBoard(enemy.getX(), enemy.getY());
-////                int x = (int)pos.x;
-////                int y = (int)pos.y;
-////                //#endregion
-////                for (int i = -1; i < 2; i++ ){
-////                    for (int j = -1 ; j <2 ; j++){
-////                        if (board.isWalkable(x+i, y+j) && Math.random() <= (double)(1/9) && !setGoal && board.inBounds(x +i, y+j) ){
-////                            board.setGoal(x+i, y+j);
-////                            setGoal = true;
-////                        }
-////                    }
-////                }
-////                break;
-//            case CHASE:
-//                if (target != null) {
-//                    board.setGoal(board.worldToBoardX(target.getX()), board.worldToBoardX(target.getY()));
-//                    setGoal = true;
-//                }
-//                break;
-//            case ATTACK:
-//                if (target != null) {
-//                    int target_x = board.worldToBoardX(target.getX());
-//                    int target_y = board.worldToBoardX(target.getY());
-//                    //#endregion
-//                    for (int i = -4; i < 5; i++) {
-//                        for (int j = -4; j < 5; j++) {
-//                            if (board.isWalkable(target_x + i, target_y + j) && canHitTargetFrom(target_x + i, target_y + i)
-//                                    && board.inBounds(target_x + i, target_y + j)) {
-//                                board.setGoal(target_x + i, target_y + j);
-//                                setGoal = true;
-//                            }
-//                        }
-//                    }
-//
-//                }
-//                break;
-//        }
-//        if (!setGoal) {
-//            board.setGoal(board.worldToBoardX(enemy.getX()), board.worldToBoardX(enemy.getY()));
-//        }
-//    }
-
-
-    /**
-     * Returns a movement direction that moves towards a goal tile.
-     * <p>
-     * This is one of the longest parts of the assignment. Implement
-     * breadth-first search (from 2110) to find the best goal tile
-     * to move to. However, just return the movement direction for
-     * the next step, not the entire path.
-     * <p>
-     * The value returned should be a control code.  See PlayerController
-     * for more information on how to use control codes.
-     *
-     * @return a movement direction that moves towards a goal tile.
-     */
-//    private int getMoveAlongPathToGoalTile() {
-//        //#region PUT YOUR CODE HERE
-//        int x = board.worldToBoardX(enemy.getX());
-//        int y = board.worldToBoardY(enemy.getY());
-//        if (board.isGoal(x, y)) {
-//            return CONTROL_NO_ACTION;
-//        }
-//
-//        Queue<TileData> queue = new Queue<>();
-//
-//
-//        board.setVisited(x, y);
-//        queue.addLast(new TileData(x, y));
-//        while (!queue.isEmpty()) {
-//            TileData head = queue.first();
-//            queue.removeFirst();
-//            if (board.isGoal(head.x, head.y)) {
-//                return getDirection(head);
-//            }
-//            for (int[] direction : directions) {
-//                if (!board.isVisited(head.x + direction[0], head.y + direction[1]) && board.isWalkable(head.x + direction[0], head.y + direction[1])) {
-//                    TileData next = new TileData(head.x + direction[0], head.y + direction[1]);
-//                    board.setVisited(next.getX(), next.getY());
-//                    next.setPrevDirection(new int[]{direction[0], direction[1]});
-//                    next.setPrev(head);
-//                    queue.addLast(next);
-//                }
-//            }
-//        }
-//        return CONTROL_NO_ACTION;
-//        //#endregion
-//    }
-//
-//    private int getMoveAlongPathToGoalTile() {
-//        //#region PUT YOUR CODE HERE
-//        int x = board.worldToBoardX(enemy.getX());
-//        int y = board.worldToBoardY(enemy.getY());
-//        if (board.isGoal(x, y)) {
-//            return CONTROL_NO_ACTION;
-//        }
-//
-//        PriorityQueue<TileData> openSet = new PriorityQueue<TileData>();
-//        HashSet<TileData> closedSet = new HashSet<TileData>();
-//        HashMap<TileData, TileData> cameFrom = new HashMap<TileData, TileData>();
-//        HashMap<TileData, Double> gScore = new HashMap<TileData, Double>();
-//        HashMap<TileData, Double> fScore = new HashMap<TileData, Double>();
-//
-//
-//        board.setVisited(x, y);
-//        gScore.put(, 0.0);
-//        fScore.put(start, heuristic(start, end));
-//        openSet.add(start);
-//
-//        while (!openSet.isEmpty()) {
-//            Node current = openSet.poll();
-//
-//            if (current == end) {
-//                return reconstructPath(cameFrom, end);
-//            }
-//
-//            closedSet.add(current);
-//
-//            for (Node neighbor : current.getNeighbors()) {
-//                if (closedSet.contains(neighbor)) {
-//                    continue;
-//                }
-//
-//                double tentativeGScore = gScore.get(current) + current.distanceTo(neighbor);
-//
-//                if (!openSet.contains(neighbor) || tentativeGScore < gScore.get(neighbor)) {
-//                    cameFrom.put(neighbor, current);
-//                    gScore.put(neighbor, tentativeGScore);
-//                    fScore.put(neighbor, tentativeGScore + heuristic(neighbor, end) + hidingSpotHeuristic(neighbor));
-//
-//                    if (!openSet.contains(neighbor)) {
-//                        openSet.add(neighbor);
-//                    }
-//                }
-//            }
-//        }
-//
-//        return null;
-//    }
-//
-//    private double heuristic(Node a, Node b) {
-//        return ;
-//    }
-
-//
-//    private int getDirection(TileData t) {
-//        while (t.prev.prev != null) {
-//            t = t.prev;
-//        }
-//        if (t.prevDirection[0] == -1) {
-//            return CONTROL_MOVE_LEFT;
-//        } else if (t.prevDirection[0] == 1) {
-//            return CONTROL_MOVE_RIGHT;
-//        } else if (t.prevDirection[1] == -1) {
-//            return CONTROL_MOVE_DOWN;
-//        } else if (t.prevDirection[1] == 1) {
-//            return CONTROL_MOVE_UP;
-//        }
-//        return CONTROL_NO_ACTION;
-//    }
-
-    // Add any auxiliary methods or data structures here
-    //#region PUT YOUR CODE HERE
-
-    private class TileData {
-        private final int x;
-        private final int y;
-
-        public int[] prevDirection = null;
-
-        public TileData prev = null;
-
-        private TileData(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
-
-        public int getX() {
-            return x;
-        }
-
-        public int getY() {
-            return y;
-        }
-
-        public void setPrevDirection(int[] prev_direction) {
-            this.prevDirection = prev_direction;
-        }
-
-        public void setPrev(TileData prev) {
-            this.prev = prev;
         }
     }
 
-    public final int[][] directions = new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
 
+    private Vector2 getRandomPointinRegion() {
+        //Calculates the two point coordinates in a world base
+        Vector2 bottom_left = board.boardToWorld((int) enemy.getBottomLeftOfRegion().x, (int) enemy.getBottomLeftOfRegion().y);
+        Vector2 top_right = board.boardToWorld((int) enemy.getTopRightOfRegion().x, (int) enemy.getTopRightOfRegion().y);
+        Vector2 random_point = new Vector2(MathUtils.random(bottom_left.x, top_right.x), MathUtils.random(bottom_left.y, top_right.y));
+        //System.out.println("I found a point with x: "+ random_point.x+", y: "+random_point.y+"!");
+        return random_point;
+    }
+
+    private Vector2 getRandomPointtoWander(float offset) {
+        //Calculates the two point coordinates in a world base
+        Vector2 bottom_left = new Vector2(this.end_chase_pos.x - offset, this.end_chase_pos.y - offset);
+        Vector2 top_right = new Vector2(this.end_chase_pos.x + offset, this.end_chase_pos.y + offset);
+        Vector2 random_point = new Vector2(MathUtils.random(bottom_left.x, top_right.x), MathUtils.random(bottom_left.y, top_right.y));
+        //System.out.println("I found a point with x: "+ random_point.x+", y: "+random_point.y+"!");
+        return random_point;
+    }
+
+    private Vector2 findPath() {
+        //TODO CHANGE--SHOULD GIVE US THE NEXT MOVEMENT
+        //Gets enemy position
+        Vector2 cur_pos = enemy.getPosition();
+        switch (state) {
+            case SPAWN:
+                break;
+            case PATROL:
+                Vector2 temp_cur_pos = new Vector2(cur_pos.x, cur_pos.y);
+                if (temp_cur_pos.sub(goal).len() <= 0.2f) {
+                    goal = getRandomPointinRegion();
+                    state = FSMState.IDLE;
+                    enemy.setVX(0);
+                    enemy.setVY(0);
+                    return new Vector2();
+                    /**stay there for a while*/
+                }
+                return new Vector2(goal.x - cur_pos.x, goal.y - cur_pos.y).nor();
+            case CHASE:
+                Vector2 target_pos = new Vector2(target.getPosition());
+                return (target_pos.sub(cur_pos)).nor();
+            case WANDER:
+                Vector2 temp_cur_pos2 = new Vector2(cur_pos.x, cur_pos.y);
+                if (temp_cur_pos2.sub(goal).len() <= 0.3f) {
+                    goal = getRandomPointtoWander(1f);
+                }
+                return new Vector2(goal.x - cur_pos.x, goal.y - cur_pos.y).nor();
+            case IDLE:
+                return new Vector2(0, 0);
+            case ALERT:
+                //alert_pos = target.getPosition();
+                Vector2 temp_cur_pos3 = new Vector2(cur_pos.x, cur_pos.y);
+                if (temp_cur_pos3.sub(alert_pos).len() <= 0.2f) {
+                    enemy.setAlerted(false);
+                    this.isAtAlertLocation = true;
+                    return new Vector2(0,0);
+                }
+                return new Vector2(alert_pos.x - cur_pos.x, alert_pos.y - cur_pos.y).nor();
+        }
+        return new Vector2(0, 0);
+    }
 }
-
-

@@ -31,6 +31,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
+import infinityx.lunarhaze.entity.Enemy;
+import infinityx.lunarhaze.entity.Werewolf;
 
 /**
  * Primary view class for the game, abstracting the basic graphics calls.
@@ -80,6 +82,8 @@ public class GameCanvas {
          */
         OPAQUE
     }
+
+    private final float GAP_DIST = 20f;
 
     /**
      * Drawing context to handle textures AND POLYGONS as sprites
@@ -370,7 +374,7 @@ public class GameCanvas {
         camera = new OrthographicCamera(getWidth(), getHeight());
         camera.setToOrtho(false);
 
-        Gdx.gl.glViewport(0, 0, getWidth(), getHeight());
+//        Gdx.gl.glViewport(0, 0, getWidth(), getHeight());
     }
 
     /**
@@ -896,31 +900,100 @@ public class GameCanvas {
         font.draw(spriteBatch, layout, x, y + offset);
     }
 
-    public void drawHPBar(String text, BitmapFont font, float offset, float width, float height, float hp) {
+    public void drawLightBar(Texture icon, float width, float height, float light) {
         if (active != DrawPass.STANDARD) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
             return;
         }
 
-        GlyphLayout layout = new GlyphLayout(font, text);
-        float x = getWidth() - layout.width - width * 1.2f;
-        float y = getHeight() - layout.height / 2.0f;
-        font.draw(spriteBatch, layout, x, y + offset);
+        barRender.begin(ShapeRenderer.ShapeType.Line);
+        barRender.setColor(Color.WHITE);
+        float x = getWidth() - width - GAP_DIST;
+        float y = getHeight() - height - GAP_DIST;
+        barRender.rect(x, y, width, height);
+        barRender.end();
 
-        ShapeRenderer barRenderer = new ShapeRenderer();
-        barRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        barRenderer.setColor(Color.YELLOW);
-        x = getWidth() - width;
-        y = getHeight() - layout.height;
-        barRenderer.rect(x, y, width * hp / 100, height);
-        barRenderer.end();
+        barRender.begin(ShapeRenderer.ShapeType.Filled);
+        Color yellow = new Color(244.0f / 255.0f, 208.0f / 255.0f, 63.0f / 255.0f, 1.0f);
+        barRender.setColor(yellow);
+        barRender.rect(x, y, width * light / Werewolf.MAX_LIGHT, height);
+        barRender.end();
 
-        barRenderer.begin(ShapeRenderer.ShapeType.Line);
-        barRenderer.setColor(Color.WHITE);
-        x = getWidth() - width;
-        y = getHeight() - layout.height;
-        barRenderer.rect(x, y, width, height);
-        barRenderer.end();
+//        draw(icon, Color.WHITE, x - width, y, width, width);
+//        canvas.draw(playButton, tint, playButton.getWidth() / 2, playButton.getHeight() / 2,
+//                centerX, 0.7f*centerY, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
+//        draw(icon, Color.WHITE, icon.getWidth()/2, icon.getHeight()/2, x - icon.getWidth(), y,0,1.0f, 1.0f);
+    }
+
+    public void drawHpBar(Texture icon, float width, float height, float hp) {
+        if (active != DrawPass.STANDARD) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+            return;
+        }
+
+        barRender.begin(ShapeRenderer.ShapeType.Line);
+        barRender.setColor(Color.WHITE);
+        float x = getWidth() - width - GAP_DIST;
+        float y = getHeight() - height * 2.25f - GAP_DIST * 1.5f;
+        barRender.rect(x, y, width, height);
+        barRender.end();
+        Color health;
+        barRender.begin(ShapeRenderer.ShapeType.Filled);
+        if (hp / Werewolf.INITIAL_HP < 0.5) {
+            health = new Color(169.0f / 255.0f, 50.0f / 255.0f, 38.0f / 255.0f, 1.0f);
+        } else {
+            health = new Color(20.0f / 255.0f, 142.0f / 255.0f, 119.0f / 255.0f, 1.0f);
+        }
+        barRender.setColor(health);
+        barRender.rect(x, y, width * hp / Werewolf.INITIAL_HP, height);
+        barRender.end();
+
+//        draw(icon, Color.WHITE, x - width, y, width, height);
+    }
+
+    public void drawEnemyHpBars(float barWidth, float barHeight, Enemy enemy) {
+        if (active != DrawPass.STANDARD) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+            return;
+        }
+        float x = WorldToScreenX(enemy.getPosition().x);
+
+        float y = WorldToScreenY(enemy.getPosition().y);
+
+        // Draw border
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(Color.BLACK);
+        shapeRenderer.rect(x - 0.7f * barWidth, y + 2 * barWidth, barWidth, barHeight);
+        shapeRenderer.end();
+
+        // Draw the actual health bar
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(Color.RED);
+
+        shapeRenderer.rect(x - 0.7f * barWidth, y + 2 * barWidth, barWidth * enemy.getHealthPercentage(), barHeight);
+        shapeRenderer.end();
+    }
+
+    public void drawStealthBar(Texture icon, float width, float height, float stealth) {
+        if (active != DrawPass.STANDARD) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+            return;
+        }
+
+        barRender.begin(ShapeRenderer.ShapeType.Line);
+        barRender.setColor(Color.WHITE);
+        float x = getWidth() - width - GAP_DIST;
+        float y = getHeight() - height * 3.5f - GAP_DIST * 2;
+        barRender.rect(x, y, width, height);
+        barRender.end();
+
+        barRender.begin(ShapeRenderer.ShapeType.Filled);
+        Color blue = new Color(40.0f / 255.0f, 116.0f / 255.0f, 166.0f / 255.0f, 1.0f);
+        barRender.setColor(blue);
+        barRender.rect(x, y, width * stealth / 1.0f, height);
+        barRender.end();
+
+//        draw(icon, Color.WHITE, x - width, y, width, height);
     }
 
     /**
@@ -956,6 +1029,39 @@ public class GameCanvas {
     }
 
     /**
+     * Draws a solid rectangle at the specified position with the specified width and height
+     *
+     * @param x      The x-coordinate of the rectangle's lower left corner
+     * @param y      The y-coordinate of the rectangle's lower left corner
+     * @param width  The width of the rectangle
+     * @param height The height of the rectangle
+     */
+    public void drawRecAt(float x, float y, float width, float height) {
+        ShapeRenderer barRenderer = new ShapeRenderer();
+        barRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        barRenderer.setColor(Color.YELLOW);
+        barRenderer.rect(x, y, width, height);
+        barRenderer.end();
+    }
+
+    /**
+     * Draws a rectangle outline at the upper right corner with specified width, and height
+     */
+    public void drawRecLine(float width, float height) {
+        ShapeRenderer barRenderer = new ShapeRenderer();
+        barRenderer.begin(ShapeRenderer.ShapeType.Line);
+        barRenderer.setColor(Color.WHITE);
+        float x = getWidth() - width;
+        float y = getHeight() - height * 4;
+        barRenderer.rect(x, y, width, height);
+        barRenderer.end();
+    }
+
+    /**
+     * Start the debug drawing sequence.
+     * <p>
+     * Nothing is flushed to the graphics card until the method end() is called.
+     * =======
      * Draws a rectangle outline affected by global transform.
      *
      * @param x bottom-left screen x
@@ -972,9 +1078,9 @@ public class GameCanvas {
     /**
      * Draws a rectangle outline at the upper right corner
      */
-    //public void drawRecOutline(float width, float height) {
-    //    drawRecOutline(getWidth() - width, getHeight() - height * 4, width, height, Color.WHITE);
-    //}
+    public void drawRecOutline(float width, float height) {
+        drawRecOutline(getWidth() - width, getHeight() - height * 4, width, height, Color.WHITE);
+    }
 
     /**
      * Compute the affine transform (and store it in local) for this image.

@@ -22,4 +22,16 @@ public interface Drawable {
      */
     public void draw(GameCanvas canvas);
 
+    /**
+     * Returns true if this object is destroyed.
+     *
+     * @return true if this object is destroyed
+     */
+    boolean isDestroyed();
+
+    /**
+     * Sets this object as destroyed. Will be removed from drawing next timestep.
+     */
+    void setDestroyed();
+
 }

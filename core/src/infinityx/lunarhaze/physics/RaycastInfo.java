@@ -61,12 +61,16 @@ public class RaycastInfo implements RayCastCallback {
         if (fixture.getUserData() == requestingObject) {
             return 1;
         }
+
         this.fixture = fixture;
         this.point = new Vector2(point.x, point.y);
         this.normal = new Vector2(normal.x, normal.y);
         this.fraction = fraction;
         this.hit = fraction != 0;
         this.hitObject = (GameObject) fixture.getUserData();
+        if (hitObject.getType() == GameObject.ObjectType.SCENE) {
+            return -1;
+        }
         return fraction;
     }
 }

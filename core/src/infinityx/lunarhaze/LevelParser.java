@@ -135,6 +135,11 @@ public class LevelParser {
 
             objId++;
         }
+
+        // Generate level settings
+        JsonValue settings = levelContents.get("settings");
+        parseSettings(settings);
+
         return levelContainer;
     }
 
@@ -152,7 +157,6 @@ public class LevelParser {
         board.setTileWorldDim(wSize[0], wSize[1]);
 
         levelContainer.setBoard(board);
-        levelContainer.hidePlayer();
 
         return levelContainer;
     }
@@ -194,7 +198,7 @@ public class LevelParser {
             for (int x = 0; x < board.getWidth(); x++) {
                 int tileNum = tileData.get((board.getHeight() - y - 1) * board.getWidth() + x);
                 board.setTileTexture(x, y,
-                        directory.getEntry(texType + tileNum + "-unlit", Texture.class)
+                        directory.getEntry(texType + tileNum, Texture.class)
                 );
                 board.setTileType(x, y, tileTypeFromNum(tileNum));
                 board.setWalkable(x, y, true);
@@ -214,6 +218,7 @@ public class LevelParser {
             int t_y = moonlightPos.getInt(1);
 
             board.setLit(t_x, t_y, true);
+            board.setCollectable(t_x, t_y, true);
         }
 
         return board;
@@ -231,9 +236,24 @@ public class LevelParser {
 
         float[] color = light.get("color").asFloatArray();
         rayhandler.setAmbientLight(color[0], color[1], color[2], color[3]);
+        levelContainer.setStealthAmbience(color);
+
         int blur = light.getInt("blur");
         rayhandler.setBlur(blur > 0);
         rayhandler.setBlurNum(blur);
+    }
+
+    /**
+     * Creates the settings for the _specific_ level
+     *
+     * @param settings the JSON tree defining the settings
+     */
+    private void parseSettings(JsonValue settings) {
+        float transitionTime = settings.getFloat("transition");
+        float phaseLength = settings.getFloat("phaseLength");
+        levelContainer.setPhaseLength(phaseLength);
+        levelContainer.setPhaseTransitionTime(transitionTime);
+        levelContainer.setBattleAmbience(settings.get("battle-ambiance").asFloatArray());
     }
 
     /**

@@ -1,14 +1,14 @@
 {
   "house": {
     "texture": {
-      "name": "house.static",
-      "origin": [3, 10],
+      "name": "house1.static",
+      "origin": [1072, 470],
       "positioned": "bottom-left",
-      "scale": 4
+      "scale": 0.25
     },
     "collider": {
-      "width": 3,
-      "height": 3
+      "width": 4,
+      "height": 1.8
     },
     "bodytype": "static",
     "density": 0.0,
@@ -18,13 +18,29 @@
   },
   "tree": {
     "texture": {
-      "name": "tree.static",
-      "origin": [30, 10],
-      "scale": 4
+      "name": "tree1.static",
+      "origin": [2150, 500],
+      "scale": 0.15
     },
     "collider": {
-      "width": 0.4,
-      "height": 0.2
+      "width": 0.75,
+      "height": 0.4
+    },
+    "bodytype": "static",
+    "density": 0.0,
+    "friction": 0.0,
+    "restitution": 0.0,
+    "damping": 0.0
+  },
+  "stone": {
+    "texture": {
+      "name": "stone.static",
+      "origin": [925, 630],
+      "scale": 0.15
+    },
+    "collider": {
+      "width": 1,
+      "height": 0.3
     },
     "bodytype": "static",
     "density": 0.0,

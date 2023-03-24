@@ -2,72 +2,24 @@
   "textures": {
     "background": "shared/menu_bg.png",
     "play": "shared/play.png",
-    "won": "shared/win.png",
-
-    "land1-lit": {
-      "file": "tiles/land1-lit.png",
-      "minFilter": "nearest",
-      "magFilter": "nearest"
-    },
-    "land1-unlit": {
-      "file": "tiles/land1-unlit.png",
-      "minFilter": "nearest",
-      "magFilter": "nearest"
-    },
-    "land2-lit": {
-      "file": "tiles/land2-lit.png",
-      "minFilter": "nearest",
-      "magFilter": "nearest"
-    },
-    "land2-unlit": {
-      "file": "tiles/land2-unlit.png",
-      "minFilter": "nearest",
-      "magFilter": "nearest"
-    },
-    "land3-lit": {
-      "file": "tiles/land3-lit.png",
-      "minFilter": "nearest",
-      "magFilter": "nearest"
-    },
-    "land3-unlit": {
-      "file": "tiles/land3-unlit.png",
-      "minFilter": "nearest",
-      "magFilter": "nearest"
-    },
-    "land4-lit": {
-      "file": "tiles/land4-lit.png",
-      "minFilter": "nearest",
-      "magFilter": "nearest"
-    },
-    "land4-unlit": {
-      "file": "tiles/land4-unlit.png",
-      "minFilter": "nearest",
-      "magFilter": "nearest"
-    },
-    "land5-lit": {
-      "file": "tiles/land5-lit.png",
-      "minFilter": "nearest",
-      "magFilter": "nearest"
-    },
-    "land5-unlit": {
-      "file": "tiles/land5-unlit.png",
-      "minFilter": "nearest",
-      "magFilter": "nearest"
-    },
-    "land6-lit": {
-      "file": "tiles/land6-lit.png",
-      "minFilter": "nearest",
-      "magFilter": "nearest"
-    },
-    "land6-unlit": {
-      "file": "tiles/land6-unlit.png",
-      "minFilter": "nearest",
-      "magFilter": "nearest"
-    },
-    "tree": {
-      "file": "images/tree.png",
-      "minFilter": "nearest",
-      "magFilter": "nearest",
+    "grass1": "tiles/grass1.png",
+    "grass2": "tiles/grass2.png",
+    "grass3": "tiles/grass3.png",
+    "grass4": "tiles/grass4.png",
+    "grass5": "tiles/grass5.png",
+    "grass6": "tiles/grass6.png",
+    "circle-bar": "images/circle_bar.png",
+    "counter": "images/top-paint-stroke.png",
+    "dusk-icon": "images/dusk.png",
+    "health-icon": "images/health_icon.png",
+    "moon-icon": "images/moon_icon.png",
+    "rec-bar": "images/rectangle.png",
+    "stealth-icon": "images/stealth_icon.png",
+    "health-stroke": "images/health-paint-stroke.png",
+    "moonlight-stroke": "images/moonlight-paint-stroke.png",
+    "stealth-stroke": "images/visibility-paint-stroke.png",
+    "tree1": {
+      "file": "images/tree1.png",
       "sprites":	{
         "static" : {
           "size" : 1,
@@ -76,10 +28,8 @@
         }
       }
     },
-    "house": {
-      "file": "images/house.png",
-      "minFilter": "nearest",
-      "magFilter": "nearest",
+    "house1": {
+      "file": "images/house1.png",
       "sprites":	{
         "static" : {
           "size" : 1,
@@ -88,7 +38,27 @@
         }
       }
     },
-
+    "house2": {
+      "file": "images/house2.png",
+      "sprites":	{
+        "static" : {
+          "size" : 1,
+          "rows" : 1,
+          "cols" : 1
+        }
+      }
+    },
+    "stone": {
+      "file": "images/stone1.png",
+      "sprites":	{
+        "static" : {
+          "size" : 1,
+          "rows" : 1,
+          "cols" : 1
+        }
+      }
+    },
+    "dust": "images/dust.png",
     "werewolf": {
       "file": 	"images/werewolf.png",
       "wrap":  	false,
@@ -131,6 +101,14 @@
     "retro": {
       "file": "shared/RetroGame.ttf",
       "size": 64
+    },
+    "libre-large": {
+      "file": "shared/LibreBaskerville-Regular.ttf",
+      "size": 30
+    },
+    "libre-small": {
+      "file": "shared/LibreBaskerville-Regular.ttf",
+      "size": 15
     }
   }
 }

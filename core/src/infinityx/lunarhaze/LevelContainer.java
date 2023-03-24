@@ -7,9 +7,11 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectMap;
+import com.badlogic.gdx.utils.ObjectSet;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.entity.Enemy;
-import infinityx.lunarhaze.entity.EnemyList;
+import infinityx.lunarhaze.entity.EnemyPool;
 import infinityx.lunarhaze.entity.SceneObject;
 import infinityx.lunarhaze.entity.Werewolf;
 import infinityx.lunarhaze.physics.LightSource;
@@ -64,9 +66,13 @@ public class LevelContainer {
      */
     private World world;
     /**
-     * Stores Enemies
+     * Memory pool for efficient storage of Enemies
      */
-    private EnemyList enemies;
+    private EnemyPool enemies;
+    /**
+     * List of active enemies
+     */
+    private Array<Enemy> activeEnemies;
     /**
      * Stores SceneObjects
      */
@@ -82,8 +88,6 @@ public class LevelContainer {
      */
     private Board board;
 
-    private int remainingMoonlight;
-
     /**
      * Keeps player centered
      */
@@ -94,6 +98,11 @@ public class LevelContainer {
      */
     private Array<Drawable> drawables;
     private final DrawableCompare drawComp = new DrawableCompare();
+
+    /**
+     * The backing set for garbage collection
+     */
+    private Array<Drawable> backing;
 
     /**
      * Constants for enemy initialization
@@ -116,6 +125,31 @@ public class LevelContainer {
     private boolean hidden;
 
     /**
+     * the total amount of collectable moonlight on the board at initialization
+     */
+    private int totalMoonlight;
+
+    /**
+     * the time it takes to transition from stealth to battle
+     */
+    private float phaseTransitionTime;
+
+    /**
+     * the length of a stealth cycle
+     */
+    private float phaseLength;
+
+    /**
+     * Ambient lighting values during stealth phase
+     */
+    private float[] stealthAmbience;
+
+    /**
+     * Ambient lighting values during battle phase
+     */
+    private float[] battleAmbience;
+
+    /**
      * Initialize attributes
      */
     private void initialize() {
@@ -123,17 +157,19 @@ public class LevelContainer {
         rayHandler = new RayHandler(world, Gdx.graphics.getWidth(), Gdx.graphics.getWidth());
         rayHandler.setAmbientLight(1);
 
-        drawables = new Array<Drawable>();
+        drawables = new Array<>();
+        backing = new Array<>();
 
-        Werewolf player = new Werewolf();
+        // There will always be a player
+        // So it's fine to initialize now
+        Werewolf player = new Werewolf(0, 0);
         player.initialize(directory, playerJson, this);
         setPlayer(player);
 
         board = null;
-        enemies = new EnemyList();
+        enemies = new EnemyPool(20);
+        activeEnemies = new Array<>(10);
         sceneObjects = new Array<>(true, 5);
-
-        remainingMoonlight = 0;
     }
 
     /**
@@ -153,7 +189,6 @@ public class LevelContainer {
      */
     public void flush() {
         initialize();
-        // The player object can be carried over!
     }
 
     public RayHandler getRayHandler() {
@@ -161,10 +196,17 @@ public class LevelContainer {
     }
 
     /**
-     * @return All enemies in level. Note EnemyList contains dead ones too.
+     * @return All active enemies in level.
      */
-    public EnemyList getEnemies() {
-        return enemies;
+    public Array<Enemy> getEnemies() {
+        return activeEnemies;
+    }
+
+    /**
+     * @return the total amount of collectable moonlight on the board at initialization
+     */
+    public float getTotalMoonlight() {
+        return totalMoonlight;
     }
 
     /**
@@ -172,28 +214,51 @@ public class LevelContainer {
      * @return Enemy added with updated id
      */
     public Enemy addEnemy(Enemy enemy) {
-        enemies.addEnemy(enemy);
-        drawables.add(enemy);
+        activeEnemies.add(enemy);
+        addDrawable(enemy);
 
-        enemy.setId(enemies.size() - 1);
+        // Update enemy controller assigned to the new enemy
+        getEnemyControllers().get(enemy).populateSurroundings(this);
+        getEnemyControllers().get(enemy).initialize();
+
         return enemy;
     }
 
     /**
+     * Removes enemy from the level.
+     *
+     * @param enemy enemy to remove
+     */
+    public void removeEnemy(Enemy enemy) {
+        enemies.free(enemy);
+        activeEnemies.removeValue(enemy, true);
+        drawables.removeValue(enemy, true);
+    }
+
+    /**
+     * Adds an enemy to the level
+     *
      * @param type   type of Enemy to append to enemy list (e.g. villager)
      * @param x      world x-position
      * @param y      world y-position
      * @param patrol patrol path for this enemy
-     * @return Enemy added with updated id
+     * @return Enemy added
      */
     public Enemy addEnemy(String type, float x, float y, ArrayList<Vector2> patrol) {
-        Enemy enemy = new Enemy();
+        Enemy enemy = enemies.obtain();
         enemy.initialize(directory, enemiesJson.get(type), this);
 
 //        enemy.setPatrolPath(patrol);
         enemy.setPosition(x, y);
 
         return addEnemy(enemy);
+    }
+
+    /**
+     * @return Mapping of all enemies (dead too) with their controllers
+     */
+    public ObjectMap<Enemy, EnemyController> getEnemyControllers() {
+        return enemies.controls;
     }
 
     /**
@@ -224,6 +289,62 @@ public class LevelContainer {
      */
     public Werewolf getPlayer() {
         return player;
+    }
+
+    /**
+     * @return the time it takes to transition from stealth to battle
+     */
+    public float getPhaseTransitionTime() {
+        return phaseTransitionTime;
+    }
+
+    /**
+     * Sets the time it takes to transition from stealth to battle
+     */
+    public void setPhaseTransitionTime(float phaseTransitionTime) {
+        this.phaseTransitionTime = phaseTransitionTime;
+    }
+
+    /**
+     * @return the length of a stealth cycle
+     */
+    public float getPhaseLength() {
+        return phaseLength;
+    }
+
+    /**
+     * Sets the length of a stealth cycle
+     */
+    public void setPhaseLength(float phaseLength) {
+        this.phaseLength = phaseLength;
+    }
+
+    /**
+     * Sets Ambient lighting values during stealth phase
+     */
+    public void setStealthAmbience(float[] stealthAmbience) {
+        this.stealthAmbience = stealthAmbience;
+    }
+
+    /**
+     * Sets Ambient lighting values during battle phase
+     */
+    public void setBattleAmbience(float[] battleAmbience) {
+        this.battleAmbience = battleAmbience;
+    }
+
+    /**
+     * @return Ambient lighting values during stealth phase
+     */
+    public float[] getStealthAmbience() {
+        return stealthAmbience;
+    }
+
+    /**
+     * @return Ambient lighting values during battle phase
+     */
+    public float[] getBattleAmbience() {
+        return battleAmbience;
     }
 
     /**
@@ -258,14 +379,6 @@ public class LevelContainer {
         drawables.add(player);
     }
 
-    public void addMoonlight() {
-        remainingMoonlight++;
-    }
-
-    public int getRemainingMoonlight() {
-        return remainingMoonlight;
-    }
-
     /**
      * @return Scene board holding all background tiles
      */
@@ -278,6 +391,7 @@ public class LevelContainer {
      */
     public void setBoard(Board board) {
         this.board = board;
+        this.totalMoonlight = board.getRemainingMoonlight();
     }
 
     /**
@@ -341,16 +455,15 @@ public class LevelContainer {
      * @param canvas The drawing context
      */
     public void drawLevel(GameCanvas canvas) {
+        garbageCollect();
         canvas.beginT(view.x, view.y);
-
-        // Debug prints
-        //System.out.printf(
-        //        "Player pos: (%f, %f), Spotlight pos: (%f, %f) \n",
-        //        player.getPosition().x, player.getPosition().y, player.getSpotlight().getPosition().x, player.getSpotlight().getPosition().y);
 
         // Render order: Board tiles -> (players, enemies, scene objects) sorted by depth (y coordinate)
         board.draw(canvas);
+
         // Uses timsort, so O(n) if already sorted, which is nice since it usually will be
+        // TODO: if this ever becomes a bottleneck, we can instead add the
+        //  depth as the z-position so OpenGL's depth buffer can do all the work
         drawables.sort(drawComp);
         for (Drawable d : drawables) {
             d.draw(canvas);
@@ -370,14 +483,28 @@ public class LevelContainer {
             raycamera.update();
         }
         rayHandler.setCombinedMatrix(raycamera);
-
-        // Finally, draw lights
         rayHandler.updateAndRender();
     }
 
+    /**
+     * Remove all objects set as destroyed from drawing queue.
+     */
+    public void garbageCollect() {
+        // INVARIANT: backing and objects are disjoint
+        for (Drawable o : drawables) {
+            if (!o.isDestroyed()) {
+                backing.add(o);
+            }
+        }
 
+        // stop-and-copy garbage collection
+        // no removal which is nice since each removal is worst case O(n)
+        Array<Drawable> tmp = backing;
+        backing = drawables;
+        drawables = tmp;
+        backing.clear();
+    }
 }
-
 
 /**
  * Depth comparison function used for drawing

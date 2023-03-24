@@ -1,314 +1,49 @@
 package infinityx.lunarhaze.entity;
 
-import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
-import com.badlogic.gdx.ai.fsm.StateMachine;
-import com.badlogic.gdx.ai.steer.Steerable;
-import com.badlogic.gdx.ai.steer.SteeringBehavior;
-import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.Pool;
 import infinityx.assets.AssetDirectory;
-import infinityx.lunarhaze.EnemyController;
-import infinityx.lunarhaze.EnemyState;
 import infinityx.lunarhaze.GameObject;
 import infinityx.lunarhaze.LevelContainer;
 import infinityx.lunarhaze.physics.ConeSource;
-import com.badlogic.gdx.ai.steer.SteeringAcceleration;
-import com.badlogic.gdx.ai.steer.behaviors.Arrive;
-import com.badlogic.gdx.ai.steer.behaviors.Wander;
-import infinityx.util.Box2dLocation;
-import infinityx.util.Box2dSteeringUtils;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 
 import java.util.ArrayList;
-import java.math.*;
 
-public class Enemy extends GameObject implements Steerable<Vector2> {
-// Instance Attributes
-    /**
-     * A unique identifier; used to decouple classes.
-     */
-    private int id;
-    /**
-     * Movement of the enemy
-     **/
-    private float movement;
-
-    private Boolean faceRight;
-
+/**
+ * Model class representing an enemy.
+ */
+public class Enemy extends GameObject implements Pool.Poolable {
     /**
      * Current animation frame for this werewolf
      */
     private final float animeframe;
 
     /**
-     * Whether the enemy is alerted. Once alerted,
-     * the enemy start chasing werewolf
+     * Whether the enemy is alerted.
      */
-    private Boolean isAlerted;
+    private Boolean alerted;
 
     /**
-     * Whether the enemy is alive.
+     * rectangular region represented by [[b_lx, b_ly], [t_rx, t_ry]]
      */
-    private final boolean isAlive;
+    private ArrayList<Vector2> patrolPath;
 
+    /**
+     * The light source on this enemy representing the flashlight
+     */
     private ConeSource flashlight;
 
     private float attackKnockback;
 
-    private float attackDamage;
+    private int attackDamage;
 
-    /** -----------------------------------------------------START---------------------------------------------*/
+    /** The maximum amount of hit-points for this enemy */
+    private float maxHp;
 
-    /** LIBGDX AI */
-    private final float boundingRadius = 1f;
-    private boolean tagged;
-    private float maxLinearAcceleration;
-    private float maxAngularAcceleration;
-    private float maxLinearSpeed = 100f;
-    private float maxAngularSpeed = 200f;
-    private float temp_orient = 0f;
-    private float zeroLinearSpeedThreshold;
-
-    private SteeringBehavior<Vector2> steeringBehavior;
-    private final SteeringAcceleration<Vector2> steeringOutput = new SteeringAcceleration<>(new Vector2());
-
-
-    /** LIBGDX AI */
-
-    /** -----------------------------------------------------START---------------------------------------------*/
-
-    // behavior
-
-    public static final int WANDER_BEHAVIOR = 0;
-    public static final int ARRIVE_BEHAVIOR = 1;
-
-
-    // Define the enemy's behaviors
-    //TODO CHANGE IT LATER
-    private Arrive<Vector2> arriveBehavior;
-    private Wander<Vector2> wanderBehavior;
-
-    public Arrive<Vector2> getArriveBehavior() {
-        return arriveBehavior;
-    }
-
-    public Wander<Vector2> getWanderBehavior() {
-        return wanderBehavior;
-    }
-
-    @Override
-    public Vector2 getLinearVelocity() {
-        return body.getLinearVelocity();
-    }
-
-    @Override
-    public float getAngularVelocity() {
-        return body.getAngularVelocity();
-    }
-
-    @Override
-    public float getBoundingRadius() {
-        return boundingRadius;
-    }
-
-    @Override
-    public boolean isTagged() {
-        return tagged;
-    }
-
-    @Override
-    public void setTagged(boolean tagged) {
-        this.tagged = tagged;
-    }
-
-    @Override
-    public Vector2 getPosition() {
-        return body.getPosition();
-    }
-
-    @Override
-    public float getOrientation() {
-        return body.getAngle();
-    }
-
-    @Override
-    public void setOrientation(float orientation) {
-        body.setTransform(getPosition(), orientation);
-    }
-
-    @Override
-    public float vectorToAngle(Vector2 vector) {
-        return Box2dSteeringUtils.vectorToAngle(vector);
-    }
-
-    @Override
-    public Vector2 angleToVector(Vector2 outVector, float angle) {
-        return Box2dSteeringUtils.angleToVector(outVector, angle);
-
-    }
-
-    @Override
-    public Location<Vector2> newLocation() {
-        return new Box2dLocation(new Vector2());
-    }
-
-    @Override
-    public float getZeroLinearSpeedThreshold() {
-        return zeroLinearSpeedThreshold;
-    }
-
-    @Override
-    public void setZeroLinearSpeedThreshold(float value) {
-        this.zeroLinearSpeedThreshold = value;
-    }
-
-    @Override
-    public float getMaxLinearSpeed() {
-        return maxLinearSpeed;
-    }
-
-    @Override
-    public void setMaxLinearSpeed(float maxLinearSpeed) {
-        this.maxLinearSpeed = maxLinearSpeed;
-    }
-
-    @Override
-    public float getMaxLinearAcceleration() {
-        return maxLinearAcceleration;
-    }
-
-    @Override
-    public void setMaxLinearAcceleration(float maxLinearAcceleration) {
-        this.maxLinearAcceleration = maxLinearAcceleration;
-    }
-
-    @Override
-    public float getMaxAngularSpeed() {
-        return maxAngularSpeed;
-    }
-
-    @Override
-    public void setMaxAngularSpeed(float maxAngularSpeed) {
-        this.maxAngularSpeed = maxAngularSpeed;
-    }
-
-    @Override
-    public float getMaxAngularAcceleration() {
-        return maxAngularAcceleration;
-    }
-
-    @Override
-    public void setMaxAngularAcceleration(float maxAngularAcceleration) {
-        this.maxAngularAcceleration = maxAngularAcceleration;
-    }
-
-
-    /**
-     * Initialize an enemy not alerted.
-     */
-    public Enemy(int id, float x, float y) {
-        super(x, y);
-        this.id = id;
-        isAlive = true;
-        animeframe = 0.0f;
-        isAlerted = false;
-    }
-
-    private void createWanderBehavior() {
-        wanderBehavior = new Wander<>(this)
-                .setEnabled(true)
-                .setWanderRadius(2f)
-                .setWanderRate((float) (Math.PI * 4))
-                .setWanderOffset(2f)
-                .setWanderOrientation(0);
-    }
-
-
-    /**
-     * Initialize an enemy with dummy position, id, and patrol path
-     */
-    public Enemy() {
-        super(0, 0);
-        isAlive = true;
-        animeframe = 0.0f;
-        isAlerted = false;
-
-        tagged = false;
-        maxAngularAcceleration = 1.0f;
-        maxLinearAcceleration = 1.0f;
-        maxLinearSpeed = 2f;
-        maxAngularSpeed = 1.0f;
-
-    }
-
-    public void setBehavior(int behavior, Werewolf target) {
-        switch (behavior) {
-            case ARRIVE_BEHAVIOR:
-                if (arriveBehavior == null) {
-                    if (target != null) {
-                        Location<Vector2> loc = new Box2dLocation(target.getPosition());
-                        arriveBehavior = new Arrive<>(this, loc)
-                                .setEnabled(true)
-                                .setTimeToTarget(0.1f)
-                                .setArrivalTolerance(0.5f);
-                        steeringBehavior = arriveBehavior;
-                    }
-                } else {
-                    steeringBehavior = arriveBehavior;
-                }
-                break;
-            case WANDER_BEHAVIOR:
-                temp_orient = wanderBehavior.getWanderOrientation();
-                Location<Vector2> loc = new Box2dLocation(target.getPosition());
-                steeringBehavior = wanderBehavior;
-            default:
-                break;
-        }
-    }
-
-
-
-    // Apply the steering acceleration to the werewolf's velocity and position
-    private void applySteering() {
-        boolean anyAcceleration = false;
-
-        if (!steeringOutput.linear.isZero()) {
-            body.applyForceToCenter(steeringOutput.linear, true);
-            anyAcceleration = true;
-        }
-
-        if (anyAcceleration) {
-
-            // cap the linear speed
-            Vector2 velocity = body.getLinearVelocity();
-            float currentSpeedSquare = velocity.len2();
-            if (currentSpeedSquare > maxLinearSpeed * maxLinearSpeed) {
-                body.setLinearVelocity(velocity.scl(maxLinearSpeed / (float) Math.sqrt(currentSpeedSquare)));
-            }
-        }
-    }
-
-    /**
-     * Updates the animation frame and position of this enemy.
-     * <p>
-     * Notice how little this method does.  It does not actively fire the weapon.  It
-     * only manages the cooldown and indicates whether the weapon is currently firing.
-     * The result of weapon fire is managed by the GameplayController.
-     */
-    public void update(float delta) {
-
-        if (steeringBehavior != null) {
-            steeringBehavior.calculateSteering(steeringOutput);
-            this.applySteering();
-            //applyingSteering(deltaTime);
-        }
-    }
-
-    /** -----------------------------------------------------END---------------------------------------------*/
-
+    /** The current amount of hit-points for this enemy */
+    private float hp;
 
     /**
      * Returns the type of this object.
@@ -321,28 +56,42 @@ public class Enemy extends GameObject implements Steerable<Vector2> {
         return ObjectType.ENEMY;
     }
 
-    /**
-     * Returns whether the enemy is alerted.
-     */
-    public Boolean getIsAlerted() {
-        return isAlerted;
-    }
-
     public ConeSource getFlashlight() {
         return flashlight;
     }
 
     /**
-     * Sets whether the enemy is alerted.
+     * @return whether the enemy is alerted
      */
-    public void setIsAlerted(Boolean value) {
-        isAlerted = value;
+    public boolean getAlerted () {
+        return alerted;
     }
 
-    private int currentWayPoint;
 
     /**
-     * Initalize the enemy with the given data
+     * Initialize an enemy with dummy position, id, and patrol path
+     */
+    public Enemy() {
+        super(0, 0);
+        this.patrolPath = new ArrayList<>();
+        animeframe = 0.0f;
+        alerted = false;
+    }
+
+    /**
+     * Resets the object for reuse.
+     */
+    @Override
+    public void reset() {
+        hp = maxHp;
+        alerted = false;
+    }
+
+    /**
+     * Parse and initialize specific enemy  attributes.
+     *
+     * @param json      Json tree holding enemy information
+     * @param container LevelContainer which this player is placed in
      */
     public void initialize(AssetDirectory directory, JsonValue json, LevelContainer container) {
         JsonValue p_dim = json.get("collider");
@@ -363,57 +112,35 @@ public class Enemy extends GameObject implements Steerable<Vector2> {
         flashLight.setColor(color[0], color[1], color[2], color[3]);
         flashLight.setSoft(light.getBoolean("soft"));
 
-        activatePhysics(container.getWorld());
+        // Body may already exist since enemy is pooled
+        if (body == null) activatePhysics(container.getWorld());
         setFlashlight(flashLight);
 
         setFlashlightOn(true);
-        //getBody().setActive(false);
 
         JsonValue attack = json.get("attack");
         setAttackKnockback(attack.getFloat("knockback"));
-        setAttackDamage(attack.getFloat("damage"));
+        setAttackDamage(attack.getInt("damage"));
+        setMaxHp(json.getFloat("hp"));
+    }
 
-        createWanderBehavior();
-
+    public void setPatrolPath(ArrayList<Vector2> path) {
+        this.patrolPath = path;
     }
 
     /**
-     * Deep clones enemy, can be used independently of this
-     *
-     * @return new enemy
+     * Sets whether the enemy is alerted.
      */
-    public Enemy deepClone(LevelContainer container) {
-        Enemy enemy = new Enemy();
-        enemy.setSpeed(speed);
-        enemy.setTexture(getTexture());
-        enemy.setOrigin((int) origin.x, (int) origin.y);
-        ConeSource flashLight = new ConeSource(
-                container.getRayHandler(), this.flashlight.getRayNum(), this.flashlight.getColor(), this.flashlight.getDistance(),
-                0, 0, this.flashlight.getDirection(), this.flashlight.getConeDegree()
-        );
-        flashLight.setSoft(this.flashlight.isSoft());
-        enemy.setBodyState(body);
-        enemy.activatePhysics(container.getWorld());
-        enemy.setFlashlight(flashlight);
-        enemy.setFlashlightOn(true);
-
-        enemy.setDimension(getDimension().x, getDimension().y);
-        enemy.setPositioned(positioned);
-        return enemy;
+    public void setAlerted(Boolean value) {
+        alerted = value;
     }
 
+    public Vector2 getBottomLeftOfRegion() {
+        return this.patrolPath.get(0);
+    }
 
-    /**
-     * Returns whether or not the ship is alive.
-     * <p>
-     * A ship is dead once it has fallen past MAX_FALL_AMOUNT. A dead ship cannot be
-     * targeted, involved in collisions, or drawn.  For all intents and purposes, it
-     * does not exist.
-     *
-     * @return whether or not the ship is alive
-     */
-    public boolean isAlive() {
-        return isAlive;
+    public Vector2 getTopRightOfRegion() {
+        return this.patrolPath.get(1);
     }
 
     /**
@@ -436,7 +163,7 @@ public class Enemy extends GameObject implements Steerable<Vector2> {
         return attackKnockback;
     }
 
-    public float getAttackDamage() {
+    public int getAttackDamage() {
         return attackDamage;
     }
 
@@ -444,33 +171,59 @@ public class Enemy extends GameObject implements Steerable<Vector2> {
         attackKnockback = knockback;
     }
 
-    public void setAttackDamage(float dmg) {
+    public void setAttackDamage(int dmg) {
         attackDamage = dmg;
     }
-//
-//    /**
-//     * As the name suggests.
-//     * Can someone think of a better name? Im too tired for this rn
-//     */
-//    public void setFlashLightRotAlongDir() {
-//        body.setTransform(body.getPosition(), getDirection().getRotScale() * (float) (Math.PI / 2f));
-//    }
+
+    public float getHp() {
+        return hp;
+    }
 
     /**
-     * Sets the specific angle of the flashlight on this enemy
+     * Sets the new hp of this enemy. Clamped to always be non-negative.
+     * @param value the hp to set
+     */
+    public void setHp(float value) {
+        hp = Math.max(0, value);
+    }
+
+    /**
+     * Sets the max hp (and starting current hp) of this enemy.
+     * @param value the hp to set
+     */
+    public void setMaxHp(float value) {
+        maxHp = value;
+        hp = maxHp;
+    }
+
+    /**
+     * @return percentage of current hp to maximum hp
+     */
+    public float getHealthPercentage() {
+        return hp / maxHp;
+    }
+
+    /**
+     * Updates the animation frame and position of this enemy.
+     * @param move impulse to apply
+     */
+    public void update(Vector2 move) {
+        body.applyLinearImpulse(move.scl(speed), new Vector2(), true);
+
+        //Limits maximum speed
+        if (body.getLinearVelocity().len() > 1f) {
+            body.setLinearVelocity(body.getLinearVelocity().clamp(0f, 1f));
+        }
+
+    }
+
+    /**
+     * Sets the specific angle of the enemy (and thus flashlight)
      *
-     * @param ang the angle...
+     * @param ang the angle
      */
     public void setFlashLightRot(float ang) {
         body.setTransform(body.getPosition(), ang);
-
     }
 
-    public int getId() {
-        return this.id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 }

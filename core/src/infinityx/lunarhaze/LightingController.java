@@ -4,18 +4,16 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.JsonValue;
-import infinityx.lunarhaze.entity.EnemyList;
+import infinityx.lunarhaze.entity.Dust;
+
+import java.util.Iterator;
 
 public class LightingController {
-    /**
-     * List of enemies
-     */
-    private final EnemyList enemies;
-
     /**
      * Reference of board from container
      */
     private final Board board;
+    private final LevelContainer container;
 
     /**
      * Contains constants for dust particle system settings
@@ -39,26 +37,27 @@ public class LightingController {
      * @param container level
      */
     public LightingController(LevelContainer container) {
-        this.enemies = container.getEnemies();
         this.board = container.getBoard();
-
-        // Parses specific GameObject (collider info, etc.) attributes.
+        this.container = container;
 
         dustInfo = container.getDirectory().getEntry("dust", JsonValue.class);
         JsonValue texInfo = dustInfo.get("texture");
+        JsonValue fade = dustInfo.get("fade-time");
 
         // Initialize pools
         dustPools = new IntMap<>();
         for (int i = 0; i < board.getWidth(); i++) {
             for (int j = 0; j < board.getHeight(); j++) {
-                if (board.isCollectable(i, j) && board.isLit(i, j)) {
+                if (board.isCollectable(i, j)) {
                     Dust[] dusts = new Dust[POOL_CAPACITY];
                     for (int ii = 0; ii < POOL_CAPACITY; ii++) {
                         Dust dust = new Dust();
+                        // Set main attributes once
                         dust.setTexture(
                                 container.getDirectory().getEntry(texInfo.getString("name"), Texture.class)
                         );
                         dust.setTextureScale(texInfo.getFloat("scale"));
+                        dust.setFadeRange(fade.getFloat(0), fade.getFloat(1));
                         initializeDust(i, j, dust);
                         dusts[ii] = dust;
                     }
@@ -66,7 +65,6 @@ public class LightingController {
                     dustPools.put(map_pos, dusts);
 
                     // add to level container so they draw
-                    System.out.println("Adding pool");
                     container.addDrawables(dustPools.get(map_pos));
                 }
             }
@@ -78,17 +76,28 @@ public class LightingController {
      * Reinitialize all dust particles set to destroy.
      */
     public void updateDust(float delta) {
-        for (IntMap.Entry<Dust[]> entry : dustPools) {
+        Iterator<IntMap.Entry<Dust[]>> iterator = dustPools.iterator();
+        while (iterator.hasNext()) {
+            IntMap.Entry<Dust[]> entry = iterator.next();
             int x = entry.key % board.getWidth();
             int y = (entry.key - x) / board.getWidth();
+
+            boolean allDestroyed = true;
             for (Dust dust : entry.value) {
                 dust.update(delta);
+                if (!dust.isDestroyed()) allDestroyed = false;
+                if (dust.inDestruction()) continue;
                 if (board.worldToBoardX(dust.getX()) != x || board.worldToBoardY(dust.getY()) != y) {
-                    dust.beginDecay();
+                    dust.beginReset();
                 }
-                if (dust.isDestroyed()) {
+                if (dust.shouldReset()) {
                     initializeDust(x, y, dust);
                 }
+            }
+            // Remove from iterator if all destroyed
+            // TODO: maybe add dust to some free list if moonlight updates
+            if (allDestroyed) {
+                iterator.remove();
             }
         }
     }
@@ -112,5 +121,15 @@ public class LightingController {
         dust.setRPS(MathUtils.random(rps.getFloat(0), rps.getFloat(1)));
         dust.setVelocity(MathUtils.random() * MathUtils.PI2, MathUtils.random(spd.getFloat(0), spd.getFloat(1)));
         dust.setScale(MathUtils.random(scl.getFloat(0), scl.getFloat(1)));
+    }
+
+    /**
+     * Begin removal of all dust particles on given board tile
+     *
+     * @param x board x-position
+     * @param y board y-position
+     */
+    public void removeDust(int x, int y) {
+        for (Dust dust : dustPools.get(x + y * board.getWidth())) dust.beginDestruction();
     }
 }
