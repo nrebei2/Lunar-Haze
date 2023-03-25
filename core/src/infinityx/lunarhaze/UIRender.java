@@ -3,9 +3,11 @@ package infinityx.lunarhaze;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.GameplayController.Phase;
 import infinityx.lunarhaze.entity.Enemy;
+import infinityx.lunarhaze.entity.Werewolf;
 
 /**
  * This is a class used for drawing player and enemies' game UI state: HP, Stealth, MoonLight
@@ -52,29 +54,34 @@ public class UIRender {
     private final static float HEALTH_STROKE_WIDTH = 200f;
 
     /**
+     * Distance between centers pf two hearts drawn on the health stroke
+     */
+    private final static float HEART_SEP = HEALTH_STROKE_WIDTH / 8;
+
+    /**
      * Health stroke (located at top left corner) height
      */
-    private final static float HEALTH_STROKE_HEIGHT = 30f;
+    private final static float HEALTH_STROKE_HEIGHT = 40f;
 
     /**
      * Moonlight stroke (located at bottom left corner) width
      */
-    private final static float MOON_STROKE_WIDTH = 100f;
+    private final static float MOON_STROKE_WIDTH = 80f;
 
     /**
      * Moonlight stroke (located at bottom left corner) height
      */
-    private final static float MOON_STROKE_HEIGHT = 30f;
+    private final static float MOON_STROKE_HEIGHT = 35f;
 
     /**
      * Stealth stroke (located at bottom center) width
      */
-    private final static float STEALTH_STROKE_WIDTH = 280f;
+    private final static float STEALTH_STROKE_WIDTH = 270f;
 
     /**
      * Stealth stroke (located at bottom center) height
      */
-    private final static float STEALTH_STROKE_HEIGHT = 20f;
+    private final static float STEALTH_STROKE_HEIGHT = 18f;
 
     /**
      * Display font for the level number
@@ -146,12 +153,12 @@ public class UIRender {
         UIFont_large.setColor(Color.WHITE);
         UIFont_small.setColor(Color.WHITE);
         canvas.begin(); // DO NOT SCALE
-        canvas.drawLightBar(moon_icon, BAR_WIDTH,
-                BAR_HEIGHT, level.getPlayer().getLight());
-        canvas.drawHpBar(health_icon, BAR_WIDTH,
-                BAR_HEIGHT, level.getPlayer().getHp());
-        canvas.drawStealthBar(stealth_icon, BAR_WIDTH,
-                BAR_HEIGHT, level.getPlayer().getStealth());
+//        canvas.drawLightBar(moon_icon, BAR_WIDTH,
+//                BAR_HEIGHT, level.getPlayer().getLight());
+//        canvas.drawHpBar(health_icon, BAR_WIDTH,
+//                BAR_HEIGHT, level.getPlayer().getHp());
+//        canvas.drawStealthBar(stealth_icon, BAR_WIDTH,
+//                BAR_HEIGHT, level.getPlayer().getStealth());
 
         if(gameplayController.getCollectingMoonlight()) {
              canvas.drawCollectLightBar(BAR_WIDTH / 2, BAR_HEIGHT / 2,
@@ -178,12 +185,31 @@ public class UIRender {
         canvas.draw(dusk_icon, Color.WHITE, 0, 0, canvas.getWidth() / 2 + COUNTER_WIDTH / 4, canvas.getHeight() - COUNTER_HEIGHT / 2.0f - dusk_icon.getHeight()/2 - TOP_MARGIN/3, 0, 0.6f, 0.6f);
 
         canvas.draw(health_stroke, Color.WHITE, 0, canvas.getHeight() - HEALTH_STROKE_HEIGHT * 2, HEALTH_STROKE_WIDTH, HEALTH_STROKE_HEIGHT);
-        canvas.draw(moonlight_stroke, Color.WHITE, MOON_STROKE_WIDTH/3, MOON_STROKE_HEIGHT, MOON_STROKE_WIDTH, MOON_STROKE_HEIGHT);
-        canvas.draw(stealth_stroke, Color.WHITE, canvas.getWidth()/2 - STEALTH_STROKE_WIDTH/2, MOON_STROKE_HEIGHT, STEALTH_STROKE_WIDTH, STEALTH_STROKE_HEIGHT);
+        for(int i = 1; i <= Werewolf.INITIAL_HP; i++){
+            if (level.getPlayer().getHp() >= i){
+                // Draw a filled heart for the ith heart
+                Color full = new Color(138f / 255.0f, 25f / 255.0f, 45f / 255.0f, 1f);
+                canvas.draw(health_icon, full, health_icon.getWidth() / 2, health_icon.getHeight() / 2, HEALTH_STROKE_WIDTH/8 + HEART_SEP * i, canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f, 0, 0.6f, 0.6f);
+            } else {
+                // Draw an empty heart for the ith heart
+                Color empty = new Color(41f / 255.0f, 41f / 255.0f, 41f / 255.0f, 0.8f);
+                canvas.draw(health_icon, empty, health_icon.getWidth() / 2, health_icon.getHeight() / 2, HEALTH_STROKE_WIDTH/8 + HEART_SEP * i, canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f, 0, 0.6f, 0.6f);
+            }
+        }
 
-        canvas.draw(moon_icon, Color.WHITE, moon_icon.getWidth() / 2, moon_icon.getHeight() / 2, canvas.getWidth() - BAR_WIDTH - moon_icon.getWidth() * 1.4f, canvas.getHeight() - BAR_HEIGHT / 2 - GAP_DIST, 0, 0.7f, 0.7f);
-        canvas.draw(health_icon, Color.WHITE, moon_icon.getWidth() / 2, moon_icon.getHeight() / 2, canvas.getWidth() - BAR_WIDTH - health_icon.getWidth() * 1.2f, canvas.getHeight() - 4.9f * BAR_HEIGHT / 2 - GAP_DIST, 0, 0.7f, 0.7f);
-        canvas.draw(stealth_icon, Color.WHITE, moon_icon.getWidth() / 2, moon_icon.getHeight() / 2, canvas.getWidth() - BAR_WIDTH - stealth_icon.getWidth() * 1.2f, canvas.getHeight() - 7.4f * BAR_HEIGHT / 2 - GAP_DIST, 0, 0.7f, 0.7f);
+        canvas.draw(moonlight_stroke, Color.WHITE, MOON_STROKE_WIDTH/3, MOON_STROKE_HEIGHT, MOON_STROKE_WIDTH, MOON_STROKE_HEIGHT);
+        canvas.draw(moon_icon, Color.WHITE, moon_icon.getWidth() / 2, moon_icon.getHeight() / 2, MOON_STROKE_WIDTH / 2 + moon_icon.getWidth()/4, MOON_STROKE_HEIGHT + moon_icon.getHeight()*2/3, 0, 0.5f, 0.5f);
+        canvas.drawText(level.getPlayer().getMoonlightCollected() + "/" + ((int) level.getTotalMoonlight()), UIFont_small, MOON_STROKE_WIDTH * 4/5, MOON_STROKE_HEIGHT * 2 - UIFont_small.getCapHeight());
+
+        canvas.draw(stealth_stroke, Color.WHITE, canvas.getWidth()/2 - STEALTH_STROKE_WIDTH/2, MOON_STROKE_HEIGHT, STEALTH_STROKE_WIDTH, STEALTH_STROKE_HEIGHT);
+        canvas.draw(stealth_icon, Color.WHITE, stealth_icon.getWidth() / 2, stealth_icon.getHeight() / 2, canvas.getWidth()/2 - STEALTH_STROKE_WIDTH/2 + stealth_icon.getWidth(), MOON_STROKE_HEIGHT + stealth_icon.getHeight()*3/5, (float) (13f/180f * Math.PI), 0.7f, 0.7f);
+        Color stealth_fill = new Color(217f / 255.0f, 217f / 255.0f, 217f / 255.0f, 1f);
+        TextureRegion region_stealth = new TextureRegion(stealth_stroke);
+        float proportion = level.getPlayer().getStealth();
+        float width = region_stealth.getRegionWidth() * proportion;
+        float height = region_stealth.getRegionHeight();
+        TextureRegion region_fill = new TextureRegion(stealth_stroke, 0, 0, width, height);
+        canvas.draw(region_fill, stealth_fill, canvas.getWidth()/2 - STEALTH_STROKE_WIDTH/2, MOON_STROKE_HEIGHT, STEALTH_STROKE_WIDTH, STEALTH_STROKE_HEIGHT);
         canvas.end();
     }
 

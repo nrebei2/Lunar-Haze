@@ -20,7 +20,7 @@ public class Werewolf extends GameObject {
     private static final float INITIAL_LIGHT = 0.0f;
 
     /**
-     * Initial hp of the werewolf is 100.0
+     * Initial hp of the werewolf is 5
      **/
     public static int INITIAL_HP = 5;
 

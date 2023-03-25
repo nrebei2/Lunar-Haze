@@ -9,7 +9,7 @@
     "rays":			512,
     "soft":			false
   },
-  "health": 20,
+  "health": 5,
   "lockout": 0.5,
   "bodytype": "dynamic",
   "density": 1.0,
