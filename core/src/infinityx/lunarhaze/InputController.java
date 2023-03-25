@@ -63,9 +63,6 @@ public class InputController {
      * Caches all constants (between levels) from directory
      */
     public void loadConstants(AssetDirectory directory) {
-        JsonValue inputJson = directory.getEntry("input", JsonValue.class);
-        runSpeed = inputJson.get("runSpeed").asFloat();
-        walkSpeed = inputJson.get("walkSpeed").asFloat();
     }
 
     /**
@@ -232,28 +229,20 @@ public class InputController {
         resetPressed = Gdx.input.isKeyPressed(RESET);
         exitPressed = Gdx.input.isKeyPressed(EXIT);
 
-        // Directional controls
-        float move;
-        if (runPressed) {
-            move = runSpeed;
-        } else {
-            move = walkSpeed;
-        }
-
         horizontal = 0.0f;
         if (Gdx.input.isKeyPressed(RIGHT)) {
-            horizontal += move;
+            horizontal += 1;
         }
         if (Gdx.input.isKeyPressed(LEFT)) {
-            horizontal -= move;
+            horizontal -= 1;
         }
 
         vertical = 0.0f;
         if (Gdx.input.isKeyPressed(UP)) {
-            vertical += move;
+            vertical += 1;
         }
         if (Gdx.input.isKeyPressed(DOWN)) {
-            vertical -= move;
+            vertical -= 1;
         }
 
     }

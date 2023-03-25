@@ -55,10 +55,7 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
 
     // Attributes for all game objects
 
-    /**
-     * Move speed
-     **/
-    protected float speed = 2f;
+
     /**
      * Reference to texture origin
      */
@@ -114,11 +111,6 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
         setDensity(json.get("density").asFloat());
         setFriction(json.get("friction").asFloat());
         setRestitution(json.get("restitution").asFloat());
-        if (!json.has("speed")) {
-            setSpeed(0);
-        } else {
-            setSpeed(json.get("speed").asFloat());
-        }
         //setStartFrame(json.get("startframe").asInt());
         JsonValue texInfo = json.get("texture");
         setTexture(directory.getEntry(texInfo.get("name").asString(), FilmStrip.class));
@@ -141,20 +133,6 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
     @Override
     public boolean isDestroyed() {
         return destroyed;
-    }
-
-    /**
-     * @return The movement speed of this object
-     */
-    public float getSpeed() {
-        return speed;
-    }
-
-    /**
-     * Set the movement speed of this object
-     */
-    public void setSpeed(float speed) {
-        this.speed = speed;
     }
 
     public void setTexture(FilmStrip filmstrip) {
@@ -194,7 +172,6 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
      * @param delta Number of seconds since last animation frame
      */
     public void update(float delta) {
-
     }
 
     public float getDepth() {

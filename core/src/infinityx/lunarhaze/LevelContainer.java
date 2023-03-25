@@ -248,7 +248,7 @@ public class LevelContainer {
         Enemy enemy = enemies.obtain();
         enemy.initialize(directory, enemiesJson.get(type), this);
 
-//        enemy.setPatrolPath(patrol);
+        enemy.setPatrolPath(patrol);
         enemy.setPosition(x, y);
 
         return addEnemy(enemy);

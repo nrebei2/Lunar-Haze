@@ -1,5 +1,6 @@
 package infinityx.lunarhaze.entity;
 
+import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
@@ -208,7 +209,7 @@ public class Enemy extends GameObject implements Pool.Poolable {
      * @param move impulse to apply
      */
     public void update(Vector2 move) {
-        body.applyLinearImpulse(move.scl(speed), new Vector2(), true);
+        body.applyLinearImpulse(move, new Vector2(), true);
 
         //Limits maximum speed
         if (body.getLinearVelocity().len() > 1f) {
@@ -225,5 +226,8 @@ public class Enemy extends GameObject implements Pool.Poolable {
     public void setFlashLightRot(float ang) {
         body.setTransform(body.getPosition(), ang);
     }
+
+
+
 
 }

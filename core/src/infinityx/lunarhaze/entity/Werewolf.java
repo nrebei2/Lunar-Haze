@@ -22,12 +22,22 @@ public class Werewolf extends GameObject {
     /**
      * Initial hp of the werewolf is 100.0
      **/
-    public static int INITIAL_HP = 5;
+    public static int INITIAL_HP;
 
     /**
      * Maximum light of the werewolf is 100.0
      **/
     public static final float MAX_LIGHT = 100.0f;
+
+    /**
+     * Move speed (walking)
+     **/
+    protected float walkSpeed;
+
+    /**
+     * Move speed (running)
+     **/
+    protected float runSpeed;
 
     /**
      * Whether the werewolf can move or not; the werewolf can't move
@@ -69,7 +79,6 @@ public class Werewolf extends GameObject {
     /**
      * Health point (hp) of the werewolf
      */
-
     private int hp;
 
     /**
@@ -84,12 +93,10 @@ public class Werewolf extends GameObject {
      */
     private float stealth;
 
-
     /**
      * Controls how long the werewolf gets knocked back by an attack and the window of the
      * damage animation.
      */
-
     private float lockoutTime;
 
     /**
@@ -97,9 +104,17 @@ public class Werewolf extends GameObject {
      */
     private PointLight spotLight;
 
-    private final Vector2 forceCache = new Vector2();
+    // TODO: change this into FSM
 
+    /**
+     * Whether the werewolf is currently attacking
+     */
     private boolean isAttacking;
+
+    /**
+     * Whether the werewolf is in sprint
+     */
+    private boolean isRunning;
 
     /**
      * Returns the type of this object.
@@ -146,6 +161,14 @@ public class Werewolf extends GameObject {
      */
     public void setMovementV(float value) {
         movementV = value;
+    }
+
+    public void setRunning(boolean running) {
+        isRunning = running;
+    }
+
+    public boolean isRunning() {
+        return isRunning;
     }
 
     /**
@@ -273,6 +296,7 @@ public class Werewolf extends GameObject {
         stealth = 0.0f;
         moonlightCollected = 0;
         isAttacking = false;
+        isRunning = false;
         canMove = true;
     }
 
@@ -292,6 +316,10 @@ public class Werewolf extends GameObject {
         int health = json.getInt("health");
         float lockout = json.getFloat("lockout");
 
+        JsonValue speedInfo = json.get("speed");
+        walkSpeed = speedInfo.getFloat("walk");
+        runSpeed = speedInfo.getFloat("run");
+
         initHp(health);
         initLockout(lockout);
 
@@ -305,18 +333,6 @@ public class Werewolf extends GameObject {
         setSpotLight(spotLight);
     }
 
-    public void resolveAttack(GameObject enemy, int damage, float knockback) {
-
-        Body enemyBody = enemy.getBody();
-        Vector2 pos = body.getPosition();
-        Vector2 enemyPos = enemyBody.getPosition();
-        Vector2 direction = pos.sub(enemyPos).nor();
-
-        canMove = false;
-        body.applyLinearImpulse(direction.scl(knockback), body.getWorldCenter(), true);
-        setHp(hp - damage);
-    }
-
     /**
      * Updates the animation frame and position of this werewolf.
      *
@@ -326,7 +342,7 @@ public class Werewolf extends GameObject {
         // get the current velocity of the player's Box2D body
         Vector2 velocity = body.getLinearVelocity();
         if (canMove) {
-            // update the velocity based on the input from the player
+            float speed = isRunning ? runSpeed : walkSpeed;
             velocity.x = movementH * speed;
             velocity.y = movementV * speed;
 
