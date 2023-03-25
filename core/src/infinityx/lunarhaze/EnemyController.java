@@ -1,5 +1,13 @@
 package infinityx.lunarhaze;
 
+import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
+import com.badlogic.gdx.ai.fsm.StateMachine;
+import com.badlogic.gdx.ai.msg.MessageDispatcher;
+import com.badlogic.gdx.ai.msg.TelegramProvider;
+import com.badlogic.gdx.ai.steer.behaviors.Arrive;
+import com.badlogic.gdx.ai.steer.behaviors.RaycastObstacleAvoidance;
+import com.badlogic.gdx.ai.steer.behaviors.Seek;
+import com.badlogic.gdx.ai.utils.RaycastCollisionDetector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
@@ -75,43 +83,21 @@ public class EnemyController {
 
     private enum Detection {
         /**
-         * The enemy can only detect the player in a straight line
+         * The enemy is alerted (Exclamation point!)
          */
-        LIGHT,
+        ALERT,
         /**
-         * The enemy can detect the player in an area
-         * The enemy can detect the player in an area
+         * The enemy has noticed sometime amiss (Question mark?)
          */
-        AREA,
-        /**
-         * The enemy can  detect the player in a half circle
-         */
-        MOON,
-
-        FULL_MOON,
+        NOTICED,
+        /** Neither heard nor seen the target */
+        NONE
     }
 
     /**
      * The enemy being controlled by this AIController
      */
     private final Enemy enemy;
-
-    private Detection detection;
-
-    /**
-     * Set of active enemies on the current level
-     */
-    Array<Enemy> enemies;
-
-    /**
-     * The game board; used for pathfinding
-     */
-    private Board board;
-
-    /**
-     * The enemies current state in the FSM
-     */
-    private FSMState state;
 
     /**
      * The target (to chase or attack).
@@ -156,38 +142,36 @@ public class EnemyController {
     private ObjectMap<Enemy, EnemyController> controls;
 
     /**
+     * AI state machine for each enemy.
+     */
+    private StateMachine<EnemyController, EnemyState> stateMachine;
+
+    /**
      * Creates an EnemyController for the enemy with the given id.
      *
      * @param enemy   The enemy being controlled by this AIController
      */
     public EnemyController(Enemy enemy) {
         this.enemy = enemy;
-        this.state = FSMState.SPAWN;
-        this.detection = Detection.LIGHT;
         this.ticks = 0;
         this.chased_ticks = 0;
         this.idle_ticks = 0;
         this.end_chase_pos = new Vector2();
+        this.stateMachine = new DefaultStateMachine<>(this, EnemyState.PATROL);
     }
 
     /**
-     * (re)initialize attributes of this controller given the enemy.
-     * This must be called when the enemy is reused from its pool.
-     */
-    public void initialize() {
-        this.goal = getRandomPointinRegion();
-    }
-
-    /**
-     * Populate
+     * Populate attributes used for sensory information.
      * @param container holding surrounding model objects
      */
     public void populateSurroundings(LevelContainer container) {
-        board = container.getBoard();
         target = container.getPlayer();
-        enemies = container.getEnemies();
         controls = container.getEnemyControllers();
         //map = container.getMap();
+    }
+
+    public StateMachine<EnemyController, EnemyState> getStateMachine() {
+        return stateMachine;
     }
 
     public RaycastInfo raycast(GameObject requestingObject, Vector2 point1, Vector2 point2, World world) {
@@ -219,11 +203,18 @@ public class EnemyController {
 
 
     /**
-     * Returns true if we detected the player (when the player walks in line of sight)
-     *
-     * @return true if we can both fire and hit our target
+     * @return the current detection the enemy has on the target
      */
-    private boolean detectedPlayer(LevelContainer container) {
+    private Detection getDetection(LevelContainer container) {
+        /* Area of interests:
+        * Focused view - same angle as flashlight, extends between [0.4, 2]
+        * Short distance - angle of 100, extends between [0.2, 1]
+        * Peripheral vision - angle of 180, extends between [0.1, 0.5]
+        * Hearing radius - angle of 360, extends between [0, 0.7]
+        * Lerp between player stealth for max distance,
+        * but maybe add cutoffs for NONE?
+        */
+
         /**Enemy must be in a line and less than detection distance away*/
         if (detection == Detection.LIGHT) {
             return lightDetect(container);
@@ -241,31 +232,10 @@ public class EnemyController {
     }
 
     /**
-     * Returns true if we can hit a target from here.
-     *
-     * @param x The x-index of the source tile
-     * @param y The y-index of the source tile
-     * @return true if we can hit a target from here.
-     */
-    private boolean canHitTargetFrom(int x, int y) {
-        if (!board.isWalkable(x, y) || target == null) {
-            return false;
-        }
-        int pos_x = board.worldToBoardX(target.getX());
-        int pos_y = board.worldToBoardX(target.getY());
-        return Vector2.dst(x, y, pos_x, pos_y) <= ATTACK_DIST;
-    }
-
-    /**
-     * Returns true if we can both fire and hit our target
-     * <p>
-     * If we can fire now, and we could hit the target from where we are,
-     * we should hit the target now.
-     *
-     * @return true if we can both fire and hit our target
+     * @return true if the enemy attached to this controller can attack the enemy
      */
     private boolean canHitTarget() {
-        return canHitTargetFrom(board.worldToBoardX(enemy.getX()), board.worldToBoardX(enemy.getY()));
+        return true;
     }
 
     private boolean canChase() {
@@ -394,30 +364,35 @@ public class EnemyController {
         }
     }
 
+    //
+    //private void changeDetectionIfApplicable(GameplayController.Phase currentPhase) {
+    //    if (target.isOnMoonlight()) {
+    //        detection = Detection.MOON;
+    //    } else if (state == FSMState.CHASE) {
+    //        detection = Detection.AREA;
+    //        enemy.getFlashlight().setConeDegree(0);
+    //    }else if (currentPhase == GameplayController.Phase.BATTLE){
+    //        enemy.getFlashlight().setConeDegree(0);
+    //        detection = Detection.FULL_MOON;
+    //        state = FSMState.CHASE;
+    //    } else {
+    //        detection = Detection.LIGHT;
+    //        enemy.getFlashlight().setConeDegree(30);
+    //
+    //    }
+    //}
 
-    private void changeDetectionIfApplicable(GameplayController.Phase currentPhase) {
-        if (target.isOnMoonlight()) {
-            detection = Detection.MOON;
-        } else if (state == FSMState.CHASE) {
-            detection = Detection.AREA;
-            enemy.getFlashlight().setConeDegree(0);
-        }else if (currentPhase == GameplayController.Phase.BATTLE){
-            enemy.getFlashlight().setConeDegree(0);
-            detection = Detection.FULL_MOON;
-            state = FSMState.CHASE;
-        } else {
-            detection = Detection.LIGHT;
-            enemy.getFlashlight().setConeDegree(30);
 
-        }
-    }
-
-
-    private Vector2 getRandomPointinRegion() {
-        //Calculates the two point coordinates in a world base
-        Vector2 bottom_left = board.boardToWorld((int) enemy.getBottomLeftOfRegion().x, (int) enemy.getBottomLeftOfRegion().y);
-        Vector2 top_right = board.boardToWorld((int) enemy.getTopRightOfRegion().x, (int) enemy.getTopRightOfRegion().y);
-        Vector2 random_point = new Vector2(MathUtils.random(bottom_left.x, top_right.x), MathUtils.random(bottom_left.y, top_right.y));
+    /**
+     *
+     * @return
+     */
+    private Vector2 getPatrolTarget() {
+        Seek
+        Vector2 random_point = new Vector2(
+                MathUtils.random(enemy.getBottomLeftOfRegion().x, enemy.getTopRightOfRegion().x),
+                MathUtils.random(enemy.getBottomLeftOfRegion().y, enemy.getTopRightOfRegion().y)
+        );
         //System.out.println("I found a point with x: "+ random_point.x+", y: "+random_point.y+"!");
         return random_point;
     }

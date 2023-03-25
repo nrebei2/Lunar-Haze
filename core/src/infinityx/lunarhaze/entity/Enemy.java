@@ -1,7 +1,9 @@
 package infinityx.lunarhaze.entity;
 
 import com.badlogic.gdx.ai.steer.Steerable;
+import com.badlogic.gdx.ai.steer.behaviors.CollisionAvoidance;
 import com.badlogic.gdx.ai.steer.behaviors.PrioritySteering;
+import com.badlogic.gdx.ai.steer.behaviors.RaycastObstacleAvoidance;
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
@@ -10,6 +12,7 @@ import com.badlogic.gdx.utils.Pool;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.GameObject;
 import infinityx.lunarhaze.LevelContainer;
+import infinityx.lunarhaze.SteeringGameObject;
 import infinityx.lunarhaze.physics.ConeSource;
 
 import java.util.ArrayList;
@@ -17,7 +20,7 @@ import java.util.ArrayList;
 /**
  * Model class representing an enemy.
  */
-public class Enemy extends GameObject implements Pool.Poolable{
+public class Enemy extends SteeringGameObject implements Pool.Poolable {
     /**
      * Current animation frame for this werewolf
      */
@@ -75,7 +78,7 @@ public class Enemy extends GameObject implements Pool.Poolable{
      * Initialize an enemy with dummy position, id, and patrol path
      */
     public Enemy() {
-        super(0, 0);
+        super(false);
         this.patrolPath = new ArrayList<>();
         animeframe = 0.0f;
         alerted = false;
@@ -204,19 +207,5 @@ public class Enemy extends GameObject implements Pool.Poolable{
      */
     public float getHealthPercentage() {
         return hp / maxHp;
-    }
-
-    /**
-     * Updates the animation frame and position of this enemy.
-     * @param move impulse to apply
-     */
-    public void update(Vector2 move) {
-        body.applyLinearImpulse(move, new Vector2(), true);
-
-        //Limits maximum speed
-        if (body.getLinearVelocity().len() > 1f) {
-            body.setLinearVelocity(body.getLinearVelocity().clamp(0f, 1f));
-        }
-
     }
 }

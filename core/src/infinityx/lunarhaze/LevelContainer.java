@@ -219,7 +219,6 @@ public class LevelContainer {
 
         // Update enemy controller assigned to the new enemy
         getEnemyControllers().get(enemy).populateSurroundings(this);
-        getEnemyControllers().get(enemy).initialize();
 
         return enemy;
     }

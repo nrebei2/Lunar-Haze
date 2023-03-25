@@ -1,8 +1,10 @@
 package infinityx.lunarhaze.physics;
 
+import com.badlogic.gdx.ai.utils.Collision;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.RayCastCallback;
+import com.badlogic.gdx.utils.ObjectSet;
 import infinityx.lunarhaze.GameObject;
 
 public class RaycastInfo implements RayCastCallback {
@@ -11,15 +13,8 @@ public class RaycastInfo implements RayCastCallback {
      */
     public Fixture fixture;
 
-    /**
-     * Collision point
-     */
-    public Vector2 point;
-
-    /**
-     * The normal at the point we hit a fixture
-     */
-    public Vector2 normal;
+    /** Holds collision point and normal */
+    public Collision<Vector2> outputCollision;
 
     /**
      * The fraction of the ray that is used to hit the fixture
@@ -33,18 +28,32 @@ public class RaycastInfo implements RayCastCallback {
     private GameObject requestingObject;
 
     /**
+     * Game object types the ray will ignore
+     */
+    private ObjectSet<GameObject.ObjectType> ignore;
+
+    /**
      * The gameobject that is attached to the fixture hit
      */
     public GameObject hitObject;
 
+    /**
+     * @param obj The requesting object
+     */
     public RaycastInfo(GameObject obj) {
         fixture = null;
-        point = new Vector2();
-        normal = new Vector2();
         fraction = 0.0f;
         hit = false;
         hitObject = null;
         this.requestingObject = obj;
+    }
+
+    /**
+     * Add types The ray will ignore objects of given types
+     * @param types of game objects ignore
+     */
+    public void addIgnores(GameObject.ObjectType... types) {
+        ignore.addAll(types);
     }
 
     /**
@@ -57,18 +66,18 @@ public class RaycastInfo implements RayCastCallback {
      */
     @Override
     public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
-        if (fixture.getUserData() == requestingObject) {
+        // Right now, all hit bodies are contained in GameObjects
+        GameObject objHit = (GameObject)fixture.getUserData();
+        if (objHit == requestingObject || ignore.contains(objHit.getType())) {
             return 1;
         }
 
         this.fixture = fixture;
-        this.point = new Vector2(point.x, point.y);
-        this.normal = new Vector2(normal.x, normal.y);
+        outputCollision.set(point, normal);
         this.fraction = fraction;
         this.hit = fraction != 0;
-        this.hitObject = (GameObject) fixture.getUserData();
-        if (hitObject.getType() == GameObject.ObjectType.SCENE) {
-            return -1;
+        if (this.hit) {
+
         }
         return fraction;
     }

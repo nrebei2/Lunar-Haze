@@ -39,13 +39,6 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
 
     /**
      * Enum specifying the type of this game object.
-     * <p>
-     * This Enum is not strictly necessary.  We could use runtime-time
-     * typing instead.  However, enums can be used in switch statements
-     * (which are very fast), which types cannot. That is the motivation
-     * for this Enum.
-     * If you add new subclasses of GameObject, you will need to add
-     * to this Enum as well.
      */
     public enum ObjectType {
         ENEMY,
@@ -54,8 +47,6 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
     }
 
     // Attributes for all game objects
-
-
     /**
      * Reference to texture origin
      */
