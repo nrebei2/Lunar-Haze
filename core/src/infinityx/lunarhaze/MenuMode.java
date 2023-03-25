@@ -73,6 +73,11 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
     private static final float PLAY_HEIGHT_RATIO = 0.25f;
 
     /**
+     * What level was selected by the player
+     */
+    private int levelSelected;
+
+    /**
      * Returns true if all assets are loaded and the player is ready to go.
      *
      * @return true if the player is ready to go
@@ -106,6 +111,14 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
         background = directory.getEntry("background", Texture.class);
         background.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         playButton = directory.getEntry("play", Texture.class);
+    }
+
+    public int getLevelSelected() {
+        return levelSelected;
+    }
+
+    public void setLevelSelected(int levelSelected) {
+        this.levelSelected = levelSelected;
     }
 
     /**
@@ -159,8 +172,14 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
                 observer.exitScreen(this, GO_EDITOR);
             }
 
+            if (Gdx.input.isKeyPressed(Input.Keys.T)) {
+                setLevelSelected(0);
+                observer.exitScreen(this, GO_PLAY);
+            }
+
             // We are are ready, notify our listener
             if (isReady() && observer != null) {
+                setLevelSelected(1);
                 observer.exitScreen(this, GO_PLAY);
             }
         }

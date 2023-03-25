@@ -130,12 +130,12 @@ public class GDXRoot extends Game implements ScreenObserver {
             loading = null;
         } else if (screen == menu) {
             // TODO: should exitCode be the level?
-            game.setLevel(exitCode);
             switch (exitCode) {
                 case MenuMode.GO_EDITOR:
                     setScreen(editor);
                     break;
                 case MenuMode.GO_PLAY:
+                    game.setLevel(menu.getLevelSelected());
                     setScreen(game);
                     break;
             }

@@ -193,9 +193,9 @@ public class Board {
     }
 
     /**
-     * Returns the board cell index for a world x-position.
+     * Returns the board cell index for a world y-position.
      *
-     * @return the board cell index for a world x-position.
+     * @return the board cell index for a world y-position.
      */
     public int worldToBoardY(float y) {
         return (int) (y / tileWorldDim.y);
