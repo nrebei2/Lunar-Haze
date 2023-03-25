@@ -909,7 +909,7 @@ public class GameCanvas {
         barRender.begin(ShapeRenderer.ShapeType.Line);
         barRender.setColor(Color.WHITE);
         float x = (getWidth() - width)/2;
-        float y = (getHeight() - height)/4*3;
+        float y = (getHeight() - height)/4*2.7f;
         barRender.rect(x, y, width, height);
         barRender.end();
 
