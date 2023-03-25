@@ -153,6 +153,11 @@ public class UIRender {
         canvas.drawStealthBar(stealth_icon, BAR_WIDTH,
                 BAR_HEIGHT, level.getPlayer().getStealth());
 
+        if(gameplayController.getCollectingMoonlight()) {
+             canvas.drawCollectLightBar(BAR_WIDTH / 2, BAR_HEIGHT / 2,
+                 gameplayController.getTimeOnMoonlightPercentage());
+        }
+
         if (phase == Phase.BATTLE) {
             for (Enemy enemy : level.getEnemies()) {
                 canvas.drawEnemyHpBars(

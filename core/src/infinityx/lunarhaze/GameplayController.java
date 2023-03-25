@@ -104,6 +104,7 @@ public class GameplayController {
     /** Number of ticks (frames) since battle began */
     private int battleTicks;
 
+
     /**
      * Creates a new GameplayController with no active elements.
      */
@@ -119,6 +120,10 @@ public class GameplayController {
     public GameState getState() {
         return gameState;
     }
+
+    public float getTimeOnMoonlightPercentage(){return playerController.getTimeOnMoonlightPercentage();}
+
+    public boolean getCollectingMoonlight(){return playerController.isCollectingMoonlight();}
 
     /**
      * @return the current phase of the game

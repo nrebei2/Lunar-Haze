@@ -900,6 +900,26 @@ public class GameCanvas {
         font.draw(spriteBatch, layout, x, y + offset);
     }
 
+    public void drawCollectLightBar(float width, float height, float percentage) {
+        if (active != DrawPass.STANDARD) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+            return;
+        }
+
+        barRender.begin(ShapeRenderer.ShapeType.Line);
+        barRender.setColor(Color.WHITE);
+        float x = (getWidth() - width)/2;
+        float y = (getHeight() - height)/4*3;
+        barRender.rect(x, y, width, height);
+        barRender.end();
+
+        barRender.begin(ShapeRenderer.ShapeType.Filled);
+        Color yellow = new Color(244.0f / 255.0f, 208.0f / 255.0f, 63.0f / 255.0f, 1.0f);
+        barRender.setColor(yellow);
+        barRender.rect(x, y, width * percentage, height);
+        barRender.end();
+    }
+
     public void drawLightBar(Texture icon, float width, float height, float light) {
         if (active != DrawPass.STANDARD) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());

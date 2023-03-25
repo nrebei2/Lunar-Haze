@@ -66,12 +66,18 @@ public class PlayerController {
      */
     private float attackCooldownCounter;
 
+    /**If the player is collecting moonlight then true, false otherwise */
+    private boolean collectingMoonlight;
+
     /**
      *
      */
     private float attackCooldown;
 
     private Vector2 attackDirection;
+    public float getTimeOnMoonlightPercentage(){
+        return timeOnMoonlight/MOONLIGHT_COLLECT_TIME;
+    }
 
     /**
      * Initializer of a PlayerController
@@ -86,6 +92,7 @@ public class PlayerController {
         attackCooldown = 4f;
         attackCooldownCounter = 0f;
         attackDirection = new Vector2();
+        collectingMoonlight = false;
     }
 
     /**
@@ -106,6 +113,7 @@ public class PlayerController {
      * <p>
      */
     public void collectMoonlight() {
+        collectingMoonlight = false;
         player.addMoonlightCollected();
         player.setLight(player.getLight() + (Werewolf.MAX_LIGHT / levelContainer.getTotalMoonlight()));
     }
@@ -124,15 +132,21 @@ public class PlayerController {
         if (board.isLit(px, py)) {
             timeOnMoonlight += delta; // Increase variable by time
             player.setOnMoonlight(true);
+            collectingMoonlight = true;
             if (board.isCollectable(px, py) && (timeOnMoonlight > MOONLIGHT_COLLECT_TIME)) {
                 collectMoonlight();
+                collectingMoonlight = false;
                 timeOnMoonlight = 0;
                 board.setCollected(px, py);
                 lightingController.removeDust(px, py);
             }
+            if(board.isCollectable(px, py)==false){
+                collectingMoonlight = false;
+            }
         } else {
             timeOnMoonlight = 0;
             player.setOnMoonlight(false);
+            collectingMoonlight = false;
         }
     }
 
@@ -158,6 +172,9 @@ public class PlayerController {
         }
     }
 
+    public boolean isCollectingMoonlight(){
+        return collectingMoonlight;
+    }
     public void attack(float delta, InputController input, Phase phase) {
         if (phase == GameplayController.Phase.BATTLE) {
             if (player.isAttacking()) {
