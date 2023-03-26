@@ -162,7 +162,7 @@ public class LevelContainer {
 
         // There will always be a player
         // So it's fine to initialize now
-        Werewolf player = new Werewolf(0, 0);
+        Werewolf player = new Werewolf();
         player.initialize(directory, playerJson, this);
         setPlayer(player);
 
@@ -215,10 +215,10 @@ public class LevelContainer {
      */
     public Enemy addEnemy(Enemy enemy) {
         activeEnemies.add(enemy);
-        addDrawable(enemy);
+        addDrawables(enemy);
 
         // Update enemy controller assigned to the new enemy
-        getEnemyControllers().get(enemy).populateSurroundings(this);
+        getEnemyControllers().get(enemy).populate(this);
 
         return enemy;
     }
@@ -258,13 +258,6 @@ public class LevelContainer {
      */
     public ObjectMap<Enemy, EnemyController> getEnemyControllers() {
         return enemies.controls;
-    }
-
-    /**
-     * Add object for this container to draw.
-     */
-    public void addDrawable(Drawable drawable) {
-        drawables.add(drawable);
     }
 
     /**

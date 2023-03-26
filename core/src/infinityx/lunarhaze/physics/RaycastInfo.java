@@ -46,6 +46,7 @@ public class RaycastInfo implements RayCastCallback {
         hit = false;
         hitObject = null;
         this.requestingObject = obj;
+        ignore = new ObjectSet<>();
     }
 
     /**

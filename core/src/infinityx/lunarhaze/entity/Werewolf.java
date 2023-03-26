@@ -9,11 +9,12 @@ import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.GameCanvas;
 import infinityx.lunarhaze.GameObject;
 import infinityx.lunarhaze.LevelContainer;
+import infinityx.lunarhaze.SteeringGameObject;
 
 /**
  * Model class representing the player.
  */
-public class Werewolf extends GameObject {
+public class Werewolf extends SteeringGameObject {
     /**
      * Initial light value of the werewolf is 0.0
      **/
@@ -286,8 +287,8 @@ public class Werewolf extends GameObject {
     /**
      * Initialize a werewolf.
      */
-    public Werewolf(float x, float y) {
-        super(x, y);
+    public Werewolf() {
+        super(false);
         animeframe = 0.0f;
         lockoutTime = 0.0f;
         moonlight = false;

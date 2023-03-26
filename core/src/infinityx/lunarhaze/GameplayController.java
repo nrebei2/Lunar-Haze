@@ -3,17 +3,12 @@ package infinityx.lunarhaze;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Interpolation;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.EnemySpawner;
 import infinityx.lunarhaze.entity.Werewolf;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Controller to handle gameplay interactions.
@@ -187,7 +182,7 @@ public class GameplayController {
             if (player.getHp() <= 0) gameState = GameState.OVER;
         }
         // Enemies should still update even when game is outside play
-        resolveEnemies();
+        resolveEnemies(delta);
 
         // TODO: for convenience, remove later
         if (Gdx.input.isKeyPressed(Input.Keys.PERIOD)) {
@@ -236,15 +231,15 @@ public class GameplayController {
     }
 
     /**
-     * Resolve any updates for the active enemies through their controllers.
+     * Resolve any updates relating to enemies.
       */
-    public void resolveEnemies() {
+    public void resolveEnemies(float delta) {
         // add enemies during battle stage and in play
         if (getPhase() == Phase.BATTLE && gameState == GameState.PLAY) {
             enemySpawner.update(battleTicks);
         }
         for (int i = 0; i < enemies.size; i++) {
-            controls.get(enemies.get(i)).update(container, currentPhase);
+            controls.get(enemies.get(i)).update(container, currentPhase, delta);
         }
     }
 }

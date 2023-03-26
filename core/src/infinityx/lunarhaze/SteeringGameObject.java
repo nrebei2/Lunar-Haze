@@ -34,7 +34,8 @@ public abstract class SteeringGameObject extends GameObject implements Steerable
     private static final SteeringAcceleration<Vector2> steeringOutput = new SteeringAcceleration<Vector2>(new Vector2());
 
     public SteeringGameObject(boolean independentFacing) {
-        this.independentFacing = independentFacing;
+        super();
+        setIndependentFacing(independentFacing);
     }
 
     public boolean isIndependentFacing () {

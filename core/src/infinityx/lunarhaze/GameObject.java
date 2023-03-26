@@ -71,7 +71,7 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
      * Creates game object at (0, 0)
      */
     public GameObject() {
-        super(0, 0);
+        this(0, 0);
     }
 
     /**

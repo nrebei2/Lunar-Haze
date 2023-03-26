@@ -13,6 +13,9 @@ public class Box2DRaycastCollision implements RaycastCollisionDetector<Vector2> 
     World world;
     RaycastInfo callback;
 
+    /** The gameobject that is attached to the fixture hit */
+    public GameObject hitObject;
+
     public Box2DRaycastCollision (World world, RaycastInfo raycastInfo) {
         this.world = world;
         this.callback = raycastInfo;
@@ -27,6 +30,7 @@ public class Box2DRaycastCollision implements RaycastCollisionDetector<Vector2> 
     public boolean findCollision (Collision<Vector2> outputCollision, Ray<Vector2> inputRay) {
         callback.outputCollision = outputCollision;
         world.rayCast(callback, inputRay.start, inputRay.end);
+        hitObject = callback.hitObject;
         return callback.hit;
     }
 }
