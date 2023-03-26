@@ -12,6 +12,7 @@ import com.badlogic.gdx.ai.utils.RaycastCollisionDetector;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import infinityx.lunarhaze.ai.LookAround;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.Werewolf;
 import infinityx.lunarhaze.physics.Box2DRaycastCollision;
@@ -147,6 +148,7 @@ public class EnemyController {
     public Arrive<Vector2> arriveSB;
     public RaycastObstacleAvoidance<Vector2> collisionSB;
     public PrioritySteering<Vector2> patrolSB;
+    public LookAround lookAroundSB;
 
     /**
      * Creates an EnemyController for the enemy with the given id.
@@ -183,14 +185,17 @@ public class EnemyController {
 
         this.collisionSB = new RaycastObstacleAvoidance<>(
                 enemy,
-                new CentralRayWithWhiskersConfiguration<>(enemy, 2, 1, 35 * MathUtils.degreesToRadians),
-                raycastCollisionDetector, 10
+                new CentralRayWithWhiskersConfiguration<>(enemy, 5, 3, 35 * MathUtils.degreesToRadians),
+                raycastCollisionDetector, 1
         );
 
         this.patrolSB =
             new PrioritySteering<>(enemy, 0.0001f)
                 .add(collisionSB)
                 .add(arriveSB);
+
+        this.lookAroundSB = new LookAround(enemy, 160).
+                setAlignTolerance(MathUtils.degreesToRadians * 10);
     }
 
     /**
@@ -404,7 +409,7 @@ public class EnemyController {
                 MathUtils.random(enemy.getBottomLeftOfRegion().x, enemy.getTopRightOfRegion().x),
                 MathUtils.random(enemy.getBottomLeftOfRegion().y, enemy.getTopRightOfRegion().y)
         );
-        //System.out.println("I found a point with x: "+ random_point.x+", y: "+random_point.y+"!");
+        System.out.println("I found a point with x: "+ random_point.x+", y: "+random_point.y+"!");
         return random_point;
     }
 

@@ -46,21 +46,41 @@ public enum EnemyState implements State<EnemyController> {
         public void enter(EnemyController entity) {
             System.out.println("Patrolling now...");
             entity.arriveSB.setTarget(new Box2dLocation(entity.getPatrolTarget()));
-
-            SteeringAcceleration<Vector2> a = new SteeringAcceleration<>(new Vector2());
-            entity.arriveSB.calculateSteering(a);
-            System.out.printf("arrive linear: %s, arrive tolerance: %f\n", a.linear.toString(), entity.arriveSB.getArrivalTolerance());
             entity.getEnemy().setSteeringBehavior(entity.patrolSB);
         }
 
         @Override
-        public void update(EnemyController control) {
-
+        public void update(EnemyController entity) {
+            // Check if have arrived to patrol position
+            float dist = entity.getEnemy().getPosition().dst(entity.arriveSB.getTarget().getPosition());
+            if (dist <= entity.arriveSB.getArrivalTolerance()) entity.getStateMachine().changeState(LOOK_AROUND);
         }
 
         @Override
         public void exit(EnemyController entity) {
 
+        }
+    },
+
+    LOOK_AROUND() {
+        @Override
+        public void enter(EnemyController entity) {
+            System.out.println("Looking around now...");
+            entity.lookAroundSB.reset();
+            entity.getEnemy().setIndependentFacing(true);
+            entity.getEnemy().setLinearVelocity(Vector2.Zero);
+            entity.getEnemy().setSteeringBehavior(entity.lookAroundSB);
+        }
+
+        @Override
+        public void update(EnemyController entity) {
+            //System.out.printf("angular: %f\n", entity.getEnemy().getSteeringAngular());
+            if (entity.lookAroundSB.isFinished()) entity.getStateMachine().revertToPreviousState();
+        }
+
+        @Override
+        public void exit(EnemyController entity) {
+           entity.getEnemy().setIndependentFacing(false);
         }
     };
 

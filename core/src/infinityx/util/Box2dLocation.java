@@ -13,6 +13,10 @@ public class Box2dLocation implements Location<Vector2>{
         orientation = 0;
     }
 
+    public Box2dLocation() {
+       this(new Vector2());
+    }
+
     @Override
     public Vector2 getPosition() {
         return position;

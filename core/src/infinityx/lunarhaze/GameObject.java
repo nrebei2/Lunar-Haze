@@ -84,7 +84,6 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
      */
     public GameObject(float x, float y) {
         super(x, y, 1, 1);
-        setFixedRotation(true);
     }
 
     /**

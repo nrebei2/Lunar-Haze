@@ -39,6 +39,16 @@ public abstract class SteeringGameObject extends GameObject implements Steerable
         setIndependentFacing(independentFacing);
     }
 
+    /** Returns last linear acceleration applied to this object from steering behavior */
+    public Vector2 getSteeringLinear() {
+        return steeringOutput.linear;
+    }
+
+    /** Returns last angular acceleration applied to this object from steering behavior */
+    public float getSteeringAngular() {
+        return steeringOutput.angular;
+    }
+
     public boolean isIndependentFacing () {
         return independentFacing;
     }
@@ -65,8 +75,6 @@ public abstract class SteeringGameObject extends GameObject implements Steerable
      */
     protected void applySteering (float deltaTime) {
         steeringBehavior.calculateSteering(steeringOutput);
-
-        System.out.printf("linear: %s\n", steeringOutput.linear.toString());
 
         boolean anyAccelerations = false;
         // Update position and linear velocity.
