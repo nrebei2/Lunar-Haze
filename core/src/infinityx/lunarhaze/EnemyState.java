@@ -3,6 +3,7 @@ package infinityx.lunarhaze;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
+import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
@@ -45,6 +46,10 @@ public enum EnemyState implements State<EnemyController> {
         public void enter(EnemyController entity) {
             System.out.println("Patrolling now...");
             entity.arriveSB.setTarget(new Box2dLocation(entity.getPatrolTarget()));
+
+            SteeringAcceleration<Vector2> a = new SteeringAcceleration<>(new Vector2());
+            entity.arriveSB.calculateSteering(a);
+            System.out.printf("arrive linear: %s, arrive tolerance: %f\n", a.linear.toString(), entity.arriveSB.getArrivalTolerance());
             entity.getEnemy().setSteeringBehavior(entity.patrolSB);
         }
 

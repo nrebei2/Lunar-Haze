@@ -28,9 +28,12 @@ public class Box2DRaycastCollision implements RaycastCollisionDetector<Vector2> 
 
     @Override
     public boolean findCollision (Collision<Vector2> outputCollision, Ray<Vector2> inputRay) {
-        callback.outputCollision = outputCollision;
-        world.rayCast(callback, inputRay.start, inputRay.end);
-        hitObject = callback.hitObject;
+        callback.hit = false;
+        if (!inputRay.start.epsilonEquals(inputRay.end, MathUtils.FLOAT_ROUNDING_ERROR)) {
+            callback.outputCollision = outputCollision;
+            world.rayCast(callback, inputRay.start, inputRay.end);
+            hitObject = callback.hitObject;
+        }
         return callback.hit;
     }
 }

@@ -7,6 +7,7 @@ import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.ai.utils.RaycastCollisionDetector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import infinityx.util.Box2dSteeringUtils;
 
 
 /**
@@ -31,7 +32,7 @@ public abstract class SteeringGameObject extends GameObject implements Steerable
     protected SteeringBehavior<Vector2> steeringBehavior;
 
     /** Cache for output from steeringBehavior */
-    private static final SteeringAcceleration<Vector2> steeringOutput = new SteeringAcceleration<Vector2>(new Vector2());
+    private static final SteeringAcceleration<Vector2> steeringOutput = new SteeringAcceleration<>(new Vector2());
 
     public SteeringGameObject(boolean independentFacing) {
         super();
@@ -64,6 +65,8 @@ public abstract class SteeringGameObject extends GameObject implements Steerable
      */
     protected void applySteering (float deltaTime) {
         steeringBehavior.calculateSteering(steeringOutput);
+
+        System.out.printf("linear: %s\n", steeringOutput.linear.toString());
 
         boolean anyAccelerations = false;
         // Update position and linear velocity.
@@ -185,7 +188,7 @@ public abstract class SteeringGameObject extends GameObject implements Steerable
      */
     @Override
     public void setMaxLinearAcceleration(float maxLinearAcceleration) {
-        this.maxAngularAcceleration = maxLinearAcceleration;
+        this.maxLinearAcceleration = maxLinearAcceleration;
     }
 
     /**
@@ -250,7 +253,7 @@ public abstract class SteeringGameObject extends GameObject implements Steerable
      */
     @Override
     public float vectorToAngle(Vector2 vector) {
-        return MathUtils.atan2(vector.y, vector.x);
+        return Box2dSteeringUtils.vectorToAngle(vector);
     }
 
     /**
@@ -262,8 +265,7 @@ public abstract class SteeringGameObject extends GameObject implements Steerable
      */
     @Override
     public Vector2 angleToVector(Vector2 outVector, float angle) {
-        outVector.set(MathUtils.cos(angle), MathUtils.sin(angle));
-        return outVector;
+       return Box2dSteeringUtils.angleToVector(outVector, angle);
     }
 
     /**

@@ -17,9 +17,6 @@ import infinityx.lunarhaze.entity.Werewolf;
 import infinityx.lunarhaze.physics.Box2DRaycastCollision;
 import infinityx.lunarhaze.physics.RaycastInfo;
 
-import java.util.Iterator;
-import java.util.Random;
-
 
 // TODO: move all this stuff into AI controller, EnemyController should hold other enemy actions
 public class EnemyController {
@@ -175,7 +172,6 @@ public class EnemyController {
         target = container.getPlayer();
         this.raycastCollision = new Box2DRaycastCollision(container.getWorld(), raycast);
 
-
         // Steering behaviors
         this.arriveSB = new Arrive<>(enemy, target);
         arriveSB.setArrivalTolerance(0.1f);
@@ -195,6 +191,28 @@ public class EnemyController {
             new PrioritySteering<>(enemy, 0.0001f)
                 .add(collisionSB)
                 .add(arriveSB);
+    }
+
+    /**
+     * Updates the enemy being controlled by this controller
+     *
+     * @param container
+     * @param currentPhase of the game
+     * @param delta
+     */
+    public void update(LevelContainer container, GameplayController.Phase currentPhase, float delta) {
+        ticks++;
+        if (enemy.getHp() <= 0) container.removeEnemy(enemy);
+
+            // Process the FSM
+            //changeStateIfApplicable(container, ticks);
+            //changeDetectionIfApplicable(currentPhase);
+
+            // Pathfinding
+            //Vector2 next_move = findPath();
+
+        stateMachine.update();
+        enemy.update(delta);
     }
 
     public StateMachine<EnemyController, EnemyState> getStateMachine() {
@@ -220,6 +238,11 @@ public class EnemyController {
 
         Interpolation lerp = Interpolation.linear;
         raycastCollision.findCollision(collisionCache, new Ray<>(enemy.getPosition(), target.getPosition()));
+
+        if (!raycast.hit) {
+            // For any reason...
+            return Detection.NONE;
+        }
 
         Vector2 enemyToPlayer = target.getPosition().sub(enemy.getPosition());
         float dist = enemyToPlayer.len();
@@ -259,27 +282,6 @@ public class EnemyController {
     }
 
 
-    /**
-     * Updates the enemy being controlled by this controller
-     *
-     * @param container
-     * @param currentPhase of the game
-     * @param delta
-     */
-    public void update(LevelContainer container, GameplayController.Phase currentPhase, float delta) {
-        ticks++;
-        if (enemy.getHp() <= 0) container.removeEnemy(enemy);
-
-            // Process the FSM
-            //changeStateIfApplicable(container, ticks);
-            //changeDetectionIfApplicable(currentPhase);
-
-            // Pathfinding
-            //Vector2 next_move = findPath();
-
-        stateMachine.update();
-        enemy.update(delta);
-    }
 
     //private void alertAllies() {
     //    Iterator<Enemy> enemyIterator = enemies.iterator();
