@@ -128,7 +128,7 @@ public class GameCanvas {
     /**
      * Color cache for setting alpha on sprites
      */
-    private Color alphaCache;
+    private final Color alphaCache;
     /**
      * Affine cache for current sprite to draw
      */
@@ -152,7 +152,7 @@ public class GameCanvas {
      * Translation cache used for view translation
      * TODO: I dont like this, maybe a better way to restructure
      */
-    private Vector2 viewCache;
+    private final Vector2 viewCache;
 
     /**
      * Sets the scaling factor for the world to screen transformation
@@ -990,7 +990,7 @@ public class GameCanvas {
         barRender.begin(ShapeRenderer.ShapeType.Filled);
         Color blue = new Color(40.0f / 255.0f, 116.0f / 255.0f, 166.0f / 255.0f, 1.0f);
         barRender.setColor(blue);
-        barRender.rect(x, y, width * stealth / 1.0f, height);
+        barRender.rect(x, y, width * stealth, height);
         barRender.end();
 
 //        draw(icon, Color.WHITE, x - width, y, width, height);

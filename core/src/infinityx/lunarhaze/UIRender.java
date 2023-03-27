@@ -86,28 +86,28 @@ public class UIRender {
      */
     protected BitmapFont UIFont_small;
 
-    private Texture circle_bar;
+    private final Texture circle_bar;
 
     /**
      * Top stroke texture
      */
-    private Texture counter;
+    private final Texture counter;
 
-    private Texture dusk_icon;
+    private final Texture dusk_icon;
 
-    private Texture health_icon;
+    private final Texture health_icon;
 
-    private Texture moon_icon;
+    private final Texture moon_icon;
 
-    private Texture rec_bar;
+    private final Texture rec_bar;
 
-    private Texture stealth_icon;
+    private final Texture stealth_icon;
 
-    private Texture health_stroke;
+    private final Texture health_stroke;
 
-    private Texture moonlight_stroke;
+    private final Texture moonlight_stroke;
 
-    private Texture stealth_stroke;
+    private final Texture stealth_stroke;
 
     /**
      * Create a new UIRender with font and directory assigned.
@@ -163,18 +163,18 @@ public class UIRender {
         canvas.end();
         canvas.begin();
         // Draw top stroke at the top center of screen
-        canvas.draw(counter, Color.WHITE, canvas.getWidth() / 2 - COUNTER_WIDTH / 2, canvas.getHeight() - COUNTER_HEIGHT - TOP_MARGIN/2, COUNTER_WIDTH, COUNTER_HEIGHT);
-        canvas.drawText("night", UIFont_small, canvas.getWidth() / 2 - UIFont_small.getCapHeight(), canvas.getHeight() - TOP_MARGIN/2);
+        canvas.draw(counter, Color.WHITE, canvas.getWidth() / 2 - COUNTER_WIDTH / 2, canvas.getHeight() - COUNTER_HEIGHT - TOP_MARGIN / 2, COUNTER_WIDTH, COUNTER_HEIGHT);
+        canvas.drawText("night", UIFont_small, canvas.getWidth() / 2 - UIFont_small.getCapHeight(), canvas.getHeight() - TOP_MARGIN / 2);
         canvas.drawText("1", UIFont_large, canvas.getWidth() / 2, canvas.getHeight() - TOP_MARGIN);
         int remaining_sec = Math.max((int) gameplayController.getRemainingTime(), 0);
         int min = remaining_sec / 60;
         int sec = remaining_sec % 60;
-        canvas.drawText(min + ":" + sec + "s", UIFont_small, canvas.getWidth() / 2 - COUNTER_WIDTH / 4, canvas.getHeight() - COUNTER_HEIGHT / 2.0f - TOP_MARGIN/3);
-        canvas.draw(dusk_icon, Color.WHITE, 0, 0, canvas.getWidth() / 2 + COUNTER_WIDTH / 4, canvas.getHeight() - COUNTER_HEIGHT / 2.0f - dusk_icon.getHeight()/2 - TOP_MARGIN/3, 0, 0.6f, 0.6f);
+        canvas.drawText(min + ":" + sec + "s", UIFont_small, canvas.getWidth() / 2 - COUNTER_WIDTH / 4, canvas.getHeight() - COUNTER_HEIGHT / 2.0f - TOP_MARGIN / 3);
+        canvas.draw(dusk_icon, Color.WHITE, 0, 0, canvas.getWidth() / 2 + COUNTER_WIDTH / 4, canvas.getHeight() - COUNTER_HEIGHT / 2.0f - dusk_icon.getHeight() / 2 - TOP_MARGIN / 3, 0, 0.6f, 0.6f);
 
         canvas.draw(health_stroke, Color.WHITE, 0, canvas.getHeight() - HEALTH_STROKE_HEIGHT * 2, HEALTH_STROKE_WIDTH, HEALTH_STROKE_HEIGHT);
-        canvas.draw(moonlight_stroke, Color.WHITE, MOON_STROKE_WIDTH/3, MOON_STROKE_HEIGHT, MOON_STROKE_WIDTH, MOON_STROKE_HEIGHT);
-        canvas.draw(stealth_stroke, Color.WHITE, canvas.getWidth()/2 - STEALTH_STROKE_WIDTH/2, MOON_STROKE_HEIGHT, STEALTH_STROKE_WIDTH, STEALTH_STROKE_HEIGHT);
+        canvas.draw(moonlight_stroke, Color.WHITE, MOON_STROKE_WIDTH / 3, MOON_STROKE_HEIGHT, MOON_STROKE_WIDTH, MOON_STROKE_HEIGHT);
+        canvas.draw(stealth_stroke, Color.WHITE, canvas.getWidth() / 2 - STEALTH_STROKE_WIDTH / 2, MOON_STROKE_HEIGHT, STEALTH_STROKE_WIDTH, STEALTH_STROKE_HEIGHT);
 
         canvas.draw(moon_icon, Color.WHITE, moon_icon.getWidth() / 2, moon_icon.getHeight() / 2, canvas.getWidth() - BAR_WIDTH - moon_icon.getWidth() * 1.4f, canvas.getHeight() - BAR_HEIGHT / 2 - GAP_DIST, 0, 0.7f, 0.7f);
         canvas.draw(health_icon, Color.WHITE, moon_icon.getWidth() / 2, moon_icon.getHeight() / 2, canvas.getWidth() - BAR_WIDTH - health_icon.getWidth() * 1.2f, canvas.getHeight() - 4.9f * BAR_HEIGHT / 2 - GAP_DIST, 0, 0.7f, 0.7f);

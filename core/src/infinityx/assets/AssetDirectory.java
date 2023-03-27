@@ -112,7 +112,7 @@ public class AssetDirectory extends AssetManager {
      * <p>
      * We need this callback to extract the contents object
      */
-    private DirectoryLoader.DirectoryLoaderParameters.LoadedCallback callback = new DirectoryLoader.DirectoryLoaderParameters.LoadedCallback() {
+    private final DirectoryLoader.DirectoryLoaderParameters.LoadedCallback callback = new DirectoryLoader.DirectoryLoaderParameters.LoadedCallback() {
         /**
          * Assign contents to the result of the directory loader.
          *

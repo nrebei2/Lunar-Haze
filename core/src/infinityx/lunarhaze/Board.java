@@ -37,13 +37,13 @@ public class Board {
      * Tile height and width in world length.
      * Should be overwritten.
      */
-    private Vector2 tileWorldDim = new Vector2(1, 1);
+    private final Vector2 tileWorldDim = new Vector2(1, 1);
 
     /**
      * Tile height and width in screen (pixel) length.
      * Should be overwritten.
      */
-    private Vector2 tileScreenDim = new Vector2(128, 96);
+    private final Vector2 tileScreenDim = new Vector2(128, 96);
 
     /**
      * Cache holding the number of tiles with collectable moonlight

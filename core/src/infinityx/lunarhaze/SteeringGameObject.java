@@ -4,8 +4,6 @@ import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
 import com.badlogic.gdx.ai.utils.Location;
-import com.badlogic.gdx.ai.utils.RaycastCollisionDetector;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import infinityx.util.Box2dSteeringUtils;
 
@@ -31,7 +29,9 @@ public abstract class SteeringGameObject extends GameObject implements Steerable
      */
     protected SteeringBehavior<Vector2> steeringBehavior;
 
-    /** Cache for output from steeringBehavior */
+    /**
+     * Cache for output from steeringBehavior
+     */
     private static final SteeringAcceleration<Vector2> steeringOutput = new SteeringAcceleration<>(new Vector2());
 
     public SteeringGameObject(boolean independentFacing) {
@@ -39,25 +39,29 @@ public abstract class SteeringGameObject extends GameObject implements Steerable
         setIndependentFacing(independentFacing);
     }
 
-    /** Returns last linear acceleration applied to this object from steering behavior */
+    /**
+     * Returns last linear acceleration applied to this object from steering behavior
+     */
     public Vector2 getSteeringLinear() {
         return steeringOutput.linear;
     }
 
-    /** Returns last angular acceleration applied to this object from steering behavior */
+    /**
+     * Returns last angular acceleration applied to this object from steering behavior
+     */
     public float getSteeringAngular() {
         return steeringOutput.angular;
     }
 
-    public boolean isIndependentFacing () {
+    public boolean isIndependentFacing() {
         return independentFacing;
     }
 
-    public void setIndependentFacing (boolean independentFacing) {
+    public void setIndependentFacing(boolean independentFacing) {
         this.independentFacing = independentFacing;
     }
 
-    public void setSteeringBehavior (SteeringBehavior<Vector2> steeringBehavior) {
+    public void setSteeringBehavior(SteeringBehavior<Vector2> steeringBehavior) {
         this.steeringBehavior = steeringBehavior;
     }
 
@@ -73,7 +77,7 @@ public abstract class SteeringGameObject extends GameObject implements Steerable
      * Calculates and applies the appropriate linear and angular acceleration using the current steering behavior.
      * Taken from https://github.com/libgdx/gdx-ai/blob/master/tests/src/com/badlogic/gdx/ai/tests/steer/box2d/Box2dSteeringEntity.java.
      */
-    protected void applySteering (float deltaTime) {
+    protected void applySteering(float deltaTime) {
         steeringBehavior.calculateSteering(steeringOutput);
 
         boolean anyAccelerations = false;
@@ -106,7 +110,7 @@ public abstract class SteeringGameObject extends GameObject implements Steerable
             float currentSpeedSquare = velocity.len2();
             float maxLinearSpeed = getMaxLinearSpeed();
             if (currentSpeedSquare > maxLinearSpeed * maxLinearSpeed) {
-                body.setLinearVelocity(velocity.scl(maxLinearSpeed / (float)Math.sqrt(currentSpeedSquare)));
+                body.setLinearVelocity(velocity.scl(maxLinearSpeed / (float) Math.sqrt(currentSpeedSquare)));
             }
 
             // Cap the angular speed
@@ -273,7 +277,7 @@ public abstract class SteeringGameObject extends GameObject implements Steerable
      */
     @Override
     public Vector2 angleToVector(Vector2 outVector, float angle) {
-       return Box2dSteeringUtils.angleToVector(outVector, angle);
+        return Box2dSteeringUtils.angleToVector(outVector, angle);
     }
 
     /**

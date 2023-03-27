@@ -49,7 +49,7 @@ public class PlayerController {
     /**
      * LevelContainer that contains moonlight information
      */
-    private LevelContainer levelContainer;
+    private final LevelContainer levelContainer;
 
     /**
      * Attacks the player has already made
@@ -59,7 +59,7 @@ public class PlayerController {
     /**
      * Maximum attacks player can make before cooldown
      */
-    private float attackLength;
+    private final float attackLength;
 
     /**
      *
@@ -69,9 +69,9 @@ public class PlayerController {
     /**
      *
      */
-    private float attackCooldown;
+    private final float attackCooldown;
 
-    private Vector2 attackDirection;
+    private final Vector2 attackDirection;
 
     /**
      * Initializer of a PlayerController

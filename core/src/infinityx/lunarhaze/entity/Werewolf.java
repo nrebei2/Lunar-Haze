@@ -3,11 +3,8 @@ package infinityx.lunarhaze.entity;
 import box2dLight.PointLight;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
-import infinityx.lunarhaze.GameCanvas;
-import infinityx.lunarhaze.GameObject;
 import infinityx.lunarhaze.LevelContainer;
 import infinityx.lunarhaze.SteeringGameObject;
 

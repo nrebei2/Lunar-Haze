@@ -5,14 +5,12 @@ import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.Pool;
 import infinityx.lunarhaze.EnemyController;
 
-import java.util.Iterator;
-
 
 /**
  * Pre-allocated pool of enemy objects.
  * Unfortunately, since enemies and their controller are tightly coupled,
  * it also handles their controllers too.
- *
+ * <p>
  * Note there is no limit on the number of enemies you can obtain, but dead enemies should be freed
  * for later reuse.
  */
@@ -20,9 +18,11 @@ public class EnemyPool extends Pool<Enemy> {
     /**
      * The pre-allocated arraylist of enemies. All instantiated enemies must be from this list.
      */
-    private Array<Enemy> enemies;
+    private final Array<Enemy> enemies;
 
-    /** controls[e] is the controller for enemy e. The domain of this map is enemies. */
+    /**
+     * controls[e] is the controller for enemy e. The domain of this map is enemies.
+     */
     public ObjectMap<Enemy, EnemyController> controls;
 
     /**

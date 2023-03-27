@@ -3,7 +3,7 @@ package infinityx.util;
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.math.Vector2;
 
-public class Box2dLocation implements Location<Vector2>{
+public class Box2dLocation implements Location<Vector2> {
 
     Vector2 position;
     float orientation;
@@ -14,7 +14,7 @@ public class Box2dLocation implements Location<Vector2>{
     }
 
     public Box2dLocation() {
-       this(new Vector2());
+        this(new Vector2());
     }
 
     @Override

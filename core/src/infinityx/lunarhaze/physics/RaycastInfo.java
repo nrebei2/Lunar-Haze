@@ -13,7 +13,9 @@ public class RaycastInfo implements RayCastCallback {
      */
     public Fixture fixture;
 
-    /** Holds collision point and normal */
+    /**
+     * Holds collision point and normal
+     */
     public Collision<Vector2> outputCollision;
 
     /**
@@ -25,12 +27,12 @@ public class RaycastInfo implements RayCastCallback {
     /**
      * The gameobject that is casting the ray
      */
-    private GameObject requestingObject;
+    private final GameObject requestingObject;
 
     /**
      * Game object types the ray will ignore
      */
-    private ObjectSet<GameObject.ObjectType> ignore;
+    private final ObjectSet<GameObject.ObjectType> ignore;
 
     /**
      * The gameobject that is attached to the fixture hit
@@ -51,6 +53,7 @@ public class RaycastInfo implements RayCastCallback {
 
     /**
      * Add types The ray will ignore objects of given types
+     *
      * @param types of game objects ignore
      */
     public void addIgnores(GameObject.ObjectType... types) {
@@ -68,7 +71,7 @@ public class RaycastInfo implements RayCastCallback {
     @Override
     public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
         // Right now, all hit bodies are contained in GameObjects
-        GameObject objHit = (GameObject)fixture.getUserData();
+        GameObject objHit = (GameObject) fixture.getUserData();
         if (objHit == requestingObject || ignore.contains(objHit.getType())) {
             return 1;
         }

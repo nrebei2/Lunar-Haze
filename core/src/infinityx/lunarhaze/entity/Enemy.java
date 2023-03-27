@@ -1,16 +1,10 @@
 package infinityx.lunarhaze.entity;
 
-import com.badlogic.gdx.ai.steer.Steerable;
-import com.badlogic.gdx.ai.steer.behaviors.CollisionAvoidance;
-import com.badlogic.gdx.ai.steer.behaviors.PrioritySteering;
-import com.badlogic.gdx.ai.steer.behaviors.RaycastObstacleAvoidance;
-import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Pool;
 import infinityx.assets.AssetDirectory;
-import infinityx.lunarhaze.GameObject;
 import infinityx.lunarhaze.LevelContainer;
 import infinityx.lunarhaze.SteeringGameObject;
 import infinityx.lunarhaze.physics.ConeSource;
@@ -45,10 +39,14 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
 
     private int attackDamage;
 
-    /** The maximum amount of hit-points for this enemy */
+    /**
+     * The maximum amount of hit-points for this enemy
+     */
     private float maxHp;
 
-    /** The current amount of hit-points for this enemy */
+    /**
+     * The current amount of hit-points for this enemy
+     */
     private float hp;
 
     /**
@@ -69,7 +67,7 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
     /**
      * @return whether the enemy is alerted
      */
-    public boolean getAlerted () {
+    public boolean getAlerted() {
         return alerted;
     }
 
@@ -193,6 +191,7 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
 
     /**
      * Sets the new hp of this enemy. Clamped to always be non-negative.
+     *
      * @param value the hp to set
      */
     public void setHp(float value) {
@@ -201,6 +200,7 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
 
     /**
      * Sets the max hp (and starting current hp) of this enemy.
+     *
      * @param value the hp to set
      */
     public void setMaxHp(float value) {

@@ -43,13 +43,19 @@ public class EnemyController {
 
     private static final int ALERT_DIST = 20;
 
-    /** Raycast cache for target detection */
-    private RaycastInfo raycast;
+    /**
+     * Raycast cache for target detection
+     */
+    private final RaycastInfo raycast;
 
-    /** Collision detector for target detection */
+    /**
+     * Collision detector for target detection
+     */
     private Box2DRaycastCollision raycastCollision;
 
-    /** Cache for collision output from raycastCollision */
+    /**
+     * Cache for collision output from raycastCollision
+     */
     Collision<Vector2> collisionCache = new Collision<>(new Vector2(), new Vector2());
 
     /**
@@ -95,7 +101,9 @@ public class EnemyController {
          * The enemy has noticed sometime amiss (Question mark?)
          */
         NOTICED,
-        /** Neither heard nor seen the target */
+        /**
+         * Neither heard nor seen the target
+         */
         NONE
     }
 
@@ -117,12 +125,12 @@ public class EnemyController {
     /**
      * The last time the enemy was in the CHASING state.
      */
-    private long chased_ticks;
+    private final long chased_ticks;
 
     /**
      * The last time the enemy was in the IDLE state.
      */
-    private long idle_ticks;
+    private final long idle_ticks;
 
     /**
      * The current goal (world) position
@@ -132,7 +140,7 @@ public class EnemyController {
     /**
      * Where the player was last seen before WANDER
      */
-    private Vector2 end_chase_pos;
+    private final Vector2 end_chase_pos;
 
     /**
      * Where the player was seen when an enemy alerts other enemies
@@ -142,7 +150,7 @@ public class EnemyController {
     /**
      * AI state machine for the given enemy.
      */
-    private StateMachine<EnemyController, EnemyState> stateMachine;
+    private final StateMachine<EnemyController, EnemyState> stateMachine;
 
     // Steering behaviors
     public Arrive<Vector2> arriveSB;
@@ -153,7 +161,7 @@ public class EnemyController {
     /**
      * Creates an EnemyController for the enemy with the given id.
      *
-     * @param enemy   The enemy being controlled by this AIController
+     * @param enemy The enemy being controlled by this AIController
      */
     public EnemyController(Enemy enemy) {
         this.enemy = enemy;
@@ -168,6 +176,7 @@ public class EnemyController {
 
     /**
      * Populate attributes used for sensory information.
+     *
      * @param container holding surrounding model objects
      */
     public void populate(LevelContainer container) {
@@ -190,9 +199,9 @@ public class EnemyController {
         );
 
         this.patrolSB =
-            new PrioritySteering<>(enemy, 0.0001f)
-                .add(collisionSB)
-                .add(arriveSB);
+                new PrioritySteering<>(enemy, 0.0001f)
+                        .add(collisionSB)
+                        .add(arriveSB);
 
         this.lookAroundSB = new LookAround(enemy, 160).
                 setAlignTolerance(MathUtils.degreesToRadians * 10);
@@ -209,12 +218,12 @@ public class EnemyController {
         ticks++;
         if (enemy.getHp() <= 0) container.removeEnemy(enemy);
 
-            // Process the FSM
-            //changeStateIfApplicable(container, ticks);
-            //changeDetectionIfApplicable(currentPhase);
+        // Process the FSM
+        //changeStateIfApplicable(container, ticks);
+        //changeDetectionIfApplicable(currentPhase);
 
-            // Pathfinding
-            //Vector2 next_move = findPath();
+        // Pathfinding
+        //Vector2 next_move = findPath();
 
         stateMachine.update();
         enemy.update(delta);
@@ -233,13 +242,13 @@ public class EnemyController {
      */
     private Detection getDetection(LevelContainer container) {
         /* Area of interests:
-        * Focused view - same angle as flashlight, extends between [0, 5]
-        * Short distance - angle of 100, extends between [0, 3.5]
-        * Peripheral vision - angle of 180, extends between [0, 1.75]
-        * Hearing radius - angle of 360, extends between [0, 3]
-        * Lerp between player stealth for max distance,
-        * but maybe add cutoffs for NONE?
-        */
+         * Focused view - same angle as flashlight, extends between [0, 5]
+         * Short distance - angle of 100, extends between [0, 3.5]
+         * Peripheral vision - angle of 180, extends between [0, 1.75]
+         * Hearing radius - angle of 360, extends between [0, 3]
+         * Lerp between player stealth for max distance,
+         * but maybe add cutoffs for NONE?
+         */
 
         Interpolation lerp = Interpolation.linear;
         raycastCollision.findCollision(collisionCache, new Ray<>(enemy.getPosition(), target.getPosition()));
@@ -285,7 +294,6 @@ public class EnemyController {
         // This is radial
         return enemy.getPosition().dst(target.getPosition()) <= CHASE_DIST;
     }
-
 
 
     //private void alertAllies() {
@@ -409,7 +417,7 @@ public class EnemyController {
                 MathUtils.random(enemy.getBottomLeftOfRegion().x, enemy.getTopRightOfRegion().x),
                 MathUtils.random(enemy.getBottomLeftOfRegion().y, enemy.getTopRightOfRegion().y)
         );
-        System.out.println("I found a point with x: "+ random_point.x+", y: "+random_point.y+"!");
+        System.out.println("I found a point with x: " + random_point.x + ", y: " + random_point.y + "!");
         return random_point;
     }
 

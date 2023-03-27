@@ -13,14 +13,14 @@ public interface Drawable {
      *
      * @return depth of object from camera
      */
-    public float getDepth();
+    float getDepth();
 
     /**
      * Draws this object to the given canvas
      *
      * @param canvas The drawing context
      */
-    public void draw(GameCanvas canvas);
+    void draw(GameCanvas canvas);
 
     /**
      * Returns true if this object is destroyed.

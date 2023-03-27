@@ -2,30 +2,33 @@ package infinityx.lunarhaze.ai;
 
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
-import com.badlogic.gdx.ai.steer.SteeringBehavior;
-import com.badlogic.gdx.ai.steer.behaviors.Face;
 import com.badlogic.gdx.ai.steer.behaviors.ReachOrientation;
-import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import infinityx.util.Box2dLocation;
 
 
-
-/** Look around delegates most of its work to ReachOrientation, as it simply makes the entity face in two directions, one after the other.  */
+/**
+ * Look around delegates most of its work to ReachOrientation, as it simply makes the entity face in two directions, one after the other.
+ */
 public class LookAround extends ReachOrientation<Vector2> {
 
     float target1;
     float target2;
 
-    /** Whether the entity has finished looking around */
+    /**
+     * Whether the entity has finished looking around
+     */
     private boolean finished;
 
-    /** The total amount (in degrees) the owner will look around for */
-    private float angle;
+    /**
+     * The total amount (in degrees) the owner will look around for
+     */
+    private final float angle;
 
     /**
      * Create a look around behavior for the specified owner
+     *
      * @param angle The total amount (in degrees) the owner will look around for
      */
     public LookAround(Steerable<Vector2> owner, float angle) {
@@ -48,10 +51,12 @@ public class LookAround extends ReachOrientation<Vector2> {
         return steering;
     }
 
-    /** Reset attributes for reuse */
+    /**
+     * Reset attributes for reuse
+     */
     public void reset() {
-        target1 = owner.getOrientation() - MathUtils.degreesToRadians * angle/2;
-        target2 = owner.getOrientation() + MathUtils.degreesToRadians * angle/2;
+        target1 = owner.getOrientation() - MathUtils.degreesToRadians * angle / 2;
+        target2 = owner.getOrientation() + MathUtils.degreesToRadians * angle / 2;
         setTarget(new Box2dLocation());
         setTargetOrientation(target1);
         finished = false;
@@ -66,19 +71,19 @@ public class LookAround extends ReachOrientation<Vector2> {
     }
 
     @Override
-    public LookAround setAlignTolerance (float alignTolerance) {
+    public LookAround setAlignTolerance(float alignTolerance) {
         this.alignTolerance = alignTolerance;
         return this;
     }
 
     @Override
-    public LookAround setDecelerationRadius (float decelerationRadius) {
+    public LookAround setDecelerationRadius(float decelerationRadius) {
         this.decelerationRadius = decelerationRadius;
         return this;
     }
 
     @Override
-    public LookAround setTimeToTarget (float timeToTarget) {
+    public LookAround setTimeToTarget(float timeToTarget) {
         this.timeToTarget = timeToTarget;
         return this;
     }

@@ -23,7 +23,7 @@ public class LightingController {
     /**
      * dustPool[p] holds the dust pool at tile p. Tile p should have collectable moonlight on it.
      */
-    private IntMap<Dust[]> dustPools;
+    private final IntMap<Dust[]> dustPools;
 
     /**
      * How many dust particles can be on a tile at once
