@@ -1,5 +1,6 @@
 package infinityx.lunarhaze;
 
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.GameplayController.Phase;
 import infinityx.lunarhaze.entity.Werewolf;
@@ -51,30 +52,11 @@ public class PlayerController {
      */
     private LevelContainer levelContainer;
 
-    /**
-     * Attacks the player has already made
-     */
-    private float attackCounter;
-
-    /**
-     * Maximum attacks player can make before cooldown
-     */
-    private float attackLength;
-
-    /**
-     *
-     */
-    private float attackCooldownCounter;
-
     /**If the player is collecting moonlight then true, false otherwise */
     private boolean collectingMoonlight;
 
-    /**
-     *
-     */
-    private float attackCooldown;
+    private AttackHandler attackHandler;
 
-    private Vector2 attackDirection;
     public float getTimeOnMoonlightPercentage(){
         return timeOnMoonlight/MOONLIGHT_COLLECT_TIME;
     }
@@ -87,12 +69,8 @@ public class PlayerController {
         this.board = board;
         timeOnMoonlight = 0;
         this.levelContainer = levelContainer;
-        attackCounter = 0f;
-        attackLength = 0.6f;
-        attackCooldown = 4f;
-        attackCooldownCounter = 0f;
-        attackDirection = new Vector2();
         collectingMoonlight = false;
+        attackHandler = new AttackHandler(player);
     }
 
     /**
@@ -176,43 +154,155 @@ public class PlayerController {
         return collectingMoonlight;
     }
 
-    /**
-     * Process the player's attack.
-     * <p>
-     *
-     * @param delta Number of seconds since last animation frame
-     * @param input InputController that handles the player's input
-     * @param phase Current phase of the game
-     */
-    public void attack(float delta, InputController input, Phase phase) {
-        // Only works during battle phase
-        if (phase == GameplayController.Phase.BATTLE) {
-            if (player.isAttacking()) {
-                System.out.println("Attacking");
-                attackCounter += delta;
-                if (attackCounter >= attackLength) {
-                    System.out.println("Attack ended");
-                    player.setAttacking(false);
-                    attackCounter = 0f;
-                }
-            } else {
-                if (attackCooldownCounter >= attackCooldown) {
-                    // Space bar checked here
-                    if (input.didAttack()) {
-                        player.setAttacking(true);
-                        attackCooldownCounter = 0f;
-                    }
-                } else {
-                    attackCooldownCounter += delta;
-                }
-            }
-        }
-    }
 
     public void update(InputController input, float delta, Phase currPhase, LightingController lightingController) {
         resolvePlayer(input, delta);
         resolveMoonlight(delta, lightingController);
         resolveStealthBar(input);
-        attack(delta, input, currPhase);
+        attackHandler.update(delta, input, currPhase);
     }
+}
+
+/** Handles player attacks */
+class AttackHandler {
+    //TODO: Remove magic numbers and add to LevelParser and jsons
+    /** Cooldown between combos */
+    private float attackCooldown;
+
+    /** Counter for delay between combo attacks */
+    private float comboAttackCooldownCounter;
+
+    /** Attack direction as vector */
+    private Vector2 attackDirection;
+
+    /** Current combo step */
+    private int comboStep;
+
+    /** Time since combo started */
+    private float comboTime;
+
+    /** Max allowed time before combo timeout */
+    private final static float MAX_COMBO_TIME = 1f;
+
+    /**
+     * Counter for attacking (used to determine when to set attacking to false)
+     */
+    private float attackCounter;
+
+    /**
+     * Maximum attacks player can make before cooldown
+     */
+    private float attackLength;
+
+    /** Counter for attack cooldowns*/
+    private float attackCooldownCounter;
+
+    /** Reference to the player model */
+    private Werewolf player;
+
+    /** Constructor that gets a reference to the player model */
+    AttackHandler(Werewolf p) {
+        player = p;
+        attackCooldown = 3f;
+        comboAttackCooldownCounter = 0f;
+        attackDirection = new Vector2();
+        comboStep = 0;
+        comboTime = 0f;
+        attackCounter = 0f;
+        attackLength = 0.5f;
+        attackCooldownCounter = 3f;
+    }
+
+    //TODO: Make the attack cooldowns and attack lengths decrease with moonlight collected
+
+    /** Called up above in the other update method, handles all attacking related logic */
+    public void update(float delta, InputController input, Phase phase) {
+        if (phase == GameplayController.Phase.BATTLE) {
+            if (player.isAttacking()) {
+                processAttack(delta, input);
+            } else {
+                attackCooldownCounter += delta;
+            }
+
+            if (comboStep > 0) {
+                handleComboTimeout(delta);
+            }
+
+            if (canStartNewAttackOrContinueCombo()) {
+                player.setDrawCooldownBar(false, 0);
+                if (input.didAttack()) {
+                    initiateAttack(input);
+                }
+            } else {
+                if(comboStep == 0) {
+                    player.setDrawCooldownBar(true, attackCooldownCounter / attackCooldown);
+                } else {
+                    // Will remove magic numbers later
+                    player.setDrawCooldownBar(true, comboAttackCooldownCounter / 0.4f);
+                }
+            }
+        }
+    }
+
+    /** Processes an attack, called every frame while attacking */
+    private void processAttack(float delta, InputController input) {
+        player.setCanMove(false);
+        updateHitboxPosition(input);
+        System.out.println("Attacking: combo " + (comboStep + 1));
+
+        attackCounter += delta;
+
+        if (attackCounter >= attackLength) {
+            endAttack();
+        }
+    }
+
+    /** Adjusts hitbox based on user input */
+    private void updateHitboxPosition(InputController input) {
+        player.attackHitbox.setTransform(player.getPosition().x + (input.getHorizontal() / 4.0f), player.getPosition().y + (input.getVertical() / 4.0f) + player.getTexture().getSize()/3.5f, 0f);
+    }
+
+    /** Called when an attack ends */
+    private void endAttack() {
+        System.out.println("Attack ended");
+        player.setAttacking(false);
+        attackCounter = 0f;
+        comboStep++;
+        comboTime = 0f;
+
+        if (comboStep >= 3) {
+            comboStep = 0;
+            attackCooldownCounter = 0f;
+        }
+    }
+
+    /** Handles combo timeouts */
+    private void handleComboTimeout(float delta) {
+        comboTime += delta;
+        comboAttackCooldownCounter += delta;
+
+        if (comboTime >= 1) {
+            System.out.println("Combo timeout");
+            comboStep = 0;
+            comboTime = 0f;
+            attackCooldownCounter = 0f;
+        }
+    }
+
+    /** Returns true if the player can start a new attack or continue a combo */
+    public boolean canStartNewAttackOrContinueCombo() {
+        return (comboStep == 0 && attackCooldownCounter >= attackCooldown)
+            || (comboStep > 0 && comboTime <= 1 && comboAttackCooldownCounter >= 0.4f);
+    }
+
+    /** Initiates an attack */
+    private void initiateAttack(InputController input) {
+        player.setAttacking(true);
+        player.setCanMove(false);
+        attackDirection.set(input.getHorizontal(), input.getVertical()).nor();
+        player.getBody().applyLinearImpulse(attackDirection, player.getBody().getWorldCenter(), true);
+        attackCooldownCounter = 0f;
+        comboAttackCooldownCounter = 0f;
+    }
+
 }
