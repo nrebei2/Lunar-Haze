@@ -305,7 +305,7 @@ public class Werewolf extends GameObject {
         setSpotLight(spotLight);
     }
 
-    public void resolveAttack(GameObject enemy, int damage, float knockback) {
+    /** public void resolveAttack(GameObject enemy, int damage, float knockback) {
 
         Body enemyBody = enemy.getBody();
         Vector2 pos = body.getPosition();
@@ -315,7 +315,7 @@ public class Werewolf extends GameObject {
         canMove = false;
         body.applyLinearImpulse(direction.scl(knockback), body.getWorldCenter(), true);
         setHp(hp - damage);
-    }
+    } */
 
     /**
      * Updates the animation frame and position of this werewolf.

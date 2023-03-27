@@ -175,27 +175,36 @@ public class PlayerController {
     public boolean isCollectingMoonlight(){
         return collectingMoonlight;
     }
+
+    /**
+     * Process the player's attack.
+     * <p>
+     *
+     * @param delta Number of seconds since last animation frame
+     * @param input InputController that handles the player's input
+     * @param phase Current phase of the game
+     */
     public void attack(float delta, InputController input, Phase phase) {
+        // Only works during battle phase
         if (phase == GameplayController.Phase.BATTLE) {
             if (player.isAttacking()) {
-                player.setCanMove(false);
+                System.out.println("Attacking");
                 attackCounter += delta;
                 if (attackCounter >= attackLength) {
+                    System.out.println("Attack ended");
                     player.setAttacking(false);
-                    player.setCanMove(true);
                     attackCounter = 0f;
                 }
             } else {
-                attackCooldownCounter += delta;
                 if (attackCooldownCounter >= attackCooldown) {
-                    attackCooldownCounter = 0f;
+                    // Space bar checked here
+                    if (input.didAttack()) {
+                        player.setAttacking(true);
+                        attackCooldownCounter = 0f;
+                    }
+                } else {
+                    attackCooldownCounter += delta;
                 }
-            }
-            if (!player.isAttacking() && attackCooldownCounter >= 0f && input.didAttack()) {
-                player.setAttacking(true);
-                attackCooldownCounter = attackCooldown;
-                attackDirection.set(input.getHorizontal(), input.getVertical()).nor().scl(125);
-                player.getBody().applyForceToCenter(attackDirection, true);
             }
         }
     }
