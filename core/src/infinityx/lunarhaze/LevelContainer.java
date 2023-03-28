@@ -13,6 +13,7 @@ import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.EnemyPool;
 import infinityx.lunarhaze.entity.SceneObject;
 import infinityx.lunarhaze.entity.Werewolf;
+import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.physics.LightSource;
 import infinityx.util.Drawable;
 
@@ -447,7 +448,7 @@ public class LevelContainer {
      */
     public void drawLevel(GameCanvas canvas) {
         garbageCollect();
-        canvas.beginT(view.x, view.y);
+        canvas.begin(GameCanvas.DrawPass.SPRITE, view.x, view.y);
 
         // Render order: Board tiles -> (players, enemies, scene objects) sorted by depth (y coordinate)
         board.draw(canvas);

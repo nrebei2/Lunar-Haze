@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
 
@@ -29,7 +30,7 @@ public class InstanceRenderer implements Renderer {
      * with respect to the current screen resolution.
      * <p>
      * Note: shader is assumed to have a "u_projTrans" uniform for transformations,
-     * and "a_position", "a_uv" attributes for position and uv coordinates respectively.
+     * and "a_position", "a_texCoord" attributes for position and uv coordinates respectively.
      *
      * @param shader The default shader to use. Will be owned by this renderer (i.e., will be disposed when this renderer is disposed).
      */
@@ -37,16 +38,25 @@ public class InstanceRenderer implements Renderer {
         this.shader = shader;
         projectionMatrix.setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         mesh = new Mesh(true, 6, 0,
-                new VertexAttribute(VertexAttributes.Usage.Position, 2, "a_position"),
-                new VertexAttribute(VertexAttributes.Usage.TextureCoordinates, 2, "a_uv")
+                new VertexAttribute(VertexAttributes.Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE),
+                new VertexAttribute(VertexAttributes.Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE)
         );
+        drawing = false;
+    }
+
+    /**
+     * See {@link InstanceRenderer#InstanceRenderer(ShaderProgram)}.
+     * The supplied shader is {@link SpriteBatch#createDefaultShader()}.
+     */
+    public InstanceRenderer() {
+       this(SpriteBatch.createDefaultShader());
     }
 
     /**
      * Calls {@link Mesh#enableInstancedRendering(boolean, int, VertexAttribute...)}.
      */
     public void initialize(boolean isStatic, int instanceCount, VertexAttribute... attributes) {
-        mesh.enableInstancedRendering(true, instanceCount, attributes);
+        mesh.enableInstancedRendering(isStatic, instanceCount, attributes);
     }
 
     /**
@@ -72,6 +82,7 @@ public class InstanceRenderer implements Renderer {
         if (!drawing) throw new IllegalStateException("InstanceRenderer.begin must be called before end.");
         mesh.render(shader, GL20.GL_TRIANGLES);
         drawing = false;
+        mesh.disableInstancedRendering();
 
         GL20 gl = Gdx.gl;
         gl.glDepthMask(true);

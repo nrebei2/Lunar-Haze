@@ -1,5 +1,5 @@
-in vec2 uv;
-uniform float amount;
+varying vec2 v_uv;
+varying float v_amount;
 
 #define PI 3.14159265
 
@@ -9,7 +9,7 @@ float circle(float r, float o, vec2 p) {
 }
 
 void main() {
-    uv = uv*2. - 1.;
+    vec2 uv = v_uv*2. - 1.;
 
     float inside = circle(0.9, 0.1, uv);
 
@@ -22,7 +22,7 @@ void main() {
 
     float ang = (atan(-uv.x, -uv.y) + PI) / (2.*PI);
 
-    if (ang <= amount) {
+    if (ang <= v_amount) {
     	gl_FragColor = vec4(filled,1.0);
     } else {
         gl_FragColor = vec4(outline,1.0);

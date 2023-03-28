@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import infinityx.assets.AssetDirectory;
+import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.util.ScreenObservable;
 
 public class EditorMode extends ScreenObservable implements Screen, InputProcessor {
@@ -199,7 +200,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         canvas.clear();
         level.drawLevel(canvas);
 
-        canvas.beginT(level.getView().x, level.getView().y);
+        canvas.begin(GameCanvas.DrawPass.SHAPE, level.getView().x, level.getView().y);
         board.drawOutline(canvas);
         canvas.end();
     }

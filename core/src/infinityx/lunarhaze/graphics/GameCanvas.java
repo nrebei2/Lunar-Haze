@@ -1,4 +1,4 @@
-package infinityx.lunarhaze;
+package infinityx.lunarhaze.graphics;
 
 /*
  * GameCanvas.java
@@ -19,20 +19,21 @@ package infinityx.lunarhaze;
  */
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.Werewolf;
+
+import java.nio.FloatBuffer;
 
 /**
  * Primary view class for the game, abstracting the basic graphics calls.
@@ -46,7 +47,7 @@ public class GameCanvas {
     /**
      * Enumeration to track which pass we are in
      */
-    private enum DrawPass {
+    public enum DrawPass {
         /**
          * We are not drawing
          */
@@ -54,15 +55,19 @@ public class GameCanvas {
         /**
          * We are drawing sprites
          */
-        STANDARD,
+        SPRITE,
+        /**
+         * We are drawing shapes
+         */
+        SHAPE,
+        /**
+         * We are drawing a shader
+         */
+        SHADER
     }
 
     /**
      * Enumeration of supported BlendStates.
-     * <p>
-     * For reasons of convenience, we do not allow user-defined blend functions.
-     * 99% of the time, we find that the following blend modes are sufficient
-     * (particularly with 2D games).
      */
     public enum BlendState {
         /**
@@ -91,17 +96,17 @@ public class GameCanvas {
     private PolygonSpriteBatch spriteBatch;
 
     /**
-     * Rendering context for drawing shapes NOT affected by global matrix
-     */
-    private final ShapeRenderer barRender;
-
-    /**
-     * Rendering context for drawing shapes affected by global matrix
+     * Rendering context for drawing shapes
      */
     private final ShapeRenderer shapeRenderer;
 
     /**
-     * Track whether or not we are active (for error checking)
+     * Rendering context for drawing instanced shaders
+     */
+    private InstanceRenderer instanceRenderer;
+
+    /**
+     * Track the current drawing pass (for error checking)
      */
     private DrawPass active;
 
@@ -111,7 +116,7 @@ public class GameCanvas {
     private BlendState blend;
 
     /**
-     * Camera for the underlying SpriteBatch
+     * Camera for the underlying renderers
      */
     private OrthographicCamera camera;
 
@@ -137,7 +142,7 @@ public class GameCanvas {
      * Affine cache for all sprites this drawing pass
      */
     private Matrix4 global;
-    private Vector2 vertex;
+
     /**
      * Cache object to handle raw textures
      */
@@ -199,21 +204,21 @@ public class GameCanvas {
     public GameCanvas() {
         active = DrawPass.INACTIVE;
         spriteBatch = new PolygonSpriteBatch();
-        barRender = new ShapeRenderer();
         shapeRenderer = new ShapeRenderer();
+        instanceRenderer = new InstanceRenderer();
 
         // Set the projection matrix (for proper scaling)
         camera = new OrthographicCamera(getWidth(), getHeight());
         camera.setToOrtho(false);
         spriteBatch.setProjectionMatrix(camera.combined);
-        barRender.setProjectionMatrix(camera.combined);
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        instanceRenderer.setProjectionMatrix(camera.combined);
 
         // Initialize the cache objects
         holder = new TextureRegion();
         local = new Affine2();
         global = new Matrix4();
-        vertex = new Vector2();
-        viewCache = new Vector2(0, 0);
+        viewCache = new Vector2();
         alphaCache = new Color(1, 1, 1, 1);
     }
 
@@ -229,7 +234,6 @@ public class GameCanvas {
         spriteBatch = null;
         local = null;
         global = null;
-        vertex = null;
         holder = null;
     }
 
@@ -438,60 +442,82 @@ public class GameCanvas {
     }
 
     /**
-     * Start a standard drawing sequence.
+     * Start a standard drawing sequence the given pass.
      * <p>
      * Nothing is flushed to the graphics card until the method end() is called.
      *
-     * @param affine the global transform apply to the camera
-     */
-    public void begin(Affine2 affine) {
-        global.setAsAffine(affine);
-        global.mulLeft(camera.combined);
-        spriteBatch.setProjectionMatrix(global);
-        shapeRenderer.setProjectionMatrix(global);
-
-        setBlendState(BlendState.NO_PREMULT);
-        spriteBatch.begin();
-        active = DrawPass.STANDARD;
-    }
-
-    /**
-     * Start a standard drawing sequence.
-     * <p>
-     * Nothing is flushed to the graphics card until the method end() is called.
-     *
+     * @param pass What pass you would like to draw in
      * @param tx the amount to translate on the x-axis
      * @param ty the amount to translate on the y-axis
      */
-    public void beginT(float tx, float ty) {
+    public void begin(DrawPass pass, float tx, float ty) {
+        if (pass == DrawPass.INACTIVE) {
+            Gdx.app.error("GameCanvas", "What do you mean by that?", new IllegalStateException());
+            return;
+        }
         global.idt();
         viewCache.set(tx, ty);
         global.translate(tx, ty, 0.0f);
         global.mulLeft(camera.combined);
-        spriteBatch.setProjectionMatrix(global);
-        shapeRenderer.setProjectionMatrix(global);
-
-        setBlendState(BlendState.NO_PREMULT);
-        spriteBatch.begin();
-        active = DrawPass.STANDARD;
+        
+        switch (pass) {
+            case SPRITE:
+                spriteBatch.setProjectionMatrix(global);
+                setBlendState(BlendState.NO_PREMULT);
+                spriteBatch.begin();
+                break;
+            case SHAPE:
+                shapeRenderer.setProjectionMatrix(global);
+                break;
+            case SHADER:
+                instanceRenderer.setProjectionMatrix(global);
+                break;
+        }
+        active = pass;
     }
 
     /**
-     * Start a standard drawing sequence.
+     * Start a standard drawing sequence the given pass.
      * <p>
      * Nothing is flushed to the graphics card until the method end() is called.
+     *
+     * @param pass What pass you would like to draw in
      */
-    public void begin() {
-        spriteBatch.setProjectionMatrix(camera.combined);
-        spriteBatch.begin();
-        active = DrawPass.STANDARD;
+    public void begin(DrawPass pass) {
+        if (pass == DrawPass.INACTIVE) {
+            Gdx.app.error("GameCanvas", "What do you mean by that?", new IllegalStateException());
+            return;
+        }
+        
+        switch (pass) {
+            case SPRITE:
+                spriteBatch.setProjectionMatrix(camera.combined);
+                setBlendState(BlendState.NO_PREMULT);
+                spriteBatch.begin();
+                break;
+            case SHAPE:
+                shapeRenderer.setProjectionMatrix(camera.combined);
+                break;
+            case SHADER:
+                instanceRenderer.setProjectionMatrix(camera.combined);
+                break;
+        }
+        active = pass;
     }
 
     /**
-     * Ends a drawing sequence, flushing textures to the graphics card.
+     * Ends a drawing sequence for the current pass, flushing stuff to the graphics card.
      */
     public void end() {
-        spriteBatch.end();
+        if (active == DrawPass.INACTIVE) {
+            Gdx.app.error("GameCanvas", "Please begin before end as the naming implies...", new IllegalStateException());
+            return;
+        }
+        switch (active) {
+            case SPRITE:
+                spriteBatch.end();
+                break;
+        }
         active = DrawPass.INACTIVE;
     }
 
@@ -513,8 +539,8 @@ public class GameCanvas {
      * @param fill  Whether to stretch the image to fill the screen
      */
     public void drawOverlay(Texture image, Color tint, boolean fill) {
-        if (active != DrawPass.STANDARD) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+        if (active != DrawPass.SPRITE) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SPRITE", new IllegalStateException());
             return;
         }
         float w, h;
@@ -560,8 +586,8 @@ public class GameCanvas {
      * @param y     The y-coordinate of the bottom left corner
      */
     public void draw(Texture image, Color tint, float x, float y) {
-        if (active != DrawPass.STANDARD) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+        if (active != DrawPass.SPRITE) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SPRITE", new IllegalStateException());
             return;
         }
 
@@ -588,48 +614,14 @@ public class GameCanvas {
      * @param height The texture height
      */
     public void draw(Texture image, Color tint, float x, float y, float width, float height) {
-        if (active != DrawPass.STANDARD) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
-            return
-                    // COORDINATE TRANSFORMS
-                    // The methods are used by the physics engine to coordinate the
-                    // Ships and Photons with the board. You should not need them.
-                    ;
+        if (active != DrawPass.SPRITE) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SPRITE", new IllegalStateException());
+            return;
         }
 
         // Unlike Lab 1, we can shortcut without a master drawing method
         spriteBatch.setColor(tint);
         spriteBatch.draw(image, x, y, width, height);
-    }
-
-    /**
-     * Draws the tinted texture at the given position.
-     * <p>
-     * The texture colors will be multiplied by the given color.  This will turn
-     * any white into the given color.  Other colors will be similarly affected.
-     * <p>
-     * Unless otherwise transformed by the global transform (@see begin(Affine2)),
-     * the texture will be unscaled.  The bottom left of the texture will be positioned
-     * at the given coordinates.
-     *
-     * @param image  The texture to draw
-     * @param tint   The color tint
-     * @param ox     The x-coordinate of texture origin (in pixels)
-     * @param oy     The y-coordinate of texture origin (in pixels)
-     * @param x      The x-coordinate of the texture origin (on screen)
-     * @param y      The y-coordinate of the texture origin (on screen)
-     * @param width  The texture width
-     * @param height The texture height
-     */
-    public void draw(Texture image, Color tint, float ox, float oy, float x, float y, float width, float height) {
-        if (active != DrawPass.STANDARD) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
-            return;
-        }
-
-        // Call the master drawing method (more efficient than base method)
-        holder.setRegion(image);
-        draw(holder, tint, x - ox, y - oy, width, height);
     }
 
 
@@ -658,11 +650,6 @@ public class GameCanvas {
      */
     public void draw(Texture image, Color tint, float ox, float oy,
                      float x, float y, float angle, float sx, float sy) {
-        if (active != DrawPass.STANDARD) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
-            return;
-        }
-
         // Call the master drawing method (more efficient that base method)
         holder.setRegion(image);
         draw(holder, tint, ox, oy, x, y, angle, sx, sy);
@@ -693,43 +680,10 @@ public class GameCanvas {
      */
     public void draw(Texture image, float alpha, float ox, float oy,
                      float x, float y, float angle, float sx, float sy) {
-        if (active != DrawPass.STANDARD) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
-            return;
-        }
-
         // Call the master drawing method (more efficient that base method)
         holder.setRegion(image);
         alphaCache.a = alpha;
         draw(holder, alphaCache, ox, oy, x, y, angle, sx, sy);
-    }
-
-    /**
-     * Draws the tinted texture region (filmstrip) at the given position.
-     * <p>
-     * A texture region is a single texture file that can hold one or more textures.
-     * It is used for filmstrip animation.
-     * <p>
-     * The texture colors will be multiplied by the given color.  This will turn
-     * any white into the given color.  Other colors will be similarly affected.
-     * <p>
-     * Unless otherwise transformed by the global transform (@see begin(Affine2)),
-     * the texture will be unscaled.  The bottom left of the texture will be positioned
-     * at the given coordinates.
-     *
-     * @param region The texture to draw
-     * @param x      The x-coordinate of the bottom left corner
-     * @param y      The y-coordinate of the bottom left corner
-     */
-    public void draw(TextureRegion region, float x, float y) {
-        if (active != DrawPass.STANDARD) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
-            return;
-        }
-
-        // Unlike Lab 1, we can shortcut without a master drawing method
-        spriteBatch.setColor(Color.WHITE);
-        spriteBatch.draw(region, x, y);
     }
 
     /**
@@ -751,44 +705,14 @@ public class GameCanvas {
      * @param height The texture height
      */
     public void draw(TextureRegion region, Color tint, float x, float y, float width, float height) {
-        if (active != DrawPass.STANDARD) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+        if (active != DrawPass.SPRITE) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SPRITE", new IllegalStateException());
             return;
         }
 
         // Unlike Lab 1, we can shortcut without a master drawing method
         spriteBatch.setColor(tint);
         spriteBatch.draw(region, x, y, width, height);
-    }
-
-    /**
-     * Draws the tinted texture at the given position.
-     * <p>
-     * The texture colors will be multiplied by the given color.  This will turn
-     * any white into the given color.  Other colors will be similarly affected.
-     * <p>
-     * Unless otherwise transformed by the global transform (@see begin(Affine2)),
-     * the texture will be unscaled.  The bottom left of the texture will be positioned
-     * at the given coordinates.
-     *
-     * @param region The texture to draw
-     * @param tint   The color tint
-     * @param ox     The x-coordinate of texture origin (in pixels)
-     * @param oy     The y-coordinate of texture origin (in pixels)
-     * @param x      The x-coordinate of the texture origin (on screen)
-     * @param y      The y-coordinate of the texture origin (on screen)
-     * @param width  The texture width
-     * @param height The texture height
-     */
-    public void draw(TextureRegion region, Color tint, float ox, float oy, float x, float y, float width, float height) {
-        if (active != DrawPass.STANDARD) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
-            return;
-        }
-
-        // Unlike Lab 1, we can shortcut without a master drawing method
-        spriteBatch.setColor(tint);
-        spriteBatch.draw(region, x - ox, y - oy, width, height);
     }
 
     /**
@@ -819,8 +743,8 @@ public class GameCanvas {
      */
     public void draw(TextureRegion region, Color tint, float ox, float oy,
                      float x, float y, float angle, float sx, float sy) {
-        if (active != DrawPass.STANDARD) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+        if (active != DrawPass.SPRITE) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SPRITE", new IllegalStateException());
             return;
         }
 
@@ -828,37 +752,6 @@ public class GameCanvas {
         // There is a workaround, but it will break if the bug is fixed.
         // For now, it is better to set the affine transform directly.
         computeTransform(ox, oy, x, y, angle, sx, sy);
-        spriteBatch.setColor(tint);
-        spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
-    }
-
-    /**
-     * Draws the tinted texture with the given transformations
-     * <p>
-     * The texture colors will be multiplied by the given color.  This will turn
-     * any white into the given color.  Other colors will be similarly affected.
-     * <p>
-     * The transformations are BEFORE after the global transform (@see begin(Affine2)).
-     * As a result, the specified texture origin will be applied to all transforms
-     * (both the local and global).
-     * <p>
-     * The local transformations in this method are applied in the following order:
-     * scaling, then rotation, then translation (e.g. placement at (sx,sy)).
-     *
-     * @param region The region to draw
-     * @param tint   The color tint
-     * @param ox     The x-coordinate of texture origin (in pixels)
-     * @param oy     The y-coordinate of texture origin (in pixels)
-     * @param affine The image transform
-     */
-    public void draw(TextureRegion region, Color tint, float ox, float oy, Affine2 affine) {
-        if (active != DrawPass.STANDARD) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
-            return;
-        }
-
-        local.set(affine);
-        local.translate(-ox, -oy);
         spriteBatch.setColor(tint);
         spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
     }
@@ -872,8 +765,8 @@ public class GameCanvas {
      * @param y    The y-coordinate of the lower-left corner
      */
     public void drawText(String text, BitmapFont font, float x, float y) {
-        if (active != DrawPass.STANDARD) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+        if (active != DrawPass.SPRITE) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SPRITE", new IllegalStateException());
             return;
         }
         GlyphLayout layout = new GlyphLayout(font, text);
@@ -888,8 +781,8 @@ public class GameCanvas {
      * @param offset The y-value offset from the center of the screen.
      */
     public void drawTextCentered(String text, BitmapFont font, float offset) {
-        if (active != DrawPass.STANDARD) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+        if (active != DrawPass.SPRITE) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SPRITE", new IllegalStateException());
             return;
         }
 
@@ -901,23 +794,23 @@ public class GameCanvas {
     }
 
     public void drawLightBar(Texture icon, float width, float height, float light) {
-        if (active != DrawPass.STANDARD) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+        if (active != DrawPass.SHAPE) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
             return;
         }
 
-        barRender.begin(ShapeRenderer.ShapeType.Line);
-        barRender.setColor(Color.WHITE);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setColor(Color.WHITE);
         float x = getWidth() - width - GAP_DIST;
         float y = getHeight() - height - GAP_DIST;
-        barRender.rect(x, y, width, height);
-        barRender.end();
+        shapeRenderer.rect(x, y, width, height);
+        shapeRenderer.end();
 
-        barRender.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         Color yellow = new Color(244.0f / 255.0f, 208.0f / 255.0f, 63.0f / 255.0f, 1.0f);
-        barRender.setColor(yellow);
-        barRender.rect(x, y, width * light / Werewolf.MAX_LIGHT, height);
-        barRender.end();
+        shapeRenderer.setColor(yellow);
+        shapeRenderer.rect(x, y, width * light / Werewolf.MAX_LIGHT, height);
+        shapeRenderer.end();
 
 //        draw(icon, Color.WHITE, x - width, y, width, width);
 //        canvas.draw(playButton, tint, playButton.getWidth() / 2, playButton.getHeight() / 2,
@@ -926,34 +819,34 @@ public class GameCanvas {
     }
 
     public void drawHpBar(Texture icon, float width, float height, float hp) {
-        if (active != DrawPass.STANDARD) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+        if (active != DrawPass.SHAPE) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
             return;
         }
 
-        barRender.begin(ShapeRenderer.ShapeType.Line);
-        barRender.setColor(Color.WHITE);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setColor(Color.WHITE);
         float x = getWidth() - width - GAP_DIST;
         float y = getHeight() - height * 2.25f - GAP_DIST * 1.5f;
-        barRender.rect(x, y, width, height);
-        barRender.end();
+        shapeRenderer.rect(x, y, width, height);
+        shapeRenderer.end();
         Color health;
-        barRender.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         if (hp / Werewolf.INITIAL_HP < 0.5) {
             health = new Color(169.0f / 255.0f, 50.0f / 255.0f, 38.0f / 255.0f, 1.0f);
         } else {
             health = new Color(20.0f / 255.0f, 142.0f / 255.0f, 119.0f / 255.0f, 1.0f);
         }
-        barRender.setColor(health);
-        barRender.rect(x, y, width * hp / Werewolf.INITIAL_HP, height);
-        barRender.end();
+        shapeRenderer.setColor(health);
+        shapeRenderer.rect(x, y, width * hp / Werewolf.INITIAL_HP, height);
+        shapeRenderer.end();
 
 //        draw(icon, Color.WHITE, x - width, y, width, height);
     }
 
     public void drawEnemyHpBars(float barWidth, float barHeight, Enemy enemy) {
-        if (active != DrawPass.STANDARD) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+        if (active != DrawPass.SHAPE) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
             return;
         }
         float x = WorldToScreenX(enemy.getPosition().x);
@@ -975,25 +868,48 @@ public class GameCanvas {
     }
 
     public void drawStealthBar(Texture icon, float width, float height, float stealth) {
-        if (active != DrawPass.STANDARD) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+        if (active != DrawPass.SHAPE) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
             return;
         }
 
-        barRender.begin(ShapeRenderer.ShapeType.Line);
-        barRender.setColor(Color.WHITE);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setColor(Color.WHITE);
         float x = getWidth() - width - GAP_DIST;
         float y = getHeight() - height * 3.5f - GAP_DIST * 2;
-        barRender.rect(x, y, width, height);
-        barRender.end();
+        shapeRenderer.rect(x, y, width, height);
+        shapeRenderer.end();
 
-        barRender.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         Color blue = new Color(40.0f / 255.0f, 116.0f / 255.0f, 166.0f / 255.0f, 1.0f);
-        barRender.setColor(blue);
-        barRender.rect(x, y, width * stealth, height);
-        barRender.end();
+        shapeRenderer.setColor(blue);
+        shapeRenderer.rect(x, y, width * stealth, height);
+        shapeRenderer.end();
 
 //        draw(icon, Color.WHITE, x - width, y, width, height);
+    }
+
+    /**
+     * Draws a shader instanced on quads with given width and height.
+     * @param shader Sets the shader which will draw
+     * @param instanceCount maxInstances for this shader
+     * @param instanceData instance data to pass into shader
+     * @param width width of quad
+     * @param height height of quad
+     * @param attributes atributes for which instanceData will be passed in
+     */
+    public void drawInstancedShader(ShaderProgram shader, int instanceCount, FloatBuffer instanceData, float width, float height, VertexAttribute... attributes) {
+        if (active != DrawPass.SHADER) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHADER", new IllegalStateException());
+            return;
+        }
+
+        instanceRenderer.setShader(shader);
+        instanceRenderer.draw(width, height);
+        instanceRenderer.initialize(true, instanceCount, attributes);
+        instanceRenderer.setInstanceData(instanceData);
+        instanceRenderer.begin();
+        instanceRenderer.end();
     }
 
     /**
@@ -1004,8 +920,8 @@ public class GameCanvas {
      * @param offset The y-value offset from the center of the screen.
      */
     public void drawTextUpperRight(String text, BitmapFont font, float offset) {
-        if (active != DrawPass.STANDARD) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+        if (active != DrawPass.SPRITE) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SPRITE", new IllegalStateException());
             return;
         }
 
@@ -1068,7 +984,10 @@ public class GameCanvas {
      * @param y bottom-left screen y
      */
     public void drawRecOutline(float x, float y, float width, float height, Color color) {
-
+        if (active != DrawPass.SHAPE) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
+            return;
+        }
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(color);
         shapeRenderer.rect(x, y, width, height);

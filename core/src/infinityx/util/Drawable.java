@@ -1,6 +1,6 @@
 package infinityx.util;
 
-import infinityx.lunarhaze.GameCanvas;
+import infinityx.lunarhaze.graphics.GameCanvas;
 
 
 /**
