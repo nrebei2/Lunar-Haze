@@ -166,13 +166,13 @@ public class GameMode extends ScreenObservable implements Screen {
         switch (gameplayController.getState()) {
             case WIN:
                 displayFont.setColor(Color.YELLOW);
-                canvas.begin();
+                canvas.begin(GameCanvas.DrawPass.SPRITE);
                 canvas.drawTextCentered("VICTORY!", displayFont, 0.0f);
                 canvas.end();
                 break;
             case OVER:
                 displayFont.setColor(Color.RED);
-                canvas.begin(); // DO NOT SCALE
+                canvas.begin(GameCanvas.DrawPass.SPRITE); // DO NOT SCALE
                 canvas.drawTextCentered("FAILURE!", displayFont, 0.0f);
                 canvas.end();
                 break;

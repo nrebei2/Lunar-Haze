@@ -1,7 +1,10 @@
 package infinityx.lunarhaze;
 
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.GameplayController.Phase;
+import infinityx.lunarhaze.combat.AttackHandler;
+import infinityx.lunarhaze.combat.PlayerAttackHandler;
 import infinityx.lunarhaze.entity.Werewolf;
 
 public class PlayerController {
@@ -49,29 +52,16 @@ public class PlayerController {
     /**
      * LevelContainer that contains moonlight information
      */
-    private final LevelContainer levelContainer;
+    private LevelContainer levelContainer;
 
-    /**
-     * Attacks the player has already made
-     */
-    private float attackCounter;
+    /**If the player is collecting moonlight then true, false otherwise */
+    private boolean collectingMoonlight;
 
-    /**
-     * Maximum attacks player can make before cooldown
-     */
-    private final float attackLength;
+    private PlayerAttackHandler attackHandler;
 
-    /**
-     *
-     */
-    private float attackCooldownCounter;
-
-    /**
-     *
-     */
-    private final float attackCooldown;
-
-    private final Vector2 attackDirection;
+    public float getTimeOnMoonlightPercentage(){
+        return timeOnMoonlight/MOONLIGHT_COLLECT_TIME;
+    }
 
     /**
      * Initializer of a PlayerController
@@ -81,11 +71,8 @@ public class PlayerController {
         this.board = board;
         timeOnMoonlight = 0;
         this.levelContainer = levelContainer;
-        attackCounter = 0f;
-        attackLength = 0.6f;
-        attackCooldown = 4f;
-        attackCooldownCounter = 0f;
-        attackDirection = new Vector2();
+        collectingMoonlight = false;
+        attackHandler = new PlayerAttackHandler(player);
     }
 
     /**
@@ -107,6 +94,7 @@ public class PlayerController {
      * <p>
      */
     public void collectMoonlight() {
+        collectingMoonlight = false;
         player.addMoonlightCollected();
         player.setLight(player.getLight() + (Werewolf.MAX_LIGHT / levelContainer.getTotalMoonlight()));
     }
@@ -125,15 +113,21 @@ public class PlayerController {
         if (board.isLit(px, py)) {
             timeOnMoonlight += delta; // Increase variable by time
             player.setOnMoonlight(true);
+            collectingMoonlight = true;
             if (board.isCollectable(px, py) && (timeOnMoonlight > MOONLIGHT_COLLECT_TIME)) {
                 collectMoonlight();
+                collectingMoonlight = false;
                 timeOnMoonlight = 0;
                 board.setCollected(px, py);
                 lightingController.removeDust(px, py);
             }
+            if(!board.isCollectable(px, py)){
+                collectingMoonlight = false;
+            }
         } else {
             timeOnMoonlight = 0;
             player.setOnMoonlight(false);
+            collectingMoonlight = false;
         }
     }
 
@@ -144,12 +138,14 @@ public class PlayerController {
      * @param input InputController that controls the player
      */
     public void resolveStealthBar(InputController input) {
-        if (input.getHorizontal() == 0 || input.getVertical() == 0) {
-            player.setStealth(STILL_STEALTH);
-        } else if (!player.isRunning()) {
+        if (Math.abs(input.getHorizontal()) == input.getWalkSpeed() ||
+                Math.abs(input.getVertical()) == input.getWalkSpeed()) {
             player.setStealth(WALK_STEALTH);
-        } else if (player.isRunning()) {
+        } else if (Math.abs(input.getHorizontal()) == input.getRunSpeed() ||
+                Math.abs(input.getVertical()) == input.getRunSpeed()) {
             player.setStealth(RUN_STEALTH);
+        } else if (input.getHorizontal() == 0 || input.getVertical() == 0) {
+            player.setStealth(STILL_STEALTH);
         }
 
         if (player.isOnMoonlight()) {
@@ -157,35 +153,14 @@ public class PlayerController {
         }
     }
 
-    public void attack(float delta, InputController input, Phase phase) {
-        if (phase == GameplayController.Phase.BATTLE) {
-            if (player.isAttacking()) {
-                player.setCanMove(false);
-                attackCounter += delta;
-                if (attackCounter >= attackLength) {
-                    player.setAttacking(false);
-                    player.setCanMove(true);
-                    attackCounter = 0f;
-                }
-            } else {
-                attackCooldownCounter += delta;
-                if (attackCooldownCounter >= attackCooldown) {
-                    attackCooldownCounter = 0f;
-                }
-            }
-            if (!player.isAttacking() && attackCooldownCounter >= 0f && input.didAttack()) {
-                player.setAttacking(true);
-                attackCooldownCounter = attackCooldown;
-                attackDirection.set(input.getHorizontal(), input.getVertical()).nor().scl(125);
-                player.getBody().applyForceToCenter(attackDirection, true);
-            }
-        }
+    public boolean isCollectingMoonlight(){
+        return collectingMoonlight;
     }
 
     public void update(InputController input, float delta, Phase currPhase, LightingController lightingController) {
         resolvePlayer(input, delta);
         resolveMoonlight(delta, lightingController);
         resolveStealthBar(input);
-        attack(delta, input, currPhase);
+        attackHandler.update(delta, input, currPhase);
     }
 }

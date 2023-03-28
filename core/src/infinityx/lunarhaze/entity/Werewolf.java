@@ -2,7 +2,11 @@ package infinityx.lunarhaze.entity;
 
 import box2dLight.PointLight;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Polygon;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.LevelContainer;
@@ -18,9 +22,12 @@ public class Werewolf extends SteeringGameObject {
     private static final float INITIAL_LIGHT = 0.0f;
 
     /**
-     * Initial hp of the werewolf is 100.0
+     * Initial hp of the werewolf is 5
      **/
-    public static int INITIAL_HP;
+    public static int INITIAL_HP = 5;
+
+    /** Size of attack hitbox */
+    public static float HITBOX_SIZE = 5f;
 
     /**
      * Maximum light of the werewolf is 100.0
@@ -77,6 +84,7 @@ public class Werewolf extends SteeringGameObject {
     /**
      * Health point (hp) of the werewolf
      */
+
     private int hp;
 
     /**
@@ -91,10 +99,12 @@ public class Werewolf extends SteeringGameObject {
      */
     private float stealth;
 
+
     /**
      * Controls how long the werewolf gets knocked back by an attack and the window of the
      * damage animation.
      */
+
     private float lockoutTime;
 
     /**
@@ -102,12 +112,16 @@ public class Werewolf extends SteeringGameObject {
      */
     private PointLight spotLight;
 
-    // TODO: change this into FSM
+    private final Vector2 forceCache = new Vector2();
 
-    /**
-     * Whether the werewolf is currently attacking
-     */
     private boolean isAttacking;
+
+    public Body attackHitbox;
+    public boolean hitboxActive;
+
+    private boolean drawCooldownBar;
+
+    private float cooldownPercent;
 
     /**
      * Whether the werewolf is in sprint
@@ -161,14 +175,6 @@ public class Werewolf extends SteeringGameObject {
         movementV = value;
     }
 
-    public void setRunning(boolean running) {
-        isRunning = running;
-    }
-
-    public boolean isRunning() {
-        return isRunning;
-    }
-
     /**
      * Returns the current hp of the werewolf.
      */
@@ -191,6 +197,14 @@ public class Werewolf extends SteeringGameObject {
 
     public void initLockout(float value) {
         lockout = value;
+    }
+
+    public boolean isRunning() {
+        return isRunning;
+    }
+
+    public void setRunning(boolean running) {
+        isRunning = running;
     }
 
     /**
@@ -230,6 +244,22 @@ public class Werewolf extends SteeringGameObject {
      */
     public float getAttackPower() {
         return light / MAX_LIGHT;
+    }
+
+    /** Sets the cooldown bar to be drawn or not */
+    public void setDrawCooldownBar(boolean b, float percentage) {
+        drawCooldownBar = b;
+        cooldownPercent = percentage;
+    }
+
+    /** @return whether the cooldown bar should be drawn */
+    public boolean drawCooldownBar() {
+        return drawCooldownBar;
+    }
+
+    /** @return the percentage of the cooldown bar */
+    public float getCooldownPercent() {
+        return cooldownPercent;
     }
 
     /**
@@ -274,7 +304,11 @@ public class Werewolf extends SteeringGameObject {
     }
 
     public void setAttacking(boolean value) {
+
         isAttacking = value;
+        hitboxActive = value;
+        attackHitbox.setActive(value);
+
     }
 
     public boolean isAttacking() {
@@ -294,7 +328,6 @@ public class Werewolf extends SteeringGameObject {
         stealth = 0.0f;
         moonlightCollected = 0;
         isAttacking = false;
-        isRunning = false;
         canMove = true;
     }
 
@@ -328,8 +361,43 @@ public class Werewolf extends SteeringGameObject {
         spotLight.setColor(color[0], color[1], color[2], color[3]);
         spotLight.setSoft(light.getBoolean("soft"));
         activatePhysics(container.getWorld());
+        createAttackHitbox(container.getWorld());
         setSpotLight(spotLight);
     }
+
+    public void createAttackHitbox(World world) {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.position.set(getBody().getPosition().x, getBody().getPosition().y + getTexture().getRegionY()/2.0f);
+
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(HITBOX_SIZE / 2, HITBOX_SIZE / 2);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.isSensor = true;
+
+        attackHitbox = world.createBody(bodyDef);
+        attackHitbox.createFixture(fixtureDef);
+        attackHitbox.setUserData(this);
+
+        shape.dispose();
+
+        hitboxActive = false;
+        attackHitbox.setActive(false);
+    }
+
+    /** public void resolveAttack(GameObject enemy, int damage, float knockback) {
+
+        Body enemyBody = enemy.getBody();
+        Vector2 pos = body.getPosition();
+        Vector2 enemyPos = enemyBody.getPosition();
+        Vector2 direction = pos.sub(enemyPos).nor();
+
+        canMove = false;
+        body.applyLinearImpulse(direction.scl(knockback), body.getWorldCenter(), true);
+        setHp(hp - damage);
+    } */
 
     /**
      * Updates the animation frame and position of this werewolf.
@@ -354,4 +422,5 @@ public class Werewolf extends SteeringGameObject {
         }
         filmstrip.setFrame(isAttacking ? 1 : 0);
     }
+
 }

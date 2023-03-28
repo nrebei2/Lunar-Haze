@@ -335,7 +335,7 @@ public class LoadingMode extends ScreenObservable implements Screen {
      */
     private void draw(float delta) {
         canvas.clear(Color.BLACK);
-        canvas.begin();
+        canvas.begin(GameCanvas.DrawPass.SPRITE);
 
         switch (loadingState) {
             case FADE_OUT:

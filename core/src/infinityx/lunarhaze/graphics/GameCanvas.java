@@ -28,7 +28,9 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Array;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.Werewolf;
@@ -793,6 +795,26 @@ public class GameCanvas {
         font.draw(spriteBatch, layout, x, y + offset);
     }
 
+    public void drawCollectLightBar(float width, float height, float percentage) {
+        if (active != DrawPass.SHAPE) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
+            return;
+        }
+
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setColor(Color.WHITE);
+        float x = (getWidth() - width)/2;
+        float y = (getHeight() - height)/4*2.7f;
+        shapeRenderer.rect(x, y, width, height);
+        shapeRenderer.end();
+
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        Color yellow = new Color(244.0f / 255.0f, 208.0f / 255.0f, 63.0f / 255.0f, 1.0f);
+        shapeRenderer.setColor(yellow);
+        shapeRenderer.rect(x, y, width * percentage, height);
+        shapeRenderer.end();
+    }
+
     public void drawLightBar(Texture icon, float width, float height, float light) {
         if (active != DrawPass.SHAPE) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
@@ -864,6 +886,52 @@ public class GameCanvas {
         shapeRenderer.setColor(Color.RED);
 
         shapeRenderer.rect(x - 0.7f * barWidth, y + 2 * barWidth, barWidth * enemy.getHealthPercentage(), barHeight);
+        shapeRenderer.end();
+    }
+
+    public void drawAttackCooldownBar(float barWidth, float barHeight, float xOffset, Werewolf werewolf) {
+        if (active != DrawPass.SHAPE) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
+            return;
+        }
+
+        float x = WorldToScreenX(werewolf.getPosition().x) + xOffset;
+        float y = WorldToScreenY(werewolf.getPosition().y);
+
+        // Draw border
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(Color.BLACK);
+        shapeRenderer.rect(x, y, barWidth, barHeight);
+        shapeRenderer.end();
+
+        // Draw the actual cooldown bar
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(Color.WHITE);
+
+        shapeRenderer.rect(x, y, barWidth, barHeight * werewolf.getCooldownPercent());
+        shapeRenderer.end();
+    }
+
+    public void drawAttackHitbox(Werewolf player) {
+        if (active != DrawPass.SHAPE) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
+            return;
+        }
+
+        PolygonShape hitbox = (PolygonShape) player.attackHitbox.getFixtureList().first().getShape();
+        float[] vertices = new float[hitbox.getVertexCount() * 2];
+        for (int i = 0; i < hitbox.getVertexCount(); i++) {
+            Vector2 vertex = new Vector2();
+            hitbox.getVertex(i, vertex);
+            vertex.add(WorldToScreenX(player.attackHitbox.getPosition().x), WorldToScreenY(player.attackHitbox.getPosition().y));
+            vertices[i * 2] = vertex.x;
+            vertices[i * 2 + 1] = vertex.y;
+        }
+        Polygon polygon = new Polygon(vertices);
+
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setColor(Color.RED);
+        shapeRenderer.polygon(polygon.getVertices());
         shapeRenderer.end();
     }
 

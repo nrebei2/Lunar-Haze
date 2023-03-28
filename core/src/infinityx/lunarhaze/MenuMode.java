@@ -144,7 +144,7 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
      * prefer this in lecture.
      */
     private void draw() {
-        canvas.begin();
+        canvas.begin(GameCanvas.DrawPass.SPRITE);
         Color alphaTint = Color.WHITE;
         canvas.drawOverlay(background, alphaTint, true);
 //        canvas.draw(background, 0, 0);
