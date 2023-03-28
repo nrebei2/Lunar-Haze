@@ -97,6 +97,7 @@ public class PlayerController {
         collectingMoonlight = false;
         player.addMoonlightCollected();
         player.setLight(player.getLight() + (Werewolf.MAX_LIGHT / levelContainer.getTotalMoonlight()));
+        PlayerAttackHandler.setAttackPower(player.getAttackPower());
     }
 
     /**

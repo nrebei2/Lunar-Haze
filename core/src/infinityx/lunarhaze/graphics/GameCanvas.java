@@ -461,7 +461,7 @@ public class GameCanvas {
         viewCache.set(tx, ty);
         global.translate(tx, ty, 0.0f);
         global.mulLeft(camera.combined);
-        
+
         switch (pass) {
             case SPRITE:
                 spriteBatch.setProjectionMatrix(global);
@@ -490,7 +490,7 @@ public class GameCanvas {
             Gdx.app.error("GameCanvas", "What do you mean by that?", new IllegalStateException());
             return;
         }
-        
+
         switch (pass) {
             case SPRITE:
                 spriteBatch.setProjectionMatrix(camera.combined);
@@ -909,29 +909,6 @@ public class GameCanvas {
         shapeRenderer.setColor(Color.WHITE);
 
         shapeRenderer.rect(x, y, barWidth, barHeight * werewolf.getCooldownPercent());
-        shapeRenderer.end();
-    }
-
-    public void drawAttackHitbox(Werewolf player) {
-        if (active != DrawPass.SHAPE) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
-            return;
-        }
-
-        PolygonShape hitbox = (PolygonShape) player.attackHitbox.getFixtureList().first().getShape();
-        float[] vertices = new float[hitbox.getVertexCount() * 2];
-        for (int i = 0; i < hitbox.getVertexCount(); i++) {
-            Vector2 vertex = new Vector2();
-            hitbox.getVertex(i, vertex);
-            vertex.add(WorldToScreenX(player.attackHitbox.getPosition().x), WorldToScreenY(player.attackHitbox.getPosition().y));
-            vertices[i * 2] = vertex.x;
-            vertices[i * 2 + 1] = vertex.y;
-        }
-        Polygon polygon = new Polygon(vertices);
-
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(Color.RED);
-        shapeRenderer.polygon(polygon.getVertices());
         shapeRenderer.end();
     }
 
