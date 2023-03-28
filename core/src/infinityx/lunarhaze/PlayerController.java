@@ -156,7 +156,6 @@ public class PlayerController {
         return collectingMoonlight;
     }
 
-
     public void update(InputController input, float delta, Phase currPhase, LightingController lightingController) {
         resolvePlayer(input, delta);
         resolveMoonlight(delta, lightingController);
