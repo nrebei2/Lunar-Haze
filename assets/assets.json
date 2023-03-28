@@ -86,6 +86,12 @@
       }
     }
 },
+  "shaders": {
+    "meter": {
+      "vert": "shaders/meter.vert",
+      "frag": "shaders/meter.frag"
+    }
+  },
   "jsons": {
     "levels": "jsons/levels.json",
     "player": "jsons/player.json",
