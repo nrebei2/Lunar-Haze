@@ -16,7 +16,7 @@ public class EnemySpawner {
     /**
      * level container to spawn enemies in
      */
-    private LevelContainer container;
+    private final LevelContainer container;
 
     /**
      * Minimum and Maximum time (in ticks) to spawn a new enemy
@@ -24,7 +24,9 @@ public class EnemySpawner {
     private int addMin;
     private int addMax;
 
-    /** Tick number for when we add a new enemy in battle mode */
+    /**
+     * Tick number for when we add a new enemy in battle mode
+     */
     private int enemyAddTick;
 
     /**
@@ -41,6 +43,7 @@ public class EnemySpawner {
 
     /**
      * Initialize attributes of this spawner
+     *
      * @param settings json tree holding spawner info
      */
     public void initialize(JsonValue settings) {

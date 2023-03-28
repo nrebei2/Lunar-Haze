@@ -27,6 +27,7 @@ import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
@@ -112,7 +113,7 @@ public class AssetDirectory extends AssetManager {
      * <p>
      * We need this callback to extract the contents object
      */
-    private DirectoryLoader.DirectoryLoaderParameters.LoadedCallback callback = new DirectoryLoader.DirectoryLoaderParameters.LoadedCallback() {
+    private final DirectoryLoader.DirectoryLoaderParameters.LoadedCallback callback = new DirectoryLoader.DirectoryLoaderParameters.LoadedCallback() {
         /**
          * Assign contents to the result of the directory loader.
          *
@@ -167,6 +168,7 @@ public class AssetDirectory extends AssetManager {
 
         setLoader(Pixmap.class, new PixmapLoader(resolver));
         setLoader(Texture.class, new TextureLoader(resolver));
+        setLoader(ShaderProgram.class, new ShaderProgramLoader(resolver));
         setLoader(TextureAtlas.class, new TextureAtlasLoader(resolver));
         setLoader(TextureRegion.class, new TextureRegionLoader(resolver));
         setLoader(FilmStrip.class, new FilmStripLoader(resolver));
@@ -188,6 +190,7 @@ public class AssetDirectory extends AssetManager {
         topLoader.addParser(new MusicParser());
         topLoader.addParser(new SoundEffectParser());
         topLoader.addParser(new MusicQueueParser());
+        topLoader.addParser(new ShaderParser());
     }
 
     /**

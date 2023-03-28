@@ -8,12 +8,12 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
-import com.badlogic.gdx.utils.ObjectSet;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.EnemyPool;
 import infinityx.lunarhaze.entity.SceneObject;
 import infinityx.lunarhaze.entity.Werewolf;
+import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.physics.LightSource;
 import infinityx.util.Drawable;
 
@@ -162,7 +162,7 @@ public class LevelContainer {
 
         // There will always be a player
         // So it's fine to initialize now
-        Werewolf player = new Werewolf(0, 0);
+        Werewolf player = new Werewolf();
         player.initialize(directory, playerJson, this);
         setPlayer(player);
 
@@ -215,11 +215,10 @@ public class LevelContainer {
      */
     public Enemy addEnemy(Enemy enemy) {
         activeEnemies.add(enemy);
-        addDrawable(enemy);
+        addDrawables(enemy);
 
         // Update enemy controller assigned to the new enemy
-        getEnemyControllers().get(enemy).populateSurroundings(this);
-        getEnemyControllers().get(enemy).initialize();
+        getEnemyControllers().get(enemy).populate(this);
 
         return enemy;
     }
@@ -259,13 +258,6 @@ public class LevelContainer {
      */
     public ObjectMap<Enemy, EnemyController> getEnemyControllers() {
         return enemies.controls;
-    }
-
-    /**
-     * Add object for this container to draw.
-     */
-    public void addDrawable(Drawable drawable) {
-        drawables.add(drawable);
     }
 
     /**
@@ -456,7 +448,7 @@ public class LevelContainer {
      */
     public void drawLevel(GameCanvas canvas) {
         garbageCollect();
-        canvas.beginT(view.x, view.y);
+        canvas.begin(GameCanvas.DrawPass.SPRITE, view.x, view.y);
 
         // Render order: Board tiles -> (players, enemies, scene objects) sorted by depth (y coordinate)
         board.draw(canvas);

@@ -7,6 +7,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import infinityx.assets.AssetDirectory;
+import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.util.ScreenObservable;
 
 /**
@@ -73,6 +74,11 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
     private static final float PLAY_HEIGHT_RATIO = 0.25f;
 
     /**
+     * What level was selected by the player
+     */
+    private int levelSelected;
+
+    /**
      * Returns true if all assets are loaded and the player is ready to go.
      *
      * @return true if the player is ready to go
@@ -108,6 +114,14 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
         playButton = directory.getEntry("play", Texture.class);
     }
 
+    public int getLevelSelected() {
+        return levelSelected;
+    }
+
+    public void setLevelSelected(int levelSelected) {
+        this.levelSelected = levelSelected;
+    }
+
     /**
      * Called when this screen should release all resources.
      */
@@ -130,7 +144,7 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
      * prefer this in lecture.
      */
     private void draw() {
-        canvas.begin();
+        canvas.begin(GameCanvas.DrawPass.SPRITE);
         Color alphaTint = Color.WHITE;
         canvas.drawOverlay(background, alphaTint, true);
 //        canvas.draw(background, 0, 0);
@@ -159,8 +173,14 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
                 observer.exitScreen(this, GO_EDITOR);
             }
 
+            if (Gdx.input.isKeyPressed(Input.Keys.T)) {
+                setLevelSelected(0);
+                observer.exitScreen(this, GO_PLAY);
+            }
+
             // We are are ready, notify our listener
             if (isReady() && observer != null) {
+                setLevelSelected(1);
                 observer.exitScreen(this, GO_PLAY);
             }
         }

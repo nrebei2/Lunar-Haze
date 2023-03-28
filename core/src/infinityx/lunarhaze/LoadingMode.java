@@ -29,6 +29,7 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
 import infinityx.assets.AssetDirectory;
+import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.util.ScreenObservable;
 
 /**
@@ -334,7 +335,7 @@ public class LoadingMode extends ScreenObservable implements Screen {
      */
     private void draw(float delta) {
         canvas.clear(Color.BLACK);
-        canvas.begin();
+        canvas.begin(GameCanvas.DrawPass.SPRITE);
 
         switch (loadingState) {
             case FADE_OUT:

@@ -2,12 +2,19 @@ package infinityx.lunarhaze;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.VertexAttribute;
+import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.BufferUtils;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.GameplayController.Phase;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.Werewolf;
+import infinityx.lunarhaze.graphics.GameCanvas;
+
+import java.nio.FloatBuffer;
 
 /**
  * This is a class used for drawing player and enemies' game UI state: HP, Stealth, MoonLight
@@ -93,28 +100,32 @@ public class UIRender {
      */
     protected BitmapFont UIFont_small;
 
-    private Texture circle_bar;
+    private final Texture circle_bar;
 
     /**
      * Top stroke texture
      */
-    private Texture counter;
+    private final Texture counter;
 
-    private Texture dusk_icon;
+    private final Texture dusk_icon;
 
-    private Texture health_icon;
+    private final Texture health_icon;
 
-    private Texture moon_icon;
+    private final Texture moon_icon;
 
-    private Texture rec_bar;
+    private final Texture rec_bar;
 
-    private Texture stealth_icon;
+    private final Texture stealth_icon;
 
-    private Texture health_stroke;
+    private final Texture health_stroke;
 
-    private Texture moonlight_stroke;
+    private final Texture moonlight_stroke;
 
-    private Texture stealth_stroke;
+    private final Texture stealth_stroke;
+
+    /** shader program which draws the enemy notice meter */
+    private final ShaderProgram meter;
+    private final VertexAttribute[] meterAttributes;
 
     /**
      * Create a new UIRender with font and directory assigned.
@@ -139,6 +150,13 @@ public class UIRender {
         health_stroke = directory.getEntry("health-stroke", Texture.class);
         moonlight_stroke = directory.getEntry("moonlight-stroke", Texture.class);
         stealth_stroke = directory.getEntry("stealth-stroke", Texture.class);
+
+        // shaders
+        this.meter = directory.get("meter", ShaderProgram.class);
+        this.meterAttributes = new VertexAttribute[]{
+                new VertexAttribute(VertexAttributes.Usage.Position, 2, "i_offset"),
+                new VertexAttribute(VertexAttributes.Usage.Position, 1, "i_amount")
+        };
     }
 
 
@@ -152,7 +170,9 @@ public class UIRender {
     public void drawUI(GameCanvas canvas, LevelContainer level, GameplayController.Phase phase, GameplayController gameplayController) {
         UIFont_large.setColor(Color.WHITE);
         UIFont_small.setColor(Color.WHITE);
-        canvas.begin(); // DO NOT SCALE
+
+        // Draw give view transform considered
+        canvas.begin(GameCanvas.DrawPass.SHAPE, level.getView().x, level.getView().y);
 //        canvas.drawLightBar(moon_icon, BAR_WIDTH,
 //                BAR_HEIGHT, level.getPlayer().getLight());
 //        canvas.drawHpBar(health_icon, BAR_WIDTH,
@@ -176,7 +196,9 @@ public class UIRender {
             }
         }
         canvas.end();
-        canvas.begin();
+
+        // Draw with view transform not considered
+        canvas.begin(GameCanvas.DrawPass.SPRITE);
         // Draw top stroke at the top center of screen
         canvas.draw(counter, Color.WHITE, canvas.getWidth() / 2 - COUNTER_WIDTH / 2, canvas.getHeight() - COUNTER_HEIGHT - TOP_MARGIN/2, COUNTER_WIDTH, COUNTER_HEIGHT);
         canvas.drawText("night", UIFont_small, canvas.getWidth() / 2 - UIFont_small.getCapHeight(), canvas.getHeight() - TOP_MARGIN/2);
@@ -210,6 +232,24 @@ public class UIRender {
         Color stealth_fill = new Color(255f / 255.0f, 255f / 255.0f, 255f / 255.0f, 1f);
         canvas.draw(stealth_stroke, stealth_fill, canvas.getWidth()/2 - STEALTH_STROKE_WIDTH/2, MOON_STROKE_HEIGHT, STEALTH_STROKE_WIDTH * proportion, STEALTH_STROKE_HEIGHT);
         canvas.end();
+
+        drawEnemyMeters(canvas, level);
+    }
+
+    /** Draw the stealth notice meter circle above enemies */
+    public void drawEnemyMeters(GameCanvas canvas, LevelContainer level) {
+        Array<Enemy> enemies = level.getEnemies();
+        FloatBuffer offsets = BufferUtils.newFloatBuffer(enemies.size * 3);
+        for (Enemy enemy : enemies) {
+            offsets.put(new float[]{
+                    // TODO
+                    canvas.WorldToScreenX(enemy.getPosition().x), canvas.WorldToScreenY(enemy.getPosition().y),
+                    0.1f
+            });
+        }
+        offsets.position(0);
+        canvas.begin(GameCanvas.DrawPass.SHADER, level.getView().x, level.getView().y);
+        canvas.drawInstancedShader(meter, enemies.size, offsets, 500, 500, meterAttributes);
     }
 
 }

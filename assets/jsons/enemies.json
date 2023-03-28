@@ -21,7 +21,6 @@
     "friction": 0.0,
     "restitution": 1.0,
     "damping": 0.0,
-    "speed": 2,
     "hp": 10,
     "startframe": 0,
     "attack": {

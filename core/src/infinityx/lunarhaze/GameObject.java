@@ -28,6 +28,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
+import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.physics.BoxObstacle;
 import infinityx.util.Drawable;
 import infinityx.util.FilmStrip;
@@ -39,13 +40,6 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
 
     /**
      * Enum specifying the type of this game object.
-     * <p>
-     * This Enum is not strictly necessary.  We could use runtime-time
-     * typing instead.  However, enums can be used in switch statements
-     * (which are very fast), which types cannot. That is the motivation
-     * for this Enum.
-     * If you add new subclasses of GameObject, you will need to add
-     * to this Enum as well.
      */
     public enum ObjectType {
         ENEMY,
@@ -55,11 +49,6 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
     }
 
     // Attributes for all game objects
-
-    /**
-     * Move speed
-     **/
-    protected float speed = 2f;
     /**
      * Reference to texture origin
      */
@@ -84,7 +73,7 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
      * Creates game object at (0, 0)
      */
     public GameObject() {
-        super(0, 0);
+        this(0, 0);
     }
 
     /**
@@ -97,7 +86,6 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
      */
     public GameObject(float x, float y) {
         super(x, y, 1, 1);
-        setFixedRotation(true);
     }
 
     /**
@@ -115,11 +103,6 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
         setDensity(json.get("density").asFloat());
         setFriction(json.get("friction").asFloat());
         setRestitution(json.get("restitution").asFloat());
-        if (!json.has("speed")) {
-            setSpeed(0);
-        } else {
-            setSpeed(json.get("speed").asFloat());
-        }
         //setStartFrame(json.get("startframe").asInt());
         JsonValue texInfo = json.get("texture");
         setTexture(directory.getEntry(texInfo.get("name").asString(), FilmStrip.class));
@@ -142,20 +125,6 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
     @Override
     public boolean isDestroyed() {
         return destroyed;
-    }
-
-    /**
-     * @return The movement speed of this object
-     */
-    public float getSpeed() {
-        return speed;
-    }
-
-    /**
-     * Set the movement speed of this object
-     */
-    public void setSpeed(float speed) {
-        this.speed = speed;
     }
 
     public void setTexture(FilmStrip filmstrip) {
@@ -195,7 +164,6 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
      * @param delta Number of seconds since last animation frame
      */
     public void update(float delta) {
-
     }
 
     public float getDepth() {

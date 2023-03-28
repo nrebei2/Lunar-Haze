@@ -3,17 +3,12 @@ package infinityx.lunarhaze;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Interpolation;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.EnemySpawner;
 import infinityx.lunarhaze.entity.Werewolf;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Controller to handle gameplay interactions.
@@ -101,7 +96,9 @@ public class GameplayController {
      */
     private float phaseTimer;
 
-    /** Number of ticks (frames) since battle began */
+    /**
+     * Number of ticks (frames) since battle began
+     */
     private int battleTicks;
 
 
@@ -137,7 +134,7 @@ public class GameplayController {
      * <p>
      *
      * @param levelContainer container holding model objects in level
-     * @param jsonValue json value holding level layout
+     * @param jsonValue      json value holding level layout
      */
     public void start(LevelContainer levelContainer, JsonValue jsonValue) {
         this.gameState = GameState.PLAY;
@@ -179,7 +176,8 @@ public class GameplayController {
             switch (currentPhase) {
                 case STEALTH:
                     phaseTimer -= delta;
-                    if (container.getBoard().getRemainingMoonlight() == 0 || phaseTimer <= 0) currentPhase = Phase.TRANSITION;
+                    if (container.getBoard().getRemainingMoonlight() == 0 || phaseTimer <= 0)
+                        currentPhase = Phase.TRANSITION;
                     break;
                 case BATTLE:
                     battleTicks += 1;
@@ -192,7 +190,7 @@ public class GameplayController {
             if (player.getHp() <= 0) gameState = GameState.OVER;
         }
         // Enemies should still update even when game is outside play
-        resolveEnemies();
+        resolveEnemies(delta);
 
         // TODO: for convenience, remove later
         if (Gdx.input.isKeyPressed(Input.Keys.PERIOD)) {
@@ -218,6 +216,7 @@ public class GameplayController {
 
     /**
      * Interpolate between stealth ambiance and battle ambiance
+     *
      * @param delta delta time
      */
     private void updateAmbientLight(float delta) {
@@ -241,15 +240,15 @@ public class GameplayController {
     }
 
     /**
-     * Resolve any updates for the active enemies through their controllers.
-      */
-    public void resolveEnemies() {
+     * Resolve any updates relating to enemies.
+     */
+    public void resolveEnemies(float delta) {
         // add enemies during battle stage and in play
         if (getPhase() == Phase.BATTLE && gameState == GameState.PLAY) {
             enemySpawner.update(battleTicks);
         }
         for (int i = 0; i < enemies.size; i++) {
-            controls.get(enemies.get(i)).update(container, currentPhase);
+            controls.get(enemies.get(i)).update(container, currentPhase, delta);
         }
     }
 }

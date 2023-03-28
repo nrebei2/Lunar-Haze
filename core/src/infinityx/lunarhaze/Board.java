@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
+import infinityx.lunarhaze.graphics.GameCanvas;
 
 import java.util.ArrayList;
 
@@ -37,13 +38,13 @@ public class Board {
      * Tile height and width in world length.
      * Should be overwritten.
      */
-    private Vector2 tileWorldDim = new Vector2(1, 1);
+    private final Vector2 tileWorldDim = new Vector2(1, 1);
 
     /**
      * Tile height and width in screen (pixel) length.
      * Should be overwritten.
      */
-    private Vector2 tileScreenDim = new Vector2(128, 96);
+    private final Vector2 tileScreenDim = new Vector2(128, 96);
 
     /**
      * Cache holding the number of tiles with collectable moonlight
@@ -193,9 +194,9 @@ public class Board {
     }
 
     /**
-     * Returns the board cell index for a world x-position.
+     * Returns the board cell index for a world y-position.
      *
-     * @return the board cell index for a world x-position.
+     * @return the board cell index for a world y-position.
      */
     public int worldToBoardY(float y) {
         return (int) (y / tileWorldDim.y);

@@ -17,5 +17,5 @@ public interface ScreenObserver {
      * @param screen   The screen requesting to exit
      * @param exitCode The state of the screen upon exit
      */
-    public void exitScreen(Screen screen, int exitCode);
+    void exitScreen(Screen screen, int exitCode);
 }

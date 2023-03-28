@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import infinityx.lunarhaze.GameCanvas;
+import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.util.Drawable;
 
 /**
@@ -15,12 +15,12 @@ public class Dust implements Drawable {
     /**
      * The particle position in world coordinates
      */
-    private Vector2 position;
+    private final Vector2 position;
 
     /**
      * The particle velocity
      */
-    private Vector2 velocity;
+    private final Vector2 velocity;
 
     /**
      * The current rotation of texture, affected by rps
@@ -38,6 +38,7 @@ public class Dust implements Drawable {
     public enum DustState {
         APPEARING, DECAYING
     }
+
     private DustState state;
 
     /**
@@ -46,8 +47,8 @@ public class Dust implements Drawable {
     private enum Condition {
         RESET, CONTINUE, DESTROY
     }
-    private Condition condition;
 
+    private Condition condition;
 
 
     /**

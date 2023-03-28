@@ -70,7 +70,7 @@ class Node implements Comparable<Node> {
 
     public float y;
 
-    public Node(float x, float y, List<Edge> edges ) {
+    public Node(float x, float y, List<Edge> edges) {
         this.x = x;
         this.y = y;
         this.edges = edges;
@@ -80,7 +80,7 @@ class Node implements Comparable<Node> {
         // This implementation uses Euclidean distance as the heuristic
         double dx = this.x - goal.x;
         double dy = this.y - goal.y;
-        return Math.sqrt(dx*dx + dy*dy);
+        return Math.sqrt(dx * dx + dy * dy);
     }
 
     // Compare nodes based on fScore

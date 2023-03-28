@@ -5,8 +5,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Pool;
 import infinityx.assets.AssetDirectory;
-import infinityx.lunarhaze.GameObject;
 import infinityx.lunarhaze.LevelContainer;
+import infinityx.lunarhaze.SteeringGameObject;
 import infinityx.lunarhaze.physics.ConeSource;
 
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import java.util.ArrayList;
 /**
  * Model class representing an enemy.
  */
-public class Enemy extends GameObject implements Pool.Poolable {
+public class Enemy extends SteeringGameObject implements Pool.Poolable {
     /**
      * Current animation frame for this werewolf
      */
@@ -39,10 +39,14 @@ public class Enemy extends GameObject implements Pool.Poolable {
 
     private int attackDamage;
 
-    /** The maximum amount of hit-points for this enemy */
+    /**
+     * The maximum amount of hit-points for this enemy
+     */
     private float maxHp;
 
-    /** The current amount of hit-points for this enemy */
+    /**
+     * The current amount of hit-points for this enemy
+     */
     private float hp;
 
     /**
@@ -63,7 +67,7 @@ public class Enemy extends GameObject implements Pool.Poolable {
     /**
      * @return whether the enemy is alerted
      */
-    public boolean getAlerted () {
+    public boolean getAlerted() {
         return alerted;
     }
 
@@ -72,10 +76,16 @@ public class Enemy extends GameObject implements Pool.Poolable {
      * Initialize an enemy with dummy position, id, and patrol path
      */
     public Enemy() {
-        super(0, 0);
+        super(false);
         this.patrolPath = new ArrayList<>();
         animeframe = 0.0f;
         alerted = false;
+
+        // TODO
+        setMaxLinearAcceleration(1);
+        setMaxLinearSpeed(1);
+        setMaxAngularAcceleration(1);
+        setMaxAngularSpeed(1);
     }
 
     /**
@@ -181,6 +191,7 @@ public class Enemy extends GameObject implements Pool.Poolable {
 
     /**
      * Sets the new hp of this enemy. Clamped to always be non-negative.
+     *
      * @param value the hp to set
      */
     public void setHp(float value) {
@@ -189,6 +200,7 @@ public class Enemy extends GameObject implements Pool.Poolable {
 
     /**
      * Sets the max hp (and starting current hp) of this enemy.
+     *
      * @param value the hp to set
      */
     public void setMaxHp(float value) {
@@ -202,28 +214,4 @@ public class Enemy extends GameObject implements Pool.Poolable {
     public float getHealthPercentage() {
         return hp / maxHp;
     }
-
-    /**
-     * Updates the animation frame and position of this enemy.
-     * @param move impulse to apply
-     */
-    public void update(Vector2 move) {
-        body.applyLinearImpulse(move.scl(speed), new Vector2(), true);
-
-        //Limits maximum speed
-        if (body.getLinearVelocity().len() > 1f) {
-            body.setLinearVelocity(body.getLinearVelocity().clamp(0f, 1f));
-        }
-
-    }
-
-    /**
-     * Sets the specific angle of the enemy (and thus flashlight)
-     *
-     * @param ang the angle
-     */
-    public void setFlashLightRot(float ang) {
-        body.setTransform(body.getPosition(), ang);
-    }
-
 }

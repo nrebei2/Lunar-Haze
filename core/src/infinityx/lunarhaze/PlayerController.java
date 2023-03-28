@@ -85,6 +85,7 @@ public class PlayerController {
     public void resolvePlayer(InputController input, float delta) {
         player.setMovementH(input.getHorizontal());
         player.setMovementV(input.getVertical());
+        player.setRunning(input.didRun());
         player.update(delta);
     }
 

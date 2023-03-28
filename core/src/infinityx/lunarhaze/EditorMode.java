@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import infinityx.assets.AssetDirectory;
+import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.util.ScreenObservable;
 
 public class EditorMode extends ScreenObservable implements Screen, InputProcessor {
@@ -18,7 +19,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     /**
      * Reference to GameCanvas created by the root
      */
-    private GameCanvas canvas;
+    private final GameCanvas canvas;
 
     /**
      * Contains level details!
@@ -94,12 +95,12 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     /**
      * Holds world coordinates of cursor
      */
-    private Vector2 mouseWorld = new Vector2();
+    private final Vector2 mouseWorld = new Vector2();
 
     /**
      * Last board position the mouse was on
      */
-    private Vector2 mouseBoard = new Vector2();
+    private final Vector2 mouseBoard = new Vector2();
 
     // Scene graph is just a tree of length 1 with root `EditorMode` and leaves buttons
     // therefore no need to have children for buttons
@@ -199,7 +200,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         canvas.clear();
         level.drawLevel(canvas);
 
-        canvas.beginT(level.getView().x, level.getView().y);
+        canvas.begin(GameCanvas.DrawPass.SHAPE, level.getView().x, level.getView().y);
         board.drawOutline(canvas);
         canvas.end();
     }

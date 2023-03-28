@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.IntArray;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
+import infinityx.lunarhaze.graphics.GameCanvas;
 
 import java.util.ArrayList;
 
@@ -119,21 +120,23 @@ public class LevelParser {
         }
 
         // Generate scene objects
-        JsonValue objects = scene.get("objects");
-        int objId = 0;
-        while (true) {
-            JsonValue objInfo = objects.get(objId);
-            if (objInfo == null) break;
+        if (scene.has("objects")) {
+            JsonValue objects = scene.get("objects");
+            int objId = 0;
+            while (true) {
+                JsonValue objInfo = objects.get(objId);
+                if (objInfo == null) break;
 
-            JsonValue objPos = objInfo.get("position");
-            float objScale = objInfo.getFloat("scale");
+                JsonValue objPos = objInfo.get("position");
+                float objScale = objInfo.getFloat("scale");
 
-            levelContainer.addSceneObject(
-                    objInfo.getString("type"), objPos.getFloat(0),
-                    objPos.getFloat(1), objScale
-            );
+                levelContainer.addSceneObject(
+                        objInfo.getString("type"), objPos.getFloat(0),
+                        objPos.getFloat(1), objScale
+                );
 
-            objId++;
+                objId++;
+            }
         }
 
         // Generate level settings
@@ -179,10 +182,9 @@ public class LevelParser {
             numRows++;
         }
 
-        // TODO: change if we do not want to assume board is square
-        // int numCols = tileData.size / numRows;
+        int numCols = tileData.size / numRows;
 
-        Board board = new Board(numRows, numRows);
+        Board board = new Board(numRows, numCols);
 
         board.setTileScreenDim(sSize[0], sSize[1]);
         board.setTileWorldDim(wSize[0], wSize[1]);

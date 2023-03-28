@@ -9,15 +9,14 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
-import infinityx.lunarhaze.GameCanvas;
-import infinityx.lunarhaze.GameObject;
 import infinityx.lunarhaze.LevelContainer;
+import infinityx.lunarhaze.SteeringGameObject;
 import infinityx.lunarhaze.combat.AttackHitbox;
 
 /**
  * Model class representing the player.
  */
-public class Werewolf extends GameObject {
+public class Werewolf extends SteeringGameObject {
     /**
      * Initial light value of the werewolf is 0.0
      **/
@@ -35,6 +34,16 @@ public class Werewolf extends GameObject {
      * Maximum light of the werewolf is 100.0
      **/
     public static final float MAX_LIGHT = 100.0f;
+
+    /**
+     * Move speed (walking)
+     **/
+    protected float walkSpeed;
+
+    /**
+     * Move speed (running)
+     **/
+    protected float runSpeed;
 
     /**
      * Whether the werewolf can move or not; the werewolf can't move
@@ -109,9 +118,15 @@ public class Werewolf extends GameObject {
     private boolean isAttacking;
 
     public AttackHitbox attackHitbox;
+
     private boolean drawCooldownBar;
 
     private float cooldownPercent;
+
+    /**
+     * Whether the werewolf is in sprint
+     */
+    private boolean isRunning;
 
     /**
      * Returns the type of this object.
@@ -182,6 +197,14 @@ public class Werewolf extends GameObject {
 
     public void initLockout(float value) {
         lockout = value;
+    }
+
+    public boolean isRunning() {
+        return isRunning;
+    }
+
+    public void setRunning(boolean running) {
+        isRunning = running;
     }
 
     /**
@@ -294,8 +317,8 @@ public class Werewolf extends GameObject {
     /**
      * Initialize a werewolf.
      */
-    public Werewolf(float x, float y) {
-        super(x, y);
+    public Werewolf() {
+        super(false);
         animeframe = 0.0f;
         lockoutTime = 0.0f;
         moonlight = false;
@@ -322,6 +345,10 @@ public class Werewolf extends GameObject {
 
         int health = json.getInt("health");
         float lockout = json.getFloat("lockout");
+
+        JsonValue speedInfo = json.get("speed");
+        walkSpeed = speedInfo.getFloat("walk");
+        runSpeed = speedInfo.getFloat("run");
 
         initHp(health);
         initLockout(lockout);
@@ -364,7 +391,7 @@ public class Werewolf extends GameObject {
         // get the current velocity of the player's Box2D body
         Vector2 velocity = body.getLinearVelocity();
         if (canMove) {
-            // update the velocity based on the input from the player
+            float speed = isRunning ? runSpeed : walkSpeed;
             velocity.x = movementH * speed;
             velocity.y = movementV * speed;
 
