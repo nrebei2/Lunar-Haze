@@ -50,7 +50,8 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
     public enum ObjectType {
         ENEMY,
         WEREWOLF,
-        SCENE
+        SCENE,
+        HITBOX
     }
 
     // Attributes for all game objects

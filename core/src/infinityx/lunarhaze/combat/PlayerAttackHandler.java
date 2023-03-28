@@ -29,6 +29,8 @@ public class PlayerAttackHandler extends AttackHandler {
     /** Reference to the player model */
     private Werewolf player;
 
+    private static float attackPower;
+
     /** Constructor that gets a reference to the player model */
     public PlayerAttackHandler(Werewolf p) {
         super(3f, 0.5f);
@@ -78,7 +80,7 @@ public class PlayerAttackHandler extends AttackHandler {
 
     /** Adjusts hitbox based on user input */
     private void updateHitboxPosition(InputController input) {
-        player.attackHitbox.setTransform(player.getPosition().x + (input.getHorizontal() / 4.0f), player.getPosition().y + (input.getVertical() / 4.0f) + player.getTexture().getSize()/3.5f, 0f);
+        player.attackHitbox.getBody().setTransform(player.getPosition().x + (input.getHorizontal() / 4.0f), player.getPosition().y + (input.getVertical() / 4.0f) + player.getTexture().getSize()/3.5f, 0f);
     }
 
     /** Called when an attack ends */
@@ -126,6 +128,14 @@ public class PlayerAttackHandler extends AttackHandler {
 
         comboAttackCooldownCounter = 0f;
         super.initiateAttack();
+    }
+
+    public static float getAttackPower() {
+    	return attackPower;
+    }
+
+    public static void setAttackPower(float power) {
+    	attackPower = power;
     }
 
 }

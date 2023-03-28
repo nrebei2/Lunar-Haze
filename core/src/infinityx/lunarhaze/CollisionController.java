@@ -2,6 +2,8 @@ package infinityx.lunarhaze;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import infinityx.lunarhaze.combat.AttackHitbox;
+import infinityx.lunarhaze.combat.PlayerAttackHandler;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.Werewolf;
 
@@ -31,19 +33,19 @@ public class CollisionController implements ContactListener {
         if (obj1.getType() == GameObject.ObjectType.WEREWOLF && obj2.getType() == GameObject.ObjectType.ENEMY) {
             Werewolf player = (Werewolf) obj1;
             Enemy enemy = (Enemy) obj2;
-            if (player.isAttacking()) {
-                resolvePlayerAttack(player, enemy);
-            } else {
-                resolveEnemyAttack(player, enemy, enemy.getAttackDamage(), enemy.getAttackKnockback());
-            }
+            resolveEnemyAttack(player, enemy, enemy.getAttackDamage(), enemy.getAttackKnockback());
         } else if (obj1.getType() == GameObject.ObjectType.ENEMY && obj2.getType() == GameObject.ObjectType.WEREWOLF) {
             Werewolf player = (Werewolf) obj2;
             Enemy enemy = (Enemy) obj1;
-            if (player.isAttacking()) {
-                resolvePlayerAttack(player, enemy);
-            } else {
-                resolveEnemyAttack(player, enemy, enemy.getAttackDamage(), enemy.getAttackKnockback());
-            }
+            resolveEnemyAttack(player, enemy, enemy.getAttackDamage(), enemy.getAttackKnockback());
+        } else if(obj1.getType() == GameObject.ObjectType.HITBOX && obj2.getType() == GameObject.ObjectType.ENEMY) {
+            AttackHitbox hitbox = (AttackHitbox) body1.getUserData();
+            Enemy enemy = (Enemy) body2.getUserData();
+            resolvePlayerAttack(hitbox, enemy);
+        } else if(obj1.getType() == GameObject.ObjectType.ENEMY && obj2.getType() == GameObject.ObjectType.HITBOX) {
+            AttackHitbox hitbox = (AttackHitbox) body2.getUserData();
+            Enemy enemy = (Enemy) body1.getUserData();
+            resolvePlayerAttack(hitbox, enemy);
         }
 
     }
@@ -63,16 +65,16 @@ public class CollisionController implements ContactListener {
         ((Werewolf) player).setHp((int) (((Werewolf) player).getHp() - damage));
     }
 
-    public void resolvePlayerAttack(Werewolf player, Enemy enemy) {
+    public void resolvePlayerAttack(AttackHitbox hitbox, Enemy enemy) {
         // Apply damage to the enemy
-        enemy.setHp(enemy.getHp() - MAX_KILL_POWER * player.getAttackPower());
+        enemy.setHp(enemy.getHp() - MAX_KILL_POWER * PlayerAttackHandler.getAttackPower());
 
         // Apply knockback to the enemy
         Body enemyBody = enemy.getBody();
-        Vector2 playerPos = player.getBody().getPosition();
+        Vector2 playerPos = hitbox.getBody().getPosition();
         Vector2 enemyPos = enemyBody.getPosition();
         Vector2 knockbackDirection = enemyPos.sub(playerPos).nor();
-        enemyBody.applyLinearImpulse(knockbackDirection.scl(4f * player.getAttackPower()), enemyBody.getWorldCenter(), true);
+        enemyBody.applyLinearImpulse(knockbackDirection.scl(6f * PlayerAttackHandler.getAttackPower()), enemyBody.getWorldCenter(), true);
     }
 
     @Override

@@ -1019,24 +1019,6 @@ public class GameCanvas {
         shapeRenderer.end();
     }
 
-    public void drawAttackHitbox(Werewolf player) {
-        PolygonShape hitbox = (PolygonShape) player.attackHitbox.getFixtureList().first().getShape();
-        float[] vertices = new float[hitbox.getVertexCount() * 2];
-        for (int i = 0; i < hitbox.getVertexCount(); i++) {
-            Vector2 vertex = new Vector2();
-            hitbox.getVertex(i, vertex);
-            vertex.add(WorldToScreenX(player.attackHitbox.getPosition().x), WorldToScreenY(player.attackHitbox.getPosition().y));
-            vertices[i * 2] = vertex.x;
-            vertices[i * 2 + 1] = vertex.y;
-        }
-        Polygon polygon = new Polygon(vertices);
-
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(Color.RED);
-        shapeRenderer.polygon(polygon.getVertices());
-        shapeRenderer.end();
-    }
-
     public void drawStealthBar(Texture icon, float width, float height, float stealth) {
         if (active != DrawPass.STANDARD) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());

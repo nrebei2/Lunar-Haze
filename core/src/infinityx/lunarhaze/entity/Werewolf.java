@@ -12,6 +12,7 @@ import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.GameCanvas;
 import infinityx.lunarhaze.GameObject;
 import infinityx.lunarhaze.LevelContainer;
+import infinityx.lunarhaze.combat.AttackHitbox;
 
 /**
  * Model class representing the player.
@@ -107,9 +108,7 @@ public class Werewolf extends GameObject {
 
     private boolean isAttacking;
 
-    public Body attackHitbox;
-    public boolean hitboxActive;
-
+    public AttackHitbox attackHitbox;
     private boolean drawCooldownBar;
 
     private float cooldownPercent;
@@ -284,7 +283,6 @@ public class Werewolf extends GameObject {
     public void setAttacking(boolean value) {
 
         isAttacking = value;
-        hitboxActive = value;
         attackHitbox.setActive(value);
 
     }
@@ -340,24 +338,8 @@ public class Werewolf extends GameObject {
     }
 
     public void createAttackHitbox(World world) {
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(getBody().getPosition().x, getBody().getPosition().y + getTexture().getRegionY()/2.0f);
-
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(HITBOX_SIZE / 2, HITBOX_SIZE / 2);
-
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.isSensor = true;
-
-        attackHitbox = world.createBody(bodyDef);
-        attackHitbox.createFixture(fixtureDef);
-        attackHitbox.setUserData(this);
-
-        shape.dispose();
-
-        hitboxActive = false;
+        attackHitbox = new AttackHitbox(HITBOX_SIZE, this);
+        attackHitbox.activatePhysics(world);
         attackHitbox.setActive(false);
     }
 

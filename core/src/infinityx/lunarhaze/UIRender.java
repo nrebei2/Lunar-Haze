@@ -171,9 +171,7 @@ public class UIRender {
                         BAR_WIDTH / 4.0f, BAR_HEIGHT / 4.0f, enemy
                 );
             }
-            if(level.getPlayer().isAttacking()) {
-                canvas.drawAttackHitbox(level.getPlayer());
-            } else if (level.getPlayer().drawCooldownBar()) {
+            if (level.getPlayer().drawCooldownBar()) {
                 canvas.drawAttackCooldownBar(10f, 60f, 65f, level.getPlayer());
             }
         }
