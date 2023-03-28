@@ -10,5 +10,5 @@ varying vec2 v_uv;
 void main() {
     v_amount = i_amount;
     v_uv = a_texCoord;
-    gl_Position = u_projTrans * a_position;
+    gl_Position = u_projTrans * (a_position + vec4(i_offset, 0., 0.));
 }

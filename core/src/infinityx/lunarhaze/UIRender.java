@@ -235,7 +235,7 @@ public class UIRender {
         canvas.draw(stealth_stroke, stealth_fill, canvas.getWidth()/2 - STEALTH_STROKE_WIDTH/2, MOON_STROKE_HEIGHT, STEALTH_STROKE_WIDTH * proportion, STEALTH_STROKE_HEIGHT);
         canvas.end();
 
-        //drawEnemyMeters(canvas, level);
+        drawEnemyMeters(canvas, level);
     }
 
     /** Draw the stealth notice meter circle above enemies */
@@ -246,12 +246,12 @@ public class UIRender {
             offsets.put(new float[]{
                     // TODO
                     canvas.WorldToScreenX(enemy.getPosition().x), canvas.WorldToScreenY(enemy.getPosition().y),
-                    30
+                    0.1f
             });
         }
         offsets.position(0);
         canvas.begin(GameCanvas.DrawPass.SHADER, level.getView().x, level.getView().y);
-        canvas.drawInstancedShader(meter, enemies.size, offsets, 50, 50, meterAttributes);
+        canvas.drawInstancedShader(meter, enemies.size, offsets, 500, 500, meterAttributes);
     }
 
 }
