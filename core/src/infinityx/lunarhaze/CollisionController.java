@@ -72,7 +72,7 @@ public class CollisionController implements ContactListener {
         Vector2 playerPos = player.getBody().getPosition();
         Vector2 enemyPos = enemyBody.getPosition();
         Vector2 knockbackDirection = enemyPos.sub(playerPos).nor();
-        enemyBody.applyLinearImpulse(knockbackDirection.scl(20f), enemyBody.getWorldCenter(), true);
+        enemyBody.applyLinearImpulse(knockbackDirection.scl(2f), enemyBody.getWorldCenter(), true);
     }
 
     @Override
