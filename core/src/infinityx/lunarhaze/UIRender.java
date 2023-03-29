@@ -100,27 +100,49 @@ public class UIRender {
      */
     protected BitmapFont UIFont_small;
 
-    private final Texture circle_bar;
-
     /**
      * Top stroke texture
      */
     private final Texture counter;
 
+    /**
+     * Texture to indicate dusk (stealth phase)
+     */
     private final Texture dusk_icon;
 
+    /**
+     * Texture to indicate fullmoon (battle phase)
+     */
+    private final Texture fullmoon_icon;
+
+    /**
+     * Texture to indicate player health
+     */
     private final Texture health_icon;
 
+    /**
+     * Texture to indicate moonlight collected
+     */
     private final Texture moon_icon;
 
-    private final Texture rec_bar;
-
+    /**
+     * Texture to indicate stealth value
+     */
     private final Texture stealth_icon;
 
+    /**
+     * Texture of background stroke for health stats
+     */
     private final Texture health_stroke;
 
+    /**
+     * Texture of background stroke for moonlight stats
+     */
     private final Texture moonlight_stroke;
 
+    /**
+     * Texture of background stroke for stealth stats
+     */
     private final Texture stealth_stroke;
 
     /** shader program which draws the enemy notice meter */
@@ -140,12 +162,11 @@ public class UIRender {
         this.directory = directory;
 
         // Load the assets for UI interface immediately.
-        circle_bar = directory.getEntry("circle-bar", Texture.class);
         counter = directory.getEntry("counter", Texture.class);
         dusk_icon = directory.getEntry("dusk-icon", Texture.class);
+        fullmoon_icon = directory.getEntry("fullmoon-icon", Texture.class);
         health_icon = directory.getEntry("health-icon", Texture.class);
         moon_icon = directory.getEntry("moon-icon", Texture.class);
-        rec_bar = directory.getEntry("rec-bar", Texture.class);
         stealth_icon = directory.getEntry("stealth-icon", Texture.class);
         health_stroke = directory.getEntry("health-stroke", Texture.class);
         moonlight_stroke = directory.getEntry("moonlight-stroke", Texture.class);
@@ -168,17 +189,10 @@ public class UIRender {
      * @param phase  current phase of the game
      */
     public void drawUI(GameCanvas canvas, LevelContainer level, GameplayController.Phase phase, GameplayController gameplayController) {
-        UIFont_large.setColor(Color.WHITE);
-        UIFont_small.setColor(Color.WHITE);
+        setFontColor(Color.WHITE);
 
         // Draw give view transform considered
         canvas.begin(GameCanvas.DrawPass.SHAPE, level.getView().x, level.getView().y);
-//        canvas.drawLightBar(moon_icon, BAR_WIDTH,
-//                BAR_HEIGHT, level.getPlayer().getLight());
-//        canvas.drawHpBar(health_icon, BAR_WIDTH,
-//                BAR_HEIGHT, level.getPlayer().getHp());
-//        canvas.drawStealthBar(stealth_icon, BAR_WIDTH,
-//                BAR_HEIGHT, level.getPlayer().getStealth());
 
         if(gameplayController.getCollectingMoonlight()) {
              canvas.drawCollectLightBar(BAR_WIDTH / 2, BAR_HEIGHT / 2,
@@ -200,15 +214,46 @@ public class UIRender {
         // Draw with view transform not considered
         canvas.begin(GameCanvas.DrawPass.SPRITE);
         // Draw top stroke at the top center of screen
+        drawLevelStats(canvas, phase, gameplayController);
+        drawHealthStats(canvas, level);
+        drawMoonlightStats(canvas, level);
+        drawStealthStats(canvas, level);
+
+//        drawEnemyMeters(canvas, level);
+    }
+
+    public void setFontColor(Color color){
+        UIFont_large.setColor(color);
+        UIFont_small.setColor(color);
+    }
+
+    /** Draw the level stroke and level status of the player */
+    public void drawLevelStats(GameCanvas canvas, GameplayController.Phase phase, GameplayController gameplayController){
         canvas.draw(counter, Color.WHITE, canvas.getWidth() / 2 - COUNTER_WIDTH / 2, canvas.getHeight() - COUNTER_HEIGHT - TOP_MARGIN/2, COUNTER_WIDTH, COUNTER_HEIGHT);
-        canvas.drawText("night", UIFont_small, canvas.getWidth() / 2 - UIFont_small.getCapHeight(), canvas.getHeight() - TOP_MARGIN/2);
+        String text;
+        Texture icon;
+        if (phase == Phase.STEALTH){
+            text = "night";
+            icon = dusk_icon;
+        } else {
+            text = "full moon";
+            icon = fullmoon_icon;
+        }
+        canvas.drawText(text, UIFont_small, canvas.getWidth() / 2 - UIFont_small.getCapHeight() * text.length()/3, canvas.getHeight() - TOP_MARGIN/2.5f);
         canvas.drawText("1", UIFont_large, canvas.getWidth() / 2, canvas.getHeight() - TOP_MARGIN);
         int remaining_sec = Math.max((int) gameplayController.getRemainingTime(), 0);
         int min = remaining_sec / 60;
         int sec = remaining_sec % 60;
         canvas.drawText(min + ":" + sec + "s", UIFont_small, canvas.getWidth() / 2 - COUNTER_WIDTH / 4, canvas.getHeight() - COUNTER_HEIGHT / 2.0f - TOP_MARGIN/3);
-        canvas.draw(dusk_icon, Color.WHITE, 0, 0, canvas.getWidth() / 2 + COUNTER_WIDTH / 4, canvas.getHeight() - COUNTER_HEIGHT / 2.0f - dusk_icon.getHeight()/2 - TOP_MARGIN/3, 0, 0.6f, 0.6f);
+        if (icon == dusk_icon) {
+            canvas.draw(icon, Color.WHITE, 0, 0, canvas.getWidth() / 2 + COUNTER_WIDTH / 4, canvas.getHeight() - COUNTER_HEIGHT / 2.0f - dusk_icon.getHeight() / 2 - TOP_MARGIN / 3, 0, 0.6f, 0.6f);
+        } else {
+            canvas.draw(icon, Color.WHITE, 0, 0, canvas.getWidth() / 2 + COUNTER_WIDTH / 4, canvas.getHeight() - COUNTER_HEIGHT / 2.0f - dusk_icon.getHeight() / 2 - TOP_MARGIN / 3, 0, 0.3f, 0.3f);
+        }
+    }
 
+    /** Draw the health stroke and health status of the player */
+    public void drawHealthStats(GameCanvas canvas, LevelContainer level){
         canvas.draw(health_stroke, Color.WHITE, 0, canvas.getHeight() - HEALTH_STROKE_HEIGHT * 2, HEALTH_STROKE_WIDTH, HEALTH_STROKE_HEIGHT);
         for(int i = 1; i <= Werewolf.INITIAL_HP; i++){
             if (level.getPlayer().getHp() >= i){
@@ -221,19 +266,23 @@ public class UIRender {
                 canvas.draw(health_icon, empty, health_icon.getWidth() / 2, health_icon.getHeight() / 2, HEALTH_STROKE_WIDTH/8 + HEART_SEP * i, canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f, 0, 0.6f, 0.6f);
             }
         }
+    }
 
+    /** Draw the moonlight stroke and moonlight status */
+    public void drawMoonlightStats(GameCanvas canvas, LevelContainer level){
         canvas.draw(moonlight_stroke, Color.WHITE, MOON_STROKE_WIDTH/3, MOON_STROKE_HEIGHT, MOON_STROKE_WIDTH, MOON_STROKE_HEIGHT);
         canvas.draw(moon_icon, Color.WHITE, moon_icon.getWidth() / 2, moon_icon.getHeight() / 2, MOON_STROKE_WIDTH / 2 + moon_icon.getWidth()/4, MOON_STROKE_HEIGHT + moon_icon.getHeight()*2/3, 0, 0.5f, 0.5f);
         canvas.drawText(level.getPlayer().getMoonlightCollected() + "/" + ((int) level.getTotalMoonlight()), UIFont_small, MOON_STROKE_WIDTH * 4/5, MOON_STROKE_HEIGHT * 2 - UIFont_small.getCapHeight());
+    }
 
+    /** Draw the stealth stroke and stealth status of the player */
+    public void drawStealthStats(GameCanvas canvas, LevelContainer level){
         canvas.draw(stealth_stroke, Color.WHITE, canvas.getWidth()/2 - STEALTH_STROKE_WIDTH/2, MOON_STROKE_HEIGHT, STEALTH_STROKE_WIDTH, STEALTH_STROKE_HEIGHT);
         float proportion = level.getPlayer().getStealth();
         canvas.draw(stealth_icon, Color.WHITE, stealth_icon.getWidth() / 2, stealth_icon.getHeight() / 2, canvas.getWidth()/2 - STEALTH_STROKE_WIDTH/2 + stealth_icon.getWidth(), MOON_STROKE_HEIGHT + stealth_icon.getHeight()*3/5, (float) (13f/180f * Math.PI), 0.7f, 0.7f);
         Color stealth_fill = new Color(255f / 255.0f, 255f / 255.0f, 255f / 255.0f, 1f);
         canvas.draw(stealth_stroke, stealth_fill, canvas.getWidth()/2 - STEALTH_STROKE_WIDTH/2, MOON_STROKE_HEIGHT, STEALTH_STROKE_WIDTH * proportion, STEALTH_STROKE_HEIGHT);
         canvas.end();
-
-        drawEnemyMeters(canvas, level);
     }
 
     /** Draw the stealth notice meter circle above enemies */
