@@ -233,7 +233,7 @@ public class UIRender {
         canvas.draw(stealth_stroke, stealth_fill, canvas.getWidth()/2 - STEALTH_STROKE_WIDTH/2, MOON_STROKE_HEIGHT, STEALTH_STROKE_WIDTH * proportion, STEALTH_STROKE_HEIGHT);
         canvas.end();
 
-        drawEnemyMeters(canvas, level);
+       // drawEnemyMeters(canvas, level);
     }
 
     /** Draw the stealth notice meter circle above enemies */

@@ -1,11 +1,13 @@
 package infinityx.lunarhaze;
 
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import infinityx.lunarhaze.combat.AttackHitbox;
 import infinityx.lunarhaze.combat.PlayerAttackHandler;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.Werewolf;
+import infinityx.lunarhaze.graphics.CameraShake;
 
 /**
  * Controller to handle gameplay interactions.
@@ -75,6 +77,7 @@ public class CollisionController implements ContactListener {
         Vector2 enemyPos = enemyBody.getPosition();
         Vector2 knockbackDirection = enemyPos.sub(playerPos).nor();
         enemyBody.applyLinearImpulse(knockbackDirection.scl(6f * PlayerAttackHandler.getAttackPower()), enemyBody.getWorldCenter(), true);
+        CameraShake.shake(10, 1);
     }
 
     @Override
