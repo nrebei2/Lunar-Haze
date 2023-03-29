@@ -12,6 +12,7 @@
 package infinityx.lunarhaze.physics;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 
@@ -50,8 +51,6 @@ public class BoxObstacle extends SimpleObstacle {
     }
 
     protected POSITIONED positioned = POSITIONED.CENTERED;
-
-    protected Vector2 scale = new Vector2(1, 1);
 
     /**
      * Returns the dimensions of this box
@@ -107,15 +106,9 @@ public class BoxObstacle extends SimpleObstacle {
         createFixtures();
     }
 
-    /**
-     * Sets the scale of the box. This will scale BOTH the texture and box collider.
-     *
-     * @param s_x scale x-axis
-     * @param s_y scale y_axis
-     */
-    public void setScale(float s_x, float s_y) {
-        scale.set(s_x, s_y);
-        dimension.set(getWidth() * s_x, getHeight() * s_y);
+    public void setScale(float s) {
+        super.setScale(s);
+        dimension.set(getWidth() * s, getHeight() * s);
         resize(getWidth(), getHeight());
         createFixtures();
     }
@@ -222,11 +215,9 @@ public class BoxObstacle extends SimpleObstacle {
             return;
         }
 
-        releaseFixtures();
 
         // Create the fixture
         fixture.shape = shape;
-
         geometry = body.createFixture(fixture);
 
         // set user data on fixture for raycasts

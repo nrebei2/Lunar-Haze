@@ -304,10 +304,8 @@ public class Werewolf extends SteeringGameObject {
     }
 
     public void setAttacking(boolean value) {
-
         isAttacking = value;
         attackHitbox.setActive(value);
-
     }
 
     public boolean isAttacking() {
@@ -366,6 +364,7 @@ public class Werewolf extends SteeringGameObject {
 
     public void createAttackHitbox(World world) {
         attackHitbox = new AttackHitbox(HITBOX_SIZE, this);
+
         attackHitbox.activatePhysics(world);
         attackHitbox.setActive(false);
     }

@@ -3,12 +3,15 @@
     "texture": {
       "name": "house1.static",
       "origin": [1072, 470],
-      "positioned": "bottom-left",
       "scale": 0.25
     },
-    "collider": {
-      "width": 4,
-      "height": 1.8
+    "colliders": {
+      "body": {
+        "type": "box",
+        "width": 4,
+        "height": 1.8,
+        "offset": [2, 0.9]
+      }
     },
     "bodytype": "static",
     "density": 0.0,
@@ -22,9 +25,11 @@
       "origin": [2150, 500],
       "scale": 0.15
     },
-    "collider": {
-      "width": 0.75,
-      "height": 0.4
+    "colliders": {
+      "body": {
+        "type": "circle",
+        "radius": 0.4
+      }
     },
     "bodytype": "static",
     "density": 0.0,
@@ -38,9 +43,11 @@
       "origin": [925, 630],
       "scale": 0.15
     },
-    "collider": {
-      "width": 1,
-      "height": 0.3
+    "colliders": {
+      "body": {
+        "type": "circle",
+        "radius": 0.5
+      }
     },
     "bodytype": "static",
     "density": 0.0,

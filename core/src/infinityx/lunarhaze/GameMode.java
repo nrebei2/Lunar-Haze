@@ -1,7 +1,8 @@
 package infinityx.lunarhaze;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.utils.JsonValue;
@@ -33,7 +34,20 @@ public class GameMode extends ScreenObservable implements Screen {
      */
     private GameplayController gameplayController;
 
+    /**
+     * Owns the UIRender
+     */
     private UIRender uiRender;
+
+    /**
+     * Stealth background music
+     */
+    private Music stealth_background;
+
+    /**
+     * Battle background music
+     */
+    private Music battle_background;
     /**
      * Reference to drawing context to display graphics (VIEW CLASS)
      */
@@ -99,6 +113,9 @@ public class GameMode extends ScreenObservable implements Screen {
         UIFont_large = directory.getEntry("libre-large", BitmapFont.class);
         UIFont_small = directory.getEntry("libre-small", BitmapFont.class);
         uiRender = new UIRender(UIFont_large, UIFont_small, directory);
+        stealth_background = directory.getEntry("stealthBackground", Music.class);
+        battle_background = directory.getEntry("battleBackground", Music.class);
+        System.out.println("gatherAssets called");
     }
 
     /**
@@ -125,6 +142,22 @@ public class GameMode extends ScreenObservable implements Screen {
                 }
                 break;
             case PLAY:
+//                System.out.println("update called for PLAY");
+                switch (gameplayController.getPhase()){
+                    case STEALTH:
+//                        System.out.println("stealth_background is null: " + (stealth_background == null));
+                        if (!stealth_background.isPlaying()) {
+                            stealth_background.setLooping(true);
+                            stealth_background.play();
+                        }
+                    case BATTLE:
+                        if (!battle_background.isPlaying()) {
+                            stealth_background.stop();
+                            battle_background.setLooping(true);
+                            battle_background.play();
+                        }
+                    case TRANSITION:
+                }
                 play(delta);
                 break;
             default:
@@ -162,6 +195,7 @@ public class GameMode extends ScreenObservable implements Screen {
                 -canvas.WorldToScreenX(levelContainer.getPlayer().getPosition().x) + canvas.getWidth() / 2,
                 -canvas.WorldToScreenY(levelContainer.getPlayer().getPosition().y) + canvas.getHeight() / 2
         );
+
         // Draw the level
         levelContainer.drawLevel(canvas);
 

@@ -71,8 +71,8 @@ public class RaycastInfo implements RayCastCallback {
     @Override
     public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
         // Right now, all hit bodies are contained in GameObjects
-        GameObject objHit = (GameObject) fixture.getUserData();
-        if(objHit == null) return 0; //added by donny bc it kept crashing
+        GameObject objHit = (GameObject) fixture.getBody().getUserData();
+
         if (objHit == requestingObject || ignore.contains(objHit.getType())) {
             return 1;
         }

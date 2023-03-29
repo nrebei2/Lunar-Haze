@@ -209,9 +209,8 @@ public class GameCanvas {
         shapeRenderer = new ShapeRenderer();
         instanceRenderer = new InstanceRenderer();
 
-        // Set the projection matrix (for proper scaling)
-        camera = new OrthographicCamera(getWidth(), getHeight());
-        camera.setToOrtho(false);
+        setupCamera();
+
         spriteBatch.setProjectionMatrix(camera.combined);
         shapeRenderer.setProjectionMatrix(camera.combined);
         instanceRenderer.setProjectionMatrix(camera.combined);
@@ -222,6 +221,17 @@ public class GameCanvas {
         global = new Matrix4();
         viewCache = new Vector2();
         alphaCache = new Color(1, 1, 1, 1);
+    }
+
+    /** Set up the camera as an orthographic camera with width and height matching the viewport */
+    private void setupCamera() {
+        // Set the projection matrix (for proper scaling)
+        camera = new OrthographicCamera(getWidth(), getHeight());
+        camera.setToOrtho(false);
+        // Cant do this, would mess up existing UI drawing
+        // Center camera at (0, 0)
+        //camera.translate(-getWidth()/2, -getHeight()/2);
+        //camera.update();
     }
 
     /**
@@ -375,10 +385,8 @@ public class GameCanvas {
      * weird scaling issues.
      */
     public void resize() {
-        // Resizing screws up the spriteBatch projection matrix
-        spriteBatch.getProjectionMatrix().setToOrtho2D(0, 0, getWidth(), getHeight());
-        camera = new OrthographicCamera(getWidth(), getHeight());
-        camera.setToOrtho(false);
+        // Resizing screws up the projection matrix
+        setupCamera();
 
 //        Gdx.gl.glViewport(0, 0, getWidth(), getHeight());
     }
@@ -444,7 +452,10 @@ public class GameCanvas {
     }
 
     /**
-     * Start a standard drawing sequence the given pass.
+     * Start a standard drawing sequence the given pass.if(CameraShake.timeLeft() > 0) {
+            CameraShake.update(Gdx.graphics.getDeltaTime());
+            levelContainer.translateView(CameraShake.getShakeOffset().x, CameraShake.getShakeOffset().y);
+        }
      * <p>
      * Nothing is flushed to the graphics card until the method end() is called.
      *

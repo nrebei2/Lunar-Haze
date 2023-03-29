@@ -126,7 +126,7 @@ public abstract class SteeringGameObject extends GameObject implements Steerable
      */
     @Override
     public float getBoundingRadius() {
-        return getWidth() / 2;
+        return getShapeInformation("body").width / 2;
     }
 
     /**

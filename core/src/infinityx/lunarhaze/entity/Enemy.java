@@ -104,9 +104,6 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
      * @param container LevelContainer which this player is placed in
      */
     public void initialize(AssetDirectory directory, JsonValue json, LevelContainer container) {
-        JsonValue p_dim = json.get("collider");
-        setDimension(p_dim.get("width").asFloat(), p_dim.get("height").asFloat());
-
         super.initialize(directory, json, container);
 
         JsonValue light = json.get("flashlight");
@@ -125,7 +122,6 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
         // Body may already exist since enemy is pooled
         if (body == null) activatePhysics(container.getWorld());
         setFlashlight(flashLight);
-
         setFlashlightOn(true);
 
         JsonValue attack = json.get("attack");
