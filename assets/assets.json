@@ -102,6 +102,10 @@
     "input": "jsons/input.json",
     "dust": "jsons/dust.json"
   },
+  "music": {
+    "stealthBackground": "sounds/stealthBackground.mp3",
+    "battleBackground": "sounds/battleBackground.mp3"
+  },
   "sounds": {
   },
   "fonts": {
