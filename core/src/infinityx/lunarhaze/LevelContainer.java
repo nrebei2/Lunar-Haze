@@ -2,6 +2,7 @@ package infinityx.lunarhaze;
 
 import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
@@ -13,6 +14,7 @@ import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.EnemyPool;
 import infinityx.lunarhaze.entity.SceneObject;
 import infinityx.lunarhaze.entity.Werewolf;
+import infinityx.lunarhaze.graphics.CameraShake;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.physics.LightSource;
 import infinityx.util.Drawable;
@@ -470,10 +472,19 @@ public class LevelContainer {
                 canvas.getWidth() / canvas.WorldToScreenX(1),
                 canvas.getHeight() / canvas.WorldToScreenY(1)
         );
+
+        //Camera shake logic
+
+        if(CameraShake.timeLeft() > 0) {
+            CameraShake.update(Gdx.graphics.getDeltaTime());
+            translateView(CameraShake.getShakeOffset().x, CameraShake.getShakeOffset().y);
+        }
+
         if (player != null) {
             raycamera.translate(player.getPosition().x, player.getPosition().y);
             raycamera.update();
         }
+
         rayHandler.setCombinedMatrix(raycamera);
         rayHandler.updateAndRender();
     }
