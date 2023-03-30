@@ -79,25 +79,62 @@ public class PlayerController {
 
     private InputController inputController;
 
+    private LightingController lightingController;
+
     private GameplayController.Phase phase;
 
     public float getTimeOnMoonlightPercentage(){
         return timeOnMoonlight/MOONLIGHT_COLLECT_TIME;
     }
 
+    public InputController getInputController() {
+        return inputController;
+    }
+
+    public PlayerAttackHandler getAttackHandler() {
+        return attackHandler;
+    }
+
+    public GameplayController.Phase getPhase() {
+        return phase;
+    }
+
+    public boolean isOnMoonlight(){
+        return player.isOnMoonlight();
+    }
+
+    public StateMachine<PlayerController, PlayerState> getStateMachine() {
+        return stateMachine;
+    }
+
+    public LightingController getLightingController(){
+        return lightingController;
+    }
+
+    public boolean isAttacking(){
+        return player.isAttacking();
+    }
+
+    public Sound getAttackSound () {
+        return attack_sound;
+    }
+
+    public Sound getCollectSound () {
+        return collect_sound;
+    }
     /**
      * Initializer of a PlayerController
      */
-    public PlayerController(Werewolf player, Board board, LevelContainer levelContainer) {
+    public PlayerController(Werewolf player, Board board, LevelContainer levelContainer, LightingController lighting) {
         this.player = player;
         this.board = board;
-        timeOnMoonlight = 0;
         this.levelContainer = levelContainer;
         collectingMoonlight = false;
         attackHandler = new PlayerAttackHandler(player);
         collect_sound = levelContainer.getDirectory().getEntry("collect", Sound.class);
         attack_sound = levelContainer.getDirectory().getEntry("whip", Sound.class);
         stateMachine = new DefaultStateMachine<>(this, PlayerState.WALK);
+        lightingController = lighting;
     }
 
     /**
@@ -182,44 +219,9 @@ public class PlayerController {
         return collectingMoonlight;
     }
 
-    public InputController getInputController() {
-        return inputController;
-    }
-
-    public PlayerAttackHandler getAttackHandler() {
-        return attackHandler;
-    }
-
-    public GameplayController.Phase getPhase() {
-        return phase;
-    }
-
-    public boolean isOnMoonlight(){
-        return player.isOnMoonlight();
-    }
-
-    public StateMachine<PlayerController, PlayerState> getStateMachine() {
-        return stateMachine;
-    }
-
-    public boolean isAttacking(){
-        return player.isAttacking();
-    }
-
-    public Sound getAttackSound () {
-        return attack_sound;
-    }
-
-    public Sound getCollectSound () {
-        return collect_sound;
-    }
-
-    public void update(InputController input, float delta, Phase currPhase, LightingController lightingController) {
-        if(inputController == null) {
-            inputController = input;
-        }
+    public void update(InputController input, float delta, Phase currPhase) {
+        inputController = inputController == null ? input : inputController;
         phase = currPhase;
-
         stateMachine.update();
     }
 }
