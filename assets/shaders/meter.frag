@@ -1,5 +1,5 @@
 varying vec2 v_uv;
-varying float v_amount;
+uniform float u_amount;
 
 #define PI 3.14159265
 
@@ -22,7 +22,7 @@ void main() {
 
     float ang = (atan(-uv.x, -uv.y) + PI) / (2.*PI);
 
-    if (ang <= v_amount) {
+    if (ang <= u_amount) {
     	gl_FragColor = vec4(filled,1.0);
     } else {
         gl_FragColor = vec4(outline,1.0);

@@ -13,6 +13,7 @@ import infinityx.lunarhaze.GameplayController.Phase;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.Werewolf;
 import infinityx.lunarhaze.graphics.GameCanvas;
+import infinityx.lunarhaze.graphics.ShaderUniform;
 
 import java.nio.FloatBuffer;
 
@@ -220,7 +221,9 @@ public class UIRender {
         drawStealthStats(canvas, level);
         canvas.end();
 
-//        drawEnemyMeters(canvas, level);
+        canvas.begin(GameCanvas.DrawPass.SHADER, level.getView().x, level.getView().y);
+        drawEnemyMeters(canvas, level);
+        canvas.end();
     }
 
     public void setFontColor(Color color){
@@ -287,18 +290,17 @@ public class UIRender {
 
     /** Draw the stealth notice meter circle above enemies */
     public void drawEnemyMeters(GameCanvas canvas, LevelContainer level) {
+        ShaderUniform uniform = new ShaderUniform("u_amount");
         Array<Enemy> enemies = level.getEnemies();
-        FloatBuffer offsets = BufferUtils.newFloatBuffer(enemies.size * 3);
         for (Enemy enemy : enemies) {
-            offsets.put(new float[]{
-                    // TODO
-                    canvas.WorldToScreenX(enemy.getPosition().x), canvas.WorldToScreenY(enemy.getPosition().y),
-                    0.1f
-            });
+            uniform.setValues(0.1f);
+            canvas.drawShader(
+                    meter,
+                    canvas.WorldToScreenX(enemy.getPosition().x),
+                    canvas.WorldToScreenY(enemy.getPosition().y),
+                    500, 500,
+                    uniform);
         }
-        offsets.position(0);
-        canvas.begin(GameCanvas.DrawPass.SHADER, level.getView().x, level.getView().y);
-        canvas.drawInstancedShader(meter, enemies.size, offsets, 500, 500, meterAttributes);
     }
 
 }

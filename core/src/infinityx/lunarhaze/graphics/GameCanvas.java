@@ -103,9 +103,9 @@ public class GameCanvas {
     private final ShapeRenderer shapeRenderer;
 
     /**
-     * Rendering context for drawing instanced shaders
+     * Rendering context for drawing shaders
      */
-    private InstanceRenderer instanceRenderer;
+    private ShaderRenderer shaderRenderer;
 
     /**
      * Track the current drawing pass (for error checking)
@@ -207,13 +207,13 @@ public class GameCanvas {
         active = DrawPass.INACTIVE;
         spriteBatch = new PolygonSpriteBatch();
         shapeRenderer = new ShapeRenderer();
-        instanceRenderer = new InstanceRenderer();
+        shaderRenderer = new ShaderRenderer();
 
         setupCamera();
 
         spriteBatch.setProjectionMatrix(camera.combined);
         shapeRenderer.setProjectionMatrix(camera.combined);
-        instanceRenderer.setProjectionMatrix(camera.combined);
+        shaderRenderer.setProjectionMatrix(camera.combined);
 
         // Initialize the cache objects
         holder = new TextureRegion();
@@ -483,7 +483,7 @@ public class GameCanvas {
                 shapeRenderer.setProjectionMatrix(global);
                 break;
             case SHADER:
-                instanceRenderer.setProjectionMatrix(global);
+                shaderRenderer.setProjectionMatrix(global);
                 break;
         }
         active = pass;
@@ -512,7 +512,7 @@ public class GameCanvas {
                 shapeRenderer.setProjectionMatrix(camera.combined);
                 break;
             case SHADER:
-                instanceRenderer.setProjectionMatrix(camera.combined);
+                shaderRenderer.setProjectionMatrix(camera.combined);
                 break;
         }
         active = pass;
@@ -953,24 +953,20 @@ public class GameCanvas {
     /**
      * Draws a shader instanced on quads with given width and height.
      * @param shader Sets the shader which will draw
-     * @param instanceCount maxInstances for this shader
-     * @param instanceData instance data to pass into shader
      * @param width width of quad
      * @param height height of quad
-     * @param attributes atributes for which instanceData will be passed in
+     * @param uniforms uniforms for which will be passed in to shader
      */
-    public void drawInstancedShader(ShaderProgram shader, int instanceCount, FloatBuffer instanceData, float width, float height, VertexAttribute... attributes) {
+    public void drawShader(ShaderProgram shader, float x, float y, float width, float height, ShaderUniform... uniforms) {
         if (active != DrawPass.SHADER) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHADER", new IllegalStateException());
             return;
         }
 
-        instanceRenderer.setShader(shader);
-        instanceRenderer.draw(width, height);
-        instanceRenderer.initialize(true, instanceCount, attributes);
-        instanceRenderer.setInstanceData(instanceData);
-        instanceRenderer.begin();
-        instanceRenderer.end();
+        shaderRenderer.setShader(shader);
+        shaderRenderer.draw(x, y, width, height, uniforms);
+        shaderRenderer.begin();
+        shaderRenderer.end();
     }
 
     /**
