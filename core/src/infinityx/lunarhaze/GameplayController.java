@@ -149,7 +149,7 @@ public class GameplayController {
 
         board = levelContainer.getBoard();
         player = levelContainer.getPlayer();
-        this.playerController = new PlayerController(player, board, levelContainer);
+        this.playerController = new PlayerController(player, board, levelContainer, lightingController);
 
         phaseTimer = levelContainer.getPhaseLength();
         ambientLightTransitionTimer = 0;
@@ -173,7 +173,7 @@ public class GameplayController {
         // FSM for state and phase
         if (gameState == GameState.PLAY) {
             // Process the player only when the game is in play
-            playerController.update(input, delta, currentPhase, lightingController);
+            playerController.update(input, delta, currentPhase);
             switch (currentPhase) {
                 case STEALTH:
                     phaseTimer -= delta;

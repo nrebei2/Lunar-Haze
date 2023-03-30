@@ -928,6 +928,19 @@ public class GameCanvas {
         shapeRenderer.end();
     }
 
+    /** Flashes the screen. Normally this draws transparent (alpha = 0) rect, but when screen flashes, draws another
+     *  colr based on the flash.
+     */
+    public void drawScreenFlash(Werewolf player){
+        Color flashColor = ScreenFlash.getFlashColor();
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(flashColor);
+        float x = WorldToScreenX(player.getPosition().x) - Gdx.graphics.getWidth()/2.0f;
+        float y = WorldToScreenY(player.getPosition().y) - Gdx.graphics.getHeight()/2.0f;
+        shapeRenderer.rect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        shapeRenderer.end();
+    }
+
     public void drawStealthBar(Texture icon, float width, float height, float stealth) {
         if (active != DrawPass.SHAPE) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
