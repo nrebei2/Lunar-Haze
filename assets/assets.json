@@ -99,7 +99,6 @@
     "dimensions": "jsons/dimensions.json",
     "objects": "jsons/objects.json",
     "enemies": "jsons/enemies.json",
-    "input": "jsons/input.json",
     "dust": "jsons/dust.json"
   },
   "music": {
