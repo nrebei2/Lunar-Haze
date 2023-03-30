@@ -230,7 +230,7 @@ public class EnemyController implements Telegraph {
 
         // Process the FSM
         //changeStateIfApplicable(container, ticks);
-        //changeDetectionIfApplicable(currentPhase);
+        //changeDetectionIfApplicable(currentPhase);  `
 
         // Pathfinding
         //Vector2 next_move = findPath();

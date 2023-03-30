@@ -164,6 +164,20 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
     }
 
     /**
+     * @return width of texture that will be drawn on screen
+     */
+    public float getTextureWidth() {
+        return filmstrip.getRegionWidth() * textureScale * scale;
+    }
+
+    /**
+     * @return height of texture that will be drawn on screen
+     */
+    public float getTextureHeight() {
+        return filmstrip.getRegionHeight() * textureScale * scale;
+    }
+
+    /**
      * Returns the type of this object.
      * <p>
      * We use this instead of runtime-typing for performance reasons.

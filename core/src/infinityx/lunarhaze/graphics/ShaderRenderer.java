@@ -9,13 +9,13 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
 
-import java.nio.FloatBuffer;
-
 /**
- * Renderer holding a Mesh with instanced rendering. Each mesh will be drawn as a quad.
- * Requires GL ES 3.0 :(
+ * A simple class which allows rendering a shader on a quad mesh.
+ * Only two vertex attributes are supported, "a_position" and "a_texCoord", however you are able to supply uniforms.
  */
-public class InstanceRenderer implements Renderer {
+public class ShaderRenderer implements Renderer {
+
+    float[] vertices;
     private final Mesh mesh;
     private boolean drawing;
 
@@ -26,45 +26,28 @@ public class InstanceRenderer implements Renderer {
     private ShaderProgram shader;
 
     /**
-     * Constructs a new InstanceRenderer. Sets the projection matrix to an orthographic projection with y-axis point upwards,
+     * Constructs a new ShaderRenderer. Sets the projection matrix to an orthographic projection with y-axis point upwards,
      * x-axis point to the right and the origin being in the bottom left corner of the screen. The projection will be pixel perfect
      * with respect to the current screen resolution.
      * <p>
      * Note: shader is assumed to have a "u_projTrans" uniform for transformations,
      * and "a_position", "a_texCoord" attributes for position and uv coordinates respectively.
-     *
-     * @param shader The default shader to use. Will be owned by this renderer (i.e., will be disposed when this renderer is disposed).
      */
-    public InstanceRenderer(ShaderProgram shader) {
-        this.shader = shader;
+    public ShaderRenderer() {
         projectionMatrix.setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        mesh = new Mesh(true, 6, 0,
+        mesh = new Mesh(false, 6, 0,
                 new VertexAttribute(VertexAttributes.Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE),
                 new VertexAttribute(VertexAttributes.Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE)
         );
+        vertices = new float[]{
+                0, 0, 0.0f, 0.0f,
+                0, 0, 1.0f, 0.0f,
+                0, 0, 0.0f, 1.0f,
+                0, 0, 1.0f, 0.0f,
+                0, 0, 1.0f, 1.0f,
+                0, 0, 0.0f, 1.0f
+        };
         drawing = false;
-    }
-
-    /**
-     * See {@link InstanceRenderer#InstanceRenderer(ShaderProgram)}.
-     * The supplied shader is {@link SpriteBatch#createDefaultShader()}.
-     */
-    public InstanceRenderer() {
-       this(SpriteBatch.createDefaultShader());
-    }
-
-    /**
-     * Calls {@link Mesh#enableInstancedRendering(boolean, int, VertexAttribute...)}.
-     */
-    public void initialize(boolean isStatic, int instanceCount, VertexAttribute... attributes) {
-        mesh.enableInstancedRendering(isStatic, instanceCount, attributes);
-    }
-
-    /**
-     * See {@link Mesh#setInstanceData(FloatBuffer)}.
-     */
-    public void setInstanceData(FloatBuffer data) {
-        mesh.setInstanceData(data);
     }
 
     @Override
@@ -80,7 +63,7 @@ public class InstanceRenderer implements Renderer {
 
     @Override
     public void end() {
-        if (!drawing) throw new IllegalStateException("InstanceRenderer.begin must be called before end.");
+        if (!drawing) throw new IllegalStateException("ShaderBatch.begin must be called before end.");
         mesh.render(shader, GL20.GL_TRIANGLES);
         drawing = false;
         mesh.disableInstancedRendering();
@@ -91,21 +74,32 @@ public class InstanceRenderer implements Renderer {
 
     /**
      * The mesh will be drawn as a quad with given width and height.
-     * The position of the bottom-left corner is set to (0,0); if you want other positions use the fact that the mesh is instanced.
+     * The position of the bottom-left corner is set to (x,y).
      * uv coordinates span from (0, 0) on the bottom-left to (1, 1) on the top right of the quad mesh.
      *
+     * @param x x-position
+     * @param y y-position
+     * @param uniforms uniforms to be passed into shader
      * @param height height of quad
      * @param width  width of quad
      */
-    public void draw(float width, float height) {
-        float[] vertices = new float[]{
-                0.0f, 0.0f, 0.0f, 0.0f,
-                width, 0.0f, 1.0f, 0.0f,
-                0.0f, height, 0.0f, 1.0f,
-                width, 0.0f, 1.0f, 0.0f,
-                width, height, 1.0f, 1.0f,
-                0.0f, height, 0.0f, 1.0f
-        };
+    public void draw(float x, float y, float height, float width, ShaderUniform... uniforms) {
+         vertices[0] = x;
+         vertices[1] = y;
+         vertices[4] = x + width;
+         vertices[5] = y;
+         vertices[8] = x;
+         vertices[9] = y + width;
+         vertices[12] = x + width;
+         vertices[13] = y;
+         vertices[16] = x + width;
+         vertices[17] = y + height;
+         vertices[20] = x;
+         vertices[21] = y + height;
+
+        for (ShaderUniform uniform: uniforms) {
+            uniform.apply(shader);
+        }
 
         mesh.setVertices(vertices);
     }
@@ -162,3 +156,4 @@ public class InstanceRenderer implements Renderer {
         return shader;
     }
 }
+
