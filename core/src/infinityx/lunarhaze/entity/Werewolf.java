@@ -28,7 +28,7 @@ public class Werewolf extends SteeringGameObject {
     public static int INITIAL_HP = 5;
 
     /** Size of attack hitbox */
-    public static float HITBOX_SIZE = 2f;
+    public static float HITBOX_SIZE = 5f;
 
     /**
      * Maximum light of the werewolf is 100.0
