@@ -296,7 +296,6 @@ public class UIRender {
         // If necessary draw screen flash
         ScreenFlash.update(Gdx.graphics.getDeltaTime());
         canvas.drawScreenFlash(level.getPlayer());
-        canvas.end();
 
        // drawEnemyMeters(canvas, level);
     }
