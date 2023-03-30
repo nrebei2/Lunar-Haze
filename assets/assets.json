@@ -106,6 +106,9 @@
     "battleBackground": "sounds/battleBackground.mp3"
   },
   "sounds": {
+    "collect": "sounds/collect.mp3",
+    "level-passed": "sounds/level-passed.mp3",
+    "whip": "sounds/whip.mp3"
   },
   "fonts": {
     "retro": {

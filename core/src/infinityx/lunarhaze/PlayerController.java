@@ -1,6 +1,8 @@
 package infinityx.lunarhaze;
 
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.GameplayController.Phase;
 import infinityx.lunarhaze.combat.AttackHandler;
@@ -57,6 +59,16 @@ public class PlayerController {
     /**If the player is collecting moonlight then true, false otherwise */
     private boolean collectingMoonlight;
 
+    /**
+     * Sound for successfully collect moonlight
+     */
+    private Sound collect_sound;
+
+    /**
+     * Sound for player attacking
+     */
+    private Sound attack_sound;
+
     private PlayerAttackHandler attackHandler;
 
     public float getTimeOnMoonlightPercentage(){
@@ -73,6 +85,8 @@ public class PlayerController {
         this.levelContainer = levelContainer;
         collectingMoonlight = false;
         attackHandler = new PlayerAttackHandler(player);
+        collect_sound = levelContainer.getDirectory().getEntry("collect", Sound.class);
+        attack_sound = levelContainer.getDirectory().getEntry("whip", Sound.class);
     }
 
     /**
@@ -96,6 +110,7 @@ public class PlayerController {
     public void collectMoonlight() {
         collectingMoonlight = false;
         player.addMoonlightCollected();
+        collect_sound.play(0.8f);
         player.setLight(player.getLight() + (Werewolf.MAX_LIGHT / levelContainer.getTotalMoonlight()));
         PlayerAttackHandler.setAttackPower(player.getAttackPower());
     }
@@ -162,6 +177,9 @@ public class PlayerController {
         resolvePlayer(input, delta);
         resolveMoonlight(delta, lightingController);
         resolveStealthBar(input);
+        if (player.isAttacking()){
+            attack_sound.play();
+        }
         attackHandler.update(delta, input, currPhase);
     }
 }

@@ -3,6 +3,7 @@ package infinityx.lunarhaze;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.utils.JsonValue;
@@ -48,6 +49,12 @@ public class GameMode extends ScreenObservable implements Screen {
      * Battle background music
      */
     private Music battle_background;
+
+    /**
+     * Sound of winning a level
+     */
+    private Sound win_sound;
+
     /**
      * Reference to drawing context to display graphics (VIEW CLASS)
      */
@@ -115,6 +122,7 @@ public class GameMode extends ScreenObservable implements Screen {
         uiRender = new UIRender(UIFont_large, UIFont_small, directory);
         stealth_background = directory.getEntry("stealthBackground", Music.class);
         battle_background = directory.getEntry("battleBackground", Music.class);
+        win_sound = directory.getEntry("level-passed", Sound.class);
         System.out.println("gatherAssets called");
     }
 
@@ -135,6 +143,7 @@ public class GameMode extends ScreenObservable implements Screen {
             case OVER:
                 // TODO: make seperate screen
             case WIN:
+                win_sound.play();
                 if (inputController.didReset()) {
                     setupLevel();
                 } else {
@@ -149,8 +158,8 @@ public class GameMode extends ScreenObservable implements Screen {
                             stealth_background.play();
                         }
                     case BATTLE:
+                        stealth_background.stop();
                         if (!battle_background.isPlaying()) {
-                            stealth_background.stop();
                             battle_background.setLooping(true);
                             battle_background.play();
                         }
