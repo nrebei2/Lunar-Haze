@@ -806,17 +806,22 @@ public class GameCanvas {
         font.draw(spriteBatch, layout, x, y + offset);
     }
 
-    public void drawCollectLightBar(float width, float height, float percentage) {
+    public void drawCollectLightBar(float width, float height, float percentage, Werewolf player) {
         if (active != DrawPass.SHAPE) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
             return;
         }
 
+        float padding = 5;
+        float x = WorldToScreenX(player.getPosition().x) - width / 2;
+        float y = WorldToScreenY(player.getPosition().y) + player.getTextureHeight() + padding;
+
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(Color.WHITE);
-        float x = (getWidth() - width)/2;
-        float y = (getHeight() - height)/4*2.7f;
-        shapeRenderer.rect(x, y, width, height);
+        shapeRenderer.rect(
+                x, y, width, height
+        );
+
         shapeRenderer.end();
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);

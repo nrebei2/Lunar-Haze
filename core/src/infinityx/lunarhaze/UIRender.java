@@ -191,12 +191,12 @@ public class UIRender {
     public void drawUI(GameCanvas canvas, LevelContainer level, GameplayController.Phase phase, GameplayController gameplayController) {
         setFontColor(Color.WHITE);
 
-        // Draw give view transform considered
+        // Draw with view transform considered
         canvas.begin(GameCanvas.DrawPass.SHAPE, level.getView().x, level.getView().y);
 
         if(gameplayController.getCollectingMoonlight()) {
              canvas.drawCollectLightBar(BAR_WIDTH / 2, BAR_HEIGHT / 2,
-                 gameplayController.getTimeOnMoonlightPercentage());
+                 gameplayController.getTimeOnMoonlightPercentage(), level.getPlayer());
         }
 
         if (phase == Phase.BATTLE) {
@@ -218,6 +218,7 @@ public class UIRender {
         drawHealthStats(canvas, level);
         drawMoonlightStats(canvas, level);
         drawStealthStats(canvas, level);
+        canvas.end();
 
 //        drawEnemyMeters(canvas, level);
     }
@@ -282,7 +283,6 @@ public class UIRender {
         canvas.draw(stealth_icon, Color.WHITE, stealth_icon.getWidth() / 2, stealth_icon.getHeight() / 2, canvas.getWidth()/2 - STEALTH_STROKE_WIDTH/2 + stealth_icon.getWidth(), MOON_STROKE_HEIGHT + stealth_icon.getHeight()*3/5, (float) (13f/180f * Math.PI), 0.7f, 0.7f);
         Color stealth_fill = new Color(255f / 255.0f, 255f / 255.0f, 255f / 255.0f, 1f);
         canvas.draw(stealth_stroke, stealth_fill, canvas.getWidth()/2 - STEALTH_STROKE_WIDTH/2, MOON_STROKE_HEIGHT, STEALTH_STROKE_WIDTH * proportion, STEALTH_STROKE_HEIGHT);
-        canvas.end();
     }
 
     /** Draw the stealth notice meter circle above enemies */
