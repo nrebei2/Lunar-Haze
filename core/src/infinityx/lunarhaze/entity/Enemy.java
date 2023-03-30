@@ -20,10 +20,28 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
      */
     private final float animeframe;
 
-    /**
-     * Whether the enemy is alerted.
-     */
-    private Boolean alerted;
+    public enum Detection {
+        /**
+         * The enemy is alerted (Exclamation point!)
+         */
+        ALERT,
+        /**
+         * The enemy has noticed sometime amiss (Question mark?)
+         */
+        NOTICED,
+        /** The enemy indicator is increasing */
+        INDICATOR,
+        /**
+         * Neither heard nor seen anything
+         */
+        NONE
+    }
+
+    /** The current detection level */
+    private Detection detection;
+
+    /** How much the indicator has been filled */
+    float indicatorAmount;
 
     /**
      * rectangular region represented by [[b_lx, b_ly], [t_rx, t_ry]]
@@ -64,12 +82,6 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
         return flashlight;
     }
 
-    /**
-     * @return whether the enemy is alerted
-     */
-    public boolean getAlerted() {
-        return alerted;
-    }
 
 
     /**
@@ -79,7 +91,6 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
         super(false);
         this.patrolPath = new ArrayList<>();
         animeframe = 0.0f;
-        alerted = false;
 
         // TODO
         setMaxLinearAcceleration(1);
@@ -94,7 +105,7 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
     @Override
     public void reset() {
         hp = maxHp;
-        alerted = false;
+        detection = Detection.NONE;
     }
 
     /**
@@ -134,11 +145,20 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
         this.patrolPath = path;
     }
 
-    /**
-     * Sets whether the enemy is alerted.
-     */
-    public void setAlerted(Boolean value) {
-        alerted = value;
+    public void setDetection(Detection detection) {
+        this.detection = detection;
+    }
+
+    public Detection getDetection() {
+        return detection;
+    }
+
+    public void setIndicatorAmount(float indicatorAmount) {
+        this.indicatorAmount = indicatorAmount;
+    }
+
+    public float getIndicatorAmount() {
+        return indicatorAmount;
     }
 
     public Vector2 getBottomLeftOfRegion() {

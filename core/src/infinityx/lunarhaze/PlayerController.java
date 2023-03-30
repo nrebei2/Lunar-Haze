@@ -23,27 +23,27 @@ public class PlayerController {
     /**
      * Stealth value if the player is standing still
      */
-    private static final float STILL_STEALTH = 0.0f;
+    public static final float STILL_STEALTH = 0.0f;
 
     /**
      * Stealth value if the player is walking
      */
-    private static final float WALK_STEALTH = 0.3f;
+    public static final float WALK_STEALTH = 0.3f;
 
     /**
      * Stealth value if the player is running
      */
-    private static final float RUN_STEALTH = 0.6f;
+    public static final float RUN_STEALTH = 0.6f;
 
     /**
      * Stealth value if the player is on the moonlight
      */
-    private static final float MOON_STEALTH = 1.0f;
+    public static final float MOON_STEALTH = 1.0f;
 
     /**
      * The player being controlled by this AIController
      */
-    private final Werewolf player;
+    public final Werewolf player;
 
     /**
      * The game board; used for pathfinding
@@ -133,7 +133,7 @@ public class PlayerController {
         attackHandler = new PlayerAttackHandler(player);
         collect_sound = levelContainer.getDirectory().getEntry("collect", Sound.class);
         attack_sound = levelContainer.getDirectory().getEntry("whip", Sound.class);
-        stateMachine = new DefaultStateMachine<>(this, PlayerState.WALK, PlayerState.ANY_STATE);
+        stateMachine = new DefaultStateMachine<>(this, PlayerState.IDLE, PlayerState.ANY_STATE);
         lightingController = lighting;
     }
 

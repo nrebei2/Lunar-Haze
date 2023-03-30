@@ -220,6 +220,12 @@ public class UIRender {
         drawStealthStats(canvas, level);
         canvas.end();
 
+        canvas.begin(GameCanvas.DrawPass.SHAPE);
+        // If necessary draw screen flash
+        ScreenFlash.update(Gdx.graphics.getDeltaTime());
+        canvas.drawScreenFlash(level.getPlayer());
+        canvas.end();
+
         canvas.begin(GameCanvas.DrawPass.SHADER, level.getView().x, level.getView().y);
         drawStealthIndicator(canvas, level);
         canvas.end();
@@ -285,15 +291,6 @@ public class UIRender {
         canvas.draw(stealth_icon, Color.WHITE, stealth_icon.getWidth() / 2, stealth_icon.getHeight() / 2, canvas.getWidth()/2 - STEALTH_STROKE_WIDTH/2 + stealth_icon.getWidth(), MOON_STROKE_HEIGHT + stealth_icon.getHeight()*3/5, (float) (13f/180f * Math.PI), 0.7f, 0.7f);
         Color stealth_fill = new Color(255f / 255.0f, 255f / 255.0f, 255f / 255.0f, 1f);
         canvas.draw(stealth_stroke, stealth_fill, canvas.getWidth()/2 - STEALTH_STROKE_WIDTH/2, MOON_STROKE_HEIGHT, STEALTH_STROKE_WIDTH * proportion, STEALTH_STROKE_HEIGHT);
-
-        //canvas.end();
-        //canvas.begin(GameCanvas.DrawPass.SHAPE);
-
-        // If necessary draw screen flash
-        ScreenFlash.update(Gdx.graphics.getDeltaTime());
-        canvas.drawScreenFlash(level.getPlayer());
-
-       // drawEnemyMeters(canvas, level);
     }
 
     /** Draw the stealth indicator above enemies */
