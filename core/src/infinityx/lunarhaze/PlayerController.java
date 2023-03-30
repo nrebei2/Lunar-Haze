@@ -8,8 +8,6 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.GameplayController.Phase;
-import infinityx.lunarhaze.combat.AttackHandler;
-import infinityx.lunarhaze.combat.AttackHitbox;
 import infinityx.lunarhaze.combat.PlayerAttackHandler;
 import infinityx.lunarhaze.entity.Werewolf;
 
