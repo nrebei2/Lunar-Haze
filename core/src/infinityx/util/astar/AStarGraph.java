@@ -5,6 +5,7 @@ import com.badlogic.gdx.ai.pfa.DefaultConnection;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
 import com.badlogic.gdx.utils.Array;
 
+/**The graph A* pathfinding uses to find the best path*/
 public class AStarGraph implements IndexedGraph<Node> {
 
     private static final int[][] NEIGHBORHOOD = new int[][]{
@@ -17,18 +18,15 @@ public class AStarGraph implements IndexedGraph<Node> {
             new int[]{1, -1},
             new int[]{1, 1}
 
-
-
-
     };
-
+    /**Map of nodes*/
     AStarMap map;
 
     public AStarGraph (AStarMap map) {
         this.map = map;
     }
 
-
+    /**Index of the node, A* assumes all the nodes are in an array. This is the index of the node in the nodes array*/
     @Override
     public int getIndex(Node node) {
         return node.getIndex();
@@ -38,7 +36,7 @@ public class AStarGraph implements IndexedGraph<Node> {
     public int getNodeCount() {
         return 0;
     }
-
+    /**The edges coming out of fromNode*/
     @Override
     public Array<Connection<Node>> getConnections(Node fromNode) {
         return null;

@@ -8,9 +8,15 @@ import com.badlogic.gdx.math.Vector2;
 import static infinityx.util.astar.AStarGraph.createGraph;
 
 public class AStartPathFinding {
+    /**Map containing all the nodes in our level*/
     public final AStarMap map;
+
+    /**Libgdx's pathfinder*/
     private final PathFinder<Node> pathfinder;
+
+    /**Heuristic function used in A* algorithm*/
     private final Heuristic<Node> heuristic;
+    /**Graph of nodes and edges. Used for A* pathfinding*/
     private final GraphPath<Connection<Node>> connectionPath;
 
     public AStartPathFinding(AStarMap map) {
@@ -25,7 +31,7 @@ public class AStartPathFinding {
             }
         };
     }
-
+    /**Finds the next node to move to, given a source and target*/
     public Node findNextNode(Vector2 source, Vector2 target) {
         int sourceX = MathUtils.floor(source.x);
         int sourceY = MathUtils.floor(source.y);

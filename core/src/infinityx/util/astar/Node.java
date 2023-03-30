@@ -6,8 +6,13 @@ public class Node {
 
     public final int x;
     public final int y;
+
+    /**Is this node an obstable*/
     public boolean isObstacle;
+    /**Index of the node in an array. Libgdx's assumes all the nodes representing a map are stored in an array*/
     private final int index;
+
+    /**Edges from this node to another node*/
     private final Array<Connection<Node>> connections;
 
     public Node(AStarMap map, int x, int y) {
