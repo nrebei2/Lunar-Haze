@@ -509,6 +509,8 @@ public class GameCanvas {
                 spriteBatch.begin();
                 break;
             case SHAPE:
+                // Enable blending
+                Gdx.gl.glEnable(GL20.GL_BLEND);
                 shapeRenderer.setProjectionMatrix(camera.combined);
                 break;
             case SHADER:
@@ -529,6 +531,9 @@ public class GameCanvas {
         switch (active) {
             case SPRITE:
                 spriteBatch.end();
+                break;
+            case SHAPE:
+                Gdx.gl.glDisable(GL20.GL_BLEND);
                 break;
         }
         active = DrawPass.INACTIVE;
@@ -933,8 +938,10 @@ public class GameCanvas {
      */
     public void drawScreenFlash(Werewolf player){
         Color flashColor = ScreenFlash.getFlashColor();
+        System.out.println(flashColor);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(flashColor);
+
         float x = WorldToScreenX(player.getPosition().x) - Gdx.graphics.getWidth()/2.0f;
         float y = WorldToScreenY(player.getPosition().y) - Gdx.graphics.getHeight()/2.0f;
         shapeRenderer.rect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());

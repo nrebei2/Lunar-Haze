@@ -409,7 +409,7 @@ public class LevelContainer {
     public SceneObject addSceneObject(String type, float x, float y, float scale) {
         SceneObject object = new SceneObject();
         object.initialize(directory, objectJson.get(type), this);
-
+        
         object.setPosition(x, y);
         object.setScale(scale);
 
