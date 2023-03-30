@@ -149,14 +149,14 @@ public class GameMode extends ScreenObservable implements Screen {
                 switch (gameplayController.getPhase()){
                     case STEALTH:
                         if (!stealth_background.isPlaying()) {
-                            stealth_background.setLooping(true);
-                            stealth_background.play();
+                            //stealth_background.setLooping(true);
+                            //stealth_background.play();
                         }
                     case BATTLE:
                         stealth_background.stop();
                         if (!battle_background.isPlaying()) {
-                            battle_background.setLooping(true);
-                            battle_background.play();
+                            //battle_background.setLooping(true);
+                            //battle_background.play();
                         }
                     case TRANSITION:
                 }

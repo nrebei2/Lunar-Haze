@@ -937,7 +937,7 @@ public class GameCanvas {
         shapeRenderer.setColor(flashColor);
         float x = WorldToScreenX(player.getPosition().x) - Gdx.graphics.getWidth()/2.0f;
         float y = WorldToScreenY(player.getPosition().y) - Gdx.graphics.getHeight()/2.0f;
-        shapeRenderer.rect(x, y, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        shapeRenderer.rect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         shapeRenderer.end();
     }
 

@@ -13,6 +13,11 @@ public class Box2dLocation implements Location<Vector2> {
         orientation = 0;
     }
 
+    public Box2dLocation(Location<Vector2> loc) {
+        position = loc.getPosition().cpy();
+        orientation = loc.getOrientation();
+    }
+
     public Box2dLocation() {
         this(new Vector2());
     }
@@ -20,6 +25,10 @@ public class Box2dLocation implements Location<Vector2> {
     @Override
     public Vector2 getPosition() {
         return position;
+    }
+
+    public void setPosition(Vector2 position) {
+        this.position.set(position);
     }
 
     @Override
