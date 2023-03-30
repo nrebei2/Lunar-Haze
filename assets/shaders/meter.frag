@@ -11,13 +11,13 @@ float circle(float r, float o, vec2 p) {
 void main() {
     vec2 uv = v_uv*2. - 1.;
 
-    float inside = circle(0.9, 0.1, uv);
+    float inside = circle(0.84, 0.16, uv);
 
     if (inside == 0.) {
         discard;
     }
 
-    vec3 outline = vec3(0.535,0.535,0.535);
+    vec3 outline = vec3(0.43,0.43,0.43);
     vec3 filled = vec3(1);
 
     float ang = (atan(-uv.x, -uv.y) + PI) / (2.*PI);
