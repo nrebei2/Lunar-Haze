@@ -5,6 +5,18 @@ import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
 
 public enum PlayerState implements State<PlayerController> {
+
+    ANY_STATE() {
+        @Override
+        public void update(PlayerController entity) {
+            InputController input = entity.getInputController();
+            entity.getAttackHandler().update(Gdx.graphics.getDeltaTime(), input, entity.getPhase());
+            entity.resolvePlayer(Gdx.graphics.getDeltaTime());
+            entity.resolveStealthBar();
+            entity.resolveMoonlight(Gdx.graphics.getDeltaTime(), entity.getLightingController());
+        }
+    },
+
     WALK() {
         @Override
         public void enter(PlayerController entity) {
@@ -12,10 +24,6 @@ public enum PlayerState implements State<PlayerController> {
         }
         @Override
         public void update(PlayerController entity) {
-            entity.resolvePlayer(Gdx.graphics.getDeltaTime());
-            entity.resolveStealthBar();
-            entity.resolveMoonlight(Gdx.graphics.getDeltaTime(), entity.getLightingController());
-
             // Handle state transitions
             if (entity.isAttacking()) {
                 entity.getStateMachine().changeState(PlayerState.ATTACK);
@@ -34,11 +42,6 @@ public enum PlayerState implements State<PlayerController> {
         }
         @Override
         public void update(PlayerController entity) {
-            InputController input = entity.getInputController();
-            entity.resolvePlayer(Gdx.graphics.getDeltaTime());
-            entity.resolveStealthBar();
-            entity.resolveMoonlight(Gdx.graphics.getDeltaTime(), entity.getLightingController());
-
             // Handle state transitions
             if (entity.isAttacking()) {
                 entity.getStateMachine().changeState(PlayerState.ATTACK);
@@ -54,13 +57,10 @@ public enum PlayerState implements State<PlayerController> {
         @Override
         public void enter(PlayerController entity) {
             System.out.println("Player switched to attack state");
+            entity.getAttackSound().play();
         }
         @Override
         public void update(PlayerController entity) {
-            InputController input = entity.getInputController();
-            entity.getAttackHandler().update(Gdx.graphics.getDeltaTime(), input, entity.getPhase());
-            entity.getAttackSound().play();
-
             // Handle state transitions
             if(!entity.isAttacking()) {
                 entity.getStateMachine().changeState(PlayerState.WALK);
@@ -75,8 +75,6 @@ public enum PlayerState implements State<PlayerController> {
         }
         @Override
         public void update(PlayerController entity) {
-            entity.resolveMoonlight(Gdx.graphics.getDeltaTime(), entity.getLightingController());
-
             // Handle state transitions
             if (entity.isAttacking()) {
                 entity.getStateMachine().changeState(PlayerState.ATTACK);
@@ -92,6 +90,9 @@ public enum PlayerState implements State<PlayerController> {
     };
 
 
+    @Override
+    public void enter(PlayerController entity) {
+    }
 
     @Override
     public void exit(PlayerController entity) {

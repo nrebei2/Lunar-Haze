@@ -1,7 +1,6 @@
 package infinityx.lunarhaze;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttribute;
@@ -9,7 +8,6 @@ import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.BufferUtils;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.GameplayController.Phase;
 import infinityx.lunarhaze.entity.Enemy;
@@ -17,8 +15,6 @@ import infinityx.lunarhaze.entity.Werewolf;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.graphics.ShaderUniform;
 import infinityx.lunarhaze.graphics.ScreenFlash;
-
-import java.nio.FloatBuffer;
 
 /**
  * This is a class used for drawing player and enemies' game UI state: HP, Stealth, MoonLight
@@ -225,7 +221,7 @@ public class UIRender {
         canvas.end();
 
         canvas.begin(GameCanvas.DrawPass.SHADER, level.getView().x, level.getView().y);
-        drawEnemyMeters(canvas, level);
+        drawStealthIndicator(canvas, level);
         canvas.end();
     }
 
@@ -296,22 +292,21 @@ public class UIRender {
         // If necessary draw screen flash
         ScreenFlash.update(Gdx.graphics.getDeltaTime());
         canvas.drawScreenFlash(level.getPlayer());
-        canvas.end();
 
        // drawEnemyMeters(canvas, level);
     }
 
-    /** Draw the stealth notice meter circle above enemies */
-    public void drawEnemyMeters(GameCanvas canvas, LevelContainer level) {
+    /** Draw the stealth indicator above enemies */
+    public void drawStealthIndicator(GameCanvas canvas, LevelContainer level) {
         ShaderUniform uniform = new ShaderUniform("u_amount");
         Array<Enemy> enemies = level.getEnemies();
         for (Enemy enemy : enemies) {
             uniform.setValues(0.1f);
             canvas.drawShader(
                     meter,
-                    canvas.WorldToScreenX(enemy.getPosition().x),
-                    canvas.WorldToScreenY(enemy.getPosition().y),
-                    500, 500,
+                    canvas.WorldToScreenX(enemy.getPosition().x) - 38,
+                    canvas.WorldToScreenY(enemy.getPosition().y) + enemy.getTextureHeight() - 25,
+                    50, 50,
                     uniform);
         }
     }

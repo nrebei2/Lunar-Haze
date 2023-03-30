@@ -131,7 +131,7 @@ public class PlayerController {
         attackHandler = new PlayerAttackHandler(player);
         collect_sound = levelContainer.getDirectory().getEntry("collect", Sound.class);
         attack_sound = levelContainer.getDirectory().getEntry("whip", Sound.class);
-        stateMachine = new DefaultStateMachine<>(this, PlayerState.WALK);
+        stateMachine = new DefaultStateMachine<>(this, PlayerState.WALK, PlayerState.ANY_STATE);
         lightingController = lighting;
     }
 
