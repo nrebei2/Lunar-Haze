@@ -88,6 +88,7 @@ public class LevelParser {
         JsonValue tiles = levelContents.get("tiles");
         Board board = parseBoard(directory, tiles, levelContainer.getRayHandler());
         levelContainer.setBoard(board);
+        levelContainer.setPathFinder();
 
         JsonValue scene = levelContents.get("scene");
 

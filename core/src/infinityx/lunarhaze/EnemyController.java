@@ -2,6 +2,8 @@ package infinityx.lunarhaze;
 
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.fsm.StateMachine;
+import com.badlogic.gdx.ai.msg.Telegram;
+import com.badlogic.gdx.ai.msg.Telegraph;
 import com.badlogic.gdx.ai.steer.behaviors.Arrive;
 import com.badlogic.gdx.ai.steer.behaviors.PrioritySteering;
 import com.badlogic.gdx.ai.steer.behaviors.RaycastObstacleAvoidance;
@@ -17,10 +19,11 @@ import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.Werewolf;
 import infinityx.lunarhaze.physics.Box2DRaycastCollision;
 import infinityx.lunarhaze.physics.RaycastInfo;
+import infinityx.util.astar.Node;
 
 
 // TODO: move all this stuff into AI controller, EnemyController should hold other enemy actions
-public class EnemyController {
+public class EnemyController implements Telegraph {
     /**
      * Distance for enemy to detect the player
      */
@@ -57,6 +60,13 @@ public class EnemyController {
      * Cache for collision output from raycastCollision
      */
     Collision<Vector2> collisionCache = new Collision<>(new Vector2(), new Vector2());
+
+    public Node nextNode;
+
+    @Override
+    public boolean handleMessage(Telegram msg) {
+        return false;
+    }
 
     /**
      * Enumeration to encode the finite state machine.

@@ -18,6 +18,8 @@ import infinityx.lunarhaze.graphics.CameraShake;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.physics.LightSource;
 import infinityx.util.Drawable;
+import infinityx.util.astar.AStarMap;
+import infinityx.util.astar.AStartPathFinding;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -89,6 +91,8 @@ public class LevelContainer {
      * Stores Board
      */
     private Board board;
+
+    public AStartPathFinding pathfinder;
 
     /**
      * Keeps player centered
@@ -386,6 +390,19 @@ public class LevelContainer {
     public void setBoard(Board board) {
         this.board = board;
         this.totalMoonlight = board.getRemainingMoonlight();
+    }
+
+    public void setPathFinder() {
+        AStarMap aStarMap = new AStarMap(board.getWidth(), board.getHeight());
+
+        for (int y = 0; y < board.getHeight(); y++) {
+            for (int x = 0; x < board.getWidth(); x++) {
+                if (!board.isWalkable(x,y)) {
+                    aStarMap.getNodeAt(x, y).isObstacle = true;
+                }
+            }
+        }
+        pathfinder = new AStartPathFinding(aStarMap);
     }
 
     /**
