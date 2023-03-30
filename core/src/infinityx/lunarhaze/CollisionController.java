@@ -1,6 +1,7 @@
 package infinityx.lunarhaze;
 
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import infinityx.lunarhaze.combat.AttackHitbox;
@@ -8,6 +9,7 @@ import infinityx.lunarhaze.combat.PlayerAttackHandler;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.Werewolf;
 import infinityx.lunarhaze.graphics.CameraShake;
+import infinityx.lunarhaze.graphics.ScreenFlash;
 
 /**
  * Controller to handle gameplay interactions.
@@ -65,6 +67,8 @@ public class CollisionController implements ContactListener {
         ((Werewolf) player).setCanMove(false);
         body.applyLinearImpulse(direction.scl(knockback), body.getWorldCenter(), true);
         ((Werewolf) player).setHp((int) (((Werewolf) player).getHp() - damage));
+        CameraShake.shake(knockback * 3f, 0.3f);
+        ScreenFlash.flash(new Color(1f, 0.2f, 0.2f, 1), 0.2f, 0.05f, 0.1f, 0.2f);
     }
 
     public void resolvePlayerAttack(AttackHitbox hitbox, Enemy enemy) {
@@ -77,7 +81,7 @@ public class CollisionController implements ContactListener {
         Vector2 enemyPos = enemyBody.getPosition();
         Vector2 knockbackDirection = enemyPos.sub(playerPos).nor();
         enemyBody.applyLinearImpulse(knockbackDirection.scl(6f * PlayerAttackHandler.getAttackPower()), enemyBody.getWorldCenter(), true);
-        CameraShake.shake(10, 1);
+        CameraShake.shake(PlayerAttackHandler.getAttackPower() * 5f, 0.5f);
     }
 
     @Override

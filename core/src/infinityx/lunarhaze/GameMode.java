@@ -9,6 +9,7 @@ import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.GameplayController.Phase;
 import infinityx.lunarhaze.graphics.CameraShake;
 import infinityx.lunarhaze.graphics.GameCanvas;
+import infinityx.lunarhaze.graphics.ScreenFlash;
 import infinityx.util.ScreenObservable;
 
 

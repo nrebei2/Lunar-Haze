@@ -449,6 +449,13 @@ public class LevelContainer {
      * @param canvas The drawing context
      */
     public void drawLevel(GameCanvas canvas) {
+
+        // Camera shake logic
+        if(CameraShake.timeLeft() > 0) {
+            CameraShake.update(Gdx.graphics.getDeltaTime());
+            translateView(CameraShake.getShakeOffset().x, CameraShake.getShakeOffset().y);
+        }
+
         garbageCollect();
         canvas.begin(GameCanvas.DrawPass.SPRITE, view.x, view.y);
 
@@ -472,13 +479,6 @@ public class LevelContainer {
                 canvas.getWidth() / canvas.WorldToScreenX(1),
                 canvas.getHeight() / canvas.WorldToScreenY(1)
         );
-
-        //Camera shake logic
-
-        if(CameraShake.timeLeft() > 0) {
-            CameraShake.update(Gdx.graphics.getDeltaTime());
-            translateView(CameraShake.getShakeOffset().x, CameraShake.getShakeOffset().y);
-        }
 
         if (player != null) {
             raycamera.translate(player.getPosition().x, player.getPosition().y);
