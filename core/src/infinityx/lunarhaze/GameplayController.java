@@ -3,6 +3,7 @@ package infinityx.lunarhaze;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
@@ -102,6 +103,11 @@ public class GameplayController {
      */
     private int battleTicks;
 
+    /**
+     * Sound of winning a level
+     */
+    private Sound win_sound;
+
 
     /**
      * Creates a new GameplayController with no active elements.
@@ -157,6 +163,8 @@ public class GameplayController {
         enemies = levelContainer.getEnemies();
         controls = levelContainer.getEnemyControllers();
         battleTicks = 0;
+
+        win_sound = levelContainer.getDirectory().getEntry("level-passed", Sound.class);
     }
 
     /**
@@ -182,7 +190,10 @@ public class GameplayController {
                     break;
                 case BATTLE:
                     battleTicks += 1;
-                    if (enemies.size == 0) gameState = GameState.WIN;
+                    if (enemies.size == 0) {
+                        gameState = GameState.WIN;
+                        win_sound.play();
+                    }
                     break;
                 case TRANSITION:
                     switchPhase(delta);

@@ -52,11 +52,6 @@ public class GameMode extends ScreenObservable implements Screen {
     private Music battle_background;
 
     /**
-     * Sound of winning a level
-     */
-    private Sound win_sound;
-
-    /**
      * Reference to drawing context to display graphics (VIEW CLASS)
      */
     private GameCanvas canvas;
@@ -123,7 +118,7 @@ public class GameMode extends ScreenObservable implements Screen {
         uiRender = new UIRender(UIFont_large, UIFont_small, directory);
         stealth_background = directory.getEntry("stealthBackground", Music.class);
         battle_background = directory.getEntry("battleBackground", Music.class);
-        win_sound = directory.getEntry("level-passed", Sound.class);
+//        win_sound = directory.getEntry("level-passed", Sound.class);
         System.out.println("gatherAssets called");
     }
 
@@ -144,7 +139,6 @@ public class GameMode extends ScreenObservable implements Screen {
             case OVER:
                 // TODO: make seperate screen
             case WIN:
-                win_sound.play();
                 if (inputController.didReset()) {
                     setupLevel();
                 } else {
