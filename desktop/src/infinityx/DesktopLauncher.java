@@ -11,7 +11,6 @@ public class DesktopLauncher {
 		config.setForegroundFPS(60);
 		config.setTitle("Lunar Haze");
 		config.setResizable(true);
-		//config.setOpenGLEmulation(Lwjgl3ApplicationConfiguration.GLEmulation.GL30, 3, 2);
 		config.setWindowedMode(1920, 1080);
 		new Lwjgl3Application(new GDXRoot(), config);
 	}

@@ -171,7 +171,7 @@ public class EnemyController {
         this.end_chase_pos = new Vector2();
         this.stateMachine = new DefaultStateMachine<>(this, EnemyState.INIT, EnemyState.ANY_STATE);
         this.raycast = new RaycastInfo(enemy);
-        raycast.addIgnores(GameObject.ObjectType.ENEMY);
+        raycast.addIgnores(GameObject.ObjectType.ENEMY, GameObject.ObjectType.HITBOX);
     }
 
     /**
@@ -189,7 +189,7 @@ public class EnemyController {
         arriveSB.setDecelerationRadius(0.9f);
 
         RaycastInfo collRay = new RaycastInfo(enemy);
-        collRay.addIgnores(GameObject.ObjectType.WEREWOLF);
+        collRay.addIgnores(GameObject.ObjectType.WEREWOLF, GameObject.ObjectType.HITBOX);
         RaycastCollisionDetector<Vector2> raycastCollisionDetector = new Box2DRaycastCollision(container.getWorld(), collRay);
 
         this.collisionSB = new RaycastObstacleAvoidance<>(
@@ -220,7 +220,7 @@ public class EnemyController {
 
         // Process the FSM
         //changeStateIfApplicable(container, ticks);
-        //changeDetectionIfApplicable(currentPhase);
+        //changeDetectionIfApplicable(currentPhase);  `
 
         // Pathfinding
         //Vector2 next_move = findPath();

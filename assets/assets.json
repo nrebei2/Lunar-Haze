@@ -11,6 +11,7 @@
     "circle-bar": "images/circle_bar.png",
     "counter": "images/top-paint-stroke.png",
     "dusk-icon": "images/dusk.png",
+    "fullmoon-icon": "images/midnight-logo.png",
     "health-icon": "images/health_icon.png",
     "moon-icon": "images/moon_icon.png",
     "rec-bar": "images/rectangle.png",
@@ -98,10 +99,16 @@
     "dimensions": "jsons/dimensions.json",
     "objects": "jsons/objects.json",
     "enemies": "jsons/enemies.json",
-    "input": "jsons/input.json",
     "dust": "jsons/dust.json"
   },
+  "music": {
+    "stealthBackground": "sounds/stealthBackground.mp3",
+    "battleBackground": "sounds/battleBackground.mp3"
+  },
   "sounds": {
+    "collect": "sounds/collect.mp3",
+    "level-passed": "sounds/level-passed.mp3",
+    "whip": "sounds/whip.mp3"
   },
   "fonts": {
     "retro": {

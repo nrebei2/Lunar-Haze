@@ -12,9 +12,12 @@
       "origin": [750, 220],
       "scale": 0.11
     },
-    "collider": {
-      "width": 0.5,
-      "height": 0.5
+    "colliders": {
+      "body": {
+        "type": "box",
+        "width": 0.5,
+        "height": 0.5
+      }
     },
     "bodytype": "dynamic",
     "density": 1.0,
@@ -24,7 +27,7 @@
     "hp": 10,
     "startframe": 0,
     "attack": {
-      "knockback": 3.0,
+      "knockback": 2.0,
       "damage": 1.0
     }
   }

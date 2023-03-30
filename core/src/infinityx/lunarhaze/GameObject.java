@@ -30,13 +30,14 @@ import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.physics.BoxObstacle;
+import infinityx.lunarhaze.physics.MultiShapeObstacle;
 import infinityx.util.Drawable;
 import infinityx.util.FilmStrip;
 
 /**
  * Base class for all Model objects in the game.
  */
-public abstract class GameObject extends BoxObstacle implements Drawable {
+public abstract class GameObject extends MultiShapeObstacle implements Drawable {
 
     /**
      * Enum specifying the type of this game object.
@@ -85,7 +86,7 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
      * @param y The object y-coordinate in world
      */
     public GameObject(float x, float y) {
-        super(x, y, 1, 1);
+        super(x, y);
     }
 
     /**
@@ -95,8 +96,6 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
      * @param container LevelContainer which this player is placed in
      */
     public void initialize(AssetDirectory directory, JsonValue json, LevelContainer container) {
-        JsonValue p_dim = json.get("collider");
-        setDimension(p_dim.get("width").asFloat(), p_dim.get("height").asFloat());
         // TODO: bother with error checking?
         setBodyType(json.get("bodytype").asString().equals("static") ? BodyDef.BodyType.StaticBody : BodyDef.BodyType.DynamicBody);
         setLinearDamping(json.get("damping").asFloat());
@@ -108,11 +107,26 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
         setTexture(directory.getEntry(texInfo.get("name").asString(), FilmStrip.class));
         int[] texOrigin = texInfo.get("origin").asIntArray();
         setOrigin(texOrigin[0], texOrigin[1]);
-        if (texInfo.has("positioned")) {
-            setPositioned(
-                    texInfo.getString("positioned").equals("bottom-left") ?
-                            BoxObstacle.POSITIONED.BOTTOM_LEFT : BoxObstacle.POSITIONED.CENTERED
-            );
+
+        // Add shape colliders
+        JsonValue p_dim = json.get("colliders");
+        for (JsonValue coll : p_dim) {
+
+            String name = coll.name();
+
+            Vector2 offset = new Vector2();
+            if (coll.has("offset")) {
+                offset.set(coll.get("offset").getFloat(0), coll.get("offset").getFloat(1));
+            }
+
+            if (coll.getString("type").equals("box")) {
+                addBox(
+                        name, coll.getFloat("width"), coll.getFloat("height"),
+                        offset, coll.has("angle") ? coll.getFloat("angle") : 0
+                );
+            } else if (coll.getString("type").equals("circle")) {
+                addCircle(name, coll.getFloat("radius"), offset);
+            }
         }
         this.textureScale = texInfo.getFloat("scale");
     }
@@ -150,6 +164,20 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
     }
 
     /**
+     * @return width of texture that will be drawn on screen
+     */
+    public float getTextureWidth() {
+        return filmstrip.getRegionWidth() * textureScale * scale;
+    }
+
+    /**
+     * @return height of texture that will be drawn on screen
+     */
+    public float getTextureHeight() {
+        return filmstrip.getRegionHeight() * textureScale * scale;
+    }
+
+    /**
      * Returns the type of this object.
      * <p>
      * We use this instead of runtime-typing for performance reasons.
@@ -173,6 +201,6 @@ public abstract class GameObject extends BoxObstacle implements Drawable {
     public void draw(GameCanvas canvas) {
         canvas.draw(filmstrip, Color.WHITE, origin.x, origin.y,
                 canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y), 0.0f,
-                textureScale * scale.x, textureScale * scale.y);
+                textureScale * scale, textureScale * scale);
     }
 }

@@ -411,7 +411,7 @@ public class LevelContainer {
         object.initialize(directory, objectJson.get(type), this);
 
         object.setPosition(x, y);
-        object.setScale(scale, scale);
+        object.setScale(scale);
 
         return addSceneObject(object);
     }
@@ -449,14 +449,14 @@ public class LevelContainer {
      * @param canvas The drawing context
      */
     public void drawLevel(GameCanvas canvas) {
+        garbageCollect();
 
-        // Camera shake logic
-        if(CameraShake.timeLeft() > 0) {
+        //Camera shake logic
+        if (CameraShake.timeLeft() > 0) {
             CameraShake.update(Gdx.graphics.getDeltaTime());
             translateView(CameraShake.getShakeOffset().x, CameraShake.getShakeOffset().y);
         }
 
-        garbageCollect();
         canvas.begin(GameCanvas.DrawPass.SPRITE, view.x, view.y);
 
         // Render order: Board tiles -> (players, enemies, scene objects) sorted by depth (y coordinate)
@@ -480,10 +480,12 @@ public class LevelContainer {
                 canvas.getHeight() / canvas.WorldToScreenY(1)
         );
 
-        if (player != null) {
-            raycamera.translate(player.getPosition().x, player.getPosition().y);
-            raycamera.update();
-        }
+        // Mimic same view transform
+        raycamera.translate(
+                -(view.x - canvas.getWidth()/2) / canvas.WorldToScreenX(1),
+                -(view.y - canvas.getHeight()/2) / canvas.WorldToScreenY(1)
+        );
+        raycamera.update();
 
         rayHandler.setCombinedMatrix(raycamera);
         rayHandler.updateAndRender();

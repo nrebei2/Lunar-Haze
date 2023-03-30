@@ -103,9 +103,9 @@ public class GameCanvas {
     private final ShapeRenderer shapeRenderer;
 
     /**
-     * Rendering context for drawing instanced shaders
+     * Rendering context for drawing shaders
      */
-    private InstanceRenderer instanceRenderer;
+    private ShaderRenderer shaderRenderer;
 
     /**
      * Track the current drawing pass (for error checking)
@@ -207,14 +207,13 @@ public class GameCanvas {
         active = DrawPass.INACTIVE;
         spriteBatch = new PolygonSpriteBatch();
         shapeRenderer = new ShapeRenderer();
-        instanceRenderer = new InstanceRenderer();
+        shaderRenderer = new ShaderRenderer();
 
-        // Set the projection matrix (for proper scaling)
-        camera = new OrthographicCamera(getWidth(), getHeight());
-        camera.setToOrtho(false);
+        setupCamera();
+
         spriteBatch.setProjectionMatrix(camera.combined);
         shapeRenderer.setProjectionMatrix(camera.combined);
-        instanceRenderer.setProjectionMatrix(camera.combined);
+        shaderRenderer.setProjectionMatrix(camera.combined);
 
         // Initialize the cache objects
         holder = new TextureRegion();
@@ -222,6 +221,17 @@ public class GameCanvas {
         global = new Matrix4();
         viewCache = new Vector2();
         alphaCache = new Color(1, 1, 1, 1);
+    }
+
+    /** Set up the camera as an orthographic camera with width and height matching the viewport */
+    private void setupCamera() {
+        // Set the projection matrix (for proper scaling)
+        camera = new OrthographicCamera(getWidth(), getHeight());
+        camera.setToOrtho(false);
+        // Cant do this, would mess up existing UI drawing
+        // Center camera at (0, 0)
+        //camera.translate(-getWidth()/2, -getHeight()/2);
+        //camera.update();
     }
 
     /**
@@ -375,10 +385,8 @@ public class GameCanvas {
      * weird scaling issues.
      */
     public void resize() {
-        // Resizing screws up the spriteBatch projection matrix
-        spriteBatch.getProjectionMatrix().setToOrtho2D(0, 0, getWidth(), getHeight());
-        camera = new OrthographicCamera(getWidth(), getHeight());
-        camera.setToOrtho(false);
+        // Resizing screws up the projection matrix
+        setupCamera();
 
 //        Gdx.gl.glViewport(0, 0, getWidth(), getHeight());
     }
@@ -444,7 +452,10 @@ public class GameCanvas {
     }
 
     /**
-     * Start a standard drawing sequence the given pass.
+     * Start a standard drawing sequence the given pass.if(CameraShake.timeLeft() > 0) {
+            CameraShake.update(Gdx.graphics.getDeltaTime());
+            levelContainer.translateView(CameraShake.getShakeOffset().x, CameraShake.getShakeOffset().y);
+        }
      * <p>
      * Nothing is flushed to the graphics card until the method end() is called.
      *
@@ -472,7 +483,7 @@ public class GameCanvas {
                 shapeRenderer.setProjectionMatrix(global);
                 break;
             case SHADER:
-                instanceRenderer.setProjectionMatrix(global);
+                shaderRenderer.setProjectionMatrix(global);
                 break;
         }
         active = pass;
@@ -501,7 +512,7 @@ public class GameCanvas {
                 shapeRenderer.setProjectionMatrix(camera.combined);
                 break;
             case SHADER:
-                instanceRenderer.setProjectionMatrix(camera.combined);
+                shaderRenderer.setProjectionMatrix(camera.combined);
                 break;
         }
         active = pass;
@@ -795,17 +806,22 @@ public class GameCanvas {
         font.draw(spriteBatch, layout, x, y + offset);
     }
 
-    public void drawCollectLightBar(float width, float height, float percentage) {
+    public void drawCollectLightBar(float width, float height, float percentage, Werewolf player) {
         if (active != DrawPass.SHAPE) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
             return;
         }
 
+        float padding = 5;
+        float x = WorldToScreenX(player.getPosition().x) - width / 2;
+        float y = WorldToScreenY(player.getPosition().y) + player.getTextureHeight() + padding;
+
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(Color.WHITE);
-        float x = (getWidth() - width)/2;
-        float y = (getHeight() - height)/4*2.7f;
-        shapeRenderer.rect(x, y, width, height);
+        shapeRenderer.rect(
+                x, y, width, height
+        );
+
         shapeRenderer.end();
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
@@ -950,24 +966,20 @@ public class GameCanvas {
     /**
      * Draws a shader instanced on quads with given width and height.
      * @param shader Sets the shader which will draw
-     * @param instanceCount maxInstances for this shader
-     * @param instanceData instance data to pass into shader
      * @param width width of quad
      * @param height height of quad
-     * @param attributes atributes for which instanceData will be passed in
+     * @param uniforms uniforms for which will be passed in to shader
      */
-    public void drawInstancedShader(ShaderProgram shader, int instanceCount, FloatBuffer instanceData, float width, float height, VertexAttribute... attributes) {
+    public void drawShader(ShaderProgram shader, float x, float y, float width, float height, ShaderUniform... uniforms) {
         if (active != DrawPass.SHADER) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHADER", new IllegalStateException());
             return;
         }
 
-        instanceRenderer.setShader(shader);
-        instanceRenderer.draw(width, height);
-        instanceRenderer.initialize(true, instanceCount, attributes);
-        instanceRenderer.setInstanceData(instanceData);
-        instanceRenderer.begin();
-        instanceRenderer.end();
+        shaderRenderer.setShader(shader);
+        shaderRenderer.draw(x, y, width, height, uniforms);
+        shaderRenderer.begin();
+        shaderRenderer.end();
     }
 
     /**

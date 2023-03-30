@@ -13,6 +13,7 @@ import java.nio.FloatBuffer;
 
 /**
  * Renderer holding a Mesh with instanced rendering. Each mesh will be drawn as a quad.
+ * Requires GL ES 3.0 :(
  */
 public class InstanceRenderer implements Renderer {
     private final Mesh mesh;

@@ -37,6 +37,9 @@ public abstract class SimpleObstacle extends Obstacle {
      */
     protected Body body;
 
+    /** Scale of the body */
+    protected float scale = 1;
+
     /// BodyDef Methods
 
     /**
@@ -50,6 +53,15 @@ public abstract class SimpleObstacle extends Obstacle {
      */
     public BodyType getBodyType() {
         return (body != null ? body.getType() : super.getBodyType());
+    }
+
+    /**
+     * Sets the scale of the body. This should further scale any shapes attached to this body.
+     *
+     * @param s scale on x and y-axis
+     */
+    protected void setScale(float s) {
+        scale = s;
     }
 
     /**
