@@ -68,7 +68,7 @@ public class CollisionController implements ContactListener {
         body.applyLinearImpulse(direction.scl(knockback), body.getWorldCenter(), true);
         ((Werewolf) player).setHp((int) (((Werewolf) player).getHp() - damage));
         CameraShake.shake(knockback * 3f, 0.3f);
-        ScreenFlash.flash(new Color(1f, 0.2f, 0.2f, 1), 0.2f, 0.05f, 0.1f, 0.2f);
+        ScreenFlash.flash(new Color(1f, 0.2f, 0.2f, 1), 0.15f, 0.05f, 0.05f, 0.15f);
     }
 
     public void resolvePlayerAttack(AttackHitbox hitbox, Enemy enemy) {
