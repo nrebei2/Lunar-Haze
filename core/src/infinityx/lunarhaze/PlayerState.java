@@ -14,11 +14,12 @@ public enum PlayerState implements State<PlayerController> {
         public void update(PlayerController entity) {
             entity.resolvePlayer(Gdx.graphics.getDeltaTime());
             entity.resolveStealthBar();
+            entity.resolveMoonlight(Gdx.graphics.getDeltaTime(), entity.getLightingController());
 
             // Handle state transitions
             if (entity.isAttacking()) {
                 entity.getStateMachine().changeState(PlayerState.ATTACK);
-            } else if (entity.isOnMoonlight()) {
+            } else if (entity.isCollectingMoonlight()) {
                 entity.getStateMachine().changeState(PlayerState.COLLECT);
             } else if (entity.getInputController().didRun()) {
                 entity.getStateMachine().changeState(PlayerState.RUN);
@@ -36,11 +37,12 @@ public enum PlayerState implements State<PlayerController> {
             InputController input = entity.getInputController();
             entity.resolvePlayer(Gdx.graphics.getDeltaTime());
             entity.resolveStealthBar();
+            entity.resolveMoonlight(Gdx.graphics.getDeltaTime(), entity.getLightingController());
 
             // Handle state transitions
             if (entity.isAttacking()) {
                 entity.getStateMachine().changeState(PlayerState.ATTACK);
-            } else if (entity.isOnMoonlight()) {
+            } else if (entity.isCollectingMoonlight()) {
                 entity.getStateMachine().changeState(PlayerState.COLLECT);
             } else if (!entity.getInputController().didRun()) {
                 entity.getStateMachine().changeState(PlayerState.WALK);
@@ -73,7 +75,7 @@ public enum PlayerState implements State<PlayerController> {
         }
         @Override
         public void update(PlayerController entity) {
-            entity.collectMoonlight();
+            entity.resolveMoonlight(Gdx.graphics.getDeltaTime(), entity.getLightingController());
 
             // Handle state transitions
             if (entity.isAttacking()) {
