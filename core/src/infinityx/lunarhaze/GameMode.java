@@ -140,10 +140,8 @@ public class GameMode extends ScreenObservable implements Screen {
                 }
                 break;
             case PLAY:
-//                System.out.println("update called for PLAY");
                 switch (gameplayController.getPhase()){
                     case STEALTH:
-//                        System.out.println("stealth_background is null: " + (stealth_background == null));
                         if (!stealth_background.isPlaying()) {
                             stealth_background.setLooping(true);
                             stealth_background.play();
