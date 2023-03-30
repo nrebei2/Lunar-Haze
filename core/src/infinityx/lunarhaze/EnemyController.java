@@ -220,7 +220,7 @@ public class EnemyController {
 
         // Process the FSM
         //changeStateIfApplicable(container, ticks);
-        //changeDetectionIfApplicable(currentPhase);
+        //changeDetectionIfApplicable(currentPhase);  `
 
         // Pathfinding
         //Vector2 next_move = findPath();

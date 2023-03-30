@@ -71,6 +71,37 @@ public class PlayerController {
 
     private PlayerAttackHandler attackHandler;
 
+    public enum PlayerState {
+        /**
+         * The player is standing still
+         */
+        STILL,
+        /**
+         * The player is walking
+         */
+        WALK,
+        /**
+         * The player is running
+         */
+        RUN,
+        /**
+         * The player is collecting moonlight
+         */
+        COLLECT,
+        /**
+         * The player is attacking villagers (only happen in battle phase)
+         */
+        ATTACK,
+    }
+
+    /**
+     * State of the player. One of PlayerState.
+     */
+    private PlayerState state;
+
+    /**
+     * Return time elapsed on moonlight tile (given player is standing on moonlight)
+     */
     public float getTimeOnMoonlightPercentage(){
         return timeOnMoonlight/MOONLIGHT_COLLECT_TIME;
     }
@@ -87,6 +118,7 @@ public class PlayerController {
         attackHandler = new PlayerAttackHandler(player);
         collect_sound = levelContainer.getDirectory().getEntry("collect", Sound.class);
         attack_sound = levelContainer.getDirectory().getEntry("whip", Sound.class);
+        state = PlayerState.STILL;
     }
 
     /**
@@ -101,6 +133,81 @@ public class PlayerController {
         player.setMovementV(input.getVertical());
         player.setRunning(input.didRun());
         player.update(delta);
+
+        int px = board.worldToBoardX(player.getPosition().x);
+        int py = board.worldToBoardY(player.getPosition().y);
+
+        if (board.isLit(px, py)) {
+            player.setOnMoonlight(true);
+        }
+    }
+
+    /**
+     * Change the state of the player.
+     * <p>
+     * A Finite State Machine (FSM) is just a collection of rules that,
+     * given a current state, and given certain observations about the
+     * environment, chooses a new state. For example, if we are currently
+     * in the WALK state, we may want to switch to the ATTACK state if the
+     * player presses SHIFT.
+     */
+    private void changeStateIfApplicable(InputController input, float delta, Phase currPhase) {
+        switch (state) {
+            case STILL:
+                if (Math.abs(input.getHorizontal()) != 0 || Math.abs(input.getVertical()) != 0){
+                    state = PlayerState.WALK;
+                } else if ((Math.abs(input.getHorizontal()) != 0 || Math.abs(input.getVertical()) != 0)
+                && input.didRun()){
+                    state = PlayerState.RUN;
+                } else if (player.isOnMoonlight() && currPhase == Phase.STEALTH){
+                    state = PlayerState.COLLECT;
+                } else if (input.didAttack() && currPhase == Phase.BATTLE){
+                    state = PlayerState.ATTACK;
+                    attack_sound.play();
+                }
+                break;
+            case WALK:
+                if (Math.abs(input.getHorizontal()) == 0 && Math.abs(input.getVertical()) == 0){
+                    state = PlayerState.STILL;
+                } else if ((Math.abs(input.getHorizontal()) != 0 || Math.abs(input.getVertical()) != 0)
+                        && input.didRun()){
+                    state = PlayerState.RUN;
+                } else if (input.didAttack() && currPhase == Phase.BATTLE){
+                    state = PlayerState.ATTACK;
+                    attack_sound.play();
+                }
+                break;
+            case RUN:
+                if (Math.abs(input.getHorizontal()) == 0 && Math.abs(input.getVertical()) == 0){
+                    state = PlayerState.STILL;
+                } else if ((Math.abs(input.getHorizontal()) != 0 || Math.abs(input.getVertical()) != 0)
+                        && !input.didRun()){
+                    state = PlayerState.WALK;
+                }
+                break;
+            case COLLECT:
+                if (!player.isOnMoonlight() && !input.didRun()){
+                    state = PlayerState.WALK;
+                    timeOnMoonlight = 0;
+                    player.setOnMoonlight(false);
+                    collectingMoonlight = false;
+                } else if (!player.isOnMoonlight() && input.didRun()){
+                    state = PlayerState.RUN;
+                    timeOnMoonlight = 0;
+                    player.setOnMoonlight(false);
+                    collectingMoonlight = false;
+                }
+                break;
+            case ATTACK:
+                if (!player.isAttacking()){
+                    state = PlayerState.STILL;
+                }
+                break;
+            default:
+                // Unknown or unhandled state, should never get here
+                assert (false);
+                break;
+        }
     }
 
     /**
@@ -126,23 +233,16 @@ public class PlayerController {
         int px = board.worldToBoardX(player.getPosition().x);
         int py = board.worldToBoardY(player.getPosition().y);
 
-        if (board.isLit(px, py)) {
-            timeOnMoonlight += delta; // Increase variable by time
-            player.setOnMoonlight(true);
-            collectingMoonlight = true;
-            if (board.isCollectable(px, py) && (timeOnMoonlight > MOONLIGHT_COLLECT_TIME)) {
-                collectMoonlight();
-                collectingMoonlight = false;
-                timeOnMoonlight = 0;
-                board.setCollected(px, py);
-                lightingController.removeDust(px, py);
-            }
-            if(!board.isCollectable(px, py)){
-                collectingMoonlight = false;
-            }
-        } else {
+        timeOnMoonlight += delta; // Increase variable by time
+        collectingMoonlight = true;
+        if (board.isCollectable(px, py) && (timeOnMoonlight > MOONLIGHT_COLLECT_TIME)) {
+            collectMoonlight();
+            collectingMoonlight = false;
             timeOnMoonlight = 0;
-            player.setOnMoonlight(false);
+            board.setCollected(px, py);
+            lightingController.removeDust(px, py);
+        }
+        if(!board.isCollectable(px, py)){
             collectingMoonlight = false;
         }
     }
@@ -154,18 +254,24 @@ public class PlayerController {
      * @param input InputController that controls the player
      */
     public void resolveStealthBar(InputController input) {
-        if (Math.abs(input.getHorizontal()) == input.getWalkSpeed() ||
-                Math.abs(input.getVertical()) == input.getWalkSpeed()) {
-            player.setStealth(WALK_STEALTH);
-        } else if (Math.abs(input.getHorizontal()) == input.getRunSpeed() ||
-                Math.abs(input.getVertical()) == input.getRunSpeed()) {
-            player.setStealth(RUN_STEALTH);
-        } else if (input.getHorizontal() == 0 || input.getVertical() == 0) {
-            player.setStealth(STILL_STEALTH);
-        }
-
-        if (player.isOnMoonlight()) {
-            player.setStealth(MOON_STEALTH);
+        switch (state) {
+            case STILL:
+                player.setStealth(STILL_STEALTH);
+                break;
+            case WALK:
+                player.setStealth(WALK_STEALTH);
+                break;
+            case RUN:
+                player.setStealth(RUN_STEALTH);
+                break;
+            case COLLECT:
+            case ATTACK:
+                player.setStealth(MOON_STEALTH);
+                break;
+            default:
+                // Unknown or unhandled state, should never get here
+                assert (false);
+                break;
         }
     }
 
@@ -175,10 +281,14 @@ public class PlayerController {
 
     public void update(InputController input, float delta, Phase currPhase, LightingController lightingController) {
         resolvePlayer(input, delta);
-        resolveMoonlight(delta, lightingController);
-        resolveStealthBar(input);
-        if (player.isAttacking()){
-            attack_sound.play();
+        changeStateIfApplicable(input, delta, currPhase);
+        if (state == PlayerState.COLLECT) {
+            resolveMoonlight(delta, lightingController);
+        }
+        if (currPhase == Phase.STEALTH) {
+            resolveStealthBar(input);
+        } else {
+            player.setStealth(MOON_STEALTH);
         }
         attackHandler.update(delta, input, currPhase);
     }
