@@ -475,20 +475,13 @@ public class LevelContainer {
 
         // A separate transform for lights :(
         // In an ideal world they would be the same, but lights should be scaled while textures shouldn't
-        OrthographicCamera raycamera = new OrthographicCamera(
-                canvas.getWidth() / canvas.WorldToScreenX(1),
-                canvas.getHeight() / canvas.WorldToScreenY(1)
-        );
-
         // Mimic same view transform
-        raycamera.translate(
-                -(view.x - canvas.getWidth()/2) / canvas.WorldToScreenX(1),
-                -(view.y - canvas.getHeight()/2) / canvas.WorldToScreenY(1)
+        canvas.begin(GameCanvas.DrawPass.LIGHT,
+                (view.x - canvas.getWidth()/2) / canvas.WorldToScreenX(1),
+                (view.y - canvas.getHeight()/2) / canvas.WorldToScreenY(1)
         );
-        raycamera.update();
 
-        rayHandler.setCombinedMatrix(raycamera);
-        rayHandler.updateAndRender();
+        canvas.drawLights(rayHandler);
     }
 
     /**

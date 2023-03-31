@@ -3,7 +3,7 @@
     "flashlight": {
       "color":		[0.8, 0.6, 0, 0.9],
       "distance":		   4,
-      "rays":			512,
+      "rays":			10,
       "soft":			false,
       "degrees": 30
     },

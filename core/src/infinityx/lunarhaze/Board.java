@@ -176,15 +176,6 @@ public class Board {
     }
 
     /**
-     * Returns the board cell index for a world position.
-     *
-     * @return the board cell index for a screen position.
-     */
-    public Vector2 worldToBoard(float x, float y) {
-        return new Vector2((int) (x / tileWorldDim.x), (int) (y / tileWorldDim.y));
-    }
-
-    /**
      * Returns the board cell index for a world x-position.
      *
      * @return the board cell index for a world x-position.
@@ -200,18 +191,6 @@ public class Board {
      */
     public int worldToBoardY(float y) {
         return (int) (y / tileWorldDim.y);
-    }
-
-    /**
-     * Returns true if a world location is in bounds of the board
-     *
-     * @param x The x value in screen coordinates
-     * @param y The y value in screen coordinates
-     * @return true if a world location is safe
-     */
-    public boolean isBoundsAtWorld(float x, float y) {
-        Vector2 boardPos = worldToBoard(x, y);
-        return inBounds(Math.round(boardPos.x), Math.round(boardPos.y));
     }
 
     /**
@@ -263,7 +242,7 @@ public class Board {
         Texture tiletexture = getTileTexture(x, y);
         canvas.draw(
                 tiletexture, Color.WHITE, tiletexture.getWidth() / 2, tiletexture.getHeight() / 2,
-                canvas.WorldToScreenX(boardCenterToWorld(x, y).x), canvas.WorldToScreenY(boardCenterToWorld(x, y).y), 0.0f,
+                canvas.WorldToScreenX(boardCenterToWorldX(x)), canvas.WorldToScreenY(boardCenterToWorldY(y)), 0.0f,
                 tileScreenDim.x / tiletexture.getWidth(), tileScreenDim.y / tiletexture.getHeight()
         );
     }
@@ -314,24 +293,9 @@ public class Board {
         int y = this.previewTile.b_y;
         canvas.draw(
                 preview, EditorMode.SELECTED_COLOR, preview.getWidth() / 2, preview.getHeight() / 2,
-                canvas.WorldToScreenX(boardCenterToWorld(x, y).x), canvas.WorldToScreenY(boardCenterToWorld(x, y).y), 0.0f,
+                canvas.WorldToScreenX(boardCenterToWorldX(x)), canvas.WorldToScreenY(boardCenterToWorldY(y)), 0.0f,
                 tileScreenDim.x / preview.getWidth(), tileScreenDim.y / preview.getHeight()
         );
-    }
-
-    /**
-     * Returns null if that position is out of bounds.
-     * <p>
-     *
-     * @param x The x index for the Tile cell
-     * @param y The y index for the Tile cell
-     * @return the world position coordinates of the bottom left corner of the tile.
-     */
-    public Vector2 boardToWorld(int x, int y) {
-        if (!inBounds(x, y)) {
-            return null;
-        }
-        return new Vector2(x * tileWorldDim.x, y * tileWorldDim.y);
     }
 
     /**
@@ -351,19 +315,20 @@ public class Board {
     }
 
     /**
-     * Returns null if that position is out of bounds.
-     *
      * @param x The x index for the Tile cell
+     * @return the center world position of the given tile
+     */
+    public float boardCenterToWorldX(int x) {
+        return boardToWorldX(x) + 0.5f * tileWorldDim.x;
+    }
+
+    /**
      * @param y The y index for the Tile cell
      * @return the center world position of the given tile
      */
-    public Vector2 boardCenterToWorld(int x, int y) {
-        if (!inBounds(x, y)) {
-            return null;
-        }
-        return boardToWorld(x, y).add(0.5f * tileWorldDim.x, 0.5f * tileWorldDim.y);
+    public float boardCenterToWorldY(int y) {
+        return boardToWorldY(y) + 0.5f * tileWorldDim.y;
     }
-
 
     /**
      * Returns true if the tile is Walkable.
