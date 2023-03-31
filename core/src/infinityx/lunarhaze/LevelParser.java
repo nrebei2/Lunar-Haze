@@ -206,7 +206,7 @@ public class LevelParser {
                 board.setWalkable(x, y, true);
                 PointLight point = new PointLight(
                         rayHandler, rays, Color.WHITE, dist,
-                        board.boardCenterToWorld(x, y).x, board.boardCenterToWorld(x, y).y
+                        board.boardCenterToWorldX(x), board.boardCenterToWorldY(y)
                 );
                 point.setColor(color[0], color[1], color[2], color[3]);
                 point.setSoft(light.getBoolean("soft"));

@@ -159,6 +159,10 @@ public class UIRender {
     private final ShaderProgram meter;
     private final VertexAttribute[] meterAttributes;
 
+    Color full = new Color(138f / 255.0f, 25f / 255.0f, 45f / 255.0f, 1f);
+
+    Color empty = new Color(41f / 255.0f, 41f / 255.0f, 41f / 255.0f, 0.8f);
+
     /**
      * Create a new UIRender with font and directory assigned.
      *
@@ -277,11 +281,9 @@ public class UIRender {
         for(int i = 1; i <= Werewolf.INITIAL_HP; i++){
             if (level.getPlayer().getHp() >= i){
                 // Draw a filled heart for the ith heart
-                Color full = new Color(138f / 255.0f, 25f / 255.0f, 45f / 255.0f, 1f);
                 canvas.draw(health_icon, full, health_icon.getWidth() / 2, health_icon.getHeight() / 2, HEALTH_STROKE_WIDTH/8 + HEART_SEP * i, canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f, 0, 0.6f, 0.6f);
             } else {
                 // Draw an empty heart for the ith heart
-                Color empty = new Color(41f / 255.0f, 41f / 255.0f, 41f / 255.0f, 0.8f);
                 canvas.draw(health_icon, empty, health_icon.getWidth() / 2, health_icon.getHeight() / 2, HEALTH_STROKE_WIDTH/8 + HEART_SEP * i, canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f, 0, 0.6f, 0.6f);
             }
         }
