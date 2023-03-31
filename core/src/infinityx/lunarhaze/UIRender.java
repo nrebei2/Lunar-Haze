@@ -145,7 +145,17 @@ public class UIRender {
      */
     private final Texture stealth_stroke;
 
-    /** shader program which draws the enemy notice meter */
+    /**
+     * Texture to represent enemy noticed
+     */
+    private final Texture noticed;
+
+    /**
+     * Texture of represent enemy alert
+     */
+    private final Texture alert;
+
+    /** shader program which draws the enemy indicator meter */
     private final ShaderProgram meter;
     private final VertexAttribute[] meterAttributes;
 
@@ -171,6 +181,8 @@ public class UIRender {
         health_stroke = directory.getEntry("health-stroke", Texture.class);
         moonlight_stroke = directory.getEntry("moonlight-stroke", Texture.class);
         stealth_stroke = directory.getEntry("stealth-stroke", Texture.class);
+        alert = directory.getEntry("alert", Texture.class);
+        noticed = directory.getEntry("noticed", Texture.class);
 
         // shaders
         this.meter = directory.get("meter", ShaderProgram.class);
@@ -220,9 +232,13 @@ public class UIRender {
         drawStealthStats(canvas, level);
         canvas.end();
 
-        canvas.begin(GameCanvas.DrawPass.SHADER, level.getView().x, level.getView().y);
-        drawStealthIndicator(canvas, level);
+        canvas.begin(GameCanvas.DrawPass.SHAPE);
+        // If necessary draw screen flash
+        ScreenFlash.update(Gdx.graphics.getDeltaTime());
+        canvas.drawScreenFlash(level.getPlayer());
         canvas.end();
+
+        drawStealthIndicator(canvas, level);
     }
 
     public void setFontColor(Color color){
@@ -285,15 +301,6 @@ public class UIRender {
         canvas.draw(stealth_icon, Color.WHITE, stealth_icon.getWidth() / 2, stealth_icon.getHeight() / 2, canvas.getWidth()/2 - STEALTH_STROKE_WIDTH/2 + stealth_icon.getWidth(), MOON_STROKE_HEIGHT + stealth_icon.getHeight()*3/5, (float) (13f/180f * Math.PI), 0.7f, 0.7f);
         Color stealth_fill = new Color(255f / 255.0f, 255f / 255.0f, 255f / 255.0f, 1f);
         canvas.draw(stealth_stroke, stealth_fill, canvas.getWidth()/2 - STEALTH_STROKE_WIDTH/2, MOON_STROKE_HEIGHT, STEALTH_STROKE_WIDTH * proportion, STEALTH_STROKE_HEIGHT);
-
-        //canvas.end();
-        //canvas.begin(GameCanvas.DrawPass.SHAPE);
-
-        // If necessary draw screen flash
-        ScreenFlash.update(Gdx.graphics.getDeltaTime());
-        canvas.drawScreenFlash(level.getPlayer());
-
-       // drawEnemyMeters(canvas, level);
     }
 
     /** Draw the stealth indicator above enemies */
@@ -301,13 +308,34 @@ public class UIRender {
         ShaderUniform uniform = new ShaderUniform("u_amount");
         Array<Enemy> enemies = level.getEnemies();
         for (Enemy enemy : enemies) {
-            uniform.setValues(0.1f);
-            canvas.drawShader(
-                    meter,
-                    canvas.WorldToScreenX(enemy.getPosition().x) - 38,
-                    canvas.WorldToScreenY(enemy.getPosition().y) + enemy.getTextureHeight() - 25,
-                    50, 50,
-                    uniform);
+            switch (enemy.getDetection()) {
+                case ALERT:
+                case NOTICED:
+                    // Draw with view transform considered
+                    canvas.begin(GameCanvas.DrawPass.SPRITE, level.getView().x, level.getView().y);
+                    Texture tex = enemy.getDetection() == Enemy.Detection.ALERT ? alert : noticed;
+                    canvas.draw(
+                            tex,
+                            Color.WHITE,
+                            tex.getWidth() /2, tex.getHeight() / 2,
+                            canvas.WorldToScreenX(enemy.getPosition().x) - 10,
+                            canvas.WorldToScreenY(enemy.getPosition().y)+ enemy.getTextureHeight(), 0,
+                            0.1f, 0.1f
+                            );
+                    canvas.end();
+                    break;
+                case INDICATOR:
+                    uniform.setValues(enemy.getIndicatorAmount());
+                    canvas.begin(GameCanvas.DrawPass.SHADER, level.getView().x, level.getView().y);
+                    canvas.drawShader(
+                            meter,
+                            canvas.WorldToScreenX(enemy.getPosition().x) - 38,
+                            canvas.WorldToScreenY(enemy.getPosition().y) + enemy.getTextureHeight() - 25,
+                            50, 50,
+                            uniform);
+                    canvas.end();
+                    break;
+            }
         }
     }
 

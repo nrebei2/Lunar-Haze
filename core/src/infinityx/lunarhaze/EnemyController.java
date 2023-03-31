@@ -3,6 +3,7 @@ package infinityx.lunarhaze;
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.fsm.StateMachine;
 import com.badlogic.gdx.ai.steer.behaviors.Arrive;
+import com.badlogic.gdx.ai.steer.behaviors.Face;
 import com.badlogic.gdx.ai.steer.behaviors.PrioritySteering;
 import com.badlogic.gdx.ai.steer.behaviors.RaycastObstacleAvoidance;
 import com.badlogic.gdx.ai.steer.utils.rays.CentralRayWithWhiskersConfiguration;
@@ -92,21 +93,6 @@ public class EnemyController {
         IDLE,
     }
 
-    private enum Detection {
-        /**
-         * The enemy is alerted (Exclamation point!)
-         */
-        ALERT,
-        /**
-         * The enemy has noticed sometime amiss (Question mark?)
-         */
-        NOTICED,
-        /**
-         * Neither heard nor seen the target
-         */
-        NONE
-    }
-
     /**
      * The enemy being controlled by this AIController
      */
@@ -115,7 +101,7 @@ public class EnemyController {
     /**
      * The target (to chase or attack).
      */
-    private Werewolf target;
+    public Werewolf target;
 
     /**
      * The number of ticks since we started this controller
@@ -157,6 +143,7 @@ public class EnemyController {
     public RaycastObstacleAvoidance<Vector2> collisionSB;
     public PrioritySteering<Vector2> patrolSB;
     public LookAround lookAroundSB;
+    public Face<Vector2> faceSB;
 
     /**
      * Creates an EnemyController for the enemy with the given id.
@@ -186,7 +173,7 @@ public class EnemyController {
         // Steering behaviors
         this.arriveSB = new Arrive<>(enemy, target);
         arriveSB.setArrivalTolerance(0.1f);
-        arriveSB.setDecelerationRadius(0.9f);
+        arriveSB.setDecelerationRadius(0.4f);
 
         RaycastInfo collRay = new RaycastInfo(enemy);
         collRay.addIgnores(GameObject.ObjectType.WEREWOLF, GameObject.ObjectType.HITBOX);
@@ -205,6 +192,8 @@ public class EnemyController {
 
         this.lookAroundSB = new LookAround(enemy, 160).
                 setAlignTolerance(MathUtils.degreesToRadians * 10);
+
+        this.faceSB = new Face<>(enemy).setAlignTolerance(MathUtils.degreesToRadians * 10);
     }
 
     /**
@@ -240,12 +229,12 @@ public class EnemyController {
     /**
      * @return the current detection the enemy has on the target
      */
-    private Detection getDetection(LevelContainer container) {
+    public Enemy.Detection getDetection() {
         /* Area of interests:
-         * Focused view - same angle as flashlight, extends between [0, 5]
-         * Short distance - angle of 100, extends between [0, 3.5]
-         * Peripheral vision - angle of 180, extends between [0, 1.75]
-         * Hearing radius - angle of 360, extends between [0, 3]
+         * Focused view - same angle as flashlight, extends between [1, 4]
+         * Short distance - angle of 100, extends between [0.6, 2.5]
+         * Peripheral vision - angle of 180, extends between [0.4, 1.75]
+         * Hearing radius - angle of 360, extends between [1.5, 4.4]
          * Lerp between player stealth for max distance,
          * but maybe add cutoffs for NONE?
          */
@@ -255,32 +244,39 @@ public class EnemyController {
 
         if (!raycast.hit) {
             // For any reason...
-            return Detection.NONE;
+            return Enemy.Detection.NONE;
         }
 
         Vector2 enemyToPlayer = target.getPosition().sub(enemy.getPosition());
         float dist = enemyToPlayer.len();
 
         // degree between enemy orientation and enemy-to-player
-        double degree = Math.abs(enemy.getOrientation() - enemy.vectorToAngle(enemyToPlayer));
-
+        double degree = Math.abs(enemy.getOrientation() - enemy.vectorToAngle(enemyToPlayer)) * MathUtils.radiansToDegrees;
         if (raycast.hitObject == target) {
-            if (degree <= enemy.getFlashlight().getConeDegree() / 2 && dist <= lerp.apply(0, 5, target.getStealth())) {
-                return Detection.ALERT;
+            //System.out.printf("degree: %f, dist: %f, stealth: %f\n", degree, dist, target.getStealth());
+            if (degree <= enemy.getFlashlight().getConeDegree() / 2 && dist <= lerp.apply(1, 4, target.getStealth())) {
+                return Enemy.Detection.ALERT;
             }
-            if (degree <= 50 && dist <= lerp.apply(0f, 3.5f, target.getStealth())) {
-                return Detection.ALERT;
+            if (degree <= 50 && dist <= lerp.apply(0.6f, 2.5f, target.getStealth())) {
+                return Enemy.Detection.ALERT;
             }
-            if (degree <= 90 && dist <= lerp.apply(0f, 1.75f, target.getStealth())) {
-                return Detection.ALERT;
+            if (degree <= 90 && dist <= lerp.apply(0.4f, 1.75f, target.getStealth())) {
+                return Enemy.Detection.ALERT;
             }
         }
+
 
         // target may be behind object, but enemy should still be able to hear
-        if (dist <= lerp.apply(0, 3f, target.getStealth())) {
-            return Detection.NOTICED;
+        if (enemy.getDetection() == Enemy.Detection.INDICATOR || enemy.getDetection() == Enemy.Detection.NOTICED) {
+            if (dist <= lerp.apply(3.5f, 7.5f, target.getStealth())) {
+                return Enemy.Detection.NOTICED;
+            }
+        } else {
+            if (dist <= lerp.apply(1.5f, 3.5f, target.getStealth())) {
+                return Enemy.Detection.NOTICED;
+            }
         }
-        return Detection.NONE;
+        return Enemy.Detection.NONE;
     }
 
     /**
@@ -417,7 +413,7 @@ public class EnemyController {
                 MathUtils.random(enemy.getBottomLeftOfRegion().x, enemy.getTopRightOfRegion().x),
                 MathUtils.random(enemy.getBottomLeftOfRegion().y, enemy.getTopRightOfRegion().y)
         );
-        System.out.println("I found a point with x: " + random_point.x + ", y: " + random_point.y + "!");
+        //System.out.println("I found a point with x: " + random_point.x + ", y: " + random_point.y + "!");
         return random_point;
     }
 

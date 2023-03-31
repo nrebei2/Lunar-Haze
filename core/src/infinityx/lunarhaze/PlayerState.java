@@ -12,23 +12,45 @@ public enum PlayerState implements State<PlayerController> {
             InputController input = entity.getInputController();
             entity.getAttackHandler().update(Gdx.graphics.getDeltaTime(), input, entity.getPhase());
             entity.resolvePlayer(Gdx.graphics.getDeltaTime());
-            entity.resolveStealthBar();
             entity.resolveMoonlight(Gdx.graphics.getDeltaTime(), entity.getLightingController());
+        }
+    },
+
+    IDLE() {
+        @Override
+        public void enter(PlayerController entity) {
+           entity.player.setStealth(entity.STILL_STEALTH);
+        }
+
+        @Override
+        public void update(PlayerController entity) {
+            if (entity.isAttacking()) {
+                entity.getStateMachine().changeState(PlayerState.ATTACK);
+            } else if (entity.isCollectingMoonlight()) {
+                entity.getStateMachine().changeState(PlayerState.COLLECT);
+            } else if (entity.getInputController().didRun() &&
+                    (entity.getInputController().getHorizontal() != 0 || entity.getInputController().getVertical() != 0)) {
+                entity.getStateMachine().changeState(PlayerState.RUN);
+            } else if (!entity.getInputController().didRun() &&
+                    (entity.getInputController().getHorizontal() != 0 || entity.getInputController().getVertical() != 0)){
+                entity.getStateMachine().changeState(PlayerState.WALK);
+            }
         }
     },
 
     WALK() {
         @Override
         public void enter(PlayerController entity) {
-            System.out.println("Player switched to walk state");
+            //System.out.println("Player switched to walk state");
+            entity.player.setStealth(entity.WALK_STEALTH);
         }
         @Override
         public void update(PlayerController entity) {
             // Handle state transitions
             if (entity.isAttacking()) {
                 entity.getStateMachine().changeState(PlayerState.ATTACK);
-            } else if (entity.isCollectingMoonlight()) {
-                entity.getStateMachine().changeState(PlayerState.COLLECT);
+            } else if (entity.getInputController().getHorizontal() == 0 && entity.getInputController().getVertical() == 0) {
+                entity.getStateMachine().changeState(PlayerState.IDLE);
             } else if (entity.getInputController().didRun()) {
                 entity.getStateMachine().changeState(PlayerState.RUN);
             }
@@ -38,17 +60,21 @@ public enum PlayerState implements State<PlayerController> {
     RUN() {
         @Override
         public void enter(PlayerController entity) {
-            System.out.println("Player switched to run state");
+            //System.out.println("Player switched to run state");
+            entity.player.setStealth(entity.RUN_STEALTH);
+
         }
         @Override
         public void update(PlayerController entity) {
             // Handle state transitions
             if (entity.isAttacking()) {
                 entity.getStateMachine().changeState(PlayerState.ATTACK);
-            } else if (entity.isCollectingMoonlight()) {
-                entity.getStateMachine().changeState(PlayerState.COLLECT);
             } else if (!entity.getInputController().didRun()) {
-                entity.getStateMachine().changeState(PlayerState.WALK);
+                if (entity.player.getLinearVelocity().isZero()) {
+                    entity.getStateMachine().changeState(PlayerState.IDLE);
+                } else {
+                    entity.getStateMachine().changeState(PlayerState.WALK);
+                }
             }
         }
     },
@@ -56,14 +82,14 @@ public enum PlayerState implements State<PlayerController> {
     ATTACK() {
         @Override
         public void enter(PlayerController entity) {
-            System.out.println("Player switched to attack state");
+            //System.out.println("Player switched to attack state");
             entity.getAttackSound().play();
         }
         @Override
         public void update(PlayerController entity) {
             // Handle state transitions
             if(!entity.isAttacking()) {
-                entity.getStateMachine().changeState(PlayerState.WALK);
+                entity.getStateMachine().changeState(PlayerState.IDLE);
             }
         }
     },
@@ -71,7 +97,8 @@ public enum PlayerState implements State<PlayerController> {
     COLLECT() {
         @Override
         public void enter(PlayerController entity) {
-            System.out.println("Player switched to collect state");
+            //System.out.println("Player switched to collect state");
+            entity.player.setStealth(entity.MOON_STEALTH);
         }
         @Override
         public void update(PlayerController entity) {
@@ -79,7 +106,7 @@ public enum PlayerState implements State<PlayerController> {
             if (entity.isAttacking()) {
                 entity.getStateMachine().changeState(PlayerState.ATTACK);
             } else if (!entity.isCollectingMoonlight()){
-                entity.getStateMachine().changeState(PlayerState.WALK);
+                entity.getStateMachine().changeState(PlayerState.IDLE);
             }
         }
 

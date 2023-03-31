@@ -19,6 +19,8 @@
     "health-stroke": "images/health-paint-stroke.png",
     "moonlight-stroke": "images/moonlight-paint-stroke.png",
     "stealth-stroke": "images/visibility-paint-stroke.png",
+    "noticed": "images/noticed.png",
+    "alert": "images/alert.png",
     "tree1": {
       "file": "images/tree1.png",
       "sprites":	{
