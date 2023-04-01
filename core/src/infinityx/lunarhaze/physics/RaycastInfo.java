@@ -82,7 +82,7 @@ public class RaycastInfo implements RayCastCallback {
         this.fraction = fraction;
         this.hit = fraction != 0;
         if (this.hit) {
-
+            this.hitObject = objHit;
         }
         return fraction;
     }

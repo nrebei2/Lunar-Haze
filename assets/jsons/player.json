@@ -16,7 +16,7 @@
   "spotlight": {
     "color":		[0.65, 0.6, 0.77, 0.6],
     "distance":		   1,
-    "rays":			512,
+    "rays":			10,
     "soft":			false
   },
   "health": 5,

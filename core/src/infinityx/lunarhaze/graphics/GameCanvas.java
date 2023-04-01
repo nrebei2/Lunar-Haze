@@ -18,6 +18,7 @@ package infinityx.lunarhaze.graphics;
  * LibGDX version, 2/6/2015
  */
 
+import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -65,7 +66,9 @@ public class GameCanvas {
         /**
          * We are drawing a shader
          */
-        SHADER
+        SHADER,
+        /** We are drawing Box2D lights */
+        LIGHT
     }
 
     /**
@@ -123,6 +126,11 @@ public class GameCanvas {
     private OrthographicCamera camera;
 
     /**
+     * Camera for the light renderer
+     */
+    private OrthographicCamera raycamera;
+
+    /**
      * Value to cache window width (if we are currently full screen)
      */
     int width;
@@ -151,6 +159,11 @@ public class GameCanvas {
     private TextureRegion holder;
 
     /**
+     * Cache object to handle drawing text
+     */
+    private final GlyphLayout layout;
+
+    /**
      * Scaling factors for world to screen translation
      */
     private Vector2 worldToScreen;
@@ -168,6 +181,12 @@ public class GameCanvas {
      */
     public void setWorldToScreen(Vector2 worldToScreen) {
         this.worldToScreen = worldToScreen;
+
+        // We have the actual world to screen now
+        raycamera = new OrthographicCamera(
+                getWidth() / WorldToScreenX(1),
+                getHeight() / WorldToScreenY(1)
+        );
     }
 
     /**
@@ -209,7 +228,8 @@ public class GameCanvas {
         shapeRenderer = new ShapeRenderer();
         shaderRenderer = new ShaderRenderer();
 
-        setupCamera();
+        worldToScreen = new Vector2();
+        setupCameras();
 
         spriteBatch.setProjectionMatrix(camera.combined);
         shapeRenderer.setProjectionMatrix(camera.combined);
@@ -221,13 +241,20 @@ public class GameCanvas {
         global = new Matrix4();
         viewCache = new Vector2();
         alphaCache = new Color(1, 1, 1, 1);
+
+        this.layout = new GlyphLayout();
     }
 
-    /** Set up the camera as an orthographic camera with width and height matching the viewport */
-    private void setupCamera() {
+    /** Set up the cameras on the canvas */
+    private void setupCameras() {
         // Set the projection matrix (for proper scaling)
         camera = new OrthographicCamera(getWidth(), getHeight());
         camera.setToOrtho(false);
+
+        raycamera = new OrthographicCamera(
+                getWidth() / WorldToScreenX(1),
+                getHeight() / WorldToScreenY(1)
+        );
         // Cant do this, would mess up existing UI drawing
         // Center camera at (0, 0)
         //camera.translate(-getWidth()/2, -getHeight()/2);
@@ -386,7 +413,7 @@ public class GameCanvas {
      */
     public void resize() {
         // Resizing screws up the projection matrix
-        setupCamera();
+        setupCameras();
 
 //        Gdx.gl.glViewport(0, 0, getWidth(), getHeight());
     }
@@ -471,7 +498,13 @@ public class GameCanvas {
         global.idt();
         viewCache.set(tx, ty);
         global.translate(tx, ty, 0.0f);
-        global.mulLeft(camera.combined);
+
+        if (pass == DrawPass.LIGHT) {
+            // Light uses a separate camera
+            global.mulLeft(raycamera.combined);
+        } else {
+            global.mulLeft(camera.combined);
+        }
 
         switch (pass) {
             case SPRITE:
@@ -485,6 +518,9 @@ public class GameCanvas {
             case SHADER:
                 shaderRenderer.setProjectionMatrix(global);
                 break;
+            case LIGHT:
+
+
         }
         active = pass;
     }
@@ -509,6 +545,8 @@ public class GameCanvas {
                 spriteBatch.begin();
                 break;
             case SHAPE:
+                // Enable blending
+                Gdx.gl.glEnable(GL20.GL_BLEND);
                 shapeRenderer.setProjectionMatrix(camera.combined);
                 break;
             case SHADER:
@@ -529,6 +567,9 @@ public class GameCanvas {
         switch (active) {
             case SPRITE:
                 spriteBatch.end();
+                break;
+            case SHAPE:
+                Gdx.gl.glDisable(GL20.GL_BLEND);
                 break;
         }
         active = DrawPass.INACTIVE;
@@ -770,6 +811,15 @@ public class GameCanvas {
     }
 
     /**
+     * Update and render lights
+     * @param handler holding lights
+     */
+    public void drawLights(RayHandler handler) {
+        handler.setCombinedMatrix(global);
+        handler.updateAndRender();
+    }
+
+    /**
      * Draws text on the screen.
      *
      * @param text The string to draw
@@ -782,7 +832,7 @@ public class GameCanvas {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SPRITE", new IllegalStateException());
             return;
         }
-        GlyphLayout layout = new GlyphLayout(font, text);
+        layout.setText(font, text);
         font.draw(spriteBatch, layout, x, y);
     }
 
@@ -799,7 +849,7 @@ public class GameCanvas {
             return;
         }
 
-        GlyphLayout layout = new GlyphLayout(font, text);
+        layout.setText(font, text);
         float x = (getWidth() - layout.width) / 2.0f;
         float y = (getHeight() + layout.height) / 2.0f;
 
@@ -946,6 +996,7 @@ public class GameCanvas {
         Color flashColor = ScreenFlash.getFlashColor();
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(flashColor);
+
         float x = WorldToScreenX(player.getPosition().x) - Gdx.graphics.getWidth()/2.0f;
         float y = WorldToScreenY(player.getPosition().y) - Gdx.graphics.getHeight()/2.0f;
         shapeRenderer.rect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());

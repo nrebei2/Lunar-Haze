@@ -91,6 +91,7 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
         super(false);
         this.patrolPath = new ArrayList<>();
         animeframe = 0.0f;
+        detection = Detection.NONE;
 
         // TODO
         setMaxLinearAcceleration(1);
