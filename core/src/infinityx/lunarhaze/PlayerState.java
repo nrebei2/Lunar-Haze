@@ -12,7 +12,9 @@ public enum PlayerState implements State<PlayerController> {
             InputController input = entity.getInputController();
             entity.getAttackHandler().update(Gdx.graphics.getDeltaTime(), input, entity.getPhase());
             entity.resolvePlayer(Gdx.graphics.getDeltaTime());
-            entity.resolveMoonlight(Gdx.graphics.getDeltaTime(), entity.getLightingController());
+            if (entity.getPhase() == GameplayController.Phase.STEALTH) {
+                entity.resolveMoonlight(Gdx.graphics.getDeltaTime(), entity.getLightingController());
+            }
         }
     },
 

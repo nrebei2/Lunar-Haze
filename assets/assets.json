@@ -2,6 +2,7 @@
   "textures": {
     "background": "shared/menu_bg.png",
     "play": "shared/play.png",
+    "add": "images/moon_icon.png",
     "grass1": "tiles/grass1.png",
     "grass2": "tiles/grass2.png",
     "grass3": "tiles/grass3.png",

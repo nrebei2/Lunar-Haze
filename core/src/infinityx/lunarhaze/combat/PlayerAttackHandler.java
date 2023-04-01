@@ -31,6 +31,8 @@ public class PlayerAttackHandler extends AttackHandler {
 
     private static float attackPower;
 
+    private static float attackRange;
+
     /** Constructor that gets a reference to the player model */
     public PlayerAttackHandler(Werewolf p) {
         super(3f, 1f);
@@ -38,6 +40,8 @@ public class PlayerAttackHandler extends AttackHandler {
         comboAttackCooldownCounter = 0f;
         comboStep = 0;
         comboTime = 0f;
+        attackPower = Werewolf.INITIAL_POWER;
+        attackRange = Werewolf.INITIAL_RANGE;
     }
 
     //TODO: Make the attack cooldowns and attack lengths decrease with moonlight collected
@@ -136,6 +140,14 @@ public class PlayerAttackHandler extends AttackHandler {
 
     public static void setAttackPower(float power) {
     	attackPower = power;
+    }
+
+    public static float getAttackRange() {
+        return attackRange;
+    }
+
+    public static void setAttackRange(float range) {
+        attackRange = range;
     }
 
 }

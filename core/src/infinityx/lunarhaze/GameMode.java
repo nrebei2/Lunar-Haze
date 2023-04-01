@@ -32,6 +32,11 @@ public class GameMode extends ScreenObservable implements Screen {
     public final static int GO_MENU = 0;
 
     /**
+     * User requested to go to allocate
+     */
+    public final static int GO_ALLOCATE = 1;
+
+    /**
      * Owns the GameplayController
      */
     private GameplayController gameplayController;
@@ -87,6 +92,14 @@ public class GameMode extends ScreenObservable implements Screen {
         // Create the controllers:
         inputController = new InputController();
         gameplayController = new GameplayController();
+    }
+
+    public GameplayController getGameplayController(){
+        return gameplayController;
+    }
+
+    public void setGameplayController(GameplayController gc){
+        gameplayController = gc;
     }
 
     /**
@@ -148,6 +161,7 @@ public class GameMode extends ScreenObservable implements Screen {
             case PLAY:
                 switch (gameplayController.getPhase()){
                     case STEALTH:
+                    case TRANSITION:
                         if (!stealth_background.isPlaying()) {
                             //stealth_background.setLooping(true);
                             //stealth_background.play();
@@ -158,7 +172,7 @@ public class GameMode extends ScreenObservable implements Screen {
                             //battle_background.setLooping(true);
                             //battle_background.play();
                         }
-                    case TRANSITION:
+                    case ALLOCATE:
                 }
                 play(delta);
                 break;
@@ -170,7 +184,8 @@ public class GameMode extends ScreenObservable implements Screen {
     /**
      * Initializes the levelContainer given level.
      */
-    private void setupLevel() {
+    public void setupLevel() {
+        System.out.println("GameMode setupLevel is callsed");
         LevelParser ps = LevelParser.LevelParser();
         levelContainer = ps.loadLevel(directory, levelFormat.get(String.valueOf(level)));
         gameplayController.start(levelContainer, levelFormat.get(String.valueOf(level)));
@@ -225,7 +240,7 @@ public class GameMode extends ScreenObservable implements Screen {
      * Called when this screen becomes the current screen for a {@link Game}.
      */
     public void show() {
-        setupLevel();
+//        setupLevel();
     }
 
     /**
@@ -241,6 +256,10 @@ public class GameMode extends ScreenObservable implements Screen {
 
         if (inputController.didExit() && observer != null) {
             observer.exitScreen(this, GO_MENU);
+        }
+
+        if (gameplayController.getPhase() == Phase.ALLOCATE && observer != null){
+            observer.exitScreen(this, GO_ALLOCATE);
         }
 
     }

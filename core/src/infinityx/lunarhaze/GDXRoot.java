@@ -35,6 +35,11 @@ public class GDXRoot extends Game implements ScreenObserver {
     private MenuMode menu;
 
     /**
+     * Allocate Screen
+     */
+    private AllocateScreen allocate;
+
+    /**
      * Level editor
      */
     private EditorMode editor;
@@ -58,12 +63,14 @@ public class GDXRoot extends Game implements ScreenObserver {
         loading = new LoadingMode("assets.json", canvas, 1);
         game = new GameMode(canvas);
         menu = new MenuMode(canvas);
+        allocate = new AllocateScreen(canvas, game);
         editor = new EditorMode(canvas);
 
         // Set screen observer to this game
         loading.setObserver(this);
         game.setObserver(this);
         menu.setObserver(this);
+        allocate.setObserver(this);
         editor.setObserver(this);
 
         setScreen(loading);
@@ -78,6 +85,7 @@ public class GDXRoot extends Game implements ScreenObserver {
         // Call dispose on our children
         setScreen(null);
         game.dispose();
+        allocate.dispose();
         menu.dispose();
 
         canvas.dispose();
@@ -120,6 +128,7 @@ public class GDXRoot extends Game implements ScreenObserver {
             // All assets are now loaded
             directory = loading.getAssets();
             menu.gatherAssets(directory);
+            allocate.gatherAssets(directory);
             game.gatherAssets(directory);
             editor.gatherAssets(directory);
             setScreen(menu);
@@ -137,12 +146,28 @@ public class GDXRoot extends Game implements ScreenObserver {
                     break;
                 case MenuMode.GO_PLAY:
                     game.setLevel(menu.getLevelSelected());
+                    game.setupLevel();
                     setScreen(game);
                     break;
             }
         } else if (screen == game) {
-            if (exitCode == GameMode.GO_MENU) {
-                setScreen(menu);
+            switch (exitCode) {
+                case GameMode.GO_MENU:
+                    setScreen(menu);
+                    break;
+                case GameMode.GO_ALLOCATE:
+                    allocate.setGameMode(game);
+                    allocate.setCanvas(canvas);
+                    setScreen(allocate);
+                    break;
+            }
+        } else if (screen == allocate) {
+            if (exitCode == AllocateScreen.GO_PLAY) {
+                System.out.println("Exit code switch to GO_PLAY");
+                game.setGameplayController(allocate.getGameplayController());
+                System.out.println("Current phase is " + game.getGameplayController().getPhase());
+                System.out.println("Current hp is " + game.getGameplayController().getPlayerController().getPlayer().getHp());
+                setScreen(game);
             }
         } else if (screen == editor) {
             if (exitCode == EditorMode.GO_MENU) {

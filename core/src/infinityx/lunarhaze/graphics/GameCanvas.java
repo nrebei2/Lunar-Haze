@@ -831,7 +831,7 @@ public class GameCanvas {
         shapeRenderer.end();
     }
 
-    public void drawLightBar(Texture icon, float width, float height, float light) {
+    public void drawAttackPow(float x, float y, float width, float height, float attackPow) {
         if (active != DrawPass.SHAPE) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
             return;
@@ -839,24 +839,17 @@ public class GameCanvas {
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(Color.WHITE);
-        float x = getWidth() - width - GAP_DIST;
-        float y = getHeight() - height - GAP_DIST;
         shapeRenderer.rect(x, y, width, height);
         shapeRenderer.end();
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         Color yellow = new Color(244.0f / 255.0f, 208.0f / 255.0f, 63.0f / 255.0f, 1.0f);
         shapeRenderer.setColor(yellow);
-        shapeRenderer.rect(x, y, width * light / Werewolf.MAX_LIGHT, height);
+        shapeRenderer.rect(x, y, width * Math.min(attackPow, 1.0f), height);
         shapeRenderer.end();
-
-//        draw(icon, Color.WHITE, x - width, y, width, width);
-//        canvas.draw(playButton, tint, playButton.getWidth() / 2, playButton.getHeight() / 2,
-//                centerX, 0.7f*centerY, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
-//        draw(icon, Color.WHITE, icon.getWidth()/2, icon.getHeight()/2, x - icon.getWidth(), y,0,1.0f, 1.0f);
     }
 
-    public void drawHpBar(Texture icon, float width, float height, float hp) {
+    public void drawHpBar(float x, float y, float width, float height, float hp) {
         if (active != DrawPass.SHAPE) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
             return;
@@ -864,8 +857,6 @@ public class GameCanvas {
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(Color.WHITE);
-        float x = getWidth() - width - GAP_DIST;
-        float y = getHeight() - height * 2.25f - GAP_DIST * 1.5f;
         shapeRenderer.rect(x, y, width, height);
         shapeRenderer.end();
         Color health;
@@ -876,7 +867,27 @@ public class GameCanvas {
             health = new Color(20.0f / 255.0f, 142.0f / 255.0f, 119.0f / 255.0f, 1.0f);
         }
         shapeRenderer.setColor(health);
-        shapeRenderer.rect(x, y, width * hp / Werewolf.INITIAL_HP, height);
+        shapeRenderer.rect(x, y, width * hp / Werewolf.MAX_HP, height);
+        shapeRenderer.end();
+
+//        draw(icon, Color.WHITE, x - width, y, width, height);
+    }
+
+    public void drawAttackRange(float x, float y, float width, float height, float range) {
+        if (active != DrawPass.SHAPE) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
+            return;
+        }
+
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setColor(Color.WHITE);
+        shapeRenderer.rect(x, y, width, height);
+        shapeRenderer.end();
+
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        Color blue = new Color(40.0f / 255.0f, 116.0f / 255.0f, 166.0f / 255.0f, 1.0f);
+        shapeRenderer.setColor(blue);
+        shapeRenderer.rect(x, y, width * range / Werewolf.MAX_RANGE, height);
         shapeRenderer.end();
 
 //        draw(icon, Color.WHITE, x - width, y, width, height);
@@ -939,28 +950,6 @@ public class GameCanvas {
         float y = WorldToScreenY(player.getPosition().y) - Gdx.graphics.getHeight()/2.0f;
         shapeRenderer.rect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         shapeRenderer.end();
-    }
-
-    public void drawStealthBar(Texture icon, float width, float height, float stealth) {
-        if (active != DrawPass.SHAPE) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
-            return;
-        }
-
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(Color.WHITE);
-        float x = getWidth() - width - GAP_DIST;
-        float y = getHeight() - height * 3.5f - GAP_DIST * 2;
-        shapeRenderer.rect(x, y, width, height);
-        shapeRenderer.end();
-
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        Color blue = new Color(40.0f / 255.0f, 116.0f / 255.0f, 166.0f / 255.0f, 1.0f);
-        shapeRenderer.setColor(blue);
-        shapeRenderer.rect(x, y, width * stealth, height);
-        shapeRenderer.end();
-
-//        draw(icon, Color.WHITE, x - width, y, width, height);
     }
 
     /**
