@@ -5,6 +5,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
@@ -155,6 +157,8 @@ public class LevelContainer {
      */
     private float[] battleAmbience;
 
+    private boolean scene;
+
     /**
      * Initialize attributes
      */
@@ -173,6 +177,7 @@ public class LevelContainer {
         setPlayer(player);
 
         board = null;
+        pathfinder = null;
         enemies = new EnemyPool(20);
         activeEnemies = new Array<>(10);
         sceneObjects = new Array<>(true, 5);
@@ -222,7 +227,6 @@ public class LevelContainer {
     public Enemy addEnemy(Enemy enemy) {
         activeEnemies.add(enemy);
         addDrawables(enemy);
-
         // Update enemy controller assigned to the new enemy
         getEnemyControllers().get(enemy).populate(this);
 
@@ -392,12 +396,22 @@ public class LevelContainer {
         this.totalMoonlight = board.getRemainingMoonlight();
     }
 
-    public void setPathFinder() {
-        AStarMap aStarMap = new AStarMap(board.getWidth(), board.getHeight());
+    public void setPathFinder(int width, int height) {
+        AStarMap aStarMap = new AStarMap(width, height);
 
-        for (int y = 0; y < board.getHeight(); y++) {
-            for (int x = 0; x < board.getWidth(); x++) {
-                if (!board.isWalkable(x,y)) {
+        QueryCallback queryCallback = new QueryCallback() {
+            @Override
+            public boolean reportFixture(Fixture fixture) {
+                if (fixture.getUserData() instanceof SceneObject) scene = true;
+                return false; // stop finding other fixtures in the query area
+            }
+        };
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                scene = false;
+                world.QueryAABB(queryCallback, x + 0.2f, y + 0.2f, x + 0.8f, y + 0.8f);
+                if (scene) {
                     aStarMap.getNodeAt(x, y).isObstacle = true;
                 }
             }

@@ -53,9 +53,9 @@ public class AStarGraph implements IndexedGraph<Node> {
                     continue;
                 }
                 // Add a connection for each valid neighbor
-                for (int offset = 0; offset < NEIGHBORHOOD.length; offset++) {
-                    int neighborX = node.x + NEIGHBORHOOD[offset][0];
-                    int neighborY = node.y + NEIGHBORHOOD[offset][1];
+                for (int[] ints : NEIGHBORHOOD) {
+                    int neighborX = node.x + ints[0];
+                    int neighborY = node.y + ints[1];
                     if (neighborX >= 0 && neighborX < width && neighborY >= 0 && neighborY < height) {
                         Node neighbor = map.getNodeAt(neighborX, neighborY);
                         if (!neighbor.isObstacle) {

@@ -19,6 +19,7 @@ import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.Werewolf;
 import infinityx.lunarhaze.physics.Box2DRaycastCollision;
 import infinityx.lunarhaze.physics.RaycastInfo;
+import infinityx.util.astar.AStartPathFinding;
 import infinityx.util.astar.Node;
 
 
@@ -62,6 +63,8 @@ public class EnemyController implements Telegraph {
     Collision<Vector2> collisionCache = new Collision<>(new Vector2(), new Vector2());
 
     public Node nextNode;
+
+    public AStartPathFinding pathfinder;
 
     @Override
     public boolean handleMessage(Telegram msg) {
@@ -215,6 +218,8 @@ public class EnemyController implements Telegraph {
 
         this.lookAroundSB = new LookAround(enemy, 160).
                 setAlignTolerance(MathUtils.degreesToRadians * 10);
+
+        this.pathfinder = container.pathfinder;
     }
 
     /**

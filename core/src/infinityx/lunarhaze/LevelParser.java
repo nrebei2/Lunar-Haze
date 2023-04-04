@@ -24,6 +24,10 @@ public class LevelParser {
      */
     private static LevelParser instance = null;
 
+//    public static final short SCENE_BIT = 1;
+//    public static final short PLAYER_BIT = 1 << 1;
+//    public static final short ENEMY_BIT = 1 << 3;
+
     /**
      * private as not to conflict with singleton pattern
      */
@@ -88,7 +92,10 @@ public class LevelParser {
         JsonValue tiles = levelContents.get("tiles");
         Board board = parseBoard(directory, tiles, levelContainer.getRayHandler());
         levelContainer.setBoard(board);
-        levelContainer.setPathFinder();
+
+
+        //create path finder
+        levelContainer.setPathFinder(board.getWidth(), board.getHeight());
 
         JsonValue scene = levelContents.get("scene");
 

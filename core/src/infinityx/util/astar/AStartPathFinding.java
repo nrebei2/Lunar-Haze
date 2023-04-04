@@ -21,7 +21,7 @@ public class AStartPathFinding {
 
     public AStartPathFinding(AStarMap map) {
         this.map = map;
-        this.pathfinder = new IndexedAStarPathFinder<Node>(createGraph(map));
+        this.pathfinder = new IndexedAStarPathFinder<Node>(AStarGraph.createGraph(map));
         this.connectionPath = new DefaultGraphPath<Connection<Node>>();
         this.heuristic = new Heuristic<Node>() {
             @Override
