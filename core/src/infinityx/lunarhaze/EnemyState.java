@@ -45,15 +45,17 @@ public enum EnemyState implements State<EnemyController> {
             System.out.println("Patrolling now...");
 //            entity.arriveSB.setTarget(new Box2dLocation(entity.getPatrolTarget()));
             Node target = entity.pathfinder.findNextNode(entity.getEnemy().getPosition(), entity.getPatrolTarget());
-            System.out.println(target.x);
-            System.out.println(target.y);
+            if (target != null) {
+                System.out.println(target.x);
+                System.out.println(target.y);
+            }
 
-            entity.getEnemy().setSteeringBehavior(entity.patrolSB);
+//            entity.getEnemy().setSteeringBehavior(entity.patrolSB);
         }
 
         @Override
         public void update(EnemyController entity) {
-            // Check if have arrived to patrol position
+//             Check if have arrived to patrol position
 //            float dist = entity.getEnemy().getPosition().dst(entity.arriveSB.getTarget().getPosition());
 //            if (dist <= entity.arriveSB.getArrivalTolerance()) entity.getStateMachine().changeState(LOOK_AROUND);
         }
