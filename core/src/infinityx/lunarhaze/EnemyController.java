@@ -10,6 +10,7 @@ import com.badlogic.gdx.ai.steer.behaviors.PrioritySteering;
 import com.badlogic.gdx.ai.steer.behaviors.RaycastObstacleAvoidance;
 import com.badlogic.gdx.ai.steer.utils.rays.CentralRayWithWhiskersConfiguration;
 import com.badlogic.gdx.ai.utils.Collision;
+import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.ai.utils.Ray;
 import com.badlogic.gdx.ai.utils.RaycastCollisionDetector;
 import com.badlogic.gdx.math.Interpolation;
@@ -20,6 +21,7 @@ import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.Werewolf;
 import infinityx.lunarhaze.physics.Box2DRaycastCollision;
 import infinityx.lunarhaze.physics.RaycastInfo;
+import infinityx.util.astar.AStarPathFinding;
 import infinityx.util.astar.Node;
 
 
@@ -63,6 +65,8 @@ public class EnemyController implements Telegraph {
     Collision<Vector2> collisionCache = new Collision<>(new Vector2(), new Vector2());
 
     public Node nextNode;
+
+    public AStarPathFinding pathfinder;
 
     @Override
     public boolean handleMessage(Telegram msg) {
@@ -155,6 +159,8 @@ public class EnemyController implements Telegraph {
     public LookAround lookAroundSB;
     public Face<Vector2> faceSB;
 
+    public FollowPath followPathSB;
+
     /**
      * Creates an EnemyController for the enemy with the given id.
      *
@@ -181,12 +187,14 @@ public class EnemyController implements Telegraph {
         this.raycastCollision = new Box2DRaycastCollision(container.getWorld(), raycast);
 
         // Steering behaviors
-        this.arriveSB = new Arrive<>(enemy, target);
+        this.arriveSB = new Arrive<>(enemy, null);
         arriveSB.setArrivalTolerance(0.1f);
         arriveSB.setDecelerationRadius(0.4f);
 
+//        this.followPathSB = new FollowPath<>(enemy, null);
+
         RaycastInfo collRay = new RaycastInfo(enemy);
-        collRay.addIgnores(GameObject.ObjectType.WEREWOLF, GameObject.ObjectType.HITBOX);
+//        collRay.addIgnores(GameObject.ObjectType.WEREWOLF, GameObject.ObjectType.HITBOX);
         RaycastCollisionDetector<Vector2> raycastCollisionDetector = new Box2DRaycastCollision(container.getWorld(), collRay);
 
         this.collisionSB = new RaycastObstacleAvoidance<>(
@@ -219,7 +227,7 @@ public class EnemyController implements Telegraph {
 
         // Process the FSM
         //changeStateIfApplicable(container, ticks);
-        //changeDetectionIfApplicable(currentPhase);  `
+        //changeDetectionIfApplicable(currentPhase);
 
         // Pathfinding
         //Vector2 next_move = findPath();
@@ -234,6 +242,10 @@ public class EnemyController implements Telegraph {
 
     public Enemy getEnemy() {
         return enemy;
+    }
+
+    public Werewolf getTarget(){
+        return target;
     }
 
     /**
@@ -287,6 +299,12 @@ public class EnemyController implements Telegraph {
             }
         }
         return Enemy.Detection.NONE;
+    }
+
+    public void setArriveSB(Enemy enemy, Location<Vector2> target){
+        this.arriveSB = new Arrive<>(enemy, target);
+        arriveSB.setArrivalTolerance(0.1f);
+        arriveSB.setDecelerationRadius(0.9f);
     }
 
     /**

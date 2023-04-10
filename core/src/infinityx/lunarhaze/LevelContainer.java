@@ -5,6 +5,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
@@ -19,7 +21,7 @@ import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.physics.LightSource;
 import infinityx.util.Drawable;
 import infinityx.util.astar.AStarMap;
-import infinityx.util.astar.AStartPathFinding;
+import infinityx.util.astar.AStarPathFinding;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -92,7 +94,9 @@ public class LevelContainer {
      */
     private Board board;
 
-    public AStartPathFinding pathfinder;
+    public AStarPathFinding pathfinder;
+
+    public static float gridSize = 1f;
 
     /**
      * Keeps player centered
@@ -155,6 +159,8 @@ public class LevelContainer {
      */
     private float[] battleAmbience;
 
+    private boolean scene;
+
     /**
      * Initialize attributes
      */
@@ -173,6 +179,7 @@ public class LevelContainer {
         setPlayer(player);
 
         board = null;
+        pathfinder = null;
         enemies = new EnemyPool(20);
         activeEnemies = new Array<>(10);
         sceneObjects = new Array<>(true, 5);
@@ -222,7 +229,6 @@ public class LevelContainer {
     public Enemy addEnemy(Enemy enemy) {
         activeEnemies.add(enemy);
         addDrawables(enemy);
-
         // Update enemy controller assigned to the new enemy
         getEnemyControllers().get(enemy).populate(this);
 
@@ -392,17 +398,36 @@ public class LevelContainer {
         this.totalMoonlight = board.getRemainingMoonlight();
     }
 
-    public void setPathFinder() {
-        AStarMap aStarMap = new AStarMap(board.getWidth(), board.getHeight());
+    public void setGridSize(float size){
+        gridSize = size;
+    }
 
-        for (int y = 0; y < board.getHeight(); y++) {
-            for (int x = 0; x < board.getWidth(); x++) {
-                if (!board.isWalkable(x,y)) {
+    public void setPathFinder(int width, int height, float gridsize) {
+        System.out.println("width" + width);
+        System.out.println("height" + height);
+
+        AStarMap aStarMap = new AStarMap(width, height);
+
+        QueryCallback queryCallback = new QueryCallback() {
+            @Override
+            public boolean reportFixture(Fixture fixture) {
+                scene = (fixture.getUserData() instanceof SceneObject);
+                return false; // stop finding other fixtures in the query area
+            }
+        };
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                scene = false;
+                world.QueryAABB(queryCallback, x*gridSize , y*gridSize, x*gridSize + gridSize, y*gridSize + gridSize);
+                if (scene) {
+                    System.out.println("obstacle between " + (x*gridsize) + "-" + (x*gridsize+gridsize) + ", " + (y*gridsize) + "-" + (y*gridsize+gridsize));
                     aStarMap.getNodeAt(x, y).isObstacle = true;
                 }
             }
         }
-        pathfinder = new AStartPathFinding(aStarMap);
+
+        pathfinder = new AStarPathFinding(aStarMap);
     }
 
     /**

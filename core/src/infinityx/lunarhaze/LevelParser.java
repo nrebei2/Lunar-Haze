@@ -24,6 +24,10 @@ public class LevelParser {
      */
     private static LevelParser instance = null;
 
+//    public static final short SCENE_BIT = 1;
+//    public static final short PLAYER_BIT = 1 << 1;
+//    public static final short ENEMY_BIT = 1 << 3;
+
     /**
      * private as not to conflict with singleton pattern
      */
@@ -88,13 +92,38 @@ public class LevelParser {
         JsonValue tiles = levelContents.get("tiles");
         Board board = parseBoard(directory, tiles, levelContainer.getRayHandler());
         levelContainer.setBoard(board);
-        levelContainer.setPathFinder();
 
         JsonValue scene = levelContents.get("scene");
 
         // Generate player
         JsonValue player = scene.get("player");
         levelContainer.getPlayer().setPosition(player.getFloat(0), player.getFloat(1));
+
+        // Generate scene objects
+        if (scene.has("objects")) {
+            JsonValue objects = scene.get("objects");
+            int objId = 0;
+            while (true) {
+                JsonValue objInfo = objects.get(objId);
+                if (objInfo == null) break;
+
+                JsonValue objPos = objInfo.get("position");
+                float objScale = objInfo.getFloat("scale");
+
+                levelContainer.addSceneObject(
+                        objInfo.getString("type"), objPos.getFloat(0),
+                        objPos.getFloat(1), objScale
+                );
+
+                objId++;
+            }
+        }
+        /**Currently hard coded, need to add way to acess collider size*/
+        float playerSize =  0.5f;
+
+        levelContainer.setGridSize(playerSize);
+        //create path finder
+        levelContainer.setPathFinder((int) (board.getWidth()/ playerSize), (int) (board.getHeight()/playerSize), playerSize);
 
         // Generate enemies
         JsonValue enemies = scene.get("enemies");
@@ -118,26 +147,6 @@ public class LevelParser {
             );
 
             curId++;
-        }
-
-        // Generate scene objects
-        if (scene.has("objects")) {
-            JsonValue objects = scene.get("objects");
-            int objId = 0;
-            while (true) {
-                JsonValue objInfo = objects.get(objId);
-                if (objInfo == null) break;
-
-                JsonValue objPos = objInfo.get("position");
-                float objScale = objInfo.getFloat("scale");
-
-                levelContainer.addSceneObject(
-                        objInfo.getString("type"), objPos.getFloat(0),
-                        objPos.getFloat(1), objScale
-                );
-
-                objId++;
-            }
         }
 
         // Generate level settings
