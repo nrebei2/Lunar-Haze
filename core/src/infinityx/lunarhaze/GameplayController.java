@@ -3,6 +3,7 @@ package infinityx.lunarhaze;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
@@ -23,7 +24,8 @@ public class GameplayController {
     public enum Phase {
         STEALTH,
         BATTLE,
-        TRANSITION
+        TRANSITION,
+        ALLOCATE,
     }
 
     public Phase currentPhase;
@@ -37,6 +39,7 @@ public class GameplayController {
     public enum GameState {
         PLAY,
         OVER,
+        PAUSED,
         WIN
     }
 
@@ -87,6 +90,8 @@ public class GameplayController {
      */
     private CollisionController collisionController;
 
+//    private AllocateScreen allocateScreen;
+
     /**
      * Timer for the ambient light transition
      */
@@ -101,6 +106,11 @@ public class GameplayController {
      * Number of ticks (frames) since battle began
      */
     private int battleTicks;
+
+    /**
+     * Sound of winning a level
+     */
+    private Sound win_sound;
 
 
     /**
@@ -118,6 +128,7 @@ public class GameplayController {
     public GameState getState() {
         return gameState;
     }
+    public void setState(GameState s) { gameState = s; }
 
     public float getTimeOnMoonlightPercentage(){return playerController.getTimeOnMoonlightPercentage();}
 
@@ -131,6 +142,13 @@ public class GameplayController {
     }
 
     /**
+     * Set the current phase of the game
+     */
+    public void setPhase(Phase p) {
+        currentPhase = p;
+    }
+
+    /**
      * Starts a new game, (re)initializing relevant controllers and attributes.
      * <p>
      *
@@ -138,6 +156,8 @@ public class GameplayController {
      * @param jsonValue      json value holding level layout
      */
     public void start(LevelContainer levelContainer, JsonValue jsonValue) {
+
+        System.out.println("GameplayController start method called");
         this.gameState = GameState.PLAY;
         this.currentPhase = Phase.STEALTH;
         this.container = levelContainer;
@@ -157,6 +177,9 @@ public class GameplayController {
         enemies = levelContainer.getEnemies();
         controls = levelContainer.getEnemyControllers();
         battleTicks = 0;
+
+        win_sound = levelContainer.getDirectory().getEntry("level-passed", Sound.class);
+//        allocateScreen = new AllocateScreen(canvas, playerController);
     }
 
     /**
@@ -182,10 +205,19 @@ public class GameplayController {
                     break;
                 case BATTLE:
                     battleTicks += 1;
-                    if (enemies.size == 0) gameState = GameState.WIN;
+                    if (enemies.size == 0) {
+                        gameState = GameState.WIN;
+                        win_sound.play();
+                    }
                     break;
                 case TRANSITION:
                     switchPhase(delta);
+                    break;
+                case ALLOCATE:
+                    // TODO: Somehow pause the game before drawing allocating screen
+                    if (playerController.getAllocateReady()){
+                        currentPhase = Phase.BATTLE;
+                    }
                     break;
             }
             if (player.getHp() <= 0) gameState = GameState.OVER;
@@ -207,12 +239,20 @@ public class GameplayController {
         return phaseTimer;
     }
 
+    public PlayerController getPlayerController() {
+        return playerController;
+    }
+
+    public void setPlayerController(PlayerController pc) {
+        playerController = pc;
+    }
+
     /**
      * Performs all necessary computations to change the current phase of the game from STEALTH to BATTLE.
      */
     public void switchPhase(float delta) {
         updateAmbientLight(delta);
-        if (ambientLightTransitionTimer >= container.getPhaseTransitionTime()) currentPhase = Phase.BATTLE;
+        if (ambientLightTransitionTimer >= container.getPhaseTransitionTime()) currentPhase = Phase.ALLOCATE;
     }
 
     /**

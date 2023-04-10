@@ -2,7 +2,7 @@
   "1": {
     "settings": {
       "transition": 2,
-      "phaseLength": 3,
+      "phaseLength": 10,
       "battle-ambiance": [0.8, 0.7, 1, 1],
       "enemy-spawner": {
         "count": 5,
@@ -42,7 +42,7 @@
         "lighting": {
           "color":		[0.7, 0.7, 0.9, 0.7],
           "distance":		   4,
-          "rays":			512,
+          "rays":			10,
           "soft":			true
         }
       }

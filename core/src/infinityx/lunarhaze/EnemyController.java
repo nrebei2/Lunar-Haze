@@ -241,10 +241,10 @@ public class EnemyController implements Telegraph {
      */
     public Enemy.Detection getDetection() {
         /* Area of interests:
-         * Focused view - same angle as flashlight, extends between [1, 5]
-         * Short distance - angle of 100, extends between [0.6, 3.5]
+         * Focused view - same angle as flashlight, extends between [1, 4]
+         * Short distance - angle of 100, extends between [0.6, 2.5]
          * Peripheral vision - angle of 180, extends between [0.4, 1.75]
-         * Hearing radius - angle of 360, extends between [0.5, 3]
+         * Hearing radius - angle of 360, extends between [1.5, 4.4]
          * Lerp between player stealth for max distance,
          * but maybe add cutoffs for NONE?
          */
@@ -262,13 +262,12 @@ public class EnemyController implements Telegraph {
 
         // degree between enemy orientation and enemy-to-player
         double degree = Math.abs(enemy.getOrientation() - enemy.vectorToAngle(enemyToPlayer)) * MathUtils.radiansToDegrees;
-        //System.out.printf("degree: %f, dist: %f, stealth: %f\n", degree, dist, target.getStealth());
-
         if (raycast.hitObject == target) {
-            if (degree <= enemy.getFlashlight().getConeDegree() / 2 && dist <= lerp.apply(1, 5, target.getStealth())) {
+            //System.out.printf("degree: %f, dist: %f, stealth: %f\n", degree, dist, target.getStealth());
+            if (degree <= enemy.getFlashlight().getConeDegree() / 2 && dist <= lerp.apply(1, 4, target.getStealth())) {
                 return Enemy.Detection.ALERT;
             }
-            if (degree <= 50 && dist <= lerp.apply(0.6f, 3.5f, target.getStealth())) {
+            if (degree <= 50 && dist <= lerp.apply(0.6f, 2.5f, target.getStealth())) {
                 return Enemy.Detection.ALERT;
             }
             if (degree <= 90 && dist <= lerp.apply(0.4f, 1.75f, target.getStealth())) {
@@ -276,9 +275,16 @@ public class EnemyController implements Telegraph {
             }
         }
 
+
         // target may be behind object, but enemy should still be able to hear
-        if (dist <= lerp.apply(0.5f, 3f, target.getStealth())) {
-            return Enemy.Detection.NOTICED;
+        if (enemy.getDetection() == Enemy.Detection.INDICATOR || enemy.getDetection() == Enemy.Detection.NOTICED) {
+            if (dist <= lerp.apply(3.5f, 7.5f, target.getStealth())) {
+                return Enemy.Detection.NOTICED;
+            }
+        } else {
+            if (dist <= lerp.apply(1.5f, 3.5f, target.getStealth())) {
+                return Enemy.Detection.NOTICED;
+            }
         }
         return Enemy.Detection.NONE;
     }
@@ -417,7 +423,7 @@ public class EnemyController implements Telegraph {
                 MathUtils.random(enemy.getBottomLeftOfRegion().x, enemy.getTopRightOfRegion().x),
                 MathUtils.random(enemy.getBottomLeftOfRegion().y, enemy.getTopRightOfRegion().y)
         );
-        System.out.println("I found a point with x: " + random_point.x + ", y: " + random_point.y + "!");
+        //System.out.println("I found a point with x: " + random_point.x + ", y: " + random_point.y + "!");
         return random_point;
     }
 

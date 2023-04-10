@@ -31,6 +31,11 @@ public class Werewolf extends GameObject implements Location<Vector2> {
      **/
     public static int INITIAL_HP = 5;
 
+    /**
+     * Maximum hp of the werewolf is 5
+     **/
+    public static int MAX_HP = 10;
+
     /** Size of attack hitbox */
     public static float HITBOX_SIZE = 5f;
 
@@ -38,6 +43,26 @@ public class Werewolf extends GameObject implements Location<Vector2> {
      * Maximum light of the werewolf is 100.0
      **/
     public static final float MAX_LIGHT = 100.0f;
+
+    /**
+     * Initial attack power of the werewolf is 0.1;
+     **/
+    public static final float INITIAL_POWER = 0.2f;
+
+    /**
+     * Initial attack range of the werewolf is 1 tile;
+     **/
+    public static final float INITIAL_RANGE = 1.0f;
+
+    /**
+     * Maximum attack power of the werewolf is 0.1;
+     **/
+    public static final float MAX_POWER = 1.0f;
+
+    /**
+     * Maximum attack range of the werewolf is 2 tiles;
+     **/
+    public static final float MAX_RANGE = 2.0f;
 
     /**
      * Move speed (walking)
@@ -126,6 +151,16 @@ public class Werewolf extends GameObject implements Location<Vector2> {
     private boolean drawCooldownBar;
 
     private float cooldownPercent;
+
+    /**
+     * A float between 0 and 1 indicating attcking power of the Werewolf
+     */
+    private float attackPower;
+
+    /**
+     * A float indicating number of tiles player's attack can reach
+     */
+    private float attackRange;
 
     /**
      * Whether the werewolf is in sprint
@@ -247,7 +282,28 @@ public class Werewolf extends GameObject implements Location<Vector2> {
      * Returns the attack power of werewolf during battle phase.
      */
     public float getAttackPower() {
-        return light / MAX_LIGHT;
+        return attackPower;
+    }
+
+    /**
+     * Sets the attack power of werewolf during battle phase.
+     */
+    public void setAttackPower(float pow) {
+        attackPower = pow;
+    }
+
+    /**
+     * Returns the attack power of werewolf during battle phase.
+     */
+    public float getAttackRange() {
+        return attackRange;
+    }
+
+    /**
+     * Sets the attack power of werewolf during battle phase.
+     */
+    public void setAttackRange(float range) {
+        attackRange = range;
     }
 
     /** Sets the cooldown bar to be drawn or not */
@@ -299,6 +355,10 @@ public class Werewolf extends GameObject implements Location<Vector2> {
         moonlightCollected++;
     }
 
+    public void reduceMoonlightCollected() {
+        moonlightCollected--;
+    }
+
     public int getMoonlightCollected() {
         return moonlightCollected;
     }
@@ -330,6 +390,8 @@ public class Werewolf extends GameObject implements Location<Vector2> {
         moonlightCollected = 0;
         isAttacking = false;
         canMove = true;
+        attackPower = INITIAL_POWER;
+        attackRange = INITIAL_RANGE;
     }
 
     /**

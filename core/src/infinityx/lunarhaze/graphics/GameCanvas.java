@@ -18,6 +18,7 @@ package infinityx.lunarhaze.graphics;
  * LibGDX version, 2/6/2015
  */
 
+import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -65,7 +66,9 @@ public class GameCanvas {
         /**
          * We are drawing a shader
          */
-        SHADER
+        SHADER,
+        /** We are drawing Box2D lights */
+        LIGHT
     }
 
     /**
@@ -123,6 +126,11 @@ public class GameCanvas {
     private OrthographicCamera camera;
 
     /**
+     * Camera for the light renderer
+     */
+    private OrthographicCamera raycamera;
+
+    /**
      * Value to cache window width (if we are currently full screen)
      */
     int width;
@@ -151,6 +159,11 @@ public class GameCanvas {
     private TextureRegion holder;
 
     /**
+     * Cache object to handle drawing text
+     */
+    private final GlyphLayout layout;
+
+    /**
      * Scaling factors for world to screen translation
      */
     private Vector2 worldToScreen;
@@ -168,6 +181,12 @@ public class GameCanvas {
      */
     public void setWorldToScreen(Vector2 worldToScreen) {
         this.worldToScreen = worldToScreen;
+
+        // We have the actual world to screen now
+        raycamera = new OrthographicCamera(
+                getWidth() / WorldToScreenX(1),
+                getHeight() / WorldToScreenY(1)
+        );
     }
 
     /**
@@ -209,7 +228,8 @@ public class GameCanvas {
         shapeRenderer = new ShapeRenderer();
         shaderRenderer = new ShaderRenderer();
 
-        setupCamera();
+        worldToScreen = new Vector2();
+        setupCameras();
 
         spriteBatch.setProjectionMatrix(camera.combined);
         shapeRenderer.setProjectionMatrix(camera.combined);
@@ -221,13 +241,20 @@ public class GameCanvas {
         global = new Matrix4();
         viewCache = new Vector2();
         alphaCache = new Color(1, 1, 1, 1);
+
+        this.layout = new GlyphLayout();
     }
 
-    /** Set up the camera as an orthographic camera with width and height matching the viewport */
-    private void setupCamera() {
+    /** Set up the cameras on the canvas */
+    private void setupCameras() {
         // Set the projection matrix (for proper scaling)
         camera = new OrthographicCamera(getWidth(), getHeight());
         camera.setToOrtho(false);
+
+        raycamera = new OrthographicCamera(
+                getWidth() / WorldToScreenX(1),
+                getHeight() / WorldToScreenY(1)
+        );
         // Cant do this, would mess up existing UI drawing
         // Center camera at (0, 0)
         //camera.translate(-getWidth()/2, -getHeight()/2);
@@ -386,7 +413,7 @@ public class GameCanvas {
      */
     public void resize() {
         // Resizing screws up the projection matrix
-        setupCamera();
+        setupCameras();
 
 //        Gdx.gl.glViewport(0, 0, getWidth(), getHeight());
     }
@@ -471,7 +498,13 @@ public class GameCanvas {
         global.idt();
         viewCache.set(tx, ty);
         global.translate(tx, ty, 0.0f);
-        global.mulLeft(camera.combined);
+
+        if (pass == DrawPass.LIGHT) {
+            // Light uses a separate camera
+            global.mulLeft(raycamera.combined);
+        } else {
+            global.mulLeft(camera.combined);
+        }
 
         switch (pass) {
             case SPRITE:
@@ -485,6 +518,9 @@ public class GameCanvas {
             case SHADER:
                 shaderRenderer.setProjectionMatrix(global);
                 break;
+            case LIGHT:
+
+
         }
         active = pass;
     }
@@ -509,6 +545,8 @@ public class GameCanvas {
                 spriteBatch.begin();
                 break;
             case SHAPE:
+                // Enable blending
+                Gdx.gl.glEnable(GL20.GL_BLEND);
                 shapeRenderer.setProjectionMatrix(camera.combined);
                 break;
             case SHADER:
@@ -529,6 +567,9 @@ public class GameCanvas {
         switch (active) {
             case SPRITE:
                 spriteBatch.end();
+                break;
+            case SHAPE:
+                Gdx.gl.glDisable(GL20.GL_BLEND);
                 break;
         }
         active = DrawPass.INACTIVE;
@@ -770,6 +811,15 @@ public class GameCanvas {
     }
 
     /**
+     * Update and render lights
+     * @param handler holding lights
+     */
+    public void drawLights(RayHandler handler) {
+        handler.setCombinedMatrix(global);
+        handler.updateAndRender();
+    }
+
+    /**
      * Draws text on the screen.
      *
      * @param text The string to draw
@@ -782,7 +832,7 @@ public class GameCanvas {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SPRITE", new IllegalStateException());
             return;
         }
-        GlyphLayout layout = new GlyphLayout(font, text);
+        layout.setText(font, text);
         font.draw(spriteBatch, layout, x, y);
     }
 
@@ -799,7 +849,7 @@ public class GameCanvas {
             return;
         }
 
-        GlyphLayout layout = new GlyphLayout(font, text);
+        layout.setText(font, text);
         float x = (getWidth() - layout.width) / 2.0f;
         float y = (getHeight() + layout.height) / 2.0f;
 
@@ -831,7 +881,7 @@ public class GameCanvas {
         shapeRenderer.end();
     }
 
-    public void drawLightBar(Texture icon, float width, float height, float light) {
+    public void drawAttackPow(float x, float y, float width, float height, float attackPow) {
         if (active != DrawPass.SHAPE) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
             return;
@@ -839,24 +889,17 @@ public class GameCanvas {
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(Color.WHITE);
-        float x = getWidth() - width - GAP_DIST;
-        float y = getHeight() - height - GAP_DIST;
         shapeRenderer.rect(x, y, width, height);
         shapeRenderer.end();
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         Color yellow = new Color(244.0f / 255.0f, 208.0f / 255.0f, 63.0f / 255.0f, 1.0f);
         shapeRenderer.setColor(yellow);
-        shapeRenderer.rect(x, y, width * light / Werewolf.MAX_LIGHT, height);
+        shapeRenderer.rect(x, y, width * Math.min(attackPow, 1.0f), height);
         shapeRenderer.end();
-
-//        draw(icon, Color.WHITE, x - width, y, width, width);
-//        canvas.draw(playButton, tint, playButton.getWidth() / 2, playButton.getHeight() / 2,
-//                centerX, 0.7f*centerY, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
-//        draw(icon, Color.WHITE, icon.getWidth()/2, icon.getHeight()/2, x - icon.getWidth(), y,0,1.0f, 1.0f);
     }
 
-    public void drawHpBar(Texture icon, float width, float height, float hp) {
+    public void drawHpBar(float x, float y, float width, float height, float hp) {
         if (active != DrawPass.SHAPE) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
             return;
@@ -864,8 +907,6 @@ public class GameCanvas {
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(Color.WHITE);
-        float x = getWidth() - width - GAP_DIST;
-        float y = getHeight() - height * 2.25f - GAP_DIST * 1.5f;
         shapeRenderer.rect(x, y, width, height);
         shapeRenderer.end();
         Color health;
@@ -876,7 +917,27 @@ public class GameCanvas {
             health = new Color(20.0f / 255.0f, 142.0f / 255.0f, 119.0f / 255.0f, 1.0f);
         }
         shapeRenderer.setColor(health);
-        shapeRenderer.rect(x, y, width * hp / Werewolf.INITIAL_HP, height);
+        shapeRenderer.rect(x, y, width * hp / Werewolf.MAX_HP, height);
+        shapeRenderer.end();
+
+//        draw(icon, Color.WHITE, x - width, y, width, height);
+    }
+
+    public void drawAttackRange(float x, float y, float width, float height, float range) {
+        if (active != DrawPass.SHAPE) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
+            return;
+        }
+
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setColor(Color.WHITE);
+        shapeRenderer.rect(x, y, width, height);
+        shapeRenderer.end();
+
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        Color blue = new Color(40.0f / 255.0f, 116.0f / 255.0f, 166.0f / 255.0f, 1.0f);
+        shapeRenderer.setColor(blue);
+        shapeRenderer.rect(x, y, width * range / Werewolf.MAX_RANGE, height);
         shapeRenderer.end();
 
 //        draw(icon, Color.WHITE, x - width, y, width, height);
@@ -935,32 +996,11 @@ public class GameCanvas {
         Color flashColor = ScreenFlash.getFlashColor();
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(flashColor);
+
         float x = WorldToScreenX(player.getPosition().x) - Gdx.graphics.getWidth()/2.0f;
         float y = WorldToScreenY(player.getPosition().y) - Gdx.graphics.getHeight()/2.0f;
         shapeRenderer.rect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         shapeRenderer.end();
-    }
-
-    public void drawStealthBar(Texture icon, float width, float height, float stealth) {
-        if (active != DrawPass.SHAPE) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
-            return;
-        }
-
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(Color.WHITE);
-        float x = getWidth() - width - GAP_DIST;
-        float y = getHeight() - height * 3.5f - GAP_DIST * 2;
-        shapeRenderer.rect(x, y, width, height);
-        shapeRenderer.end();
-
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        Color blue = new Color(40.0f / 255.0f, 116.0f / 255.0f, 166.0f / 255.0f, 1.0f);
-        shapeRenderer.setColor(blue);
-        shapeRenderer.rect(x, y, width * stealth, height);
-        shapeRenderer.end();
-
-//        draw(icon, Color.WHITE, x - width, y, width, height);
     }
 
     /**

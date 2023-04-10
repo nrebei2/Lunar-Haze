@@ -148,7 +148,6 @@ public class ShaderRenderer implements Renderer {
             end();
         }
         this.shader = shader;
-        this.shader.bind();
     }
 
     @Override

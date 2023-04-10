@@ -12,7 +12,9 @@ public enum PlayerState implements State<PlayerController> {
             InputController input = entity.getInputController();
             entity.getAttackHandler().update(Gdx.graphics.getDeltaTime(), input, entity.getPhase());
             entity.resolvePlayer(Gdx.graphics.getDeltaTime());
-            entity.resolveMoonlight(Gdx.graphics.getDeltaTime(), entity.getLightingController());
+            if (entity.getPhase() == GameplayController.Phase.STEALTH) {
+                entity.resolveMoonlight(Gdx.graphics.getDeltaTime(), entity.getLightingController());
+            }
         }
     },
 
@@ -24,7 +26,17 @@ public enum PlayerState implements State<PlayerController> {
 
         @Override
         public void update(PlayerController entity) {
-
+            if (entity.isAttacking()) {
+                entity.getStateMachine().changeState(PlayerState.ATTACK);
+            } else if (entity.isCollectingMoonlight()) {
+                entity.getStateMachine().changeState(PlayerState.COLLECT);
+            } else if (entity.getInputController().didRun() &&
+                    (entity.getInputController().getHorizontal() != 0 || entity.getInputController().getVertical() != 0)) {
+                entity.getStateMachine().changeState(PlayerState.RUN);
+            } else if (!entity.getInputController().didRun() &&
+                    (entity.getInputController().getHorizontal() != 0 || entity.getInputController().getVertical() != 0)){
+                entity.getStateMachine().changeState(PlayerState.WALK);
+            }
         }
     },
 
@@ -39,8 +51,8 @@ public enum PlayerState implements State<PlayerController> {
             // Handle state transitions
             if (entity.isAttacking()) {
                 entity.getStateMachine().changeState(PlayerState.ATTACK);
-            } else if (entity.isCollectingMoonlight()) {
-                entity.getStateMachine().changeState(PlayerState.COLLECT);
+            } else if (entity.getInputController().getHorizontal() == 0 && entity.getInputController().getVertical() == 0) {
+                entity.getStateMachine().changeState(PlayerState.IDLE);
             } else if (entity.getInputController().didRun()) {
                 entity.getStateMachine().changeState(PlayerState.RUN);
             }
@@ -59,8 +71,6 @@ public enum PlayerState implements State<PlayerController> {
             // Handle state transitions
             if (entity.isAttacking()) {
                 entity.getStateMachine().changeState(PlayerState.ATTACK);
-            } else if (entity.isCollectingMoonlight()) {
-                entity.getStateMachine().changeState(PlayerState.COLLECT);
             } else if (!entity.getInputController().didRun()) {
                 if (entity.player.getLinearVelocity().isZero()) {
                     entity.getStateMachine().changeState(PlayerState.IDLE);
@@ -81,7 +91,7 @@ public enum PlayerState implements State<PlayerController> {
         public void update(PlayerController entity) {
             // Handle state transitions
             if(!entity.isAttacking()) {
-                entity.getStateMachine().changeState(PlayerState.WALK);
+                entity.getStateMachine().changeState(PlayerState.IDLE);
             }
         }
     },
@@ -98,7 +108,7 @@ public enum PlayerState implements State<PlayerController> {
             if (entity.isAttacking()) {
                 entity.getStateMachine().changeState(PlayerState.ATTACK);
             } else if (!entity.isCollectingMoonlight()){
-                entity.getStateMachine().changeState(PlayerState.WALK);
+                entity.getStateMachine().changeState(PlayerState.IDLE);
             }
         }
 

@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.utils.Array;
 import infinityx.assets.AssetDirectory;
+import infinityx.lunarhaze.GameplayController.GameState;
 import infinityx.lunarhaze.GameplayController.Phase;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.Werewolf;
@@ -145,9 +146,23 @@ public class UIRender {
      */
     private final Texture stealth_stroke;
 
-    /** shader program which draws the enemy notice meter */
+    /**
+     * Texture to represent enemy noticed
+     */
+    private final Texture noticed;
+
+    /**
+     * Texture of represent enemy alert
+     */
+    private final Texture alert;
+
+    /** shader program which draws the enemy indicator meter */
     private final ShaderProgram meter;
     private final VertexAttribute[] meterAttributes;
+
+    Color full = new Color(138f / 255.0f, 25f / 255.0f, 45f / 255.0f, 1f);
+
+    Color empty = new Color(41f / 255.0f, 41f / 255.0f, 41f / 255.0f, 0.8f);
 
     /**
      * Create a new UIRender with font and directory assigned.
@@ -171,6 +186,8 @@ public class UIRender {
         health_stroke = directory.getEntry("health-stroke", Texture.class);
         moonlight_stroke = directory.getEntry("moonlight-stroke", Texture.class);
         stealth_stroke = directory.getEntry("stealth-stroke", Texture.class);
+        alert = directory.getEntry("alert", Texture.class);
+        noticed = directory.getEntry("noticed", Texture.class);
 
         // shaders
         this.meter = directory.get("meter", ShaderProgram.class);
@@ -189,46 +206,50 @@ public class UIRender {
      * @param phase  current phase of the game
      */
     public void drawUI(GameCanvas canvas, LevelContainer level, GameplayController.Phase phase, GameplayController gameplayController) {
-        setFontColor(Color.WHITE);
+        if(gameplayController.getState()== GameState.PLAY) {
+            setFontColor(Color.WHITE);
 
-        // Draw with view transform considered
-        canvas.begin(GameCanvas.DrawPass.SHAPE, level.getView().x, level.getView().y);
+            // Draw with view transform considered
+            canvas.begin(GameCanvas.DrawPass.SHAPE, level.getView().x, level.getView().y);
 
-        if(gameplayController.getCollectingMoonlight()) {
-             canvas.drawCollectLightBar(BAR_WIDTH / 2, BAR_HEIGHT / 2,
-                 gameplayController.getTimeOnMoonlightPercentage(), level.getPlayer());
-        }
-
-        if (phase == Phase.BATTLE) {
-            for (Enemy enemy : level.getEnemies()) {
-                canvas.drawEnemyHpBars(
-                        BAR_WIDTH / 4.0f, BAR_HEIGHT / 4.0f, enemy
-                );
+            if (gameplayController.getCollectingMoonlight()) {
+                canvas.drawCollectLightBar(BAR_WIDTH / 2, BAR_HEIGHT / 2,
+                        gameplayController.getTimeOnMoonlightPercentage(), level.getPlayer());
             }
-            if (level.getPlayer().drawCooldownBar()) {
-                canvas.drawAttackCooldownBar(10f, 60f, 65f, level.getPlayer());
+
+            if (phase == Phase.BATTLE) {
+                for (Enemy enemy : level.getEnemies()) {
+                    canvas.drawEnemyHpBars(
+                            BAR_WIDTH / 4.0f, BAR_HEIGHT / 4.0f, enemy
+                    );
+                }
+                if (level.getPlayer().drawCooldownBar()) {
+                    canvas.drawAttackCooldownBar(10f, 60f, 65f, level.getPlayer());
+                }
             }
+            canvas.end();
+
+            // Draw with view transform not considered
+            canvas.begin(GameCanvas.DrawPass.SPRITE);
+            // Draw top stroke at the top center of screen
+            drawLevelStats(canvas, phase, gameplayController);
+            if (phase == Phase.STEALTH) {
+                drawHealthStats(canvas, level, phase);
+                drawMoonlightStats(canvas, level);
+                drawStealthStats(canvas, level);
+            } else if (phase == Phase.BATTLE) {
+                drawHealthStats(canvas, level, phase);
+            }
+            canvas.end();
+
+            canvas.begin(GameCanvas.DrawPass.SHAPE);
+            // If necessary draw screen flash
+            ScreenFlash.update(Gdx.graphics.getDeltaTime());
+            canvas.drawScreenFlash(level.getPlayer());
+            canvas.end();
+
+            drawStealthIndicator(canvas, level);
         }
-        canvas.end();
-
-        // Draw with view transform not considered
-        canvas.begin(GameCanvas.DrawPass.SPRITE);
-        // Draw top stroke at the top center of screen
-        drawLevelStats(canvas, phase, gameplayController);
-        drawHealthStats(canvas, level);
-        drawMoonlightStats(canvas, level);
-        drawStealthStats(canvas, level);
-        canvas.end();
-
-        canvas.begin(GameCanvas.DrawPass.SHAPE);
-        // If necessary draw screen flash
-        ScreenFlash.update(Gdx.graphics.getDeltaTime());
-        canvas.drawScreenFlash(level.getPlayer());
-        canvas.end();
-
-        canvas.begin(GameCanvas.DrawPass.SHADER, level.getView().x, level.getView().y);
-        drawStealthIndicator(canvas, level);
-        canvas.end();
     }
 
     public void setFontColor(Color color){
@@ -262,17 +283,26 @@ public class UIRender {
     }
 
     /** Draw the health stroke and health status of the player */
-    public void drawHealthStats(GameCanvas canvas, LevelContainer level){
-        canvas.draw(health_stroke, Color.WHITE, 0, canvas.getHeight() - HEALTH_STROKE_HEIGHT * 2, HEALTH_STROKE_WIDTH, HEALTH_STROKE_HEIGHT);
-        for(int i = 1; i <= Werewolf.INITIAL_HP; i++){
-            if (level.getPlayer().getHp() >= i){
+    public void drawHealthStats(GameCanvas canvas, LevelContainer level, Phase phase){
+        float stroke_width = HEALTH_STROKE_WIDTH;
+        int max_hp = Werewolf.INITIAL_HP;
+        if (phase == Phase.STEALTH) {
+            stroke_width = HEALTH_STROKE_WIDTH;
+            max_hp = Werewolf.INITIAL_HP;
+        } else if (phase == Phase.BATTLE){
+            stroke_width = HEALTH_STROKE_WIDTH * 2;
+            max_hp = Werewolf.MAX_HP;
+        }
+        canvas.draw(health_stroke, Color.WHITE, 0, canvas.getHeight() - HEALTH_STROKE_HEIGHT * 2, stroke_width, HEALTH_STROKE_HEIGHT);
+        for (int i = 1; i <= max_hp; i++) {
+            if (level.getPlayer().getHp() >= i) {
                 // Draw a filled heart for the ith heart
                 Color full = new Color(138f / 255.0f, 25f / 255.0f, 45f / 255.0f, 1f);
-                canvas.draw(health_icon, full, health_icon.getWidth() / 2, health_icon.getHeight() / 2, HEALTH_STROKE_WIDTH/8 + HEART_SEP * i, canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f, 0, 0.6f, 0.6f);
+                canvas.draw(health_icon, full, health_icon.getWidth() / 2, health_icon.getHeight() / 2, HEALTH_STROKE_WIDTH / 8 + HEART_SEP * i, canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f, 0, 0.6f, 0.6f);
             } else {
                 // Draw an empty heart for the ith heart
                 Color empty = new Color(41f / 255.0f, 41f / 255.0f, 41f / 255.0f, 0.8f);
-                canvas.draw(health_icon, empty, health_icon.getWidth() / 2, health_icon.getHeight() / 2, HEALTH_STROKE_WIDTH/8 + HEART_SEP * i, canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f, 0, 0.6f, 0.6f);
+                canvas.draw(health_icon, empty, health_icon.getWidth() / 2, health_icon.getHeight() / 2, HEALTH_STROKE_WIDTH / 8 + HEART_SEP * i, canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f, 0, 0.6f, 0.6f);
             }
         }
     }
@@ -298,13 +328,34 @@ public class UIRender {
         ShaderUniform uniform = new ShaderUniform("u_amount");
         Array<Enemy> enemies = level.getEnemies();
         for (Enemy enemy : enemies) {
-            uniform.setValues(0.1f);
-            canvas.drawShader(
-                    meter,
-                    canvas.WorldToScreenX(enemy.getPosition().x) - 38,
-                    canvas.WorldToScreenY(enemy.getPosition().y) + enemy.getTextureHeight() - 25,
-                    50, 50,
-                    uniform);
+            switch (enemy.getDetection()) {
+                case ALERT:
+                case NOTICED:
+                    // Draw with view transform considered
+                    canvas.begin(GameCanvas.DrawPass.SPRITE, level.getView().x, level.getView().y);
+                    Texture tex = enemy.getDetection() == Enemy.Detection.ALERT ? alert : noticed;
+                    canvas.draw(
+                            tex,
+                            Color.WHITE,
+                            tex.getWidth() /2, tex.getHeight() / 2,
+                            canvas.WorldToScreenX(enemy.getPosition().x) - 10,
+                            canvas.WorldToScreenY(enemy.getPosition().y)+ enemy.getTextureHeight(), 0,
+                            0.1f, 0.1f
+                            );
+                    canvas.end();
+                    break;
+                case INDICATOR:
+                    uniform.setValues(enemy.getIndicatorAmount());
+                    canvas.begin(GameCanvas.DrawPass.SHADER, level.getView().x, level.getView().y);
+                    canvas.drawShader(
+                            meter,
+                            canvas.WorldToScreenX(enemy.getPosition().x) - 38,
+                            canvas.WorldToScreenY(enemy.getPosition().y) + enemy.getTextureHeight() - 25,
+                            50, 50,
+                            uniform);
+                    canvas.end();
+                    break;
+            }
         }
     }
 
