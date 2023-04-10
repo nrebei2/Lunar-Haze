@@ -116,7 +116,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
     private int centerYReview;
     private int centerYExit;
     private int centerYQuit;
-    private static final float BUTTON_SCALE = 0.5f;
+    private static final float BUTTON_SCALE = 0.25f;
     /**
      * Ratio of play height from bottom
      */
@@ -453,10 +453,10 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
         scale = (sx < sy ? sx : sy);
 
         centerYResume = (int) (BACK_HEIGHT_RATIO * height);
-        centerYRestart = centerYResume - pause_resume.getHeight();
-        centerYReview = centerYRestart - pause_restart.getHeight();
-        centerYExit = centerYReview - pause_review.getHeight();
-        centerYQuit = centerYExit - pause_exit.getHeight();
+        centerYRestart = centerYResume - (int)(0.6 * pause_resume.getHeight());
+        centerYReview = centerYRestart - (int)(0.6 * pause_resume.getHeight());
+        centerYExit = centerYReview - (int)(0.6 * pause_resume.getHeight());
+        centerYQuit = centerYExit - (int)(0.6 * pause_resume.getHeight());
         centerX = width / 2;
         heightY = height;
 
