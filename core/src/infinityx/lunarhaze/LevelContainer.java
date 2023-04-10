@@ -21,7 +21,7 @@ import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.physics.LightSource;
 import infinityx.util.Drawable;
 import infinityx.util.astar.AStarMap;
-import infinityx.util.astar.AStartPathFinding;
+import infinityx.util.astar.AStarPathFinding;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -94,7 +94,9 @@ public class LevelContainer {
      */
     private Board board;
 
-    public AStartPathFinding pathfinder;
+    public AStarPathFinding pathfinder;
+
+    public static float gridSize = 1f;
 
     /**
      * Keeps player centered
@@ -396,13 +398,20 @@ public class LevelContainer {
         this.totalMoonlight = board.getRemainingMoonlight();
     }
 
-    public void setPathFinder(int width, int height) {
+    public void setGridSize(float size){
+        gridSize = size;
+    }
+
+    public void setPathFinder(int width, int height, float gridsize) {
+        System.out.println("width" + width);
+        System.out.println("height" + height);
+
         AStarMap aStarMap = new AStarMap(width, height);
 
         QueryCallback queryCallback = new QueryCallback() {
             @Override
             public boolean reportFixture(Fixture fixture) {
-                if (fixture.getUserData() instanceof SceneObject) scene = true;
+                scene = (fixture.getUserData() instanceof SceneObject);
                 return false; // stop finding other fixtures in the query area
             }
         };
@@ -410,13 +419,15 @@ public class LevelContainer {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 scene = false;
-                world.QueryAABB(queryCallback, x + 0.2f, y + 0.2f, x + 0.8f, y + 0.8f);
+                world.QueryAABB(queryCallback, x*gridSize , y*gridSize, x*gridSize + gridSize, y*gridSize + gridSize);
                 if (scene) {
+                    System.out.println("obstacle between " + (x*gridsize) + "-" + (x*gridsize+gridsize) + ", " + (y*gridsize) + "-" + (y*gridsize+gridsize));
                     aStarMap.getNodeAt(x, y).isObstacle = true;
                 }
             }
         }
-        pathfinder = new AStartPathFinding(aStarMap);
+
+        pathfinder = new AStarPathFinding(aStarMap);
     }
 
     /**

@@ -42,22 +42,54 @@ public enum EnemyState implements State<EnemyController> {
     PATROL() {
         @Override
         public void enter(EnemyController entity) {
-            System.out.println("Patrolling now...");
 //            entity.arriveSB.setTarget(new Box2dLocation(entity.getPatrolTarget()));
-            Node target = entity.pathfinder.findNextNode(entity.getEnemy().getPosition(), entity.getPatrolTarget());
-            if (target != null) {
-                System.out.println(target.x);
-                System.out.println(target.y);
-            }
+            System.out.println("Patrolling now...");
 
-//            entity.getEnemy().setSteeringBehavior(entity.patrolSB);
+            Vector2 patrol = entity.getPatrolTarget();
+            patrol = worldToGrid(patrol);
+            while (entity.pathfinder.map.getNodeAt((int)patrol.x, (int)patrol.y).isObstacle){
+                patrol = entity.getPatrolTarget();
+                patrol = worldToGrid(patrol);
+            }
+            entity.nextNode = entity.pathfinder.map.getNodeAt((int)patrol.x, (int)patrol.y);
+
+            System.out.println(entity.nextNode);
+//            System.out.println("current location" + entity.getEnemy().getPosition());
+
         }
 
         @Override
         public void update(EnemyController entity) {
-//             Check if have arrived to patrol position
-//            float dist = entity.getEnemy().getPosition().dst(entity.arriveSB.getTarget().getPosition());
-//            if (dist <= entity.arriveSB.getArrivalTolerance()) entity.getStateMachine().changeState(LOOK_AROUND);
+
+//            System.out.println(entity.getDetection());
+            //check if spotted target
+            if (entity.getDetection() == EnemyController.Detection.ALERT){
+                System.out.println("found target");
+                entity.getStateMachine().changeState(CHASE);
+            }
+
+            //             Check if have arrived to patrol position
+            Vector2 cur_pos = worldToGrid(entity.getEnemy().getPosition());
+            float dist = cur_pos.dst(entity.nextNode.x, entity.nextNode.y);
+            if (dist <= 0.2f) entity.getStateMachine().changeState(LOOK_AROUND);
+            else{
+                Node target = entity.pathfinder.findNextNode(cur_pos, new Vector2(entity.nextNode.x, entity.nextNode.y));
+                if (target != null) {
+                    Vector2 target_world = gridToWorld(new Vector2(target.x, target.y));
+//                    System.out.println("moving to next node" + target.x + ", " + target.y);
+                    entity.setArriveSB(entity.getEnemy(), new Box2dLocation(target_world));
+                    entity.getEnemy().setSteeringBehavior(entity.arriveSB);
+//                System.out.println(target.x + ", "+target.y);
+                }
+                else{
+//                    System.out.println("target is null");
+                    entity.setArriveSB(entity.getEnemy(), new Box2dLocation(entity.getEnemy().getPosition()));
+                    entity.getEnemy().setSteeringBehavior(entity.arriveSB);
+//                System.out.println(entity.getEnemy().getPosition());
+//                entity.getStateMachine().changeState(LOOK_AROUND);
+                }
+
+            }
         }
 
         @Override
@@ -74,6 +106,7 @@ public enum EnemyState implements State<EnemyController> {
             entity.getEnemy().setIndependentFacing(true);
             entity.getEnemy().setLinearVelocity(Vector2.Zero);
             entity.getEnemy().setSteeringBehavior(entity.lookAroundSB);
+
         }
 
         @Override
@@ -85,6 +118,26 @@ public enum EnemyState implements State<EnemyController> {
         @Override
         public void exit(EnemyController entity) {
             entity.getEnemy().setIndependentFacing(false);
+        }
+    },
+
+    CHASE(){
+        @Override
+        public void update(EnemyController entity) {
+//            Vector2 cur_pos = worldToGrid(entity.getEnemy().getPosition());
+//            Node target = entity.pathfinder.findNextNode(cur_pos, new Vector2(entity.getTarget().getPosition()));
+//            if (target != null) {
+//                Vector2 target_world = gridToWorld(new Vector2(target.x, target.y));
+//                entity.setArriveSB(entity.getEnemy(), new Box2dLocation(target_world));
+//                entity.getEnemy().setSteeringBehavior(entity.arriveSB);
+//            }
+//            else{
+//                entity.setArriveSB(entity.getEnemy(), new Box2dLocation(entity.getEnemy().getPosition()));
+//                entity.getEnemy().setSteeringBehavior(entity.arriveSB);
+//            }
+            entity.setArriveSB(entity.getEnemy(), entity.getTarget());
+            entity.getEnemy().setSteeringBehavior(entity.arriveSB);
+
         }
     };
 
@@ -99,6 +152,14 @@ public enum EnemyState implements State<EnemyController> {
     @Override
     public boolean onMessage(EnemyController control, Telegram telegram) {
         return false;
+    }
+
+    public Vector2 worldToGrid(Vector2 world){
+        return new Vector2(world.x/LevelContainer.gridSize, world.y/LevelContainer.gridSize);
+    }
+
+    public Vector2 gridToWorld(Vector2 grid){
+        return new Vector2(grid.x*LevelContainer.gridSize, grid.y*LevelContainer.gridSize);
     }
 
 }

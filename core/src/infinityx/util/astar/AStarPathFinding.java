@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
-public class AStartPathFinding {
+public class AStarPathFinding {
     /**Map containing all the nodes in our level*/
     public final AStarMap map;
 
@@ -19,7 +19,7 @@ public class AStartPathFinding {
     /**Graph of nodes and edges. Used for A* pathfinding*/
     private final GraphPath<Connection<Node>> connectionPath;
 
-    public AStartPathFinding(AStarMap map) {
+    public AStarPathFinding(AStarMap map) {
         this.map = map;
         this.pathfinder = new IndexedAStarPathFinder<Node>(createGraph(map));
         this.connectionPath = new DefaultGraphPath<Connection<Node>>();
@@ -43,11 +43,13 @@ public class AStartPathFinding {
                 || sourceY < 0 || sourceY >= map.getHeight()
                 || targetX < 0 || targetX >= map.getWidth()
                 || targetY < 0 || targetY >= map.getHeight()) {
+            System.out.println("unknown null");
             return null;
         }
 
         Node sourceNode = map.getNodeAt(sourceX, sourceY);
         Node targetNode = map.getNodeAt(targetX, targetY);
+
         connectionPath.clear();
         pathfinder.searchConnectionPath(sourceNode, targetNode, heuristic, connectionPath);
 

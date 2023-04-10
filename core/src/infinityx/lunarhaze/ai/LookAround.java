@@ -42,8 +42,10 @@ public class LookAround extends ReachOrientation<Vector2> {
         super.calculateRealSteering(steering);
 
         if (steering.isZero()) {
+
             if (target.getOrientation() == target1) {
                 setTargetOrientation(target2);
+                finished = false;
             } else {
                 finished = true;
             }

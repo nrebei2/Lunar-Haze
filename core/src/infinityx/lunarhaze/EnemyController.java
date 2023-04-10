@@ -4,11 +4,11 @@ import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.fsm.StateMachine;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
-import com.badlogic.gdx.ai.steer.behaviors.Arrive;
-import com.badlogic.gdx.ai.steer.behaviors.PrioritySteering;
-import com.badlogic.gdx.ai.steer.behaviors.RaycastObstacleAvoidance;
+import com.badlogic.gdx.ai.steer.behaviors.*;
+import com.badlogic.gdx.ai.steer.utils.Path;
 import com.badlogic.gdx.ai.steer.utils.rays.CentralRayWithWhiskersConfiguration;
 import com.badlogic.gdx.ai.utils.Collision;
+import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.ai.utils.Ray;
 import com.badlogic.gdx.ai.utils.RaycastCollisionDetector;
 import com.badlogic.gdx.math.Interpolation;
@@ -19,7 +19,7 @@ import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.Werewolf;
 import infinityx.lunarhaze.physics.Box2DRaycastCollision;
 import infinityx.lunarhaze.physics.RaycastInfo;
-import infinityx.util.astar.AStartPathFinding;
+import infinityx.util.astar.AStarPathFinding;
 import infinityx.util.astar.Node;
 
 
@@ -64,7 +64,7 @@ public class EnemyController implements Telegraph {
 
     public Node nextNode;
 
-    public AStartPathFinding pathfinder;
+    public AStarPathFinding pathfinder;
 
     @Override
     public boolean handleMessage(Telegram msg) {
@@ -105,7 +105,7 @@ public class EnemyController implements Telegraph {
         IDLE,
     }
 
-    private enum Detection {
+    public enum Detection {
         /**
          * The enemy is alerted (Exclamation point!)
          */
@@ -168,8 +168,10 @@ public class EnemyController implements Telegraph {
     // Steering behaviors
     public Arrive<Vector2> arriveSB;
     public RaycastObstacleAvoidance<Vector2> collisionSB;
-    public PrioritySteering<Vector2> patrolSB;
+    public Seek<Vector2> patrolSB;
     public LookAround lookAroundSB;
+
+    public FollowPath followPathSB;
 
     /**
      * Creates an EnemyController for the enemy with the given id.
@@ -197,12 +199,14 @@ public class EnemyController implements Telegraph {
         this.raycastCollision = new Box2DRaycastCollision(container.getWorld(), raycast);
 
         // Steering behaviors
-        this.arriveSB = new Arrive<>(enemy, target);
+        this.arriveSB = new Arrive<>(enemy, null);
         arriveSB.setArrivalTolerance(0.1f);
         arriveSB.setDecelerationRadius(0.9f);
 
+//        this.followPathSB = new FollowPath<>(enemy, null);
+
         RaycastInfo collRay = new RaycastInfo(enemy);
-        collRay.addIgnores(GameObject.ObjectType.WEREWOLF, GameObject.ObjectType.HITBOX);
+//        collRay.addIgnores(GameObject.ObjectType.WEREWOLF, GameObject.ObjectType.HITBOX);
         RaycastCollisionDetector<Vector2> raycastCollisionDetector = new Box2DRaycastCollision(container.getWorld(), collRay);
 
         this.collisionSB = new RaycastObstacleAvoidance<>(
@@ -211,15 +215,17 @@ public class EnemyController implements Telegraph {
                 raycastCollisionDetector, 1
         );
 
-        this.patrolSB =
-                new PrioritySteering<>(enemy, 0.0001f)
-                        .add(collisionSB)
-                        .add(arriveSB);
+        this.patrolSB = new Seek<>(enemy, null);
 
         this.lookAroundSB = new LookAround(enemy, 160).
-                setAlignTolerance(MathUtils.degreesToRadians * 10);
+                setAlignTolerance(MathUtils.degreesToRadians * 1);
+
 
         this.pathfinder = container.pathfinder;
+    }
+
+    public void setPatrolSB(Enemy enemy, Location<Vector2> target){
+        this.patrolSB = new Seek<>(enemy, target);
     }
 
     /**
@@ -252,10 +258,14 @@ public class EnemyController implements Telegraph {
         return enemy;
     }
 
+    public Werewolf getTarget(){
+        return target;
+    }
+
     /**
      * @return the current detection the enemy has on the target
      */
-    private Detection getDetection(LevelContainer container) {
+    public Detection getDetection() {
         /* Area of interests:
          * Focused view - same angle as flashlight, extends between [0, 5]
          * Short distance - angle of 100, extends between [0, 3.5]
@@ -269,6 +279,7 @@ public class EnemyController implements Telegraph {
         raycastCollision.findCollision(collisionCache, new Ray<>(enemy.getPosition(), target.getPosition()));
 
         if (!raycast.hit) {
+            System.out.println("no ray hit");
             // For any reason...
             return Detection.NONE;
         }
@@ -280,15 +291,17 @@ public class EnemyController implements Telegraph {
         double degree = Math.abs(enemy.getOrientation() - enemy.vectorToAngle(enemyToPlayer));
 
         if (raycast.hitObject == target) {
-            if (degree <= enemy.getFlashlight().getConeDegree() / 2 && dist <= lerp.apply(0, 5, target.getStealth())) {
-                return Detection.ALERT;
-            }
-            if (degree <= 50 && dist <= lerp.apply(0f, 3.5f, target.getStealth())) {
-                return Detection.ALERT;
-            }
-            if (degree <= 90 && dist <= lerp.apply(0f, 1.75f, target.getStealth())) {
-                return Detection.ALERT;
-            }
+            System.out.println(" ray hit");
+//            if (degree <= enemy.getFlashlight().getConeDegree() / 2 && dist <= lerp.apply(0, 5, target.getStealth())) {
+//                return Detection.ALERT;
+//            }
+//            if (degree <= 50 && dist <= lerp.apply(0f, 3.5f, target.getStealth())) {
+//                return Detection.ALERT;
+//            }
+//            if (degree <= 90 && dist <= lerp.apply(0f, 1.75f, target.getStealth())) {
+//                return Detection.ALERT;
+//            }
+            if (degree <= enemy.getFlashlight().getConeDegree() / 2) return Detection.ALERT;
         }
 
         // target may be behind object, but enemy should still be able to hear
@@ -296,6 +309,12 @@ public class EnemyController implements Telegraph {
             return Detection.NOTICED;
         }
         return Detection.NONE;
+    }
+
+    public void setArriveSB(Enemy enemy, Location<Vector2> target){
+        this.arriveSB = new Arrive<>(enemy, target);
+        arriveSB.setArrivalTolerance(0.1f);
+        arriveSB.setDecelerationRadius(0.9f);
     }
 
     /**
@@ -432,7 +451,7 @@ public class EnemyController implements Telegraph {
                 MathUtils.random(enemy.getBottomLeftOfRegion().x, enemy.getTopRightOfRegion().x),
                 MathUtils.random(enemy.getBottomLeftOfRegion().y, enemy.getTopRightOfRegion().y)
         );
-        System.out.println("I found a point with x: " + random_point.x + ", y: " + random_point.y + "!");
+//        System.out.println("I found a point with x: " + random_point.x + ", y: " + random_point.y + "!");
         return random_point;
     }
 
