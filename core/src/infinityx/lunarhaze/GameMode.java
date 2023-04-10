@@ -1,13 +1,18 @@
 package infinityx.lunarhaze;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
+import infinityx.lunarhaze.GameplayController.GameState;
 import infinityx.lunarhaze.GameplayController.Phase;
 import infinityx.lunarhaze.graphics.CameraShake;
 import infinityx.lunarhaze.graphics.GameCanvas;
@@ -20,7 +25,7 @@ import infinityx.util.ScreenObservable;
  * This is the player mode class for running the game. It provides the
  * basic game loop (update-draw).
  */
-public class GameMode extends ScreenObservable implements Screen {
+public class GameMode extends ScreenObservable implements Screen, InputProcessor {
     /**
      * Need an ongoing reference to the asset directory
      */
@@ -55,6 +60,116 @@ public class GameMode extends ScreenObservable implements Screen {
      * Battle background music
      */
     private Music battle_background;
+    /**
+     * Background texture for paused screen
+     */
+    private Texture pause_menu;
+    /**
+     * Texture for paused screen resume
+     */
+    private Texture pause_resume;
+    /**
+     * Texture for paused screen restart
+     */
+    private Texture pause_restart;
+    /**
+     * Texture for paused screen review
+     */
+    private Texture pause_review;
+    /**
+     * Texture for paused screen exit
+     */
+    private Texture pause_exit;
+    /**
+     * Texture for paused screen quit
+     */
+    private Texture pause_quit;
+    /**
+     * The current state of the resume button
+     */
+    private int pressResumeState;
+    /**
+     * The current state of the restart button
+     */
+    private int pressRestartState;
+    /**
+     * The current state of the review button
+     */
+    private int pressReviewState;
+    /**
+     * The current state of the exit button
+     */
+    private int pressExitState;
+    /**
+     * The current state of the quit button
+     */
+    private int pressQuitState;
+    /**
+     * The x-coordinate of the center of the buttons
+     */
+    private int centerX;
+    /**
+     * The y-coordinate of the center of the buttons
+     */
+    private int centerYResume;
+    private int centerYRestart;
+    private int centerYReview;
+    private int centerYExit;
+    private int centerYQuit;
+    private static final float BUTTON_SCALE = 0.5f;
+    /**
+     * Ratio of play height from bottom
+     */
+    private static final float BACK_HEIGHT_RATIO = 0.45f;
+    /**
+     * Scaling factor for when the student changes the resolution.
+     */
+    private float scale;
+    /**
+     * Standard window size (for scaling)
+     */
+    private static final int STANDARD_WIDTH = 800;
+    /**
+     * Standard window height (for scaling)
+     */
+    private static final int STANDARD_HEIGHT = 700;
+    /**
+     * The height of the canvas window (necessary since sprite origin != screen origin)
+     */
+    private int heightY;
+    /**
+     * @return true if the player is ready to resume the game
+     */
+    public boolean isReadyResume() {
+        return pressResumeState == 2;
+    }
+    /**
+     * @return true if the player is ready to restart the game
+     */
+    public boolean isReadyRestart() {
+        return pressRestartState == 2;
+    }
+    /**
+     * @return true if the player is ready to review the setting
+     */
+    public boolean isReadyReview() {
+        return pressReviewState == 2;
+    }
+    /**
+     * @return true if the player is ready to exit to the menu
+     */
+    public boolean isReadyExit() {
+        return pressExitState == 2;
+    }
+    /**
+     * @return true if the player is ready to quit the game
+     */
+    public boolean isReadyQuit() {
+        return pressQuitState == 2;
+    }
+
+
+
 
     /**
      * Reference to drawing context to display graphics (VIEW CLASS)
@@ -131,6 +246,13 @@ public class GameMode extends ScreenObservable implements Screen {
         uiRender = new UIRender(UIFont_large, UIFont_small, directory);
         stealth_background = directory.getEntry("stealthBackground", Music.class);
         battle_background = directory.getEntry("battleBackground", Music.class);
+        pause_menu = directory.getEntry("pause", Texture.class);
+        pause_resume = directory.getEntry("pause-resume", Texture.class);
+        pause_restart = directory.getEntry("pause-restart", Texture.class);
+        pause_review = directory.getEntry("pause-review", Texture.class);
+        pause_exit = directory.getEntry("pause-exit", Texture.class);
+        pause_quit = directory.getEntry("pause-quit", Texture.class);
+
 //        win_sound = directory.getEntry("level-passed", Sound.class);
         System.out.println("gatherAssets called");
     }
@@ -158,7 +280,22 @@ public class GameMode extends ScreenObservable implements Screen {
                     play(delta);
                 }
                 break;
+            case PAUSED:
+                if(isReadyResume()){
+                    gameplayController.setState(GameState.PLAY);
+                    pressResumeState = 0;
+                }else if(isReadyRestart()){
+                    gameplayController.setState(GameState.PLAY);
+                    setupLevel();
+                    pressRestartState = 0;
+                }else if(isReadyQuit()){
+                    Gdx.app.exit();
+                }
+                break;
             case PLAY:
+                if(inputController.didExit()){
+                    gameplayController.setState(GameState.PAUSED);
+                }
                 switch (gameplayController.getPhase()){
                     case STEALTH:
                     case TRANSITION:
@@ -229,6 +366,26 @@ public class GameMode extends ScreenObservable implements Screen {
                 canvas.drawTextCentered("FAILURE!", displayFont, 0.0f);
                 canvas.end();
                 break;
+            case PAUSED:
+                canvas.begin(GameCanvas.DrawPass.SPRITE);
+                Color alphaTint = Color.WHITE;
+                canvas.drawOverlay(pause_menu, alphaTint, true);
+                Color tintResume = (pressResumeState == 1 ? Color.BLACK : Color.WHITE);
+                canvas.draw(pause_resume, tintResume, pause_resume.getWidth() / 2, pause_resume.getHeight() / 2,
+                        centerX, centerYResume, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
+                Color tintRestart = (pressRestartState == 1 ? Color.BLACK : Color.WHITE);
+                canvas.draw(pause_restart, tintRestart, pause_restart.getWidth() / 2, pause_restart.getHeight() / 2,
+                        centerX, centerYRestart, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
+                Color tintReview = (pressReviewState == 1 ? Color.BLACK : Color.WHITE);
+                canvas.draw(pause_review, tintReview, pause_review.getWidth() / 2, pause_review.getHeight() / 2,
+                        centerX, centerYReview, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
+                Color tintExit = (pressExitState == 1 ? Color.BLACK : Color.WHITE);
+                canvas.draw(pause_exit, tintExit, pause_exit.getWidth() / 2, pause_exit.getHeight() / 2,
+                        centerX, centerYExit, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
+                Color tintQuit = (pressQuitState == 1 ? Color.BLACK : Color.WHITE);
+                canvas.draw(pause_quit, tintQuit, pause_quit.getWidth() / 2, pause_quit.getHeight() / 2,
+                        centerX, centerYQuit, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
+                canvas.end();
             case PLAY:
                 Phase phase = gameplayController.getPhase();
                 uiRender.drawUI(canvas, levelContainer, phase, gameplayController);
@@ -241,6 +398,12 @@ public class GameMode extends ScreenObservable implements Screen {
      */
     public void show() {
 //        setupLevel();
+        pressResumeState = 0;
+        pressRestartState = 0;
+        pressReviewState = 0;
+        pressExitState = 0;
+        pressQuitState = 0;
+        Gdx.input.setInputProcessor(this);
     }
 
     /**
@@ -254,9 +417,12 @@ public class GameMode extends ScreenObservable implements Screen {
         update(delta);
         draw(delta);
 
-        if (inputController.didExit() && observer != null) {
+        if (isReadyExit() && observer != null) {
             observer.exitScreen(this, GO_MENU);
         }
+//        if (isReadyQuit() && observer != null) {
+//            observer.exitScreen(this, GO_EXIT);
+//        }
 
         if (gameplayController.getPhase() == Phase.ALLOCATE && observer != null){
             observer.exitScreen(this, GO_ALLOCATE);
@@ -282,6 +448,17 @@ public class GameMode extends ScreenObservable implements Screen {
      * @see ApplicationListener#resize(int, int)
      */
     public void resize(int width, int height) {
+        float sx = ((float) width) / STANDARD_WIDTH;
+        float sy = ((float) height) / STANDARD_HEIGHT;
+        scale = (sx < sy ? sx : sy);
+
+        centerYResume = (int) (BACK_HEIGHT_RATIO * height);
+        centerYRestart = centerYResume - pause_resume.getHeight();
+        centerYReview = centerYRestart - pause_restart.getHeight();
+        centerYExit = centerYReview - pause_review.getHeight();
+        centerYQuit = centerYExit - pause_exit.getHeight();
+        centerX = width / 2;
+        heightY = height;
 
     }
 
@@ -307,4 +484,98 @@ public class GameMode extends ScreenObservable implements Screen {
     }
 
 
+    @Override
+    public boolean keyDown(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        if (pause_resume == null || pressResumeState == 2) {
+            return true;
+        }
+        // Flip to match graphics coordinates
+        screenY = heightY - screenY;
+
+        //System.out.printf("%d, %d", screenX, screenY);
+
+        // TODO: Fix scaling
+        // Button are rectangles with same x-coordinate and shapes.
+        float x = BUTTON_SCALE * scale * pause_resume.getWidth()/2;
+        float distX = Math.abs(screenX - centerX);
+        float y = BUTTON_SCALE * scale * pause_resume.getHeight()/2;
+
+        float distYResume = Math.abs(screenY - centerYResume);
+        if(distX < x && distYResume <y){
+            pressResumeState =1;
+        }
+        float distYRestart = Math.abs(screenY - centerYRestart);
+        if(distX < x && distYRestart <y){
+            pressRestartState =1;
+        }
+        float distYReview = Math.abs(screenY - centerYReview);
+        if(distX < x && distYReview <y){
+            pressReviewState =1;
+        }
+        float distYExit = Math.abs(screenY - centerYExit);
+        if(distX < x && distYExit <y){
+            pressExitState =1;
+        }
+        float distYQuit = Math.abs(screenY - centerYQuit);
+        if(distX < x && distYQuit <y){
+            pressQuitState =1;
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        if (pressResumeState == 1) {
+            pressResumeState = 2;
+            return false;
+        }
+        if (pressRestartState == 1) {
+            pressRestartState = 2;
+            return false;
+        }
+        if (pressReviewState == 1) {
+            pressReviewState = 2;
+            return false;
+        }
+        if (pressExitState == 1) {
+            pressExitState = 2;
+            return false;
+        }
+        if (pressQuitState == 1) {
+            pressQuitState = 2;
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return false;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        return false;
+    }
+
+    @Override
+    public boolean scrolled(float amountX, float amountY) {
+        return false;
+    }
 }

@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.utils.Array;
 import infinityx.assets.AssetDirectory;
+import infinityx.lunarhaze.GameplayController.GameState;
 import infinityx.lunarhaze.GameplayController.Phase;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.Werewolf;
@@ -205,48 +206,50 @@ public class UIRender {
      * @param phase  current phase of the game
      */
     public void drawUI(GameCanvas canvas, LevelContainer level, GameplayController.Phase phase, GameplayController gameplayController) {
-        setFontColor(Color.WHITE);
+        if(gameplayController.getState()== GameState.PLAY) {
+            setFontColor(Color.WHITE);
 
-        // Draw with view transform considered
-        canvas.begin(GameCanvas.DrawPass.SHAPE, level.getView().x, level.getView().y);
+            // Draw with view transform considered
+            canvas.begin(GameCanvas.DrawPass.SHAPE, level.getView().x, level.getView().y);
 
-        if(gameplayController.getCollectingMoonlight()) {
-             canvas.drawCollectLightBar(BAR_WIDTH / 2, BAR_HEIGHT / 2,
-                 gameplayController.getTimeOnMoonlightPercentage(), level.getPlayer());
-        }
-
-        if (phase == Phase.BATTLE) {
-            for (Enemy enemy : level.getEnemies()) {
-                canvas.drawEnemyHpBars(
-                        BAR_WIDTH / 4.0f, BAR_HEIGHT / 4.0f, enemy
-                );
+            if (gameplayController.getCollectingMoonlight()) {
+                canvas.drawCollectLightBar(BAR_WIDTH / 2, BAR_HEIGHT / 2,
+                        gameplayController.getTimeOnMoonlightPercentage(), level.getPlayer());
             }
-            if (level.getPlayer().drawCooldownBar()) {
-                canvas.drawAttackCooldownBar(10f, 60f, 65f, level.getPlayer());
+
+            if (phase == Phase.BATTLE) {
+                for (Enemy enemy : level.getEnemies()) {
+                    canvas.drawEnemyHpBars(
+                            BAR_WIDTH / 4.0f, BAR_HEIGHT / 4.0f, enemy
+                    );
+                }
+                if (level.getPlayer().drawCooldownBar()) {
+                    canvas.drawAttackCooldownBar(10f, 60f, 65f, level.getPlayer());
+                }
             }
+            canvas.end();
+
+            // Draw with view transform not considered
+            canvas.begin(GameCanvas.DrawPass.SPRITE);
+            // Draw top stroke at the top center of screen
+            drawLevelStats(canvas, phase, gameplayController);
+            if (phase == Phase.STEALTH) {
+                drawHealthStats(canvas, level, phase);
+                drawMoonlightStats(canvas, level);
+                drawStealthStats(canvas, level);
+            } else if (phase == Phase.BATTLE) {
+                drawHealthStats(canvas, level, phase);
+            }
+            canvas.end();
+
+            canvas.begin(GameCanvas.DrawPass.SHAPE);
+            // If necessary draw screen flash
+            ScreenFlash.update(Gdx.graphics.getDeltaTime());
+            canvas.drawScreenFlash(level.getPlayer());
+            canvas.end();
+
+            drawStealthIndicator(canvas, level);
         }
-        canvas.end();
-
-        // Draw with view transform not considered
-        canvas.begin(GameCanvas.DrawPass.SPRITE);
-        // Draw top stroke at the top center of screen
-        drawLevelStats(canvas, phase, gameplayController);
-        if (phase == Phase.STEALTH) {
-            drawHealthStats(canvas, level, phase);
-            drawMoonlightStats(canvas, level);
-            drawStealthStats(canvas, level);
-        } else if (phase == Phase.BATTLE){
-            drawHealthStats(canvas, level, phase);
-        }
-        canvas.end();
-
-        canvas.begin(GameCanvas.DrawPass.SHAPE);
-        // If necessary draw screen flash
-        ScreenFlash.update(Gdx.graphics.getDeltaTime());
-        canvas.drawScreenFlash(level.getPlayer());
-        canvas.end();
-
-        drawStealthIndicator(canvas, level);
     }
 
     public void setFontColor(Color color){
