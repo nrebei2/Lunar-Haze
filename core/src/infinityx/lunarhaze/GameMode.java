@@ -155,6 +155,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
      * The height of the canvas window (necessary since sprite origin != screen origin)
      */
     private int heightY;
+
     /**
      * @return true if the player is ready to resume the game
      */
@@ -372,8 +373,6 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
      * Draw the game mode.
      */
     public void draw(float delta) {
-        canvas.clear();
-
         // Puts player at center of canvas
         levelContainer.setViewTranslation(
                 -canvas.WorldToScreenX(levelContainer.getPlayer().getPosition().x) + canvas.getWidth() / 2,

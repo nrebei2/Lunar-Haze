@@ -3,6 +3,7 @@ package infinityx.lunarhaze;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -484,6 +485,9 @@ public class LevelContainer {
         return view;
     }
 
+
+    public Color backgroundColor = new Color(0x0f4f47ff).mul(0.8f);
+
     /**
      * Draws the entire scene to the canvas
      *
@@ -491,6 +495,7 @@ public class LevelContainer {
      */
     public void drawLevel(GameCanvas canvas) {
         garbageCollect();
+        canvas.clear(backgroundColor);
 
         //Camera shake logic
         if (CameraShake.timeLeft() > 0) {

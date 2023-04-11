@@ -138,7 +138,7 @@
     },
     "texture": {
       "name": "static",
-      "origin": [1150, 500],
+      "origin": [1010, 500],
       "scale": 0.15
     },
     "colliders": {

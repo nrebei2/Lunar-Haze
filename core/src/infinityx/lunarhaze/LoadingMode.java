@@ -341,15 +341,20 @@ public class LoadingMode extends ScreenObservable implements Screen {
 
 
         TextureRegion currentFrame = moonAnimation.getKeyFrame(stateTime, true);
-        canvas.draw(currentFrame, centerX-100, centerY-60);
+        canvas.draw(currentFrame, centerX-100, centerY);
 
         canvas.end();
     }
 
     private void drawBackground(GameCanvas canvas){
         canvas.drawOverlay(background, alphaTint, true);
-        canvas.draw(title, alphaTint, title.getWidth() / 2,title.getHeight()/2,canvas.getWidth()/2,canvas.getHeight()/16*11,0,0.2f,0.2f);
-        canvas.draw(studios, alphaTint,studios.getWidth() / 2,studios.getHeight()/2,canvas.getWidth()/2,canvas.getHeight()/16*6,0,0.2f,0.2f);
+        canvas.draw(title, alphaTint, title.getWidth() / 2,title.getHeight()/2,canvas.getWidth()/2,canvas.getHeight()/2,0,0.2f,0.2f);
+        canvas.draw(
+                studios, alphaTint,
+                studios.getWidth() / 2,studios.getHeight()/2,
+                canvas.getWidth()/2,canvas.getHeight()/2 - 230,
+                0,0.2f,0.2f
+        );
     }
 
     // ADDITIONAL SCREEN METHODS

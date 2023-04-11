@@ -87,12 +87,11 @@ public enum PlayerState implements State<PlayerController> {
             // Handle state transitions
             if (entity.isAttacking()) {
                 entity.getStateMachine().changeState(PlayerState.ATTACK);
+            }
+            else if (entity.player.getLinearVelocity().isZero()) {
+                entity.getStateMachine().changeState(PlayerState.IDLE);
             } else if (!entity.getInputController().didRun()) {
-                if (entity.player.getLinearVelocity().isZero()) {
-                    entity.getStateMachine().changeState(PlayerState.IDLE);
-                } else {
-                    entity.getStateMachine().changeState(PlayerState.WALK);
-                }
+                entity.getStateMachine().changeState(PlayerState.WALK);
             }
 
             // Animations

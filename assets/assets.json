@@ -223,7 +223,7 @@
       }
     },
     "werewolf": {
-      "file": 	"images/player/front_still.png",
+      "file": 	"images/player/right_still.png",
       "wrap":  	false,
       "sprites":	{
         "idle-r" : {
