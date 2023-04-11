@@ -27,7 +27,7 @@ public enum EnemyState implements State<EnemyController> {
     INIT() {
         @Override
         public void update(EnemyController entity) {
-            entity.getStateMachine().changeState(ALERT);
+            entity.getStateMachine().changeState(PATROL);
         }
     },
 
@@ -146,7 +146,7 @@ public enum EnemyState implements State<EnemyController> {
            Vector2 player_pos = worldToGrid(entity.getTarget().getPosition());
            Path path = entity.pathfinder.findPath(cur_pos, player_pos, entity.raycastCollisionDetector);
            if (path!= null) {
-               entity.followPathSB = new FollowPath(entity.getEnemy(), path, 0, 0.05f);
+               entity.followPathSB = new FollowPath(entity.getEnemy(), path, 0, 0.5f);
                entity.getEnemy().setSteeringBehavior(entity.followPathSB);
            }
             MessageManager.getInstance().dispatchMessage(TacticalManager.ADD, entity);
@@ -180,7 +180,7 @@ public enum EnemyState implements State<EnemyController> {
                 Vector2 cur_pos = worldToGrid(control.getEnemy().getPosition());
                 Path path = control.pathfinder.findPath(cur_pos, flank_pos, control.raycastCollisionDetector);
                 if (path != null){
-                    control.followPathSB = new FollowPath(control.getEnemy(), path, 0, 0.05f);
+                    control.followPathSB = new FollowPath(control.getEnemy(), path, 0, 0.5f);
                     control.getEnemy().setSteeringBehavior(control.followPathSB);
                 }
 
@@ -208,7 +208,7 @@ public enum EnemyState implements State<EnemyController> {
 
             Path path = entity.pathfinder.findPath(cur_pos, new Vector2(entity.nextNode.x, entity.nextNode.y), entity.raycastCollisionDetector);
             if (path!= null) {
-                entity.followPathSB = new FollowPath(entity.getEnemy(), path, 0, 0.1f);
+                entity.followPathSB = new FollowPath(entity.getEnemy(), path, 0, 0.5f);
                 entity.getEnemy().setSteeringBehavior(entity.followPathSB);
             }
 
