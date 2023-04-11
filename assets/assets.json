@@ -92,6 +92,26 @@
         }
       }
     },
+    "forest": {
+      "file": "images/forest.png",
+      "sprites":	{
+        "static" : {
+          "size" : 1,
+          "rows" : 1,
+          "cols" : 1
+        }
+      }
+    },
+    "fores": {
+      "file": "images/fores.png",
+      "sprites":	{
+        "static" : {
+          "size" : 1,
+          "rows" : 1,
+          "cols" : 1
+        }
+      }
+    },
     "stone": {
       "file": "images/stone1.png",
       "sprites":	{
