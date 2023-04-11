@@ -45,6 +45,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     private ImGuiImplGlfw imGuiGlfw;
     private ImGuiImplGl3 imGuiGl3;
 
+    /** ImGui initialization */
     public void setupImGui() {
         // ImGui initialization
         this.imGuiGlfw = new ImGuiImplGlfw();
@@ -179,7 +180,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     }
 
     /**
-     * Called when this screen becomes the current screen for a {@link Game}.
+     * Called when this screen becomes the current screen for a {@link com.badlogic.gdx.Game}.
      */
     @Override
     public void show() {
@@ -233,7 +234,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         ImGui.newFrame();
 
         // --- ImGUI draw commands go here ---
-        ImGui.button("I'm a Button!");
+        ImGui.showDemoWindow();
+        ImGui.imageButton(selected.texture.getTextureObjectHandle(), 200, 200 * 3/4);
         // ---
 
         ImGui.render();
@@ -342,6 +344,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        if (ImGui.getIO().getWantCaptureMouse()) return false;
+
         if (selected == null) {
             return false;
         }
@@ -374,6 +378,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
+        if (ImGui.getIO().getWantCaptureMouse()) return false;
+
         mouseWorld.set(canvas.ScreenToWorldX(Gdx.input.getX()), canvas.ScreenToWorldY(Gdx.input.getY()));
         if (selected == null) {
             return false;
@@ -400,6 +406,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
+        if (ImGui.getIO().getWantCaptureMouse()) return false;
         // Cursor world position
         mouseWorld.set(canvas.ScreenToWorldX(Gdx.input.getX()), canvas.ScreenToWorldY(Gdx.input.getY()));
         //System.out.printf("mouse world: (%f, %f)\n", mouseWorld.x, mouseWorld.y);
