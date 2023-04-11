@@ -436,7 +436,8 @@ public class Werewolf extends GameObject implements Location<Vector2> {
         attackHitbox.setActive(false);
     }
 
-    /** public void resolveAttack(GameObject enemy, int damage, float knockback) {
+    /**
+     public void resolveAttack(GameObject enemy, int damage, float knockback) {
 
         Body enemyBody = enemy.getBody();
         Vector2 pos = body.getPosition();
