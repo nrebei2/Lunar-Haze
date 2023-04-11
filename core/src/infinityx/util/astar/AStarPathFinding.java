@@ -49,9 +49,10 @@ public class AStarPathFinding {
                 || sourceY < 0 || sourceY >= map.getHeight()
                 || targetX < 0 || targetX >= map.getWidth()
                 || targetY < 0 || targetY >= map.getHeight()) {
-            System.out.println("unknown null");
             return null;
         }
+
+
 
         Node sourceNode = map.getNodeAt(sourceX, sourceY);
         Node targetNode = map.getNodeAt(targetX, targetY);
@@ -59,20 +60,24 @@ public class AStarPathFinding {
         connectionPath.clear();
         pathfinder.searchNodePath(sourceNode, targetNode, heuristic, connectionPath);
 
-
-        PathSmoother smoother = new PathSmoother(ray);
-        int removed = smoother.smoothPath(connectionPath);
-        System.out.println("removed " + removed);
+//
+//        PathSmoother smoother = new PathSmoother(ray);
+//        int removed = smoother.smoothPath(connectionPath);
+//        System.out.println("removed " + removed);
 
         if (connectionPath.getCount() < 2){
             return null;
         }
+        System.out.println("source "  + sourceNode.wx + ", " + sourceNode.wy );
+        System.out.println("target " + targetNode.wx + ", " + targetNode.wy );
 
+        System.out.println("start of path");
         Array<Vector2> waypoints = new Array<>();
         for (int i = 0; i < connectionPath.getCount(); i++) {
             Node node = connectionPath.get(i);
             waypoints.add(new Vector2(node.wx, node.wy));
         }
+        System.out.println(waypoints);
         Path path = new LinePath(waypoints);
 
         return path;

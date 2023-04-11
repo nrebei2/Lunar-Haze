@@ -25,7 +25,7 @@ public enum EnemyState implements State<EnemyController> {
     INIT() {
         @Override
         public void update(EnemyController entity) {
-            entity.getStateMachine().changeState(PATROL);
+            entity.getStateMachine().changeState(ALERT);
         }
     },
 
@@ -139,8 +139,15 @@ public enum EnemyState implements State<EnemyController> {
        public void enter(EnemyController entity) {
             System.out.println("!");
             entity.getEnemy().setDetection(Enemy.Detection.ALERT);
-            entity.setArriveSB(entity.getEnemy(), entity.getTarget());
-            entity.getEnemy().setSteeringBehavior(entity.arriveSB);
+
+           Vector2 cur_pos = worldToGrid(entity.getEnemy().getPosition());
+           Vector2 player_pos = worldToGrid(entity.getTarget().getPosition());
+           Path path = entity.pathfinder.findPath(cur_pos, player_pos, entity.raycastCollisionDetector);
+           if (path!= null) {
+               entity.followPathSB = new FollowPath(entity.getEnemy(), path, 0, 0.1f);
+               entity.getEnemy().setSteeringBehavior(entity.followPathSB);
+           }
+
         }
 
         @Override
@@ -200,7 +207,8 @@ public enum EnemyState implements State<EnemyController> {
 //            }
 
             //             Check if have arrived to patrol position
-            float dist = entity.getEnemy().getPosition().dst(entity.nextNode.wx, entity.nextNode.wy);
+            Vector2 cur_pos = new Vector2(entity.getEnemy().getPosition().x, entity.getEnemy().getY());
+            float dist = cur_pos.dst(entity.nextNode.wx, entity.nextNode.wy);
             if (dist <= 0.1f) entity.getStateMachine().changeState(LOOK_AROUND);
         }
 
