@@ -35,6 +35,17 @@ public class GDXRoot extends Game implements ScreenObserver {
     private MenuMode menu;
 
     /**
+     * Setting Screen
+     */
+    private SettingMode setting;
+
+    /**
+     * About us Screen
+     */
+    private AboutUsMode aboutUs;
+
+
+    /**
      * Allocate Screen
      */
     private AllocateScreen allocate;
@@ -63,6 +74,8 @@ public class GDXRoot extends Game implements ScreenObserver {
         loading = new LoadingMode("assets.json", canvas, 1);
         game = new GameMode(canvas);
         menu = new MenuMode(canvas);
+        setting = new SettingMode(canvas);
+        aboutUs = new AboutUsMode(canvas);
         allocate = new AllocateScreen(canvas, game);
         editor = new EditorMode(canvas);
 
@@ -70,6 +83,8 @@ public class GDXRoot extends Game implements ScreenObserver {
         loading.setObserver(this);
         game.setObserver(this);
         menu.setObserver(this);
+        setting.setObserver(this);
+        aboutUs.setObserver(this);
         allocate.setObserver(this);
         editor.setObserver(this);
 
@@ -87,6 +102,8 @@ public class GDXRoot extends Game implements ScreenObserver {
         game.dispose();
         allocate.dispose();
         menu.dispose();
+        setting.dispose();
+        aboutUs.dispose();
 
         canvas.dispose();
         canvas = null;
@@ -128,6 +145,8 @@ public class GDXRoot extends Game implements ScreenObserver {
             // All assets are now loaded
             directory = loading.getAssets();
             menu.gatherAssets(directory);
+            setting.gatherAssets(directory);
+            aboutUs.gatherAssets(directory);
             allocate.gatherAssets(directory);
             game.gatherAssets(directory);
             editor.gatherAssets(directory);
@@ -148,6 +167,27 @@ public class GDXRoot extends Game implements ScreenObserver {
                     game.setLevel(menu.getLevelSelected());
                     game.setupLevel();
                     setScreen(game);
+                    break;
+                case MenuMode.GO_SETTING:
+                    setScreen(setting);
+                    break;
+                case MenuMode.GO_ABOUT_US:
+                    setScreen(aboutUs);
+                    break;
+                case MenuMode.GO_EXIT:
+                    Gdx.app.exit();
+                    break;
+            }
+        }else if (screen == setting){
+            switch(exitCode){
+                case SettingMode.GO_MENU:
+                    setScreen(menu);
+                    break;
+            }
+        }else if(screen == aboutUs){
+            switch (exitCode) {
+                case AboutUsMode.GO_MENU:
+                    setScreen(menu);
                     break;
             }
         } else if (screen == game) {

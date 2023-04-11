@@ -1,6 +1,7 @@
 package infinityx.lunarhaze.entity;
 
 import box2dLight.PointLight;
+import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Polygon;
@@ -9,14 +10,17 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
+import infinityx.lunarhaze.GameObject;
 import infinityx.lunarhaze.LevelContainer;
 import infinityx.lunarhaze.SteeringGameObject;
 import infinityx.lunarhaze.combat.AttackHitbox;
+import infinityx.util.Box2dLocation;
+import infinityx.util.Box2dSteeringUtils;
 
 /**
  * Model class representing the player.
  */
-public class Werewolf extends SteeringGameObject {
+public class Werewolf extends GameObject implements Location<Vector2> {
     /**
      * Initial light value of the werewolf is 0.0
      **/
@@ -376,7 +380,7 @@ public class Werewolf extends SteeringGameObject {
      * Initialize a werewolf.
      */
     public Werewolf() {
-        super(false);
+        super();
         animeframe = 0.0f;
         lockoutTime = 0.0f;
         moonlight = false;
@@ -467,4 +471,28 @@ public class Werewolf extends SteeringGameObject {
         filmstrip.setFrame(isAttacking ? 1 : 0);
     }
 
+    @Override
+    public float getOrientation() {
+        return body.getAngle();
+    }
+
+    @Override
+    public void setOrientation(float orientation) {
+        body.setTransform(getPosition(), orientation);
+    }
+
+    @Override
+    public float vectorToAngle(Vector2 vector) {
+        return Box2dSteeringUtils.vectorToAngle(vector);
+    }
+
+    @Override
+    public Vector2 angleToVector(Vector2 outVector, float angle) {
+        return Box2dSteeringUtils.angleToVector(outVector, angle);
+    }
+
+    @Override
+    public Location<Vector2> newLocation() {
+        return new Box2dLocation(this.getPosition());
+    }
 }

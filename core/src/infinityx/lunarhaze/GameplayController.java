@@ -39,6 +39,7 @@ public class GameplayController {
     public enum GameState {
         PLAY,
         OVER,
+        PAUSED,
         WIN
     }
 
@@ -127,6 +128,7 @@ public class GameplayController {
     public GameState getState() {
         return gameState;
     }
+    public void setState(GameState s) { gameState = s; }
 
     public float getTimeOnMoonlightPercentage(){return playerController.getTimeOnMoonlightPercentage();}
 

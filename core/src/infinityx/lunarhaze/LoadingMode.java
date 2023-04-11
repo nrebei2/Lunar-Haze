@@ -22,12 +22,17 @@ package infinityx.lunarhaze;
  * Updated asset version, 2/6/2021
  */
 
+import com.badlogic.gdx.ApplicationListener;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.math.Vector2;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.util.ScreenObservable;
@@ -35,7 +40,7 @@ import infinityx.util.ScreenObservable;
 /**
  * Class that provides a loading screen for the state of the game.
  */
-public class LoadingMode extends ScreenObservable implements Screen {
+public class LoadingMode extends ScreenObservable implements Screen, ApplicationListener {
 
     /**
      * Track the current state of the loading screen.
@@ -61,35 +66,29 @@ public class LoadingMode extends ScreenObservable implements Screen {
      */
     private final Texture background;
     /**
-     * Texture atlas to support a progress bar
+     * Game Title texture
      */
-    private final Texture statusBar;
-
-    // statusBar is a "texture atlas." Break it up into parts.
+    private final Texture title;
     /**
-     * Left cap to the status background (grey region)
+     * Studio Logo texture
      */
-    private final TextureRegion statusBkgLeft;
+    private final Texture studios;
     /**
-     * Middle portion of the status background (grey region)
+     * Moonphase texture
      */
-    private final TextureRegion statusBkgMiddle;
+    private final Texture moonphase;
     /**
-     * Right cap to the status background (grey region)
+     * Animation used for the moonphase
      */
-    private final TextureRegion statusBkgRight;
+    Animation<TextureRegion> moonAnimation; // Must declare frame type (TextureRegion)
     /**
-     * Left cap to the status forground (colored region)
+     * SpriteBatch used for the moonphase
      */
-    private final TextureRegion statusFrgLeft;
+    SpriteBatch spriteBatch;
     /**
-     * Middle portion of the status forground (colored region)
+     * A variable used to track the time for animation
      */
-    private final TextureRegion statusFrgMiddle;
-    /**
-     * Right cap to the status forground (colored region)
-     */
-    private final TextureRegion statusFrgRight;
+    float stateTime;
 
     /**
      * Default budget for asset loader (do nothing but load 60 fps)
@@ -252,16 +251,9 @@ public class LoadingMode extends ScreenObservable implements Screen {
         // Load the next two images immediately.
         background = internal.getEntry("background", Texture.class);
         background.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-        statusBar = internal.getEntry("progress", Texture.class);
-
-        // Break up the status bar texture into regions
-        statusBkgLeft = internal.getEntry("progress.backleft", TextureRegion.class);
-        statusBkgRight = internal.getEntry("progress.backright", TextureRegion.class);
-        statusBkgMiddle = internal.getEntry("progress.background", TextureRegion.class);
-
-        statusFrgLeft = internal.getEntry("progress.foreleft", TextureRegion.class);
-        statusFrgRight = internal.getEntry("progress.foreright", TextureRegion.class);
-        statusFrgMiddle = internal.getEntry("progress.foreground", TextureRegion.class);
+        moonphase = internal.getEntry("moonphase", Texture.class);
+        studios = internal.getEntry("studio", Texture.class);
+        title = internal.getEntry("title", Texture.class);
 
         // No progress so far.
         progress = 0;
@@ -272,6 +264,7 @@ public class LoadingMode extends ScreenObservable implements Screen {
         active = true;
 
         loadingState = LoadingState.FADE_IN;
+        create();
     }
 
     /**
@@ -340,46 +333,19 @@ public class LoadingMode extends ScreenObservable implements Screen {
         switch (loadingState) {
             case FADE_OUT:
             case FADE_IN:
-                canvas.drawOverlay(background, alphaTint, true);
+                drawBackground(canvas);
                 break;
             case LOAD:
-                canvas.drawOverlay(background, alphaTint, true);
-                drawProgress(canvas);
+                drawBackground(canvas);
                 break;
         }
         canvas.end();
     }
 
-    /**
-     * Updates the progress bar according to loading progress
-     * <p>
-     * The progress bar is composed of parts: two rounded caps on the end,
-     * and a rectangle in a middle.  We adjust the size of the rectangle in
-     * the middle to represent the amount of progress.
-     *
-     * @param canvas The drawing context
-     */
-    private void drawProgress(GameCanvas canvas) {
-        canvas.draw(statusBkgLeft, Color.WHITE, centerX - width / 2, centerY,
-                scale * statusBkgLeft.getRegionWidth(), scale * statusBkgLeft.getRegionHeight());
-        canvas.draw(statusBkgRight, Color.WHITE, centerX + width / 2 - scale * statusBkgRight.getRegionWidth(), centerY,
-                scale * statusBkgRight.getRegionWidth(), scale * statusBkgRight.getRegionHeight());
-        canvas.draw(statusBkgMiddle, Color.WHITE, centerX - width / 2 + scale * statusBkgLeft.getRegionWidth(), centerY,
-                width - scale * (statusBkgRight.getRegionWidth() + statusBkgLeft.getRegionWidth()),
-                scale * statusBkgMiddle.getRegionHeight());
-
-        canvas.draw(statusFrgLeft, Color.WHITE, centerX - width / 2, centerY,
-                scale * statusFrgLeft.getRegionWidth(), scale * statusFrgLeft.getRegionHeight());
-        if (progress > 0) {
-            float span = progress * (width - scale * (statusFrgLeft.getRegionWidth() + statusFrgRight.getRegionWidth())) / 2.0f;
-            canvas.draw(statusFrgRight, Color.WHITE, centerX - width / 2 + scale * statusFrgLeft.getRegionWidth() + span, centerY,
-                    scale * statusFrgRight.getRegionWidth(), scale * statusFrgRight.getRegionHeight());
-            canvas.draw(statusFrgMiddle, Color.WHITE, centerX - width / 2 + scale * statusFrgLeft.getRegionWidth(), centerY,
-                    span, scale * statusFrgMiddle.getRegionHeight());
-        } else {
-            canvas.draw(statusFrgRight, Color.WHITE, centerX - width / 2 + scale * statusFrgLeft.getRegionWidth(), centerY,
-                    scale * statusFrgRight.getRegionWidth(), scale * statusFrgRight.getRegionHeight());
-        }
+    private void drawBackground(GameCanvas canvas){
+        canvas.drawOverlay(background, alphaTint, true);
+        canvas.draw(title,Color.WHITE,0.8f*canvas.getWidth()/2,canvas.getHeight()/8*3,0.8f*canvas.getWidth()/2,canvas.getHeight()/8*3,0,0.2f,0.2f);
+        canvas.draw(studios,Color.WHITE,canvas.getWidth()/2,canvas.getHeight()/16*5,canvas.getWidth()/2,canvas.getHeight()/16*5,0,0.2f,0.2f);
     }
 
     // ADDITIONAL SCREEN METHODS
@@ -396,7 +362,24 @@ public class LoadingMode extends ScreenObservable implements Screen {
         if (active) {
             update(delta);
             draw(delta);
+            render();
         }
+    }
+
+    @Override
+    public void create() {
+        TextureRegion[][] moonTextures = TextureRegion.split(moonphase, moonphase.getWidth() / 13,
+                moonphase.getHeight() / 1);
+        TextureRegion[] moonFrames = new TextureRegion[13 * 1];
+        int index = 0;
+        for (int i = 0; i < 1; i++) {
+            for (int j = 0; j < 13; j++) {
+                moonFrames[index++] = moonTextures[i][j];
+            }
+        }
+        moonAnimation = new Animation<TextureRegion>(0.45f, moonFrames);
+        spriteBatch = new SpriteBatch();
+        stateTime = 0f;
     }
 
     /**
@@ -418,6 +401,15 @@ public class LoadingMode extends ScreenObservable implements Screen {
         centerY = (int) (BAR_HEIGHT_RATIO * height);
         centerX = width / 2;
         heightY = height;
+    }
+
+    @Override
+    public void render() {
+            stateTime += Gdx.graphics.getDeltaTime();
+            TextureRegion currentFrame = moonAnimation.getKeyFrame(stateTime, true);
+            spriteBatch.begin();
+            spriteBatch.draw(currentFrame, centerX-80, centerY-100); // Draw current frame at (50, 50)
+            spriteBatch.end();
     }
 
     /**
