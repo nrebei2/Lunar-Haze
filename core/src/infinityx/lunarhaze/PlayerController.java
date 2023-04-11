@@ -184,7 +184,7 @@ public class PlayerController {
         player.addMoonlightCollected();
         collect_sound.play(0.8f);
         player.setLight(player.getLight() + (Werewolf.MAX_LIGHT / levelContainer.getTotalMoonlight()));
-//        PlayerAttackHandler.setAttackPower(player.getAttackPower());
+        //        PlayerAttackHandler.setAttackPower(player.getAttackPower());
     }
 
     /**
@@ -269,8 +269,7 @@ public class PlayerController {
      */
     public void allocateAttackRange(){
         player.reduceMoonlightCollected();
-        // TODO: multiply player's attack range by (1 + ADD_RANGE_AMOUNT)
-        player.setAttackRange(player.getAttackRange() * (1 + ADD_RANGE_AMOUNT));
+        player.setAttackRange(player.getAttackRange() + ADD_RANGE_AMOUNT);
     }
 
     /**

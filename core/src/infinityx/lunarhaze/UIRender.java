@@ -151,6 +151,21 @@ public class UIRender {
     private final Texture noticed;
 
     /**
+     * Whether heart indicator length has been changed
+     */
+    boolean changed = false;
+
+    /**
+     * Store HP value of last frame
+     */
+    int last_hp = Werewolf.INITIAL_HP;
+
+    /**
+     * Store moonlight collected of last frame
+     */
+    int last_moon = 0;
+
+    /**
      * Texture of represent enemy alert
      */
     private final Texture alert;
@@ -210,7 +225,7 @@ public class UIRender {
         // Draw with view transform considered
         canvas.begin(GameCanvas.DrawPass.SHAPE, level.getView().x, level.getView().y);
 
-        if(gameplayController.getCollectingMoonlight()) {
+        if(gameplayController.getCollectingMoonlight() && phase == Phase.STEALTH) {
              canvas.drawCollectLightBar(BAR_WIDTH / 2, BAR_HEIGHT / 2,
                  gameplayController.getTimeOnMoonlightPercentage(), level.getPlayer());
         }
@@ -298,17 +313,29 @@ public class UIRender {
                 canvas.draw(health_icon, full, health_icon.getWidth() / 2, health_icon.getHeight() / 2, HEALTH_STROKE_WIDTH / 8 + HEART_SEP * i, canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f, 0, 0.6f, 0.6f);
             } else {
                 // Draw an empty heart for the ith heart
-                Color empty = new Color(41f / 255.0f, 41f / 255.0f, 41f / 255.0f, 0.8f);
-                canvas.draw(health_icon, empty, health_icon.getWidth() / 2, health_icon.getHeight() / 2, HEALTH_STROKE_WIDTH / 8 + HEART_SEP * i, canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f, 0, 0.6f, 0.6f);
+                if (phase == Phase.STEALTH) {
+                    Color empty = new Color(41f / 255.0f, 41f / 255.0f, 41f / 255.0f, 0.8f);
+                    canvas.draw(health_icon, empty, health_icon.getWidth() / 2, health_icon.getHeight() / 2, HEALTH_STROKE_WIDTH / 8 + HEART_SEP * i, canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f, 0, 0.6f, 0.6f);
+                }
             }
         }
+        if (level.getPlayer().getHp() < last_hp){
+            drawHealthLose(canvas, level, phase);
+        }
+        last_hp = level.getPlayer().getHp();
     }
 
     /** Draw the moonlight stroke and moonlight status */
     public void drawMoonlightStats(GameCanvas canvas, LevelContainer level){
-        canvas.draw(moonlight_stroke, Color.WHITE, MOON_STROKE_WIDTH/3, MOON_STROKE_HEIGHT, MOON_STROKE_WIDTH, MOON_STROKE_HEIGHT);
-        canvas.draw(moon_icon, Color.WHITE, moon_icon.getWidth() / 2, moon_icon.getHeight() / 2, MOON_STROKE_WIDTH / 2 + moon_icon.getWidth()/4, MOON_STROKE_HEIGHT + moon_icon.getHeight()*2/3, 0, 0.5f, 0.5f);
-        canvas.drawText(level.getPlayer().getMoonlightCollected() + "/" + ((int) level.getTotalMoonlight()), UIFont_small, MOON_STROKE_WIDTH * 4/5, MOON_STROKE_HEIGHT * 2 - UIFont_small.getCapHeight());
+        canvas.draw(moonlight_stroke, Color.WHITE, MOON_STROKE_WIDTH/3 + HEALTH_STROKE_WIDTH, canvas.getHeight() - HEALTH_STROKE_HEIGHT - MOON_STROKE_HEIGHT, MOON_STROKE_WIDTH, MOON_STROKE_HEIGHT);
+        canvas.draw(moon_icon, Color.WHITE, moon_icon.getWidth() / 2, moon_icon.getHeight() / 2,
+                MOON_STROKE_WIDTH / 2 + moon_icon.getWidth()/4 + HEALTH_STROKE_WIDTH, canvas.getHeight() - HEALTH_STROKE_HEIGHT - MOON_STROKE_HEIGHT + moon_icon.getHeight()/2, 0, 0.5f, 0.5f);
+        canvas.drawText(level.getPlayer().getMoonlightCollected() + "/" + ((int) level.getTotalMoonlight()), UIFont_small,
+                MOON_STROKE_WIDTH * 4/5 + HEALTH_STROKE_WIDTH, canvas.getHeight() - HEALTH_STROKE_HEIGHT * 2 + UIFont_small.getCapHeight() * 2.5f);
+        if (level.getPlayer().getMoonlightCollected() > last_moon){
+            drawMoonCollect(canvas, level);
+        }
+        last_moon = level.getPlayer().getMoonlightCollected();
     }
 
     /** Draw the stealth stroke and stealth status of the player */
@@ -318,6 +345,20 @@ public class UIRender {
         canvas.draw(stealth_icon, Color.WHITE, stealth_icon.getWidth() / 2, stealth_icon.getHeight() / 2, canvas.getWidth()/2 - STEALTH_STROKE_WIDTH/2 + stealth_icon.getWidth(), MOON_STROKE_HEIGHT + stealth_icon.getHeight()*3/5, (float) (13f/180f * Math.PI), 0.7f, 0.7f);
         Color stealth_fill = new Color(255f / 255.0f, 255f / 255.0f, 255f / 255.0f, 1f);
         canvas.draw(stealth_stroke, stealth_fill, canvas.getWidth()/2 - STEALTH_STROKE_WIDTH/2, MOON_STROKE_HEIGHT, STEALTH_STROKE_WIDTH * proportion, STEALTH_STROKE_HEIGHT);
+    }
+
+    /** Draw the lose of 1 HP */
+    public void drawHealthLose(GameCanvas canvas, LevelContainer level, Phase phase){
+        Color healthColor = new Color(202f/255.0f, 139f/255.0f, 139f/255.0f, 1);
+        setFontColor(healthColor);
+        canvas.drawText("-1", UIFont_small, HEALTH_STROKE_WIDTH/2, canvas.getHeight() - HEALTH_STROKE_HEIGHT * 3);
+    }
+
+    /** Draw the collect of 1 moon */
+    public void drawMoonCollect(GameCanvas canvas, LevelContainer level){
+        Color moonColor = new Color(248f/255.0f, 228f/255.0f, 184f/255.0f, 1);
+        setFontColor(moonColor);
+        canvas.drawText("-1", UIFont_small, HEALTH_STROKE_WIDTH + MOON_STROKE_WIDTH/2, canvas.getHeight() - HEALTH_STROKE_HEIGHT * 3);
     }
 
     /** Draw the stealth indicator above enemies */
