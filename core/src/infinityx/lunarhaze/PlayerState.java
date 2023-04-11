@@ -107,7 +107,7 @@ public enum PlayerState implements State<PlayerController> {
             //System.out.println("Player switched to attack state");
             entity.getAttackSound().play();
             setTexture(entity, "attack");
-            entity.player.texUpdate = 0.2f;
+            entity.player.texUpdate = 0.06f;
         }
         @Override
         public void update(PlayerController entity) {

@@ -49,7 +49,7 @@ public class PlayerAttackHandler extends AttackHandler {
     /** Called up above in the other update method, handles all attacking related logic */
     public void update(float delta, InputController input, GameplayController.Phase phase) {
         if (phase == GameplayController.Phase.BATTLE) {
-            System.out.println("Combo step: " + comboStep);
+            //System.out.println("Combo step: " + comboStep);
             if (player.isAttacking()) {
                 processAttack(delta, input);
             } else {
@@ -98,7 +98,7 @@ public class PlayerAttackHandler extends AttackHandler {
         comboTime = 0f;
         // Step 3 is the last attack in the combo
         if (comboStep >= 3) {
-            System.out.println("Combo step is bigger than 3");
+            //System.out.println("Combo step is bigger than 3");
             comboStep = 0;
             attackCooldownCounter = 0f;
         }
@@ -116,7 +116,7 @@ public class PlayerAttackHandler extends AttackHandler {
         comboAttackCooldownCounter += delta;
 
         if (comboTime >= MAX_COMBO_TIME) {
-            System.out.println("Combo timed out");
+            //System.out.println("Combo timed out");
             comboStep = 0;
             comboTime = 0f;
             attackCooldownCounter = 0f;

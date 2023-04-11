@@ -199,7 +199,6 @@ public class LevelContainer {
 
     /**
      * "flush" all objects from this level and resets level.
-     * P
      */
     public void flush() {
         initialize();

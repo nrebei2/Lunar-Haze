@@ -14,7 +14,7 @@ import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.util.ScreenObservable;
 
 /**
- * Provides a menu screen for level select
+ * Provides a screen for upgrading stats of the player
  */
 public class AllocateScreen extends ScreenObservable implements Screen, InputProcessor {
 
