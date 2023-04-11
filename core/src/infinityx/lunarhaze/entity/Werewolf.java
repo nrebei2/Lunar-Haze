@@ -46,17 +46,17 @@ public class Werewolf extends GameObject implements Location<Vector2> {
     public static final float MAX_LIGHT = 100.0f;
 
     /**
-     * Initial attack power of the werewolf is 0.1;
+     * Initial attack power of the werewolf is 0.2;
      **/
     public static final float INITIAL_POWER = 0.2f;
 
     /**
-     * Initial attack range of the werewolf is 1 tile;
+     * Initial attack range of the werewolf is 1.2 tile;
      **/
-    public static final float INITIAL_RANGE = 1.0f;
+    public static final float INITIAL_RANGE = 1.2f;
 
     /**
-     * Maximum attack power of the werewolf is 0.1;
+     * Maximum attack power of the werewolf is 1.0;
      **/
     public static final float MAX_POWER = 1.0f;
 
