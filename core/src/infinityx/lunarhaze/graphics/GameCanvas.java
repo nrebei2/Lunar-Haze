@@ -741,23 +741,45 @@ public class GameCanvas {
     }
 
     /**
-     * Draws the tinted texture at the given position.
-     * <p>
-     * The texture colors will be multiplied by the given color.  This will turn
-     * any white into the given color.  Other colors will be similarly affected.
-     * <p>
+     * Draws the texture at the given position.
      * Unless otherwise transformed by the global transform (@see begin(Affine2)),
      * the texture will be unscaled.  The bottom left of the texture will be positioned
      * at the given coordinates.
      * region
      *
      * @param region The texture to draw
-     * @param tint   The color tint
      * @param x      The x-coordinate of the bottom left corner
      * @param y      The y-coordinate of the bottom left corner
-     * @param width  The texture width
-     * @param height The texture height
      */
+    public void draw(TextureRegion region, float x, float y) {
+        if (active != DrawPass.SPRITE) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SPRITE", new IllegalStateException());
+            return;
+        }
+
+        // Unlike Lab 1, we can shortcut without a master drawing method
+        spriteBatch.draw(region, x, y);
+    }
+
+
+        /**
+         * Draws the tinted texture at the given position.
+         * <p>
+         * The texture colors will be multiplied by the given color.  This will turn
+         * any white into the given color.  Other colors will be similarly affected.
+         * <p>
+         * Unless otherwise transformed by the global transform (@see begin(Affine2)),
+         * the texture will be unscaled.  The bottom left of the texture will be positioned
+         * at the given coordinates.
+         * region
+         *
+         * @param region The texture to draw
+         * @param tint   The color tint
+         * @param x      The x-coordinate of the bottom left corner
+         * @param y      The y-coordinate of the bottom left corner
+         * @param width  The texture width
+         * @param height The texture height
+         */
     public void draw(TextureRegion region, Color tint, float x, float y, float width, float height) {
         if (active != DrawPass.SPRITE) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SPRITE", new IllegalStateException());

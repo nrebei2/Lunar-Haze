@@ -40,7 +40,7 @@ import infinityx.util.ScreenObservable;
 /**
  * Class that provides a loading screen for the state of the game.
  */
-public class LoadingMode extends ScreenObservable implements Screen, ApplicationListener {
+public class LoadingMode extends ScreenObservable implements Screen {
 
     /**
      * Track the current state of the loading screen.
@@ -81,10 +81,6 @@ public class LoadingMode extends ScreenObservable implements Screen, Application
      * Animation used for the moonphase
      */
     Animation<TextureRegion> moonAnimation; // Must declare frame type (TextureRegion)
-    /**
-     * SpriteBatch used for the moonphase
-     */
-    SpriteBatch spriteBatch;
     /**
      * A variable used to track the time for animation
      */
@@ -274,7 +270,6 @@ public class LoadingMode extends ScreenObservable implements Screen, Application
         internal.unloadAssets();
         internal.dispose();
         moonphase.dispose();
-        spriteBatch.dispose();
     }
 
     /**
@@ -287,6 +282,7 @@ public class LoadingMode extends ScreenObservable implements Screen, Application
      * @param delta Number of seconds since last animation frame
      */
     private void update(float delta) {
+        stateTime += Gdx.graphics.getDeltaTime();
         switch (loadingState) {
             case FADE_IN:
                 elapsed += delta;
@@ -334,6 +330,7 @@ public class LoadingMode extends ScreenObservable implements Screen, Application
 
         switch (loadingState) {
             case FADE_OUT:
+                drawBackground(canvas);
             case FADE_IN:
                 drawBackground(canvas);
                 break;
@@ -341,13 +338,18 @@ public class LoadingMode extends ScreenObservable implements Screen, Application
                 drawBackground(canvas);
                 break;
         }
+
+
+        TextureRegion currentFrame = moonAnimation.getKeyFrame(stateTime, true);
+        canvas.draw(currentFrame, centerX-100, centerY-60); // Draw current frame at (50, 50)
+
         canvas.end();
     }
 
     private void drawBackground(GameCanvas canvas){
         canvas.drawOverlay(background, alphaTint, true);
-        canvas.draw(title,Color.WHITE,0.8f*canvas.getWidth()/2,canvas.getHeight()/8*3,0.8f*canvas.getWidth()/2,canvas.getHeight()/8*3,0,0.2f,0.2f);
-        canvas.draw(studios,Color.WHITE,canvas.getWidth()/2,canvas.getHeight()/16*5,canvas.getWidth()/2,canvas.getHeight()/16*5,0,0.2f,0.2f);
+        canvas.draw(title,Color.WHITE, title.getWidth() / 2,title.getHeight()/2,canvas.getWidth()/2,canvas.getHeight()/2,0,0.2f,0.2f);
+        canvas.draw(studios,Color.WHITE,studios.getWidth() / 2,studios.getHeight()/2,canvas.getWidth()/2,canvas.getHeight()/16*5,0,0.2f,0.2f);
     }
 
     // ADDITIONAL SCREEN METHODS
@@ -360,15 +362,14 @@ public class LoadingMode extends ScreenObservable implements Screen, Application
      *
      * @param delta Number of seconds since last animation frame
      */
+    @Override
     public void render(float delta) {
         if (active) {
             update(delta);
             draw(delta);
-            render();
         }
     }
 
-    @Override
     public void create() {
         TextureRegion[][] moonTextures = TextureRegion.split(moonphase, moonphase.getWidth() / 13,
                 moonphase.getHeight() / 1);
@@ -380,7 +381,6 @@ public class LoadingMode extends ScreenObservable implements Screen, Application
             }
         }
         moonAnimation = new Animation<TextureRegion>(0.45f, moonFrames);
-        spriteBatch = new SpriteBatch();
         stateTime = 0f;
     }
 
@@ -403,15 +403,6 @@ public class LoadingMode extends ScreenObservable implements Screen, Application
         centerY = (int) (BAR_HEIGHT_RATIO * height);
         centerX = width / 2;
         heightY = height;
-    }
-
-    @Override
-    public void render() {
-            stateTime += Gdx.graphics.getDeltaTime();
-            TextureRegion currentFrame = moonAnimation.getKeyFrame(stateTime, true);
-            spriteBatch.begin();
-            spriteBatch.draw(currentFrame, centerX-80, centerY-100); // Draw current frame at (50, 50)
-            spriteBatch.end();
     }
 
     /**
