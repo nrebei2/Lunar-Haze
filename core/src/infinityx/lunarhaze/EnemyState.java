@@ -2,6 +2,7 @@ package infinityx.lunarhaze;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.fsm.State;
+import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.steer.behaviors.FollowPath;
 import com.badlogic.gdx.ai.steer.behaviors.ReachOrientation;
@@ -10,6 +11,7 @@ import com.badlogic.gdx.ai.utils.ArithmeticUtils;
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import infinityx.lunarhaze.ai.TacticalManager;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.physics.Box2DRaycastCollision;
 import infinityx.lunarhaze.physics.RaycastInfo;
@@ -141,6 +143,7 @@ public enum EnemyState implements State<EnemyController> {
             entity.getEnemy().setDetection(Enemy.Detection.ALERT);
             entity.setArriveSB(entity.getEnemy(), entity.getTarget());
             entity.getEnemy().setSteeringBehavior(entity.arriveSB);
+            MessageManager.getInstance().dispatchMessage(TacticalManager.ADD, entity);
         }
 
         @Override
@@ -159,7 +162,16 @@ public enum EnemyState implements State<EnemyController> {
 
         @Override
         public void exit(EnemyController entity) {
-            entity.getEnemy().setIndependentFacing(false);
+           entity.getEnemy().setIndependentFacing(false);
+           MessageManager.getInstance().dispatchMessage(TacticalManager.REMOVE, entity);
+        }
+
+        @Override
+        public boolean onMessage(EnemyController control, Telegram telegram) {
+            if (telegram.message == TacticalManager.FLANK) {
+                // Stuff
+            }
+            return true;
         }
     },
 
