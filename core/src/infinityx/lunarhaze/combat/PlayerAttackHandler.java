@@ -35,7 +35,7 @@ public class PlayerAttackHandler extends AttackHandler {
 
     /** Constructor that gets a reference to the player model */
     public PlayerAttackHandler(Werewolf p) {
-        super(3f, 1f);
+        super(4f, 0.5f);
         player = p;
         comboAttackCooldownCounter = 0f;
         comboStep = 0;
@@ -49,6 +49,7 @@ public class PlayerAttackHandler extends AttackHandler {
     /** Called up above in the other update method, handles all attacking related logic */
     public void update(float delta, InputController input, GameplayController.Phase phase) {
         if (phase == GameplayController.Phase.BATTLE) {
+            System.out.println("Combo step: " + comboStep);
             if (player.isAttacking()) {
                 processAttack(delta, input);
             } else {
@@ -84,7 +85,7 @@ public class PlayerAttackHandler extends AttackHandler {
 
     /** Adjusts hitbox based on user input */
     private void updateHitboxPosition(InputController input) {
-        player.attackHitbox.getBody().setTransform(player.getPosition().x + (input.getHorizontal() / 4.0f), player.getPosition().y + (input.getVertical() / 4.0f) + player.getTexture().getSize()/3.5f, 0f);
+        player.attackHitbox.getBody().setTransform(player.getPosition().x + (input.getHorizontal() / 4.0f), player.getPosition().y + (input.getVertical() / 4.0f) + player.getTextureHeight()/2f, 0f);
     }
 
     /** Called when an attack ends */
@@ -97,10 +98,16 @@ public class PlayerAttackHandler extends AttackHandler {
         comboTime = 0f;
         // Step 3 is the last attack in the combo
         if (comboStep >= 3) {
+            System.out.println("Combo step is bigger than 3");
             comboStep = 0;
             attackCooldownCounter = 0f;
         }
 
+    }
+
+    /** Sets the attack cooldown */
+    public void setAttackCooldown (float attackCooldown) {
+        this.attackCooldown = attackCooldown;
     }
 
     /** Handles combo timeouts */
@@ -109,6 +116,7 @@ public class PlayerAttackHandler extends AttackHandler {
         comboAttackCooldownCounter += delta;
 
         if (comboTime >= MAX_COMBO_TIME) {
+            System.out.println("Combo timed out");
             comboStep = 0;
             comboTime = 0f;
             attackCooldownCounter = 0f;
@@ -134,10 +142,12 @@ public class PlayerAttackHandler extends AttackHandler {
         super.initiateAttack();
     }
 
+    /** @return the attack power of the player */
     public static float getAttackPower() {
     	return attackPower;
     }
 
+    /** Sets the attack power of the player */
     public static void setAttackPower(float power) {
     	attackPower = power;
     }
