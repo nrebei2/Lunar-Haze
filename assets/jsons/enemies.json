@@ -28,7 +28,6 @@
     "restitution": 1.0,
     "damping": 0.0,
     "hp": 10,
-    "startframe": 0,
     "attack": {
       "knockback": 0.5,
       "damage": 1.0

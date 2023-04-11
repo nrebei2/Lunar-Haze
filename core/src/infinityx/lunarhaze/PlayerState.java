@@ -155,7 +155,7 @@ public enum PlayerState implements State<PlayerController> {
         return false;
     }
 
-    public void setTexture(PlayerController entity, String name) {
+    protected void setTexture(PlayerController entity, String name) {
         switch (entity.player.direction) {
             case UP:
                 entity.player.setTexture(entity.player.filmstrips.get(name + "-b"));

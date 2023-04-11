@@ -143,8 +143,6 @@ public class Werewolf extends GameObject implements Location<Vector2> {
      */
     private PointLight spotLight;
 
-    private final Vector2 forceCache = new Vector2();
-
     private boolean isAttacking;
 
     public AttackHitbox attackHitbox;
@@ -482,7 +480,6 @@ public class Werewolf extends GameObject implements Location<Vector2> {
         } else {
             lockoutTime += delta;
         }
-        filmstrip.setFrame(isAttacking ? 1 : 0);
     }
 
     @Override

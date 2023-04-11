@@ -118,15 +118,12 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
         setDensity(json.get("density").asFloat());
         setFriction(json.get("friction").asFloat());
         setRestitution(json.get("restitution").asFloat());
-        //setStartFrame(json.get("startframe").asInt());
         JsonValue textures = json.get("textures");
         for (JsonValue tex : textures) {
             filmstrips.put(tex.name(), directory.getEntry(tex.asString(), FilmStrip.class));
         }
 
         JsonValue texInfo = json.get("texture");
-        System.out.println(filmstrips);
-        System.out.println(filmstrips.get(texInfo.get("name").asString()));
         setTexture(filmstrips.get(texInfo.get("name").asString()));
         int[] texOrigin = texInfo.get("origin").asIntArray();
         setOrigin(texOrigin[0], texOrigin[1]);
