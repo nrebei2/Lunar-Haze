@@ -4,29 +4,23 @@ import com.badlogic.gdx.ai.fsm.StateMachine;
 import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
-import com.badlogic.gdx.ai.steer.behaviors.Arrive;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.OrderedSet;
 import infinityx.lunarhaze.EnemyController;
 import infinityx.lunarhaze.EnemyState;
 import infinityx.lunarhaze.LevelContainer;
-import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.Werewolf;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Random;
 
 public class TacticalManager implements Telegraph {
     private Werewolf target;
 
     /** Set of alert enemy controllers */
-    OrderedSet<EnemyController> enemies;
+    OrderedSet<EnemyController> enemies = new OrderedSet<>();
 
     public TacticalManager(LevelContainer container) {
         target = container.getPlayer();
-        enemies = new OrderedSet<>();
         MessageManager.getInstance().addListener(this, ADD);
         MessageManager.getInstance().addListener(this, REMOVE);
     }
@@ -39,18 +33,23 @@ public class TacticalManager implements Telegraph {
     public void sendFlankMessage() {
         int i = 0;
         for (EnemyController control : enemies) {
-            StateMachine enemy = control.getStateMachine();
+            StateMachine<EnemyController, EnemyState> enemy = control.getStateMachine();
             if (!enemy.isInState(EnemyState.ALERT)) continue;
+            Random rand = new Random();
+            if (rand.nextFloat()<=0.3) {
+                // Calculate angle step for evenly distributing the enemies around the target
+                float angleStep = 360.0f / enemies.size;
 
-            // Calculate angle step for evenly distributing the enemies around the target
-            float angleStep = 360.0f / enemies.size;
+                // Calculate the angle for this enemy
+                float enemyAngle = angleStep * i;
 
-            // Calculate the angle for this enemy
-            float enemyAngle = angleStep * i;
-
-            // Calculate a flanking position relative to the target
-            Vector2 flankingPosition = target.getPosition().cpy().add(new Vector2(1, 0).rotate(enemyAngle));
-            MessageManager.getInstance().dispatchMessage(null, enemy, FLANK, flankingPosition);
+                // Calculate a flanking position relative to the target
+                Vector2 flankingPosition = target.getPosition().cpy().add(new Vector2(1, 0).rotateDeg(enemyAngle));
+                MessageManager.getInstance().dispatchMessage(null, enemy, FLANK, flankingPosition);
+            }
+            else {
+                MessageManager.getInstance().dispatchMessage(null, enemy, ATTACK);
+            }
 
             i++;
         }
@@ -67,6 +66,8 @@ public class TacticalManager implements Telegraph {
     public static int ADD = 100;
     public static int FLANK = 10012;
     public static int REMOVE = 100203;
+
+    public static int ATTACK = 1001001;
 }
 
 //

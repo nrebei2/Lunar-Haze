@@ -143,7 +143,7 @@ public enum EnemyState implements State<EnemyController> {
         int tick;
        @Override
        public void enter(EnemyController entity) {
-            //System.out.println("!");
+           System.out.println("!");
             entity.getEnemy().setDetection(Enemy.Detection.ALERT);
             entity.target.setStealth(entity.target.getStealth() + 1);
 
@@ -151,7 +151,7 @@ public enum EnemyState implements State<EnemyController> {
            Vector2 player_pos = worldToGrid(entity.getTarget().getPosition());
            Path path = entity.pathfinder.findPath(cur_pos, player_pos, entity.raycastCollisionDetector);
            if (path!= null) {
-               entity.followPathSB = new FollowPath(entity.getEnemy(), path, 0, 0.5f);
+               entity.followPathSB = new FollowPath(entity.getEnemy(), path, 0.05f, 0.5f);
                entity.getEnemy().setSteeringBehavior(entity.followPathSB);
            }
            MessageManager.getInstance().dispatchMessage(TacticalManager.ADD, entity);
@@ -174,10 +174,13 @@ public enum EnemyState implements State<EnemyController> {
             tick++;
             // Update path every 30 frames
             if (tick % 30 == 0) {
+                System.out.println("updating path");
                 Vector2 cur_pos = worldToGrid(entity.getEnemy().getPosition());
                 Vector2 player_pos = worldToGrid(entity.getTarget().getPosition());
                 Path path = entity.pathfinder.findPath(cur_pos, player_pos, entity.raycastCollisionDetector);
-                entity.followPathSB.setPath(path);
+                if (path != null) {
+                    entity.followPathSB.setPath(path);
+                }
             }
         }
 
@@ -190,17 +193,21 @@ public enum EnemyState implements State<EnemyController> {
 
         @Override
         public boolean onMessage(EnemyController control, Telegram telegram) {
-            if (telegram.message == TacticalManager.FLANK) {
-                //System.out.println("flanking");
+            if (telegram.message == TacticalManager.FLANK ) {
+                System.out.println("flanking");
                 Vector2 flank_pos = worldToGrid((Vector2) telegram.extraInfo);
                 Vector2 cur_pos = worldToGrid(control.getEnemy().getPosition());
                 Path path = control.pathfinder.findPath(cur_pos, flank_pos, control.raycastCollisionDetector);
                 if (path != null){
-                    control.followPathSB = new FollowPath(control.getEnemy(), path, 0, 0.5f);
+                    control.followPathSB = new FollowPath(control.getEnemy(), path, 0.05f, 0.5f);
                     control.getEnemy().setSteeringBehavior(control.followPathSB);
                 }
-
-
+//                Vector2 flank_pos = (Vector2) telegram.extraInfo;
+//                control.setArriveSB(control.getEnemy(), new Box2dLocation(flank_pos));
+//                control.getEnemy().setSteeringBehavior(control.arriveSB);
+            }
+            else{
+                control.getStateMachine().changeState(ALERT);
             }
             return true;
         }
