@@ -83,7 +83,7 @@ public class ShaderRenderer implements Renderer {
      * @param height height of quad
      * @param width  width of quad
      */
-    public void draw(float x, float y, float height, float width, ShaderUniform... uniforms) {
+    public void draw(float x, float y, float height, float width) {
          vertices[0] = x;
          vertices[1] = y;
          vertices[4] = x + width;
@@ -96,10 +96,6 @@ public class ShaderRenderer implements Renderer {
          vertices[17] = y + height;
          vertices[20] = x;
          vertices[21] = y + height;
-
-        for (ShaderUniform uniform: uniforms) {
-            uniform.apply(shader);
-        }
 
         mesh.setVertices(vertices);
     }

@@ -66,6 +66,7 @@ public class EnemyController {
     public Node nextNode;
 
     public AStarPathFinding pathfinder;
+    private GameplayController.Phase curPhase;
 
     /**
      * Enumeration to encode the finite state machine.
@@ -206,7 +207,8 @@ public class EnemyController {
 
 
         this.lookAroundSB = new LookAround(enemy, 160)
-                .setAlignTolerance(MathUtils.degreesToRadians * 10);
+                .setAlignTolerance(MathUtils.degreesToRadians * 10)
+                .setTimeToTarget(0.1f);
 
         this.faceSB = new Face<>(enemy).setAlignTolerance(MathUtils.degreesToRadians * 10);
 
@@ -227,6 +229,12 @@ public class EnemyController {
         // Process the FSM
         //changeStateIfApplicable(container, ticks);
         //changeDetectionIfApplicable(currentPhase);
+
+        if (currentPhase == GameplayController.Phase.BATTLE) {
+            stateMachine.changeState(EnemyState.ALERT);
+        }
+
+        this.curPhase = currentPhase;
 
         // Pathfinding
         //Vector2 next_move = findPath();
@@ -260,6 +268,8 @@ public class EnemyController {
          * but maybe add cutoffs for NONE?
          */
 
+        if (curPhase == GameplayController.Phase.BATTLE) return Enemy.Detection.ALERT;
+
         Interpolation lerp = Interpolation.linear;
         raycastCollision.findCollision(collisionCache, new Ray<>(enemy.getPosition(), target.getPosition()));
 
@@ -273,7 +283,7 @@ public class EnemyController {
 
         // degree between enemy orientation and enemy-to-player
         double degree = Math.abs(enemy.getOrientation() - enemy.vectorToAngle(enemyToPlayer)) * MathUtils.radiansToDegrees;
-        if (raycast.hitObject == target) {
+        if (true) {
             //System.out.printf("degree: %f, dist: %f, stealth: %f\n", degree, dist, target.getStealth());
             if (degree <= enemy.getFlashlight().getConeDegree() / 2 && dist <= lerp.apply(1, 4, target.getStealth())) {
                 return Enemy.Detection.ALERT;
@@ -288,11 +298,7 @@ public class EnemyController {
 
 
         // target may be behind object, but enemy should still be able to hear
-        if (enemy.getDetection() == Enemy.Detection.INDICATOR || enemy.getDetection() == Enemy.Detection.NOTICED) {
-            if (dist <= lerp.apply(3.5f, 7.5f, target.getStealth())) {
-                return Enemy.Detection.NOTICED;
-            }
-        } else {
+        {
             if (dist <= lerp.apply(1.5f, 3.5f, target.getStealth())) {
                 return Enemy.Detection.NOTICED;
             }

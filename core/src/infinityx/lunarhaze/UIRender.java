@@ -173,7 +173,9 @@ public class UIRender {
 
     /** shader program which draws the enemy indicator meter */
     private final ShaderProgram meter;
-    private final VertexAttribute[] meterAttributes;
+
+    private ShaderUniform meterUniform;
+
 
     Color full = new Color(138f / 255.0f, 25f / 255.0f, 45f / 255.0f, 1f);
 
@@ -206,10 +208,8 @@ public class UIRender {
 
         // shaders
         this.meter = directory.get("meter", ShaderProgram.class);
-        this.meterAttributes = new VertexAttribute[]{
-                new VertexAttribute(VertexAttributes.Usage.Position, 2, "i_offset"),
-                new VertexAttribute(VertexAttributes.Usage.Position, 1, "i_amount")
-        };
+        this.meterUniform = new ShaderUniform("u_amount");
+
     }
 
 
@@ -399,7 +399,6 @@ public class UIRender {
 
     /** Draw the stealth indicator above enemies */
     public void drawStealthIndicator(GameCanvas canvas, LevelContainer level) {
-        ShaderUniform uniform = new ShaderUniform("u_amount");
         Array<Enemy> enemies = level.getEnemies();
         for (Enemy enemy : enemies) {
             switch (enemy.getDetection()) {
@@ -414,19 +413,20 @@ public class UIRender {
                             tex.getWidth() /2, tex.getHeight() / 2,
                             canvas.WorldToScreenX(enemy.getPosition().x) - 10,
                             canvas.WorldToScreenY(enemy.getPosition().y)+ enemy.getTextureHeight(), 0,
-                            0.1f, 0.1f
+                            0.5f, 0.5f
                             );
                     canvas.end();
                     break;
                 case INDICATOR:
-                    uniform.setValues(enemy.getIndicatorAmount());
+                    if (enemy.getIndicatorAmount() == 0) break;
+                    meterUniform.setValues(enemy.getIndicatorAmount());
                     canvas.begin(GameCanvas.DrawPass.SHADER, level.getView().x, level.getView().y);
                     canvas.drawShader(
                             meter,
                             canvas.WorldToScreenX(enemy.getPosition().x) - 38,
                             canvas.WorldToScreenY(enemy.getPosition().y) + enemy.getTextureHeight() - 25,
                             50, 50,
-                            uniform);
+                            meterUniform);
                     canvas.end();
                     break;
             }

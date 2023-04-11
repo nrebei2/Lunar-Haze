@@ -1039,8 +1039,11 @@ public class GameCanvas {
         }
 
         shaderRenderer.setShader(shader);
-        shaderRenderer.draw(x, y, width, height, uniforms);
+        shaderRenderer.draw(x, y, width, height);
         shaderRenderer.begin();
+        for (ShaderUniform uniform: uniforms) {
+            uniform.apply(shaderRenderer.getShader());
+        }
         shaderRenderer.end();
     }
 
