@@ -16,6 +16,7 @@ import infinityx.lunarhaze.GameplayController.GameState;
 import infinityx.lunarhaze.GameplayController.Phase;
 import infinityx.lunarhaze.graphics.CameraShake;
 import infinityx.lunarhaze.graphics.GameCanvas;
+import infinityx.lunarhaze.graphics.GameCanvas.DrawPass;
 import infinityx.lunarhaze.graphics.ScreenFlash;
 import infinityx.util.ScreenObservable;
 
@@ -65,6 +66,14 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
      */
     private Texture pause_menu;
     /**
+     * Background texture for paused review screen
+     */
+    private Texture review;
+    /**
+     * Background texture for paused review back button
+     */
+    private Texture back;
+    /**
      * Texture for paused screen resume
      */
     private Texture pause_resume;
@@ -105,9 +114,17 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
      */
     private int pressQuitState;
     /**
+     * The current state of the back button
+     */
+    private int pressBackState;
+    /**
      * The x-coordinate of the center of the buttons
      */
     private int centerX;
+    /**
+     * The x-coordinate of the center of the back button
+     */
+    private int centerXBack;
     /**
      * The y-coordinate of the center of the buttons
      */
@@ -116,6 +133,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
     private int centerYReview;
     private int centerYExit;
     private int centerYQuit;
+    private int centerYBack;
     private static final float BUTTON_SCALE = 0.25f;
     /**
      * Ratio of play height from bottom
@@ -166,6 +184,12 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
      */
     public boolean isReadyQuit() {
         return pressQuitState == 2;
+    }
+    /**
+     * @return true if the player is ready to quit the game
+     */
+    public boolean isReadyBack() {
+        return pressBackState == 2;
     }
 
 
@@ -247,6 +271,8 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
         stealth_background = directory.getEntry("stealthBackground", Music.class);
         battle_background = directory.getEntry("battleBackground", Music.class);
         pause_menu = directory.getEntry("pause", Texture.class);
+        review = directory.getEntry("review", Texture.class);
+        back = directory.getEntry("back", Texture.class);
         pause_resume = directory.getEntry("pause-resume", Texture.class);
         pause_restart = directory.getEntry("pause-restart", Texture.class);
         pause_review = directory.getEntry("pause-review", Texture.class);
@@ -288,6 +314,10 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
                     gameplayController.setState(GameState.PLAY);
                     setupLevel();
                     pressRestartState = 0;
+                }else if(isReadyBack()){
+                    pressBackState = 0;
+                    pressReviewState = 0;
+                    gameplayController.setState(GameState.PAUSED);
                 }else if(isReadyQuit()){
                     Gdx.app.exit();
                 }
@@ -367,25 +397,41 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
                 canvas.end();
                 break;
             case PAUSED:
-                canvas.begin(GameCanvas.DrawPass.SPRITE);
-                Color alphaTint = Color.WHITE;
-                canvas.drawOverlay(pause_menu, alphaTint, true);
-                Color tintResume = (pressResumeState == 1 ? Color.BLACK : Color.WHITE);
-                canvas.draw(pause_resume, tintResume, pause_resume.getWidth() / 2, pause_resume.getHeight() / 2,
-                        centerX, centerYResume, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
-                Color tintRestart = (pressRestartState == 1 ? Color.BLACK : Color.WHITE);
-                canvas.draw(pause_restart, tintRestart, pause_restart.getWidth() / 2, pause_restart.getHeight() / 2,
-                        centerX, centerYRestart, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
-                Color tintReview = (pressReviewState == 1 ? Color.BLACK : Color.WHITE);
-                canvas.draw(pause_review, tintReview, pause_review.getWidth() / 2, pause_review.getHeight() / 2,
-                        centerX, centerYReview, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
-                Color tintExit = (pressExitState == 1 ? Color.BLACK : Color.WHITE);
-                canvas.draw(pause_exit, tintExit, pause_exit.getWidth() / 2, pause_exit.getHeight() / 2,
-                        centerX, centerYExit, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
-                Color tintQuit = (pressQuitState == 1 ? Color.BLACK : Color.WHITE);
-                canvas.draw(pause_quit, tintQuit, pause_quit.getWidth() / 2, pause_quit.getHeight() / 2,
-                        centerX, centerYQuit, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
-                canvas.end();
+                if(pressReviewState != 2) {
+                    canvas.begin(GameCanvas.DrawPass.SPRITE);
+                    Color alphaTint = Color.WHITE;
+                    canvas.drawOverlay(pause_menu, alphaTint, true);
+                    Color tintResume = (pressResumeState == 1 ? Color.BLACK : Color.WHITE);
+                    canvas.draw(pause_resume, tintResume, pause_resume.getWidth() / 2,
+                            pause_resume.getHeight() / 2,
+                            centerX, centerYResume, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
+                    Color tintRestart = (pressRestartState == 1 ? Color.BLACK : Color.WHITE);
+                    canvas.draw(pause_restart, tintRestart, pause_restart.getWidth() / 2,
+                            pause_restart.getHeight() / 2,
+                            centerX, centerYRestart, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
+                    Color tintReview = (pressReviewState == 1 ? Color.BLACK : Color.WHITE);
+                    canvas.draw(pause_review, tintReview, pause_review.getWidth() / 2,
+                            pause_review.getHeight() / 2,
+                            centerX, centerYReview, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
+                    Color tintExit = (pressExitState == 1 ? Color.BLACK : Color.WHITE);
+                    canvas.draw(pause_exit, tintExit, pause_exit.getWidth() / 2,
+                            pause_exit.getHeight() / 2,
+                            centerX, centerYExit, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
+                    Color tintQuit = (pressQuitState == 1 ? Color.BLACK : Color.WHITE);
+                    canvas.draw(pause_quit, tintQuit, pause_quit.getWidth() / 2,
+                            pause_quit.getHeight() / 2,
+                            centerX, centerYQuit, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
+                    canvas.end();
+                }else{
+                    canvas.begin(GameCanvas.DrawPass.SPRITE);
+                    Color alphaTint = Color.WHITE;
+                    canvas.drawOverlay(review, alphaTint, true);
+                    Color color = new Color(45.0f/255.0f, 74.0f/255.0f, 133.0f/255.0f, 1.0f);
+                    Color tintBack = (pressBackState == 1 ? color : Color.WHITE);
+                    canvas.draw(back, tintBack, back.getWidth() / 2, back.getHeight() / 2,
+                            centerXBack, centerYBack, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
+                    canvas.end();
+                }
             case PLAY:
                 Phase phase = gameplayController.getPhase();
                 uiRender.drawUI(canvas, levelContainer, phase, gameplayController);
@@ -403,6 +449,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
         pressReviewState = 0;
         pressExitState = 0;
         pressQuitState = 0;
+        pressBackState = 0;
         Gdx.input.setInputProcessor(this);
     }
 
@@ -459,6 +506,8 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
         centerYQuit = centerYExit - (int)(0.6 * pause_resume.getHeight());
         centerX = width / 2;
         heightY = height;
+        centerYBack = (int) (0.9f * height);
+        centerXBack = width / 16;
 
     }
 
@@ -535,6 +584,11 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
         if(distX < x && distYQuit <y){
             pressQuitState =1;
         }
+        float radiusBack = BUTTON_SCALE * scale * back.getWidth() / 2.0f;
+        float distBack = (screenX - centerXBack) * (screenX - centerXBack) + (screenY - centerYBack) * (screenY - centerYBack);
+        if (distBack < radiusBack * radiusBack) {
+            pressBackState = 1;
+        }
 
         return false;
     }
@@ -559,6 +613,10 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
         }
         if (pressQuitState == 1) {
             pressQuitState = 2;
+            return false;
+        }
+        if (pressBackState == 1) {
+            pressBackState = 2;
             return false;
         }
         return true;

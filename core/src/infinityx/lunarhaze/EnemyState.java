@@ -2,6 +2,7 @@ package infinityx.lunarhaze;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.fsm.State;
+import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.steer.behaviors.FollowPath;
 import com.badlogic.gdx.ai.steer.behaviors.ReachOrientation;
@@ -10,6 +11,7 @@ import com.badlogic.gdx.ai.utils.ArithmeticUtils;
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import infinityx.lunarhaze.ai.TacticalManager;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.physics.Box2DRaycastCollision;
 import infinityx.lunarhaze.physics.RaycastInfo;
@@ -25,7 +27,7 @@ public enum EnemyState implements State<EnemyController> {
     INIT() {
         @Override
         public void update(EnemyController entity) {
-            entity.getStateMachine().changeState(ALERT);
+            entity.getStateMachine().changeState(PATROL);
         }
     },
 
@@ -147,7 +149,7 @@ public enum EnemyState implements State<EnemyController> {
                entity.followPathSB = new FollowPath(entity.getEnemy(), path, 0, 0.1f);
                entity.getEnemy().setSteeringBehavior(entity.followPathSB);
            }
-
+            MessageManager.getInstance().dispatchMessage(TacticalManager.ADD, entity);
         }
 
         @Override
@@ -166,7 +168,16 @@ public enum EnemyState implements State<EnemyController> {
 
         @Override
         public void exit(EnemyController entity) {
-            entity.getEnemy().setIndependentFacing(false);
+           entity.getEnemy().setIndependentFacing(false);
+           MessageManager.getInstance().dispatchMessage(TacticalManager.REMOVE, entity);
+        }
+
+        @Override
+        public boolean onMessage(EnemyController control, Telegram telegram) {
+            if (telegram.message == TacticalManager.FLANK) {
+                // Stuff
+            }
+            return true;
         }
     },
 
@@ -207,8 +218,7 @@ public enum EnemyState implements State<EnemyController> {
 //            }
 
             //             Check if have arrived to patrol position
-            Vector2 cur_pos = new Vector2(entity.getEnemy().getPosition().x, entity.getEnemy().getY());
-            float dist = cur_pos.dst(entity.nextNode.wx, entity.nextNode.wy);
+            float dist = entity.getEnemy().getPosition().dst(entity.nextNode.wx, entity.nextNode.wy);
             if (dist <= 0.1f) entity.getStateMachine().changeState(LOOK_AROUND);
         }
 

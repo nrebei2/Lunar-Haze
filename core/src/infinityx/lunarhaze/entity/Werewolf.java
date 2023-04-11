@@ -14,6 +14,7 @@ import infinityx.lunarhaze.GameObject;
 import infinityx.lunarhaze.LevelContainer;
 import infinityx.lunarhaze.SteeringGameObject;
 import infinityx.lunarhaze.combat.AttackHitbox;
+import infinityx.util.FilmStrip;
 import infinityx.util.Box2dLocation;
 import infinityx.util.Box2dSteeringUtils;
 
@@ -45,17 +46,17 @@ public class Werewolf extends GameObject implements Location<Vector2> {
     public static final float MAX_LIGHT = 100.0f;
 
     /**
-     * Initial attack power of the werewolf is 0.1;
+     * Initial attack power of the werewolf is 0.2;
      **/
     public static final float INITIAL_POWER = 0.2f;
 
     /**
-     * Initial attack range of the werewolf is 1 tile;
+     * Initial attack range of the werewolf is 1.2 tile;
      **/
-    public static final float INITIAL_RANGE = 1.0f;
+    public static final float INITIAL_RANGE = 1.2f;
 
     /**
-     * Maximum attack power of the werewolf is 0.1;
+     * Maximum attack power of the werewolf is 1.0;
      **/
     public static final float MAX_POWER = 1.0f;
 
@@ -67,12 +68,12 @@ public class Werewolf extends GameObject implements Location<Vector2> {
     /**
      * Move speed (walking)
      **/
-    protected float walkSpeed;
+    public float walkSpeed;
 
     /**
      * Move speed (running)
      **/
-    protected float runSpeed;
+    public float runSpeed;
 
     /**
      * Whether the werewolf can move or not; the werewolf can't move
@@ -142,8 +143,6 @@ public class Werewolf extends GameObject implements Location<Vector2> {
      */
     private PointLight spotLight;
 
-    private final Vector2 forceCache = new Vector2();
-
     private boolean isAttacking;
 
     public AttackHitbox attackHitbox;
@@ -166,6 +165,8 @@ public class Werewolf extends GameObject implements Location<Vector2> {
      * Whether the werewolf is in sprint
      */
     private boolean isRunning;
+
+    public Direction direction;
 
     /**
      * Returns the type of this object.
@@ -453,12 +454,23 @@ public class Werewolf extends GameObject implements Location<Vector2> {
      * @param delta Number of seconds since last animation frame
      */
     public void update(float delta) {
+        super.update(delta);
         // get the current velocity of the player's Box2D body
         Vector2 velocity = body.getLinearVelocity();
         if (canMove) {
             float speed = isRunning ? runSpeed : walkSpeed;
             velocity.x = movementH * speed;
             velocity.y = movementV * speed;
+
+            if (movementV < 0) {
+                direction = Direction.DOWN;
+            } else if (movementV > 0) {
+                direction = Direction.UP;
+            } else if (movementH < 0) {
+                direction = Direction.LEFT;
+            } else  if (movementH > 0) {
+                direction = Direction.RIGHT;
+            }
 
             // set the updated velocity to the player's Box2D body
             body.setLinearVelocity(velocity);
@@ -468,7 +480,6 @@ public class Werewolf extends GameObject implements Location<Vector2> {
         } else {
             lockoutTime += delta;
         }
-        filmstrip.setFrame(isAttacking ? 1 : 0);
     }
 
     @Override
