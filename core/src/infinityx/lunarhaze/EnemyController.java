@@ -4,10 +4,7 @@ import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.fsm.StateMachine;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
-import com.badlogic.gdx.ai.steer.behaviors.Arrive;
-import com.badlogic.gdx.ai.steer.behaviors.Face;
-import com.badlogic.gdx.ai.steer.behaviors.PrioritySteering;
-import com.badlogic.gdx.ai.steer.behaviors.RaycastObstacleAvoidance;
+import com.badlogic.gdx.ai.steer.behaviors.*;
 import com.badlogic.gdx.ai.steer.utils.rays.CentralRayWithWhiskersConfiguration;
 import com.badlogic.gdx.ai.utils.Collision;
 import com.badlogic.gdx.ai.utils.Location;
@@ -161,6 +158,8 @@ public class EnemyController implements Telegraph {
 
     public FollowPath followPathSB;
 
+    public RaycastCollisionDetector raycastCollisionDetector;
+
     /**
      * Creates an EnemyController for the enemy with the given id.
      *
@@ -191,11 +190,9 @@ public class EnemyController implements Telegraph {
         arriveSB.setArrivalTolerance(0.1f);
         arriveSB.setDecelerationRadius(0.4f);
 
-//        this.followPathSB = new FollowPath<>(enemy, null);
-
         RaycastInfo collRay = new RaycastInfo(enemy);
 //        collRay.addIgnores(GameObject.ObjectType.WEREWOLF, GameObject.ObjectType.HITBOX);
-        RaycastCollisionDetector<Vector2> raycastCollisionDetector = new Box2DRaycastCollision(container.getWorld(), collRay);
+         this.raycastCollisionDetector = new Box2DRaycastCollision(container.getWorld(), collRay);
 
         this.collisionSB = new RaycastObstacleAvoidance<>(
                 enemy,
@@ -208,10 +205,13 @@ public class EnemyController implements Telegraph {
                         .add(collisionSB)
                         .add(arriveSB);
 
+
         this.lookAroundSB = new LookAround(enemy, 160).
                 setAlignTolerance(MathUtils.degreesToRadians * 10);
 
         this.faceSB = new Face<>(enemy).setAlignTolerance(MathUtils.degreesToRadians * 10);
+
+        this.pathfinder = container.pathfinder;
     }
 
     /**

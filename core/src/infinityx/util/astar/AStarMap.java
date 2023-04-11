@@ -6,14 +6,16 @@ public class AStarMap {
     private final int width;
     private final int height;
 
-    public AStarMap(int width, int height) {
+    public AStarMap(int width, int height, float gridsize) {
         this.width = width;
         this.height = height;
 
         map = new Node[height][width];
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                map[y][x] = new Node(this, x, y);
+                float wx = (float) ((x+0.5)*gridsize);
+                float wy = (float) ((y+0.5)*gridsize);
+                map[y][x] = new Node(this, x, y, wx, wy);
             }
         }
     }

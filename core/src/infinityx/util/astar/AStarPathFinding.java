@@ -3,9 +3,15 @@ package infinityx.util.astar;
 import com.badlogic.gdx.ai.pfa.*;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
+import com.badlogic.gdx.ai.steer.utils.Path;
+import com.badlogic.gdx.ai.steer.utils.paths.LinePath;
+import com.badlogic.gdx.ai.utils.RaycastCollisionDetector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import infinityx.lunarhaze.physics.Box2DRaycastCollision;
+
+import java.util.Iterator;
 
 public class AStarPathFinding {
     /**Map containing all the nodes in our level*/
@@ -17,12 +23,12 @@ public class AStarPathFinding {
     /**Heuristic function used in A* algorithm*/
     private final Heuristic<Node> heuristic;
     /**Graph of nodes and edges. Used for A* pathfinding*/
-    private final GraphPath<Connection<Node>> connectionPath;
+    private final SmoothableGraphPath<Node, Vector2> connectionPath;
 
     public AStarPathFinding(AStarMap map) {
         this.map = map;
         this.pathfinder = new IndexedAStarPathFinder<Node>(createGraph(map));
-        this.connectionPath = new DefaultGraphPath<Connection<Node>>();
+        this.connectionPath = new SmoothGraphPath();
         this.heuristic = new Heuristic<Node>() {
             @Override
             public float estimate (Node node, Node endNode) {
@@ -32,7 +38,7 @@ public class AStarPathFinding {
         };
     }
     /**Finds the next node to move to, given a source and target*/
-    public Node findNextNode(Vector2 source, Vector2 target) {
+    public Path findPath(Vector2 source, Vector2 target, RaycastCollisionDetector ray) {
         int sourceX = MathUtils.floor(source.x);
         int sourceY = MathUtils.floor(source.y);
         int targetX = MathUtils.floor(target.x);
@@ -51,9 +57,26 @@ public class AStarPathFinding {
         Node targetNode = map.getNodeAt(targetX, targetY);
 
         connectionPath.clear();
-        pathfinder.searchConnectionPath(sourceNode, targetNode, heuristic, connectionPath);
+        pathfinder.searchNodePath(sourceNode, targetNode, heuristic, connectionPath);
 
-        return connectionPath.getCount() == 0 ? null : connectionPath.get(0).getToNode();
+
+        PathSmoother smoother = new PathSmoother(ray);
+        int removed = smoother.smoothPath(connectionPath);
+        System.out.println("removed " + removed);
+
+        if (connectionPath.getCount() < 2){
+            return null;
+        }
+
+        Array<Vector2> waypoints = new Array<>();
+        for (int i = 0; i < connectionPath.getCount(); i++) {
+            Node node = connectionPath.get(i);
+            waypoints.add(new Vector2(node.wx, node.wy));
+        }
+        Path path = new LinePath(waypoints);
+
+        return path;
+
     }
 
     private static final int[][] NEIGHBORHOOD = new int[][] {
@@ -96,7 +119,7 @@ public class AStarPathFinding {
         return graph;
     }
 
-    private static class AStarGraph implements IndexedGraph<Node> {
+    public static class AStarGraph implements IndexedGraph<Node> {
 
         AStarMap map;
 

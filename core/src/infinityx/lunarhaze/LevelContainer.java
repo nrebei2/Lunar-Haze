@@ -406,7 +406,7 @@ public class LevelContainer {
         System.out.println("width" + width);
         System.out.println("height" + height);
 
-        AStarMap aStarMap = new AStarMap(width, height);
+        AStarMap aStarMap = new AStarMap(width, height, gridsize);
 
         QueryCallback queryCallback = new QueryCallback() {
             @Override
@@ -421,7 +421,6 @@ public class LevelContainer {
                 scene = false;
                 world.QueryAABB(queryCallback, x*gridSize , y*gridSize, x*gridSize + gridSize, y*gridSize + gridSize);
                 if (scene) {
-                    System.out.println("obstacle between " + (x*gridsize) + "-" + (x*gridsize+gridsize) + ", " + (y*gridsize) + "-" + (y*gridsize+gridsize));
                     aStarMap.getNodeAt(x, y).isObstacle = true;
                 }
             }
