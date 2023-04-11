@@ -6,10 +6,19 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.Vector2;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.util.ScreenObservable;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class EditorMode extends ScreenObservable implements Screen, InputProcessor {
     /**
@@ -30,6 +39,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * Reference to levels board
      */
     private Board board;
+    private TiledMap tiledMap;
+    private OrthogonalTiledMapRenderer tiledMapRenderer;
 
     /**
      * User requested to go to menu
@@ -87,6 +98,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     private Selected selected;
 
+    private List<Selected> availableSelections;
+    private int currentSelectionIndex;
+
     /**
      * Tint for textures before placement
      */
@@ -122,6 +136,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
     public EditorMode(GameCanvas canvas) {
         this.canvas = canvas;
+        availableSelections = new ArrayList<>();
+        currentSelectionIndex = 0;
     }
 
     /**
@@ -134,14 +150,24 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     public void gatherAssets(AssetDirectory directory) {
         this.directory = directory;
+        availableSelections.add(new Tile(directory.getEntry("grass1", Texture.class), "grass"));
+        availableSelections.add(new Tile(directory.getEntry("grass2", Texture.class), "grass"));
+        availableSelections.add(new Tile(directory.getEntry("grass3", Texture.class), "grass"));
+        availableSelections.add(new Enemy(directory.getEntry("villager", Texture.class), "villager"));
+        availableSelections.add(new Player(directory.getEntry("werewolf", Texture.class)));
+        selected = availableSelections.get(currentSelectionIndex);
     }
 
     private void placeTile() {
-        board.setTileTexture(
-                (int) mouseBoard.x, (int) mouseBoard.y,
-                selected.texture
-        );
-        board.setTileType((int) mouseBoard.x, (int) mouseBoard.y, infinityx.lunarhaze.Tile.TileType.Road);
+        System.out.println("Placing tile at " + (int) mouseBoard.x + ", " + (int) mouseBoard.y);
+        setTileTexture((int) mouseBoard.x, (int) mouseBoard.y, selected.texture);
+    }
+
+    private void setTileTexture(int x, int y, Texture texture) {
+        TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(0);
+        TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
+        cell.setTile(new StaticTiledMapTile(new TextureRegion(texture)));
+        layer.setCell(x, y, cell);
     }
 
     private void placeSelection() {
@@ -158,6 +184,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     @Override
     public void show() {
+        tiledMap = new TmxMapLoader().load("assets/maps/default.tmx");
+        tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
         level = LevelParser.LevelParser().loadEmpty();
         level.hidePlayer();
         board = level.getBoard();
@@ -198,9 +226,10 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     private void draw(float delta) {
         canvas.clear();
-        level.drawLevel(canvas);
-
+        //level.drawLevel(canvas);
         canvas.begin(GameCanvas.DrawPass.SHAPE, level.getView().x, level.getView().y);
+        tiledMapRenderer.setView(canvas.getCamera());
+        tiledMapRenderer.render();
         board.drawOutline(canvas);
         canvas.end();
     }
@@ -259,7 +288,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     @Override
     public void dispose() {
-
+        tiledMap.dispose();
+        tiledMapRenderer.dispose();
     }
 
     /**
@@ -270,7 +300,12 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     @Override
     public boolean keyDown(int keycode) {
-
+        if (keycode == Input.Keys.R) {
+            currentSelectionIndex = (currentSelectionIndex + 1) % availableSelections.size();
+            selected = availableSelections.get(currentSelectionIndex);
+            System.out.println("Currently selected: " + selected.toString());
+            return true;
+        }
         return false;
     }
 
