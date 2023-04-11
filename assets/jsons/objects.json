@@ -109,5 +109,48 @@
     "friction": 0.0,
     "restitution": 0.0,
     "damping": 0.0
+  },
+
+  "forest": {
+    "textures": {
+      "static": "forest.static"
+    },
+    "texture": {
+      "name": "static",
+      "origin": [2150, 500],
+      "scale": 0.15
+    },
+    "colliders": {
+      "body": {
+        "type": "circle",
+        "radius": 0.0
+      }
+    },
+    "bodytype": "static",
+    "density": 0.0,
+    "friction": 0.0,
+    "restitution": 0.0,
+    "damping": 0.0
+  },
+  "fores": {
+    "textures": {
+      "static": "fores.static"
+    },
+    "texture": {
+      "name": "static",
+      "origin": [1150, 500],
+      "scale": 0.15
+    },
+    "colliders": {
+      "body": {
+        "type": "circle",
+        "radius": 0.0
+      }
+    },
+    "bodytype": "static",
+    "density": 0.0,
+    "friction": 0.0,
+    "restitution": 0.0,
+    "damping": 0.0
   }
 }
