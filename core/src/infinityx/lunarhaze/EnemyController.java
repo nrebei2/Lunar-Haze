@@ -230,7 +230,7 @@ public class EnemyController {
         //changeStateIfApplicable(container, ticks);
         //changeDetectionIfApplicable(currentPhase);
 
-        if (currentPhase == GameplayController.Phase.BATTLE) {
+        if (currentPhase == GameplayController.Phase.BATTLE && !stateMachine.isInState(EnemyState.ALERT)) {
             stateMachine.changeState(EnemyState.ALERT);
         }
 

@@ -292,7 +292,9 @@ public class GameplayController {
         // add enemies during battle stage and in play
         if (getPhase() == Phase.BATTLE && gameState == GameState.PLAY) {
             enemySpawner.update(battleTicks);
-            tacticalManager.update();
+            if (battleTicks % 60 == 0) {
+                tacticalManager.update();
+            }
         }
         for (int i = 0; i < enemies.size; i++) {
             controls.get(enemies.get(i)).update(container, currentPhase, delta);
