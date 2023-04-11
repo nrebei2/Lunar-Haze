@@ -348,8 +348,8 @@ public class LoadingMode extends ScreenObservable implements Screen {
 
     private void drawBackground(GameCanvas canvas){
         canvas.drawOverlay(background, alphaTint, true);
-        canvas.draw(title,Color.WHITE, title.getWidth() / 2,title.getHeight()/2,canvas.getWidth()/2,canvas.getHeight()/2,0,0.2f,0.2f);
-        canvas.draw(studios,Color.WHITE,studios.getWidth() / 2,studios.getHeight()/2,canvas.getWidth()/2,canvas.getHeight()/16*5,0,0.2f,0.2f);
+        canvas.draw(title, alphaTint, title.getWidth() / 2,title.getHeight()/2,canvas.getWidth()/2,canvas.getHeight()/2,0,0.2f,0.2f);
+        canvas.draw(studios, alphaTint,studios.getWidth() / 2,studios.getHeight()/2,canvas.getWidth()/2,canvas.getHeight()/16*5,0,0.2f,0.2f);
     }
 
     // ADDITIONAL SCREEN METHODS
