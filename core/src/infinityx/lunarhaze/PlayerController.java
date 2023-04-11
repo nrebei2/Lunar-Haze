@@ -58,7 +58,7 @@ public class PlayerController {
     /**
      * The player being controlled by this AIController
      */
-    public final Werewolf player;
+    public Werewolf player;
 
     /**
      * The game board; used for pathfinding
