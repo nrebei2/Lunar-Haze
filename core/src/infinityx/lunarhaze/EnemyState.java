@@ -212,8 +212,6 @@ public enum EnemyState implements State<EnemyController> {
                 entity.getEnemy().setSteeringBehavior(entity.followPathSB);
             }
 
-
-
         }
 
         @Override
