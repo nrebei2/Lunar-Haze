@@ -94,8 +94,8 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
         detection = Detection.NONE;
 
         // TODO
-        setMaxLinearAcceleration(1);
-        setMaxLinearSpeed(1);
+        setMaxLinearAcceleration(1f);
+        setMaxLinearSpeed(0.5f);
         setMaxAngularAcceleration(1);
         setMaxAngularSpeed(1);
     }
@@ -125,7 +125,7 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
         float degrees = light.getFloat("degrees");
 
         ConeSource flashLight = new ConeSource(
-                container.getRayHandler(), rays, Color.WHITE, dist,
+                container.getRayHandler(), rays, Color.RED, dist,
                 getX(), getY(), 0f, degrees
         );
         flashLight.setColor(color[0], color[1], color[2], color[3]);

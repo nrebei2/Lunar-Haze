@@ -2,12 +2,12 @@ package infinityx.lunarhaze;
 
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.fsm.StateMachine;
-import com.badlogic.gdx.ai.steer.behaviors.Arrive;
-import com.badlogic.gdx.ai.steer.behaviors.Face;
-import com.badlogic.gdx.ai.steer.behaviors.PrioritySteering;
-import com.badlogic.gdx.ai.steer.behaviors.RaycastObstacleAvoidance;
+import com.badlogic.gdx.ai.msg.Telegram;
+import com.badlogic.gdx.ai.msg.Telegraph;
+import com.badlogic.gdx.ai.steer.behaviors.*;
 import com.badlogic.gdx.ai.steer.utils.rays.CentralRayWithWhiskersConfiguration;
 import com.badlogic.gdx.ai.utils.Collision;
+import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.ai.utils.Ray;
 import com.badlogic.gdx.ai.utils.RaycastCollisionDetector;
 import com.badlogic.gdx.math.Interpolation;
@@ -18,10 +18,12 @@ import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.Werewolf;
 import infinityx.lunarhaze.physics.Box2DRaycastCollision;
 import infinityx.lunarhaze.physics.RaycastInfo;
+import infinityx.util.astar.AStarPathFinding;
+import infinityx.util.astar.Node;
 
 
 // TODO: move all this stuff into AI controller, EnemyController should hold other enemy actions
-public class EnemyController {
+public class EnemyController implements Telegraph {
     /**
      * Distance for enemy to detect the player
      */
@@ -58,6 +60,15 @@ public class EnemyController {
      * Cache for collision output from raycastCollision
      */
     Collision<Vector2> collisionCache = new Collision<>(new Vector2(), new Vector2());
+
+    public Node nextNode;
+
+    public AStarPathFinding pathfinder;
+
+    @Override
+    public boolean handleMessage(Telegram msg) {
+        return false;
+    }
 
     /**
      * Enumeration to encode the finite state machine.
@@ -145,6 +156,10 @@ public class EnemyController {
     public LookAround lookAroundSB;
     public Face<Vector2> faceSB;
 
+    public FollowPath followPathSB;
+
+    public RaycastCollisionDetector raycastCollisionDetector;
+
     /**
      * Creates an EnemyController for the enemy with the given id.
      *
@@ -171,13 +186,13 @@ public class EnemyController {
         this.raycastCollision = new Box2DRaycastCollision(container.getWorld(), raycast);
 
         // Steering behaviors
-        this.arriveSB = new Arrive<>(enemy, target);
+        this.arriveSB = new Arrive<>(enemy, null);
         arriveSB.setArrivalTolerance(0.1f);
         arriveSB.setDecelerationRadius(0.4f);
 
         RaycastInfo collRay = new RaycastInfo(enemy);
-        collRay.addIgnores(GameObject.ObjectType.WEREWOLF, GameObject.ObjectType.HITBOX);
-        RaycastCollisionDetector<Vector2> raycastCollisionDetector = new Box2DRaycastCollision(container.getWorld(), collRay);
+//        collRay.addIgnores(GameObject.ObjectType.WEREWOLF, GameObject.ObjectType.HITBOX);
+         this.raycastCollisionDetector = new Box2DRaycastCollision(container.getWorld(), collRay);
 
         this.collisionSB = new RaycastObstacleAvoidance<>(
                 enemy,
@@ -190,10 +205,13 @@ public class EnemyController {
                         .add(collisionSB)
                         .add(arriveSB);
 
+
         this.lookAroundSB = new LookAround(enemy, 160).
                 setAlignTolerance(MathUtils.degreesToRadians * 10);
 
         this.faceSB = new Face<>(enemy).setAlignTolerance(MathUtils.degreesToRadians * 10);
+
+        this.pathfinder = container.pathfinder;
     }
 
     /**
@@ -209,7 +227,7 @@ public class EnemyController {
 
         // Process the FSM
         //changeStateIfApplicable(container, ticks);
-        //changeDetectionIfApplicable(currentPhase);  `
+        //changeDetectionIfApplicable(currentPhase);
 
         // Pathfinding
         //Vector2 next_move = findPath();
@@ -224,6 +242,10 @@ public class EnemyController {
 
     public Enemy getEnemy() {
         return enemy;
+    }
+
+    public Werewolf getTarget(){
+        return target;
     }
 
     /**
@@ -277,6 +299,12 @@ public class EnemyController {
             }
         }
         return Enemy.Detection.NONE;
+    }
+
+    public void setArriveSB(Enemy enemy, Location<Vector2> target){
+        this.arriveSB = new Arrive<>(enemy, target);
+        arriveSB.setArrivalTolerance(0.1f);
+        arriveSB.setDecelerationRadius(0.9f);
     }
 
     /**
