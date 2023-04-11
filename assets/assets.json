@@ -72,6 +72,26 @@
         }
       }
     },
+    "fence1": {
+      "file": "images/fence1.png",
+      "sprites":	{
+        "static" : {
+          "size" : 1,
+          "rows" : 1,
+          "cols" : 1
+        }
+      }
+    },
+    "fence2": {
+      "file": "images/fence2.png",
+      "sprites":	{
+        "static" : {
+          "size" : 1,
+          "rows" : 1,
+          "cols" : 1
+        }
+      }
+    },
     "stone": {
       "file": "images/stone1.png",
       "sprites":	{

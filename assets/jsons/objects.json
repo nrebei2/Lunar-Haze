@@ -63,5 +63,51 @@
     "friction": 0.0,
     "restitution": 0.0,
     "damping": 0.0
+  },
+  "fencex": {
+    "textures": {
+      "static": "fence1.static"
+    },
+    "texture": {
+      "name": "static",
+      "origin": [500, 500],
+      "scale": 0.25
+    },
+    "colliders": {
+      "body": {
+        "type": "box",
+        "width": 2,
+        "height": 0.2,
+        "offset": [0,-1.1]
+      }
+    },
+    "bodytype": "static",
+    "density": 0.0,
+    "friction": 0.0,
+    "restitution": 0.0,
+    "damping": 0.0
+  },
+  "fencey": {
+    "textures": {
+      "static": "fence2.static"
+    },
+    "texture": {
+      "name": "static",
+      "origin": [1450, 500],
+      "scale": 0.25
+    },
+    "colliders": {
+      "body": {
+        "type": "box",
+        "width": 0.2,
+        "height": 1.5,
+        "offset": [-1.1,0]
+      }
+    },
+    "bodytype": "static",
+    "density": 0.0,
+    "friction": 0.0,
+    "restitution": 0.0,
+    "damping": 0.0
   }
 }
