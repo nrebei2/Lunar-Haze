@@ -4,9 +4,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
+import imgui.ImGui;
+import imgui.ImGuiIO;
+import imgui.gl3.ImGuiImplGl3;
+import imgui.glfw.ImGuiImplGlfw;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.util.ScreenObservable;
@@ -35,6 +40,26 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * User requested to go to menu
      */
     public final static int GO_MENU = 0;
+
+    /** ImGui classes */
+    private ImGuiImplGlfw imGuiGlfw;
+    private ImGuiImplGl3 imGuiGl3;
+
+    public void setupImGui() {
+        // ImGui initialization
+        this.imGuiGlfw = new ImGuiImplGlfw();
+        this.imGuiGl3 = new ImGuiImplGl3();
+
+        long windowHandle = ((Lwjgl3Graphics) Gdx.graphics).getWindow().getWindowHandle();
+        ImGui.createContext();
+        ImGuiIO io = ImGui.getIO();
+        io.setIniFilename(null);
+        io.getFonts().addFontDefault();
+        io.getFonts().build();
+
+        imGuiGlfw.init(windowHandle, true);
+        imGuiGl3.init("#version 110");
+    }
 
     /**
      * type Selected :=
@@ -203,6 +228,16 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         canvas.begin(GameCanvas.DrawPass.SHAPE, level.getView().x, level.getView().y);
         board.drawOutline(canvas);
         canvas.end();
+
+        imGuiGlfw.newFrame();
+        ImGui.newFrame();
+
+        // --- ImGUI draw commands go here ---
+        ImGui.button("I'm a Button!");
+        // ---
+
+        ImGui.render();
+        imGuiGl3.renderDrawData(ImGui.getDrawData());
     }
 
     /**
