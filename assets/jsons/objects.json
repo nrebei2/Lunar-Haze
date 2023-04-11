@@ -1,7 +1,10 @@
 {
   "house": {
+    "textures": {
+      "static": "house1.static"
+    },
     "texture": {
-      "name": "house1.static",
+      "name": "static",
       "origin": [1072, 470],
       "scale": 0.25
     },
@@ -20,8 +23,11 @@
     "damping": 0.0
   },
   "tree": {
+    "textures": {
+      "static": "tree1.static"
+    },
     "texture": {
-      "name": "tree1.static",
+      "name": "static",
       "origin": [2150, 500],
       "scale": 0.15
     },
@@ -38,8 +44,11 @@
     "damping": 0.0
   },
   "stone": {
+    "textures": {
+    "static": "stone.static"
+  },
     "texture": {
-      "name": "stone.static",
+      "name": "static",
       "origin": [925, 630],
       "scale": 0.15
     },
@@ -47,6 +56,95 @@
       "body": {
         "type": "circle",
         "radius": 0.5
+      }
+    },
+    "bodytype": "static",
+    "density": 0.0,
+    "friction": 0.0,
+    "restitution": 0.0,
+    "damping": 0.0
+  },
+  "fencex": {
+    "textures": {
+      "static": "fence1.static"
+    },
+    "texture": {
+      "name": "static",
+      "origin": [512, 46],
+      "scale": 0.25
+    },
+    "colliders": {
+      "body": {
+        "type": "box",
+        "width": 2,
+        "height": 0.2,
+        "offset": [0,0]
+      }
+    },
+    "bodytype": "static",
+    "density": 0.0,
+    "friction": 0.0,
+    "restitution": 0.0,
+    "damping": 0.0
+  },
+  "fencey": {
+    "textures": {
+      "static": "fence2.static"
+    },
+    "texture": {
+      "name": "static",
+      "origin": [969, 382],
+      "scale": 0.25
+    },
+    "colliders": {
+      "body": {
+        "type": "box",
+        "width": 0.2,
+        "height": 2,
+        "offset": [0,0]
+      }
+    },
+    "bodytype": "static",
+    "density": 0.0,
+    "friction": 0.0,
+    "restitution": 0.0,
+    "damping": 0.0
+  },
+
+  "forest": {
+    "textures": {
+      "static": "forest.static"
+    },
+    "texture": {
+      "name": "static",
+      "origin": [2150, 500],
+      "scale": 0.15
+    },
+    "colliders": {
+      "body": {
+        "type": "circle",
+        "radius": 0.0
+      }
+    },
+    "bodytype": "static",
+    "density": 0.0,
+    "friction": 0.0,
+    "restitution": 0.0,
+    "damping": 0.0
+  },
+  "fores": {
+    "textures": {
+      "static": "fores.static"
+    },
+    "texture": {
+      "name": "static",
+      "origin": [1010, 500],
+      "scale": 0.15
+    },
+    "colliders": {
+      "body": {
+        "type": "circle",
+        "radius": 0.0
       }
     },
     "bodytype": "static",

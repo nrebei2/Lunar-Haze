@@ -741,23 +741,45 @@ public class GameCanvas {
     }
 
     /**
-     * Draws the tinted texture at the given position.
-     * <p>
-     * The texture colors will be multiplied by the given color.  This will turn
-     * any white into the given color.  Other colors will be similarly affected.
-     * <p>
+     * Draws the texture at the given position.
      * Unless otherwise transformed by the global transform (@see begin(Affine2)),
      * the texture will be unscaled.  The bottom left of the texture will be positioned
      * at the given coordinates.
      * region
      *
      * @param region The texture to draw
-     * @param tint   The color tint
      * @param x      The x-coordinate of the bottom left corner
      * @param y      The y-coordinate of the bottom left corner
-     * @param width  The texture width
-     * @param height The texture height
      */
+    public void draw(TextureRegion region, float x, float y) {
+        if (active != DrawPass.SPRITE) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SPRITE", new IllegalStateException());
+            return;
+        }
+
+        // Unlike Lab 1, we can shortcut without a master drawing method
+        spriteBatch.draw(region, x, y);
+    }
+
+
+        /**
+         * Draws the tinted texture at the given position.
+         * <p>
+         * The texture colors will be multiplied by the given color.  This will turn
+         * any white into the given color.  Other colors will be similarly affected.
+         * <p>
+         * Unless otherwise transformed by the global transform (@see begin(Affine2)),
+         * the texture will be unscaled.  The bottom left of the texture will be positioned
+         * at the given coordinates.
+         * region
+         *
+         * @param region The texture to draw
+         * @param tint   The color tint
+         * @param x      The x-coordinate of the bottom left corner
+         * @param y      The y-coordinate of the bottom left corner
+         * @param width  The texture width
+         * @param height The texture height
+         */
     public void draw(TextureRegion region, Color tint, float x, float y, float width, float height) {
         if (active != DrawPass.SPRITE) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SPRITE", new IllegalStateException());
@@ -881,7 +903,7 @@ public class GameCanvas {
         shapeRenderer.end();
     }
 
-    public void drawLightBar(Texture icon, float width, float height, float light) {
+    public void drawAttackPow(float x, float y, float width, float height, float attackPow) {
         if (active != DrawPass.SHAPE) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
             return;
@@ -889,24 +911,17 @@ public class GameCanvas {
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(Color.WHITE);
-        float x = getWidth() - width - GAP_DIST;
-        float y = getHeight() - height - GAP_DIST;
         shapeRenderer.rect(x, y, width, height);
         shapeRenderer.end();
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         Color yellow = new Color(244.0f / 255.0f, 208.0f / 255.0f, 63.0f / 255.0f, 1.0f);
         shapeRenderer.setColor(yellow);
-        shapeRenderer.rect(x, y, width * light / Werewolf.MAX_LIGHT, height);
+        shapeRenderer.rect(x, y, width * Math.min(attackPow, 1.0f), height);
         shapeRenderer.end();
-
-//        draw(icon, Color.WHITE, x - width, y, width, width);
-//        canvas.draw(playButton, tint, playButton.getWidth() / 2, playButton.getHeight() / 2,
-//                centerX, 0.7f*centerY, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
-//        draw(icon, Color.WHITE, icon.getWidth()/2, icon.getHeight()/2, x - icon.getWidth(), y,0,1.0f, 1.0f);
     }
 
-    public void drawHpBar(Texture icon, float width, float height, float hp) {
+    public void drawHpBar(float x, float y, float width, float height, float hp) {
         if (active != DrawPass.SHAPE) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
             return;
@@ -914,8 +929,6 @@ public class GameCanvas {
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(Color.WHITE);
-        float x = getWidth() - width - GAP_DIST;
-        float y = getHeight() - height * 2.25f - GAP_DIST * 1.5f;
         shapeRenderer.rect(x, y, width, height);
         shapeRenderer.end();
         Color health;
@@ -926,7 +939,27 @@ public class GameCanvas {
             health = new Color(20.0f / 255.0f, 142.0f / 255.0f, 119.0f / 255.0f, 1.0f);
         }
         shapeRenderer.setColor(health);
-        shapeRenderer.rect(x, y, width * hp / Werewolf.INITIAL_HP, height);
+        shapeRenderer.rect(x, y, width * hp / Werewolf.MAX_HP, height);
+        shapeRenderer.end();
+
+//        draw(icon, Color.WHITE, x - width, y, width, height);
+    }
+
+    public void drawAttackRange(float x, float y, float width, float height, float range) {
+        if (active != DrawPass.SHAPE) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
+            return;
+        }
+
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setColor(Color.WHITE);
+        shapeRenderer.rect(x, y, width, height);
+        shapeRenderer.end();
+
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        Color blue = new Color(40.0f / 255.0f, 116.0f / 255.0f, 166.0f / 255.0f, 1.0f);
+        shapeRenderer.setColor(blue);
+        shapeRenderer.rect(x, y, width * (range - 1.0f) / (Werewolf.MAX_RANGE - 1.0f), height);
         shapeRenderer.end();
 
 //        draw(icon, Color.WHITE, x - width, y, width, height);
@@ -992,28 +1025,6 @@ public class GameCanvas {
         shapeRenderer.end();
     }
 
-    public void drawStealthBar(Texture icon, float width, float height, float stealth) {
-        if (active != DrawPass.SHAPE) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
-            return;
-        }
-
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(Color.WHITE);
-        float x = getWidth() - width - GAP_DIST;
-        float y = getHeight() - height * 3.5f - GAP_DIST * 2;
-        shapeRenderer.rect(x, y, width, height);
-        shapeRenderer.end();
-
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        Color blue = new Color(40.0f / 255.0f, 116.0f / 255.0f, 166.0f / 255.0f, 1.0f);
-        shapeRenderer.setColor(blue);
-        shapeRenderer.rect(x, y, width * stealth, height);
-        shapeRenderer.end();
-
-//        draw(icon, Color.WHITE, x - width, y, width, height);
-    }
-
     /**
      * Draws a shader instanced on quads with given width and height.
      * @param shader Sets the shader which will draw
@@ -1028,8 +1039,11 @@ public class GameCanvas {
         }
 
         shaderRenderer.setShader(shader);
-        shaderRenderer.draw(x, y, width, height, uniforms);
+        shaderRenderer.draw(x, y, width, height);
         shaderRenderer.begin();
+        for (ShaderUniform uniform: uniforms) {
+            uniform.apply(shaderRenderer.getShader());
+        }
         shaderRenderer.end();
     }
 

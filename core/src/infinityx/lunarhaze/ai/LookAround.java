@@ -40,20 +40,22 @@ public class LookAround extends ReachOrientation<Vector2> {
 
     @Override
     protected SteeringAcceleration<Vector2> calculateRealSteering(SteeringAcceleration<Vector2> steering) {
+        super.calculateRealSteering(steering);
+
         float rotation = ArithmeticUtils.wrapAngleAroundZero(target.getOrientation() - owner.getOrientation());
+
         // Absolute rotation
         float rotationSize = rotation < 0f ? -rotation : rotation;
 
-        // Check if we faced the current target, switch targets or set finished
+        // Check if we are there
         if (rotationSize <= alignTolerance) {
             if (target.getOrientation() == target1) {
                 setTargetOrientation(target2);
+                finished = false;
             } else {
                 finished = true;
             }
         }
-
-        super.calculateRealSteering(steering);
         return steering;
     }
 

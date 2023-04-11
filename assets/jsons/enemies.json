@@ -1,14 +1,17 @@
 {
   "villager": {
     "flashlight": {
-      "color":		[0.8, 0.6, 0, 0.9],
+      "color":		[0.3, 0.0, 0.9, 0.9],
       "distance":		   4,
       "rays":			10,
       "soft":			false,
       "degrees": 30
     },
+    "textures": {
+      "walk": "villager.movement"
+    },
     "texture": {
-      "name": "villager.movement",
+      "name": "walk",
       "origin": [750, 220],
       "scale": 0.11
     },
@@ -25,10 +28,9 @@
     "restitution": 1.0,
     "damping": 0.0,
     "hp": 10,
-    "startframe": 0,
     "attack": {
-      "knockback": 2.0,
-      "damage": 1.0
+      "knockback": 0.5,
+      "damage": 0.0
     }
   }
 }

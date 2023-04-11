@@ -39,9 +39,24 @@ public class PlayerController {
     public static final float MOON_STEALTH = 1.0f;
 
     /**
+     * Hp increase for each moonlight allocated during phase ALLOCATE
+     */
+    public static final int ADD_HP_AMOUNT = 1;
+
+    /**
+     *  Attack power increase for each moonlight allocated during phase ALLOCATE
+     */
+    public static final float ADD_ATTACK_AMOUNT = 0.1f;
+
+    /**
+     *  Attack range percentage increase for each moonlight allocated during phase ALLOCATE
+     */
+    public static final float ADD_RANGE_AMOUNT = 0.1f;
+
+    /**
      * The player being controlled by this AIController
      */
-    public final Werewolf player;
+    public Werewolf player;
 
     /**
      * The game board; used for pathfinding
@@ -73,6 +88,11 @@ public class PlayerController {
 
     private PlayerAttackHandler attackHandler;
 
+    /**
+     * Indicate whether player has done with allocating moonlight
+     */
+    private Boolean allocateReady;
+
     private StateMachine<PlayerController, PlayerState> stateMachine;
 
     private InputController inputController;
@@ -95,6 +115,10 @@ public class PlayerController {
 
     public GameplayController.Phase getPhase() {
         return phase;
+    }
+
+    public Werewolf getPlayer() {
+        return player;
     }
 
     public boolean isOnMoonlight(){
@@ -133,6 +157,7 @@ public class PlayerController {
         attack_sound = levelContainer.getDirectory().getEntry("whip", Sound.class);
         stateMachine = new DefaultStateMachine<>(this, PlayerState.IDLE, PlayerState.ANY_STATE);
         lightingController = lighting;
+        allocateReady = false;
     }
 
     /**
@@ -157,7 +182,7 @@ public class PlayerController {
         player.addMoonlightCollected();
         collect_sound.play(0.8f);
         player.setLight(player.getLight() + (Werewolf.MAX_LIGHT / levelContainer.getTotalMoonlight()));
-        PlayerAttackHandler.setAttackPower(player.getAttackPower());
+        //        PlayerAttackHandler.setAttackPower(player.getAttackPower());
     }
 
     /**
@@ -213,8 +238,50 @@ public class PlayerController {
         }
     }
 
+    /**
+     * Whether the player is currently collecting moonlight
+     * (Need to stand on a moonlight tile and in IDLE state)
+     */
     public boolean isCollectingMoonlight(){
         return collectingMoonlight;
+    }
+
+    /**
+     * Player allocates one moonlight to increase hp by ADD_HP_AMOUNT
+     */
+    public void allocateHp(){
+        player.reduceMoonlightCollected();
+        player.setHp(player.getHp() + ADD_HP_AMOUNT);
+    }
+
+    /**
+     * Player allocates one moonlight to increase attack power by ADD_ATTACK_AMOUNT
+     */
+    public void allocateAttackPow(){
+        player.reduceMoonlightCollected();
+        player.setAttackPower(player.getAttackPower() + ADD_ATTACK_AMOUNT);
+    }
+
+    /**
+     * Player allocates one moonlight to multiply attack range by (1 + ADD_RANGE_AMOUNT)
+     */
+    public void allocateAttackRange(){
+        player.reduceMoonlightCollected();
+        player.setAttackRange(player.getAttackRange() + ADD_RANGE_AMOUNT);
+    }
+
+    /**
+     * Returns if player finished allocating the attibutes
+     */
+    public boolean getAllocateReady(){
+        return allocateReady;
+    }
+
+    /**
+     * Sets whether player finished allocating the attibutes
+     */
+    public void setAllocateReady(boolean b){
+        allocateReady = b;
     }
 
     public void update(InputController input, float delta, Phase currPhase) {

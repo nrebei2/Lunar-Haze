@@ -2,6 +2,21 @@
   "textures": {
     "background": "shared/menu_bg.png",
     "play": "shared/play.png",
+    "bkg_allocate": "allocateUI/bkg-allocate.png",
+    "add": "allocateUI/add-button.png",
+    "setting": "shared/setting.png",
+    "background-setting": "shared/setting_bg.jpg",
+    "about-us": "shared/about_us.png",
+    "background-about-us": "shared/aboutus_bg.png",
+    "back": "shared/back.png",
+    "exit": "shared/exit.png",
+    "pause": "shared/pause_menu.jpg",
+    "pause-exit": "shared/pause_exit.png",
+    "pause-quit": "shared/pause_quit.png",
+    "pause-restart": "shared/pause_restart.png",
+    "pause-resume": "shared/pause_resume.png",
+    "pause-review": "shared/pause_review.png",
+    "review": "shared/review.jpg",
     "grass1": "tiles/grass1.png",
     "grass2": "tiles/grass2.png",
     "grass3": "tiles/grass3.png",
@@ -14,11 +29,17 @@
     "fullmoon-icon": "images/midnight-logo.png",
     "health-icon": "images/health_icon.png",
     "moon-icon": "images/moon_icon.png",
+    "attack-pow-icon": "allocateUI/attack-pow-icon.png",
     "rec-bar": "images/rectangle.png",
     "stealth-icon": "images/stealth_icon.png",
     "health-stroke": "images/health-paint-stroke.png",
     "moonlight-stroke": "images/moonlight-paint-stroke.png",
     "stealth-stroke": "images/visibility-paint-stroke.png",
+    "square-stroke": "allocateUI/square-stroke.png",
+    "star-empty": "allocateUI/star-empty.png",
+    "star-filled": "allocateUI/star-filled.png",
+    "title-left": "allocateUI/title-left.png",
+    "title-right": "allocateUI/title-right.png",
     "noticed": "images/noticed.png",
     "alert": "images/alert.png",
     "tree1": {
@@ -51,6 +72,46 @@
         }
       }
     },
+    "fence1": {
+      "file": "images/fence1.png",
+      "sprites":	{
+        "static" : {
+          "size" : 1,
+          "rows" : 1,
+          "cols" : 1
+        }
+      }
+    },
+    "fence2": {
+      "file": "images/fence2.png",
+      "sprites":	{
+        "static" : {
+          "size" : 1,
+          "rows" : 1,
+          "cols" : 1
+        }
+      }
+    },
+    "forest": {
+      "file": "images/forest.png",
+      "sprites":	{
+        "static" : {
+          "size" : 1,
+          "rows" : 1,
+          "cols" : 1
+        }
+      }
+    },
+    "fores": {
+      "file": "images/fores.png",
+      "sprites":	{
+        "static" : {
+          "size" : 1,
+          "rows" : 1,
+          "cols" : 1
+        }
+      }
+    },
     "stone": {
       "file": "images/stone1.png",
       "sprites":	{
@@ -63,23 +124,141 @@
     },
     "dust": "images/dust.png",
     "werewolf": {
-      "file": 	"images/werewolf.png",
+      "file": 	"images/player/walk_spritesheet_left.png",
       "wrap":  	false,
-      "minFilter": "nearest",
-      "magFilter": "nearest",
       "sprites":	{
-        "movement" : {
-          "size" : 2,
+        "walk-l" : {
+          "size" : 6,
           "rows" : 1,
-          "cols" : 2
+          "cols" : 6
         }
       }
     },
+    "werewolf": {
+      "file": 	"images/player/walk_spritesheet_right.png",
+      "wrap":  	false,
+      "sprites":	{
+        "walk-r" : {
+          "size" : 6,
+          "rows" : 1,
+          "cols" : 6
+        }
+      }
+    },
+    "werewolf": {
+      "file": 	"images/player/walk_spritesheet_back.png",
+      "wrap":  	false,
+      "sprites":	{
+        "walk-b" : {
+          "size" : 6,
+          "rows" : 1,
+          "cols" : 6
+        }
+      }
+    },
+    "werewolf": {
+      "file": 	"images/player/walk_spritesheet_front.png",
+      "wrap":  	false,
+      "sprites":	{
+        "walk-f" : {
+          "size" : 8,
+          "rows" : 1,
+          "cols" : 8
+        }
+      }
+    },
+    "werewolf": {
+      "file": 	"images/player/attack_spritesheet_left.png",
+      "wrap":  	false,
+      "sprites":	{
+        "attack-l" : {
+          "size" : 6,
+          "rows" : 1,
+          "cols" : 6
+        }
+      }
+    },
+    "werewolf": {
+      "file": 	"images/player/attack_spritesheet_right.png",
+      "wrap":  	false,
+      "sprites":	{
+        "attack-r" : {
+          "size" : 6,
+          "rows" : 1,
+          "cols" : 6
+        }
+      }
+    },
+    "werewolf": {
+      "file": 	"images/player/attack_spritesheet_back.png",
+      "wrap":  	false,
+      "sprites":	{
+        "attack-b" : {
+          "size" : 6,
+          "rows" : 1,
+          "cols" : 6
+        }
+      }
+    },
+    "werewolf": {
+      "file": 	"images/player/attack_spritesheet_front.png",
+      "wrap":  	false,
+      "sprites":	{
+        "attack-f" : {
+          "size" : 6,
+          "rows" : 1,
+          "cols" : 6
+        }
+      }
+    },
+    "werewolf": {
+      "file": 	"images/player/left_still.png",
+      "wrap":  	false,
+      "sprites":	{
+        "idle-l" : {
+          "size" : 1,
+          "rows" : 1,
+          "cols" : 1
+        }
+      }
+    },
+    "werewolf": {
+      "file": 	"images/player/right_still.png",
+      "wrap":  	false,
+      "sprites":	{
+        "idle-r" : {
+          "size" : 1,
+          "rows" : 1,
+          "cols" : 1
+        }
+      }
+    },
+    "werewolf": {
+      "file": 	"images/player/back_still.png",
+      "wrap":  	false,
+      "sprites":	{
+        "idle-b" : {
+          "size" : 1,
+          "rows" : 1,
+          "cols" : 1
+        }
+      }
+    },
+    "werewolf": {
+      "file": 	"images/player/front_still.png",
+      "wrap":  	false,
+      "sprites":	{
+        "idle-f" : {
+          "size" : 1,
+          "rows" : 1,
+          "cols" : 1
+        }
+      }
+    },
+
     "villager":{
       "file": 	"images/villager.png",
       "wrap":  	false,
-      "minFilter": "nearest",
-      "magFilter": "nearest",
       "sprites":	{
         "movement" : {
           "size" : 1,

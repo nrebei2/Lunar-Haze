@@ -2,22 +2,26 @@ package infinityx.lunarhaze;
 
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.fsm.StateMachine;
-import com.badlogic.gdx.ai.steer.behaviors.Arrive;
-import com.badlogic.gdx.ai.steer.behaviors.Face;
-import com.badlogic.gdx.ai.steer.behaviors.PrioritySteering;
-import com.badlogic.gdx.ai.steer.behaviors.RaycastObstacleAvoidance;
+import com.badlogic.gdx.ai.msg.MessageManager;
+import com.badlogic.gdx.ai.msg.Telegram;
+import com.badlogic.gdx.ai.msg.Telegraph;
+import com.badlogic.gdx.ai.steer.behaviors.*;
 import com.badlogic.gdx.ai.steer.utils.rays.CentralRayWithWhiskersConfiguration;
 import com.badlogic.gdx.ai.utils.Collision;
+import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.ai.utils.Ray;
 import com.badlogic.gdx.ai.utils.RaycastCollisionDetector;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.ai.LookAround;
+import infinityx.lunarhaze.ai.TacticalManager;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.Werewolf;
 import infinityx.lunarhaze.physics.Box2DRaycastCollision;
 import infinityx.lunarhaze.physics.RaycastInfo;
+import infinityx.util.astar.AStarPathFinding;
+import infinityx.util.astar.Node;
 
 
 // TODO: move all this stuff into AI controller, EnemyController should hold other enemy actions
@@ -58,6 +62,11 @@ public class EnemyController {
      * Cache for collision output from raycastCollision
      */
     Collision<Vector2> collisionCache = new Collision<>(new Vector2(), new Vector2());
+
+    public Node nextNode;
+
+    public AStarPathFinding pathfinder;
+    private GameplayController.Phase curPhase;
 
     /**
      * Enumeration to encode the finite state machine.
@@ -145,6 +154,10 @@ public class EnemyController {
     public LookAround lookAroundSB;
     public Face<Vector2> faceSB;
 
+    public FollowPath followPathSB;
+
+    public RaycastCollisionDetector raycastCollisionDetector;
+
     /**
      * Creates an EnemyController for the enemy with the given id.
      *
@@ -156,7 +169,9 @@ public class EnemyController {
         this.chased_ticks = 0;
         this.idle_ticks = 0;
         this.end_chase_pos = new Vector2();
+
         this.stateMachine = new DefaultStateMachine<>(this, EnemyState.INIT, EnemyState.ANY_STATE);
+
         this.raycast = new RaycastInfo(enemy);
         raycast.addIgnores(GameObject.ObjectType.ENEMY, GameObject.ObjectType.HITBOX);
     }
@@ -171,13 +186,13 @@ public class EnemyController {
         this.raycastCollision = new Box2DRaycastCollision(container.getWorld(), raycast);
 
         // Steering behaviors
-        this.arriveSB = new Arrive<>(enemy, target);
+        this.arriveSB = new Arrive<>(enemy, null);
         arriveSB.setArrivalTolerance(0.1f);
         arriveSB.setDecelerationRadius(0.4f);
 
         RaycastInfo collRay = new RaycastInfo(enemy);
         collRay.addIgnores(GameObject.ObjectType.WEREWOLF, GameObject.ObjectType.HITBOX);
-        RaycastCollisionDetector<Vector2> raycastCollisionDetector = new Box2DRaycastCollision(container.getWorld(), collRay);
+         this.raycastCollisionDetector = new Box2DRaycastCollision(container.getWorld(), collRay);
 
         this.collisionSB = new RaycastObstacleAvoidance<>(
                 enemy,
@@ -190,10 +205,14 @@ public class EnemyController {
                         .add(collisionSB)
                         .add(arriveSB);
 
-        this.lookAroundSB = new LookAround(enemy, 160).
-                setAlignTolerance(MathUtils.degreesToRadians * 10);
+
+        this.lookAroundSB = new LookAround(enemy, 160)
+                .setAlignTolerance(MathUtils.degreesToRadians * 10)
+                .setTimeToTarget(0.1f);
 
         this.faceSB = new Face<>(enemy).setAlignTolerance(MathUtils.degreesToRadians * 10);
+
+        this.pathfinder = container.pathfinder;
     }
 
     /**
@@ -209,7 +228,13 @@ public class EnemyController {
 
         // Process the FSM
         //changeStateIfApplicable(container, ticks);
-        //changeDetectionIfApplicable(currentPhase);  `
+        //changeDetectionIfApplicable(currentPhase);
+
+        if (currentPhase == GameplayController.Phase.BATTLE && !stateMachine.isInState(EnemyState.ALERT)) {
+            stateMachine.changeState(EnemyState.ALERT);
+        }
+
+        this.curPhase = currentPhase;
 
         // Pathfinding
         //Vector2 next_move = findPath();
@@ -226,6 +251,10 @@ public class EnemyController {
         return enemy;
     }
 
+    public Werewolf getTarget(){
+        return target;
+    }
+
     /**
      * @return the current detection the enemy has on the target
      */
@@ -238,6 +267,8 @@ public class EnemyController {
          * Lerp between player stealth for max distance,
          * but maybe add cutoffs for NONE?
          */
+
+        if (curPhase == GameplayController.Phase.BATTLE) return Enemy.Detection.ALERT;
 
         Interpolation lerp = Interpolation.linear;
         raycastCollision.findCollision(collisionCache, new Ray<>(enemy.getPosition(), target.getPosition()));
@@ -252,7 +283,7 @@ public class EnemyController {
 
         // degree between enemy orientation and enemy-to-player
         double degree = Math.abs(enemy.getOrientation() - enemy.vectorToAngle(enemyToPlayer)) * MathUtils.radiansToDegrees;
-        if (raycast.hitObject == target) {
+        if (true) {
             //System.out.printf("degree: %f, dist: %f, stealth: %f\n", degree, dist, target.getStealth());
             if (degree <= enemy.getFlashlight().getConeDegree() / 2 && dist <= lerp.apply(1, 4, target.getStealth())) {
                 return Enemy.Detection.ALERT;
@@ -267,16 +298,18 @@ public class EnemyController {
 
 
         // target may be behind object, but enemy should still be able to hear
-        if (enemy.getDetection() == Enemy.Detection.INDICATOR || enemy.getDetection() == Enemy.Detection.NOTICED) {
-            if (dist <= lerp.apply(3.5f, 7.5f, target.getStealth())) {
-                return Enemy.Detection.NOTICED;
-            }
-        } else {
+        {
             if (dist <= lerp.apply(1.5f, 3.5f, target.getStealth())) {
                 return Enemy.Detection.NOTICED;
             }
         }
         return Enemy.Detection.NONE;
+    }
+
+    public void setArriveSB(Enemy enemy, Location<Vector2> target){
+        this.arriveSB = new Arrive<>(enemy, target);
+        arriveSB.setArrivalTolerance(0.1f);
+        arriveSB.setDecelerationRadius(0.9f);
     }
 
     /**

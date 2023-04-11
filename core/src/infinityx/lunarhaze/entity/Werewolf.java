@@ -1,6 +1,7 @@
 package infinityx.lunarhaze.entity;
 
 import box2dLight.PointLight;
+import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Polygon;
@@ -9,14 +10,18 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
+import infinityx.lunarhaze.GameObject;
 import infinityx.lunarhaze.LevelContainer;
 import infinityx.lunarhaze.SteeringGameObject;
 import infinityx.lunarhaze.combat.AttackHitbox;
+import infinityx.util.FilmStrip;
+import infinityx.util.Box2dLocation;
+import infinityx.util.Box2dSteeringUtils;
 
 /**
  * Model class representing the player.
  */
-public class Werewolf extends SteeringGameObject {
+public class Werewolf extends GameObject implements Location<Vector2> {
     /**
      * Initial light value of the werewolf is 0.0
      **/
@@ -27,6 +32,11 @@ public class Werewolf extends SteeringGameObject {
      **/
     public static int INITIAL_HP = 5;
 
+    /**
+     * Maximum hp of the werewolf is 5
+     **/
+    public static int MAX_HP = 10;
+
     /** Size of attack hitbox */
     public static float HITBOX_SIZE = 5f;
 
@@ -36,14 +46,34 @@ public class Werewolf extends SteeringGameObject {
     public static final float MAX_LIGHT = 100.0f;
 
     /**
+     * Initial attack power of the werewolf is 0.2;
+     **/
+    public static final float INITIAL_POWER = 0.2f;
+
+    /**
+     * Initial attack range of the werewolf is 1.2 tile;
+     **/
+    public static final float INITIAL_RANGE = 1.2f;
+
+    /**
+     * Maximum attack power of the werewolf is 1.0;
+     **/
+    public static final float MAX_POWER = 1.0f;
+
+    /**
+     * Maximum attack range of the werewolf is 2 tiles;
+     **/
+    public static final float MAX_RANGE = 2.0f;
+
+    /**
      * Move speed (walking)
      **/
-    protected float walkSpeed;
+    public float walkSpeed;
 
     /**
      * Move speed (running)
      **/
-    protected float runSpeed;
+    public float runSpeed;
 
     /**
      * Whether the werewolf can move or not; the werewolf can't move
@@ -113,8 +143,6 @@ public class Werewolf extends SteeringGameObject {
      */
     private PointLight spotLight;
 
-    private final Vector2 forceCache = new Vector2();
-
     private boolean isAttacking;
 
     public AttackHitbox attackHitbox;
@@ -124,9 +152,21 @@ public class Werewolf extends SteeringGameObject {
     private float cooldownPercent;
 
     /**
+     * A float between 0 and 1 indicating attcking power of the Werewolf
+     */
+    private float attackPower;
+
+    /**
+     * A float indicating number of tiles player's attack can reach
+     */
+    private float attackRange;
+
+    /**
      * Whether the werewolf is in sprint
      */
     private boolean isRunning;
+
+    public Direction direction;
 
     /**
      * Returns the type of this object.
@@ -243,7 +283,28 @@ public class Werewolf extends SteeringGameObject {
      * Returns the attack power of werewolf during battle phase.
      */
     public float getAttackPower() {
-        return light / MAX_LIGHT;
+        return attackPower;
+    }
+
+    /**
+     * Sets the attack power of werewolf during battle phase.
+     */
+    public void setAttackPower(float pow) {
+        attackPower = pow;
+    }
+
+    /**
+     * Returns the attack power of werewolf during battle phase.
+     */
+    public float getAttackRange() {
+        return attackRange;
+    }
+
+    /**
+     * Sets the attack power of werewolf during battle phase.
+     */
+    public void setAttackRange(float range) {
+        attackRange = range;
     }
 
     /** Sets the cooldown bar to be drawn or not */
@@ -295,6 +356,10 @@ public class Werewolf extends SteeringGameObject {
         moonlightCollected++;
     }
 
+    public void reduceMoonlightCollected() {
+        moonlightCollected--;
+    }
+
     public int getMoonlightCollected() {
         return moonlightCollected;
     }
@@ -316,7 +381,7 @@ public class Werewolf extends SteeringGameObject {
      * Initialize a werewolf.
      */
     public Werewolf() {
-        super(false);
+        super();
         animeframe = 0.0f;
         lockoutTime = 0.0f;
         moonlight = false;
@@ -326,6 +391,8 @@ public class Werewolf extends SteeringGameObject {
         moonlightCollected = 0;
         isAttacking = false;
         canMove = true;
+        attackPower = INITIAL_POWER;
+        attackRange = INITIAL_RANGE;
     }
 
     /**
@@ -369,7 +436,8 @@ public class Werewolf extends SteeringGameObject {
         attackHitbox.setActive(false);
     }
 
-    /** public void resolveAttack(GameObject enemy, int damage, float knockback) {
+    /**
+     public void resolveAttack(GameObject enemy, int damage, float knockback) {
 
         Body enemyBody = enemy.getBody();
         Vector2 pos = body.getPosition();
@@ -387,12 +455,23 @@ public class Werewolf extends SteeringGameObject {
      * @param delta Number of seconds since last animation frame
      */
     public void update(float delta) {
+        super.update(delta);
         // get the current velocity of the player's Box2D body
         Vector2 velocity = body.getLinearVelocity();
         if (canMove) {
             float speed = isRunning ? runSpeed : walkSpeed;
             velocity.x = movementH * speed;
             velocity.y = movementV * speed;
+
+            if (movementV < 0) {
+                direction = Direction.DOWN;
+            } else if (movementV > 0) {
+                direction = Direction.UP;
+            } else if (movementH < 0) {
+                direction = Direction.LEFT;
+            } else  if (movementH > 0) {
+                direction = Direction.RIGHT;
+            }
 
             // set the updated velocity to the player's Box2D body
             body.setLinearVelocity(velocity);
@@ -402,7 +481,30 @@ public class Werewolf extends SteeringGameObject {
         } else {
             lockoutTime += delta;
         }
-        filmstrip.setFrame(isAttacking ? 1 : 0);
     }
 
+    @Override
+    public float getOrientation() {
+        return body.getAngle();
+    }
+
+    @Override
+    public void setOrientation(float orientation) {
+        body.setTransform(getPosition(), orientation);
+    }
+
+    @Override
+    public float vectorToAngle(Vector2 vector) {
+        return Box2dSteeringUtils.vectorToAngle(vector);
+    }
+
+    @Override
+    public Vector2 angleToVector(Vector2 outVector, float angle) {
+        return Box2dSteeringUtils.angleToVector(outVector, angle);
+    }
+
+    @Override
+    public Location<Vector2> newLocation() {
+        return new Box2dLocation(this.getPosition());
+    }
 }

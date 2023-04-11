@@ -23,7 +23,6 @@ public class AttackHitbox extends GameObject {
     }
 
     public boolean activatePhysics(World world) {
-
         setBodyType(BodyDef.BodyType.DynamicBody);
         setPosition(attacker.getX(), attacker.getY());
 

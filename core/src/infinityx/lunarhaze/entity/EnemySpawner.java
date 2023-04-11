@@ -67,7 +67,7 @@ public class EnemySpawner {
         if (tick % enemyAddTick == 0) {
             // TODO: enemies in battle phase should not use patrol path
             // TODO: smart placement for enemies
-            container.addEnemy("villager", 0, 0,
+            container.addEnemy("villager", 6, 5,
                     new ArrayList<>(Arrays.asList(new Vector2(), new Vector2()))
             );
             enemyAddTick = MathUtils.random(addMin, addMax);

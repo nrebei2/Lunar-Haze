@@ -80,7 +80,7 @@ public class CollisionController implements ContactListener {
         Vector2 playerPos = hitbox.getBody().getPosition();
         Vector2 enemyPos = enemyBody.getPosition();
         Vector2 knockbackDirection = enemyPos.sub(playerPos).nor();
-        enemyBody.applyLinearImpulse(knockbackDirection.scl(6f * PlayerAttackHandler.getAttackPower()), enemyBody.getWorldCenter(), true);
+        enemyBody.applyLinearImpulse(knockbackDirection.scl(2f * PlayerAttackHandler.getAttackRange()), enemyBody.getWorldCenter(), true);
         CameraShake.shake(300, 1);
     }
 

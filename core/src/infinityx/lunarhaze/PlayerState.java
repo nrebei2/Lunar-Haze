@@ -3,6 +3,8 @@ package infinityx.lunarhaze;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
+import infinityx.lunarhaze.entity.Direction;
+import infinityx.util.FilmStrip;
 
 public enum PlayerState implements State<PlayerController> {
 
@@ -12,14 +14,17 @@ public enum PlayerState implements State<PlayerController> {
             InputController input = entity.getInputController();
             entity.getAttackHandler().update(Gdx.graphics.getDeltaTime(), input, entity.getPhase());
             entity.resolvePlayer(Gdx.graphics.getDeltaTime());
-            entity.resolveMoonlight(Gdx.graphics.getDeltaTime(), entity.getLightingController());
+            if (entity.getPhase() == GameplayController.Phase.STEALTH) {
+                entity.resolveMoonlight(Gdx.graphics.getDeltaTime(), entity.getLightingController());
+            }
         }
     },
 
     IDLE() {
         @Override
         public void enter(PlayerController entity) {
-           entity.player.setStealth(entity.STILL_STEALTH);
+            entity.player.setStealth(entity.STILL_STEALTH);
+            setTexture(entity, "idle");
         }
 
         @Override
@@ -39,10 +44,14 @@ public enum PlayerState implements State<PlayerController> {
     },
 
     WALK() {
+        Direction direction;
         @Override
         public void enter(PlayerController entity) {
             //System.out.println("Player switched to walk state");
+            direction = entity.player.direction;
             entity.player.setStealth(entity.WALK_STEALTH);
+            setTexture(entity, "walk");
+            entity.player.texUpdate = 0.1f;
         }
         @Override
         public void update(PlayerController entity) {
@@ -54,14 +63,23 @@ public enum PlayerState implements State<PlayerController> {
             } else if (entity.getInputController().didRun()) {
                 entity.getStateMachine().changeState(PlayerState.RUN);
             }
+
+            // Animations
+            if (entity.player.direction == direction) return;
+            setTexture(entity, "walk");
+            direction = entity.player.direction;
         }
     },
 
     RUN() {
+        Direction direction;
         @Override
         public void enter(PlayerController entity) {
             //System.out.println("Player switched to run state");
+            direction = entity.player.direction;
             entity.player.setStealth(entity.RUN_STEALTH);
+            setTexture(entity, "walk");
+            entity.player.texUpdate = 0.1f * entity.player.walkSpeed / entity.player.runSpeed;
 
         }
         @Override
@@ -69,13 +87,17 @@ public enum PlayerState implements State<PlayerController> {
             // Handle state transitions
             if (entity.isAttacking()) {
                 entity.getStateMachine().changeState(PlayerState.ATTACK);
-            } else if (!entity.getInputController().didRun()) {
-                if (entity.player.getLinearVelocity().isZero()) {
-                    entity.getStateMachine().changeState(PlayerState.IDLE);
-                } else {
-                    entity.getStateMachine().changeState(PlayerState.WALK);
-                }
             }
+            else if (entity.player.getLinearVelocity().isZero()) {
+                entity.getStateMachine().changeState(PlayerState.IDLE);
+            } else if (!entity.getInputController().didRun()) {
+                entity.getStateMachine().changeState(PlayerState.WALK);
+            }
+
+            // Animations
+            if (entity.player.direction == direction) return;
+            setTexture(entity, "walk");
+            direction = entity.player.direction;
         }
     },
 
@@ -84,6 +106,8 @@ public enum PlayerState implements State<PlayerController> {
         public void enter(PlayerController entity) {
             //System.out.println("Player switched to attack state");
             entity.getAttackSound().play();
+            setTexture(entity, "attack");
+            entity.player.texUpdate = 0.06f;
         }
         @Override
         public void update(PlayerController entity) {
@@ -128,5 +152,22 @@ public enum PlayerState implements State<PlayerController> {
     @Override
     public boolean onMessage(PlayerController entity, Telegram telegram) {
         return false;
+    }
+
+    protected void setTexture(PlayerController entity, String name) {
+        switch (entity.player.direction) {
+            case UP:
+                entity.player.setTexture(entity.player.filmstrips.get(name + "-b"));
+                break;
+            case DOWN:
+                entity.player.setTexture(entity.player.filmstrips.get(name + "-f"));
+                break;
+            case LEFT:
+                entity.player.setTexture(entity.player.filmstrips.get(name + "-l"));
+                break;
+            case RIGHT:
+                entity.player.setTexture(entity.player.filmstrips.get(name + "-r"));
+                break;
+        }
     }
 }
