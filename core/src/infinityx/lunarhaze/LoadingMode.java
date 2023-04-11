@@ -273,6 +273,8 @@ public class LoadingMode extends ScreenObservable implements Screen, Application
     public void dispose() {
         internal.unloadAssets();
         internal.dispose();
+        moonphase.dispose();
+        spriteBatch.dispose();
     }
 
     /**
