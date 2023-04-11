@@ -26,8 +26,9 @@ public class TacticalManager implements Telegraph {
 
     public TacticalManager(LevelContainer container) {
         target = container.getPlayer();
+        enemies = new OrderedSet<>();
         MessageManager.getInstance().addListener(this, ADD);
-        MessageManager.getInstance().addListener(this, ADD);
+        MessageManager.getInstance().addListener(this, REMOVE);
     }
 
     public void update() {

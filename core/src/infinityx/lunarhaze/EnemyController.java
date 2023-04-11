@@ -190,7 +190,7 @@ public class EnemyController {
         arriveSB.setDecelerationRadius(0.4f);
 
         RaycastInfo collRay = new RaycastInfo(enemy);
-//        collRay.addIgnores(GameObject.ObjectType.WEREWOLF, GameObject.ObjectType.HITBOX);
+        collRay.addIgnores(GameObject.ObjectType.WEREWOLF, GameObject.ObjectType.HITBOX);
          this.raycastCollisionDetector = new Box2DRaycastCollision(container.getWorld(), collRay);
 
         this.collisionSB = new RaycastObstacleAvoidance<>(

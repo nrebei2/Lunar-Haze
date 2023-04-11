@@ -27,7 +27,7 @@ public enum EnemyState implements State<EnemyController> {
     INIT() {
         @Override
         public void update(EnemyController entity) {
-            entity.getStateMachine().changeState(PATROL);
+            entity.getStateMachine().changeState(ALERT);
         }
     },
 
@@ -146,7 +146,7 @@ public enum EnemyState implements State<EnemyController> {
            Vector2 player_pos = worldToGrid(entity.getTarget().getPosition());
            Path path = entity.pathfinder.findPath(cur_pos, player_pos, entity.raycastCollisionDetector);
            if (path!= null) {
-               entity.followPathSB = new FollowPath(entity.getEnemy(), path, 0, 0.1f);
+               entity.followPathSB = new FollowPath(entity.getEnemy(), path, 0, 0.05f);
                entity.getEnemy().setSteeringBehavior(entity.followPathSB);
            }
             MessageManager.getInstance().dispatchMessage(TacticalManager.ADD, entity);
@@ -157,7 +157,6 @@ public enum EnemyState implements State<EnemyController> {
             // Check if have arrived to target
             //float dist = entity.getEnemy().getPosition().dst(entity.arriveSB.getTarget().getPosition());
             //if (dist <= entity.arriveSB.getArrivalTolerance()) entity.getStateMachine().changeState(ATTACK);
-
             switch (entity.getDetection()) {
                 case NONE:
                     INDICATOR.setTarget(entity.target.getPosition());
@@ -176,6 +175,16 @@ public enum EnemyState implements State<EnemyController> {
         public boolean onMessage(EnemyController control, Telegram telegram) {
             if (telegram.message == TacticalManager.FLANK) {
                 // Stuff
+                System.out.println("flanking");
+                Vector2 flank_pos = worldToGrid((Vector2) telegram.extraInfo);
+                Vector2 cur_pos = worldToGrid(control.getEnemy().getPosition());
+                Path path = control.pathfinder.findPath(cur_pos, flank_pos, control.raycastCollisionDetector);
+                if (path != null){
+                    control.followPathSB = new FollowPath(control.getEnemy(), path, 0, 0.05f);
+                    control.getEnemy().setSteeringBehavior(control.followPathSB);
+                }
+
+
             }
             return true;
         }

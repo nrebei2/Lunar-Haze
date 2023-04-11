@@ -60,7 +60,7 @@ public class AStarPathFinding {
         connectionPath.clear();
         pathfinder.searchNodePath(sourceNode, targetNode, heuristic, connectionPath);
 
-//
+
 //        PathSmoother smoother = new PathSmoother(ray);
 //        int removed = smoother.smoothPath(connectionPath);
 //        System.out.println("removed " + removed);

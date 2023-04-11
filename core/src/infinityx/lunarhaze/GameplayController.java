@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
+import infinityx.lunarhaze.ai.TacticalManager;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.EnemySpawner;
 import infinityx.lunarhaze.entity.Werewolf;
@@ -84,6 +85,8 @@ public class GameplayController {
      * Owns the player controller
      */
     private PlayerController playerController;
+
+    private TacticalManager tacticalManager;
 
     /**
      * Owns the collision controller, handles collisions
@@ -180,6 +183,8 @@ public class GameplayController {
 
         win_sound = levelContainer.getDirectory().getEntry("level-passed", Sound.class);
 //        allocateScreen = new AllocateScreen(canvas, playerController);
+
+        tacticalManager = new TacticalManager(container);
     }
 
     /**
@@ -287,6 +292,7 @@ public class GameplayController {
         // add enemies during battle stage and in play
         if (getPhase() == Phase.BATTLE && gameState == GameState.PLAY) {
             enemySpawner.update(battleTicks);
+            tacticalManager.update();
         }
         for (int i = 0; i < enemies.size; i++) {
             controls.get(enemies.get(i)).update(container, currentPhase, delta);
