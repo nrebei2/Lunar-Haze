@@ -255,6 +255,8 @@ public class UIRender {
                 drawStealthStats(canvas, level);
             } else if (phase == Phase.BATTLE) {
                 drawHealthStats(canvas, level, phase);
+                drawPowerStats(canvas, level);
+                drawRangeStats(canvas, level);
             }
             canvas.end();
 
@@ -363,6 +365,36 @@ public class UIRender {
         Color moonColor = new Color(248f/255.0f, 228f/255.0f, 184f/255.0f, 1);
         setFontColor(moonColor);
         canvas.drawText("-1", UIFont_small, HEALTH_STROKE_WIDTH + MOON_STROKE_WIDTH/2, canvas.getHeight() - HEALTH_STROKE_HEIGHT * 3);
+    }
+
+    /** Draw attack power stats */
+    public void drawPowerStats(GameCanvas canvas, LevelContainer level){
+        canvas.end();
+        canvas.begin(GameCanvas.DrawPass.SHAPE);
+        canvas.drawAttackPow(canvas.getWidth() - BAR_WIDTH, canvas.getHeight() - BAR_HEIGHT * 2,
+                BAR_WIDTH, BAR_HEIGHT, level.getPlayer().getAttackPower());
+        canvas.end();
+
+        canvas.begin(GameCanvas.DrawPass.SPRITE);
+        canvas.drawText("Attack power ", UIFont_small,
+                canvas.getWidth() - BAR_WIDTH - UIFont_small.getAscent() * ("Attack power ".length()) * 2,
+                canvas.getHeight() - BAR_HEIGHT);
+        canvas.end();
+    }
+
+    /** Draw attack range stats */
+    public void drawRangeStats(GameCanvas canvas, LevelContainer level){
+        canvas.begin(GameCanvas.DrawPass.SPRITE);
+        canvas.drawText("Attack range ", UIFont_small,
+                canvas.getWidth() - BAR_WIDTH - UIFont_small.getAscent() * ("Attack range ".length()) * 2,
+                canvas.getHeight() - BAR_HEIGHT * 2 - GAP_DIST);
+        canvas.end();
+
+        canvas.begin(GameCanvas.DrawPass.SHAPE);
+        canvas.drawAttackRange(canvas.getWidth() - BAR_WIDTH, canvas.getHeight() - BAR_HEIGHT * 3 - GAP_DIST,
+                BAR_WIDTH, BAR_HEIGHT, level.getPlayer().getAttackRange());
+        canvas.end();
+        canvas.begin(GameCanvas.DrawPass.SPRITE);
     }
 
     /** Draw the stealth indicator above enemies */

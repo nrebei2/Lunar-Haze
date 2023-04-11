@@ -937,7 +937,7 @@ public class GameCanvas {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         Color blue = new Color(40.0f / 255.0f, 116.0f / 255.0f, 166.0f / 255.0f, 1.0f);
         shapeRenderer.setColor(blue);
-        shapeRenderer.rect(x, y, width * range / Werewolf.MAX_RANGE, height);
+        shapeRenderer.rect(x, y, width * (range - 1.0f) / (Werewolf.MAX_RANGE - 1.0f), height);
         shapeRenderer.end();
 
 //        draw(icon, Color.WHITE, x - width, y, width, height);
