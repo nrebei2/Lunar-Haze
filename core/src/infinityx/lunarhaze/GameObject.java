@@ -34,6 +34,9 @@ import infinityx.lunarhaze.physics.MultiShapeObstacle;
 import infinityx.util.Drawable;
 import infinityx.util.FilmStrip;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Base class for all Model objects in the game.
  */
@@ -56,9 +59,14 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
     protected Vector2 origin;
 
     /**
-     * FilmStrip pointer to the texture region
+     * Current filmstrip which will render
      */
     protected FilmStrip filmstrip;
+
+    /**
+     * Collection of named filmstrips
+     */
+    protected Map<String, FilmStrip> filmstrips;
 
     /**
      * How much the texture of this object should be scaled when drawn
@@ -69,6 +77,12 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
      * Whether the object should be drawn at next timestep.
      */
     protected boolean destroyed;
+
+    /** Counter with texUpdate to update frame */
+    private float texTime;
+
+    /** Time (in seconds) texture frame should change */
+    public float texUpdate;
 
     /**
      * Creates game object at (0, 0)
@@ -87,6 +101,8 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
      */
     public GameObject(float x, float y) {
         super(x, y);
+        filmstrips = new HashMap<>();
+        this.origin = new Vector2();
     }
 
     /**
@@ -103,15 +119,23 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
         setFriction(json.get("friction").asFloat());
         setRestitution(json.get("restitution").asFloat());
         //setStartFrame(json.get("startframe").asInt());
+        JsonValue textures = json.get("textures");
+        for (JsonValue tex : textures) {
+            filmstrips.put(tex.name(), directory.getEntry(tex.asString(), FilmStrip.class));
+        }
+
         JsonValue texInfo = json.get("texture");
-        setTexture(directory.getEntry(texInfo.get("name").asString(), FilmStrip.class));
+        System.out.println(filmstrips);
+        System.out.println(filmstrips.get(texInfo.get("name").asString()));
+        setTexture(filmstrips.get(texInfo.get("name").asString()));
         int[] texOrigin = texInfo.get("origin").asIntArray();
         setOrigin(texOrigin[0], texOrigin[1]);
+        textureScale = texInfo.getFloat("scale");
+        texUpdate = -1;
 
         // Add shape colliders
         JsonValue p_dim = json.get("colliders");
         for (JsonValue coll : p_dim) {
-
             String name = coll.name();
 
             Vector2 offset = new Vector2();
@@ -128,7 +152,6 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
                 addCircle(name, coll.getFloat("radius"), offset);
             }
         }
-        this.textureScale = texInfo.getFloat("scale");
     }
 
     @Override
@@ -143,7 +166,8 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
 
     public void setTexture(FilmStrip filmstrip) {
         this.filmstrip = filmstrip;
-        this.origin = new Vector2();
+        filmstrip.setFrame(0);
+        this.texTime = 0;
     }
 
     /**
@@ -192,6 +216,15 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
      * @param delta Number of seconds since last animation frame
      */
     public void update(float delta) {
+        if (texUpdate == -1) return;
+        this.texTime += delta;
+        if (filmstrip != null) {
+            if (texTime >= texUpdate) {
+                int next = (filmstrip.getFrame()+1) % filmstrip.getSize();
+                filmstrip.setFrame(next);
+                texTime = 0;
+            }
+        }
     }
 
     public float getDepth() {

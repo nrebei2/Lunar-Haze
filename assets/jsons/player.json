@@ -31,9 +31,23 @@
     "run": 2
   },
   "startframe": 0,
+  "textures": {
+    "attack-l": "werewolf.attack-l",
+    "attack-r": "werewolf.attack-r",
+    "attack-f": "werewolf.attack-f",
+    "attack-b": "werewolf.attack-b",
+    "walk-l": "werewolf.walk-l",
+    "walk-r": "werewolf.walk-r",
+    "walk-f": "werewolf.walk-f",
+    "walk-b": "werewolf.walk-b",
+    "idle-l": "werewolf.idle-l",
+    "idle-r": "werewolf.idle-r",
+    "idle-f": "werewolf.idle-f",
+    "idle-b": "werewolf.idle-b"
+  },
   "texture": {
-    "name" : "werewolf.movement",
-    "origin" : [640, 100],
-    "scale": 0.12
+    "name": "idle-r",
+    "origin" : [250, 150],
+    "scale": 0.48
   }
 }

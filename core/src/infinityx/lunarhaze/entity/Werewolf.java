@@ -12,6 +12,7 @@ import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.LevelContainer;
 import infinityx.lunarhaze.SteeringGameObject;
 import infinityx.lunarhaze.combat.AttackHitbox;
+import infinityx.util.FilmStrip;
 
 /**
  * Model class representing the player.
@@ -63,12 +64,12 @@ public class Werewolf extends SteeringGameObject {
     /**
      * Move speed (walking)
      **/
-    protected float walkSpeed;
+    public float walkSpeed;
 
     /**
      * Move speed (running)
      **/
-    protected float runSpeed;
+    public float runSpeed;
 
     /**
      * Whether the werewolf can move or not; the werewolf can't move
@@ -162,6 +163,8 @@ public class Werewolf extends SteeringGameObject {
      * Whether the werewolf is in sprint
      */
     private boolean isRunning;
+
+    public Direction direction;
 
     /**
      * Returns the type of this object.
@@ -388,6 +391,7 @@ public class Werewolf extends SteeringGameObject {
         canMove = true;
         attackPower = INITIAL_POWER;
         attackRange = INITIAL_RANGE;
+        direction = Direction.LEFT;
     }
 
     /**
@@ -449,12 +453,23 @@ public class Werewolf extends SteeringGameObject {
      * @param delta Number of seconds since last animation frame
      */
     public void update(float delta) {
+        super.update(delta);
         // get the current velocity of the player's Box2D body
         Vector2 velocity = body.getLinearVelocity();
         if (canMove) {
             float speed = isRunning ? runSpeed : walkSpeed;
             velocity.x = movementH * speed;
             velocity.y = movementV * speed;
+
+            if (movementV < 0) {
+                direction = Direction.DOWN;
+            } else if (movementV > 0) {
+                direction = Direction.UP;
+            } else if (movementH < 0) {
+                direction = Direction.LEFT;
+            } else  if (movementH > 0) {
+                direction = Direction.RIGHT;
+            }
 
             // set the updated velocity to the player's Box2D body
             body.setLinearVelocity(velocity);
@@ -464,7 +479,5 @@ public class Werewolf extends SteeringGameObject {
         } else {
             lockoutTime += delta;
         }
-        filmstrip.setFrame(isAttacking ? 1 : 0);
     }
-
 }
