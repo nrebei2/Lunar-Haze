@@ -208,7 +208,7 @@ public enum EnemyState implements State<EnemyController> {
 
             Path path = entity.pathfinder.findPath(cur_pos, new Vector2(entity.nextNode.x, entity.nextNode.y), entity.raycastCollisionDetector);
             if (path!= null) {
-                entity.followPathSB = new FollowPath(entity.getEnemy(), path, 0, 0.5f);
+                entity.followPathSB = new FollowPath(entity.getEnemy(), path, 0.05f, 1f);
                 entity.getEnemy().setSteeringBehavior(entity.followPathSB);
             }
 
