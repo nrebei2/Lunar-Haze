@@ -3,6 +3,7 @@ package infinityx.lunarhaze.ai;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.behaviors.ReachOrientation;
+import com.badlogic.gdx.ai.utils.ArithmeticUtils;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import infinityx.util.Box2dLocation;
@@ -41,8 +42,13 @@ public class LookAround extends ReachOrientation<Vector2> {
     protected SteeringAcceleration<Vector2> calculateRealSteering(SteeringAcceleration<Vector2> steering) {
         super.calculateRealSteering(steering);
 
-        if (steering.isZero()) {
+        float rotation = ArithmeticUtils.wrapAngleAroundZero(target.getOrientation() - owner.getOrientation());
 
+        // Absolute rotation
+        float rotationSize = rotation < 0f ? -rotation : rotation;
+
+        // Check if we are there
+        if (rotationSize <= alignTolerance) {
             if (target.getOrientation() == target1) {
                 setTargetOrientation(target2);
                 finished = false;

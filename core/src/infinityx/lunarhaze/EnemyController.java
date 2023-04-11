@@ -205,8 +205,8 @@ public class EnemyController {
                         .add(arriveSB);
 
 
-        this.lookAroundSB = new LookAround(enemy, 160).
-                setAlignTolerance(MathUtils.degreesToRadians * 10);
+        this.lookAroundSB = new LookAround(enemy, 160)
+                .setAlignTolerance(MathUtils.degreesToRadians * 10);
 
         this.faceSB = new Face<>(enemy).setAlignTolerance(MathUtils.degreesToRadians * 10);
 
