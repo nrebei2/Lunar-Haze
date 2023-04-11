@@ -85,7 +85,8 @@ public class PlayerAttackHandler extends AttackHandler {
 
     /** Adjusts hitbox based on user input */
     private void updateHitboxPosition(InputController input) {
-        player.attackHitbox.getBody().setTransform(player.getPosition().x + (input.getHorizontal() / 4.0f), player.getPosition().y + (input.getVertical() / 4.0f) + player.getTextureHeight()/2f, 0f);
+        //System.out.println("Updating hitbox to be at " + (player.getPosition().x + (input.getHorizontal() / 4.0f)) + ", " + (player.getPosition().y + (input.getVertical() / 4.0f) + player.getTextureHeight()/2f));
+        player.attackHitbox.getBody().setTransform(player.getPosition().x + (input.getHorizontal() / 4.0f), player.getPosition().y + (input.getVertical() / 4.0f) + 1.0f, 0f);
     }
 
     /** Called when an attack ends */
