@@ -4,6 +4,7 @@
         "title": "shared/loading-logo.png",
         "studio": "shared/studio.png",
         "moonphase": "shared/progress_bar.png",
+        "loadtext": "shared/load_text.png",
         "progress": {
             "file":      "shared/progress_bar.png",
             "atlas":     {
