@@ -74,6 +74,10 @@ public class LoadingMode extends ScreenObservable implements Screen {
      */
     private final Texture studios;
     /**
+     * Loading text texture
+     */
+    private final Texture loading;
+    /**
      * Moonphase texture
      */
     private final Texture moonphase;
@@ -249,6 +253,7 @@ public class LoadingMode extends ScreenObservable implements Screen {
         background.setFilter(TextureFilter.Linear, TextureFilter.Linear);
         moonphase = internal.getEntry("moonphase", Texture.class);
         studios = internal.getEntry("studio", Texture.class);
+        loading = internal.getEntry("loadtext", Texture.class);
         title = internal.getEntry("title", Texture.class);
 
         // No progress so far.
@@ -341,7 +346,9 @@ public class LoadingMode extends ScreenObservable implements Screen {
 
 
         TextureRegion currentFrame = moonAnimation.getKeyFrame(stateTime, true);
-        canvas.draw(currentFrame, centerX-100, centerY);
+//        canvas.draw(currentFrame, centerX-100, 0.3f*centerY);
+        canvas.draw(currentFrame, Color.WHITE, currentFrame.getRegionWidth()/2,
+                currentFrame.getRegionY()/2, centerX, 0.5f*centerY, 0f, 0.1f, 0.1f);
 
         canvas.end();
     }
@@ -354,6 +361,12 @@ public class LoadingMode extends ScreenObservable implements Screen {
                 studios.getWidth() / 2,studios.getHeight()/2,
                 canvas.getWidth()/2,canvas.getHeight()/2 - 230,
                 0,0.2f,0.2f
+        );
+        canvas.draw(
+                loading, alphaTint,
+                loading.getWidth() / 2,loading.getHeight()/2,
+                canvas.getWidth()/2,canvas.getHeight()/2 - 380,
+                0,0.3f,0.3f
         );
     }
 
@@ -376,16 +389,16 @@ public class LoadingMode extends ScreenObservable implements Screen {
     }
 
     public void create() {
-        TextureRegion[][] moonTextures = TextureRegion.split(moonphase, moonphase.getWidth() / 13,
+        TextureRegion[][] moonTextures = TextureRegion.split(moonphase, moonphase.getWidth() / 29,
                 moonphase.getHeight() / 1);
-        TextureRegion[] moonFrames = new TextureRegion[13 * 1];
+        TextureRegion[] moonFrames = new TextureRegion[29 * 1];
         int index = 0;
         for (int i = 0; i < 1; i++) {
-            for (int j = 0; j < 13; j++) {
+            for (int j = 0; j < 29; j++) {
                 moonFrames[index++] = moonTextures[i][j];
             }
         }
-        moonAnimation = new Animation<TextureRegion>(0.45f, moonFrames);
+        moonAnimation = new Animation<TextureRegion>(0.2f, moonFrames);
         stateTime = 0f;
     }
 
