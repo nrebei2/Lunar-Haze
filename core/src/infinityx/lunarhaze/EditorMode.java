@@ -218,7 +218,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         int x = (int) mouseBoard.x;
         int y = (int) mouseBoard.y;
         board.setLit(x, y, !board.isLit(x, y));
-        board.setSpotlight(x, y, new PointLight(level.getRayHandler(), 10, Color.WHITE, 4,
+        board.setSpotlight(x, y, new PointLight(level.getRayHandler(), 10, new Color(0.7f, 0.7f, 0.9f, 0.7f), 4,
                 board.boardCenterToWorldX(x), board.boardCenterToWorldY(y)));
     }
 
