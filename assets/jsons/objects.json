@@ -132,19 +132,19 @@
     "restitution": 0.0,
     "damping": 0.0
   },
-  "fores": {
+  "lamp": {
     "textures": {
-      "static": "fores.static"
+      "static": "lamp.static"
     },
     "texture": {
       "name": "static",
-      "origin": [1010, 500],
+      "origin": [1026, 100],
       "scale": 0.15
     },
     "colliders": {
       "body": {
         "type": "circle",
-        "radius": 0.0
+        "radius": 0.2
       }
     },
     "bodytype": "static",

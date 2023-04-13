@@ -42,6 +42,16 @@
     "title-right": "allocateUI/title-right.png",
     "noticed": "images/noticed.png",
     "alert": "images/alert.png",
+    "lamp": {
+      "file": "images/objects/Lamp_a_1.png",
+      "sprites":	{
+        "static" : {
+          "size" : 1,
+          "rows" : 1,
+          "cols" : 1
+        }
+      }
+    },
     "tree1": {
       "file": "images/objects/tree1.png",
       "sprites":	{

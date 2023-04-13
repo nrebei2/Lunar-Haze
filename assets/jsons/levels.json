@@ -1325,6 +1325,21 @@
       ],
       "objects": [
         {
+          "type" : "lamp",
+          "scale" : 1,
+          "position": [13.5, 12.5]
+        },
+        {
+          "type" : "lamp",
+          "scale" : 1.2,
+          "position": [13.5, 2.5]
+        },
+        {
+          "type" : "lamp",
+          "scale" : 1.1,
+          "position": [0.5, 6.5]
+        },
+        {
           "type" : "house",
           "scale" : 0.7,
           "position": [3, 1]
