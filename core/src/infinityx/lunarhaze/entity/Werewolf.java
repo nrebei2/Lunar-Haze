@@ -38,7 +38,7 @@ public class Werewolf extends GameObject implements Location<Vector2> {
     public static int MAX_HP = 10;
 
     /** Size of attack hitbox */
-    public static float HITBOX_SIZE = 5f;
+    public static float HITBOX_SIZE = 3f;
 
     /**
      * Maximum light of the werewolf is 100.0
