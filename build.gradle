@@ -2,10 +2,12 @@ buildscript {
     
 
     repositories {
+        maven { url 'https://s01.oss.sonatype.org' }
         mavenLocal()
         mavenCentral()
         gradlePluginPortal()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
         google()
     }
     dependencies {
@@ -16,6 +18,7 @@ buildscript {
 
 allprojects {
     apply plugin: "eclipse"
+    apply plugin: 'idea'
 
     version = '1.0'
     ext {
@@ -55,16 +58,23 @@ project(":desktop") {
 
 project(":core") {
     apply plugin: "java-library"
+    sourceCompatibility = 8
+    targetCompatibility = 8
 
 
     dependencies {
+        api "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
         api "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
         api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         api "com.badlogicgames.box2dlights:box2dlights:$box2DLightsVersion"
         api "com.badlogicgames.gdx:gdx-ai:$aiVersion"
-        
+
+        api "io.github.spair:imgui-java-binding:$imguiVersion"
+        api "io.github.spair:imgui-java-lwjgl3:$imguiVersion"
+        api "io.github.spair:imgui-java-natives-linux:$imguiVersion"
+        api "io.github.spair:imgui-java-natives-macos:$imguiVersion"
+        api "io.github.spair:imgui-java-natives-windows:$imguiVersion"
     }
 }
-

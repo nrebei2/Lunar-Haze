@@ -79,7 +79,6 @@ public class ShaderRenderer implements Renderer {
      *
      * @param x x-position
      * @param y y-position
-     * @param uniforms uniforms to be passed into shader
      * @param height height of quad
      * @param width  width of quad
      */
