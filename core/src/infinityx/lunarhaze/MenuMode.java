@@ -291,7 +291,7 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
 
             // We are are ready, notify our listener
             if (isReady() && observer != null) {
-                setLevelSelected(1);
+                setLevelSelected(2);
                 observer.exitScreen(this, GO_PLAY);
             }
             // Settings are ready, notify our listener

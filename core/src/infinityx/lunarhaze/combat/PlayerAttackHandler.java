@@ -35,7 +35,7 @@ public class PlayerAttackHandler extends AttackHandler {
 
     /** Constructor that gets a reference to the player model */
     public PlayerAttackHandler(Werewolf p) {
-        super(4f, 0.5f);
+        super(1f, 0.5f);
         player = p;
         comboAttackCooldownCounter = 0f;
         comboStep = 0;
