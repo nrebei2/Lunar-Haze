@@ -238,7 +238,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         SceneObject curr = (SceneObject) selected;
         level.addSceneObject(
                 curr.type,
-                (int) mouseBoard.x, (int) mouseBoard.y,
+                board.boardToWorldX((int)mouseBoard.x), board.boardToWorldY((int) mouseBoard.y),
                 1
         );
         System.out.println(curr.type + " placed at " + (int) mouseBoard.x + ", " + (int) mouseBoard.y);
@@ -420,7 +420,13 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         if (ImGui.getIO().getWantCaptureMouse()) return false;
+        int boardX = board.worldToBoardX(mouseWorld.x);
+        int boardY = board.worldToBoardY(mouseWorld.y);
 
+        if (!mouseBoard.epsilonEquals(boardX, boardY)) {
+            // mouse is on different tile now
+            mouseBoard.set(boardX, boardY);
+        }
         if (selected == null) {
             return false;
         }

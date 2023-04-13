@@ -62,7 +62,7 @@
 		}
 	},
 	"scene": {
-		"player": [ 1, 10 ],
+		"player": [ 12, 3 ],
 		"objects": []
 	}
 }

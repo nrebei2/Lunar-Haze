@@ -117,6 +117,7 @@ public class LevelSerializer {
             objPos.addChild(new JsonValue(board.worldToBoardX(obj.getPosition().x)));
             objPos.addChild(new JsonValue(board.worldToBoardY(obj.getPosition().y)));
             currObj.addChild("position", objPos);
+            objects.addChild(currObj);
         }
         scene.addChild("objects", objects);
 
