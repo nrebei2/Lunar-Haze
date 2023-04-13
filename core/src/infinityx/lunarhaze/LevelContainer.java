@@ -162,6 +162,8 @@ public class LevelContainer {
 
     private boolean scene;
 
+    private int[] playerStartPos;
+
     /**
      * Initialize attributes
      */
@@ -448,7 +450,7 @@ public class LevelContainer {
      * @return scene object added
      */
     public SceneObject addSceneObject(String type, float x, float y, float scale) {
-        SceneObject object = new SceneObject();
+        SceneObject object = new SceneObject(type);
         object.initialize(directory, objectJson.get(type), this);
         
         object.setPosition(x, y);
@@ -456,6 +458,8 @@ public class LevelContainer {
 
         return addSceneObject(object);
     }
+
+    public Array<SceneObject> getSceneObjects() { return sceneObjects; }
 
     /**
      * Set view translation
@@ -484,6 +488,9 @@ public class LevelContainer {
         return view;
     }
 
+    public int[] getPlayerStartPos() { return playerStartPos; }
+
+    public void setPlayerStartPos(int[] pos) { playerStartPos = pos; }
 
     public Color backgroundColor = new Color(0x0f4f47ff).mul(0.8f);
 
@@ -527,6 +534,8 @@ public class LevelContainer {
         );
 
         canvas.drawLights(rayHandler);
+
+        canvas.end();
     }
 
     /**
@@ -558,3 +567,4 @@ class DrawableCompare implements Comparator<Drawable> {
         return (int) Math.signum(d2.getDepth() - d1.getDepth());
     }
 }
+

@@ -109,8 +109,8 @@ public enum EnemyState implements State<EnemyController> {
             float dist = entity.getEnemy().getPosition().dst(entity.arriveSB.getTarget().getPosition());
             if (dist <= entity.arriveSB.getArrivalTolerance()) entity.getStateMachine().changeState(LOOK_AROUND);
 
-            System.out.println(entity.getDetection());
-            System.out.println(entity.getEnemy().getIndicatorAmount());
+            //System.out.println(entity.getDetection());
+            //System.out.println(entity.getEnemy().getIndicatorAmount());
             switch (entity.getDetection()) {
                 case NOTICED:
                 case ALERT:

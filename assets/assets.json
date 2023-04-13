@@ -42,8 +42,18 @@
     "title-right": "allocateUI/title-right.png",
     "noticed": "images/noticed.png",
     "alert": "images/alert.png",
+    "lamp": {
+      "file": "images/objects/Lamp_a_1.png",
+      "sprites":	{
+        "static" : {
+          "size" : 1,
+          "rows" : 1,
+          "cols" : 1
+        }
+      }
+    },
     "tree1": {
-      "file": "images/tree1.png",
+      "file": "images/objects/tree1.png",
       "sprites":	{
         "static" : {
           "size" : 1,
@@ -53,7 +63,7 @@
       }
     },
     "house1": {
-      "file": "images/house1.png",
+      "file": "images/objects/house1.png",
       "sprites":	{
         "static" : {
           "size" : 1,
@@ -63,7 +73,7 @@
       }
     },
     "house2": {
-      "file": "images/house2.png",
+      "file": "images/objects/house2.png",
       "sprites":	{
         "static" : {
           "size" : 1,
@@ -73,7 +83,7 @@
       }
     },
     "fence1": {
-      "file": "images/fence1.png",
+      "file": "images/objects/fence1.png",
       "sprites":	{
         "static" : {
           "size" : 1,
@@ -83,7 +93,7 @@
       }
     },
     "fence2": {
-      "file": "images/fence2.png",
+      "file": "images/objects/fence2.png",
       "sprites":	{
         "static" : {
           "size" : 1,
@@ -93,17 +103,7 @@
       }
     },
     "forest": {
-      "file": "images/forest.png",
-      "sprites":	{
-        "static" : {
-          "size" : 1,
-          "rows" : 1,
-          "cols" : 1
-        }
-      }
-    },
-    "fores": {
-      "file": "images/fores.png",
+      "file": "images/objects/forest.png",
       "sprites":	{
         "static" : {
           "size" : 1,
@@ -113,7 +113,7 @@
       }
     },
     "stone": {
-      "file": "images/stone1.png",
+      "file": "images/objects/stone1.png",
       "sprites":	{
         "static" : {
           "size" : 1,

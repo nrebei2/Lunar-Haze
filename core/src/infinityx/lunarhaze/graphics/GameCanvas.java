@@ -1153,4 +1153,8 @@ public class GameCanvas {
         local.scale(sx, sy);
         local.translate(-ox, -oy);
     }
+
+    public OrthographicCamera getCamera() {
+        return camera;
+    }
 }

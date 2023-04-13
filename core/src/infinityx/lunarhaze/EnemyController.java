@@ -283,7 +283,7 @@ public class EnemyController {
 
         // degree between enemy orientation and enemy-to-player
         double degree = Math.abs(enemy.getOrientation() - enemy.vectorToAngle(enemyToPlayer)) * MathUtils.radiansToDegrees;
-        if (true) {
+        if (raycast.hitObject == target) {
             //System.out.printf("degree: %f, dist: %f, stealth: %f\n", degree, dist, target.getStealth());
             if (degree <= enemy.getFlashlight().getConeDegree() / 2 && dist <= lerp.apply(1, 4, target.getStealth())) {
                 return Enemy.Detection.ALERT;
@@ -306,138 +306,6 @@ public class EnemyController {
         return Enemy.Detection.NONE;
     }
 
-    public void setArriveSB(Enemy enemy, Location<Vector2> target){
-        this.arriveSB = new Arrive<>(enemy, target);
-        arriveSB.setArrivalTolerance(0.1f);
-        arriveSB.setDecelerationRadius(0.9f);
-    }
-
-    /**
-     * @return true if the enemy attached to this controller can attack the enemy
-     */
-    private boolean canHitTarget() {
-        return true;
-    }
-
-    private boolean canChase() {
-        // This is radial
-        return enemy.getPosition().dst(target.getPosition()) <= CHASE_DIST;
-    }
-
-
-    //private void alertAllies() {
-    //    Iterator<Enemy> enemyIterator = enemies.iterator();
-    //    while (enemyIterator.hasNext()){
-    //        Enemy curr_enemy = enemyIterator.next();
-    //        if (!curr_enemy.equals(enemy)){
-    //            if (curr_enemy.getPosition().dst(enemy.getPosition()) <= ALERT_DIST){
-    //                curr_enemy.setAlerted(true);
-    //                controls.get(curr_enemy).alert_pos = (new Vector2(target.getX(), target.getY()));
-    //            }
-    //        }
-    //    }
-    //
-    //}
-
-    /**
-     * Change the state of the enemy.
-     * <p>
-     * A Finite State Machine (FSM) is just a collection of rules that,
-     * given a current state, and given certain observations about the
-     * environment, chooses a new state. For example, if we are currently
-     * in the ATTACK state, we may want to switch to the CHASE state if the
-     * target gets out of range.
-     */
-    //private void changeStateIfApplicable(LevelContainer container, long ticks) {
-    //    switch (state) {
-    //        case SPAWN:
-    //            state = FSMState.PATROL;
-    //            break;
-    //        case PATROL:
-    //            if (detectedPlayer(container)) {
-    //                alertAllies();
-    //                state = FSMState.CHASE;
-    //            }
-    //            if (enemy.getAlerted()){
-    //                state = FSMState.ALERT;
-    //            }
-    //
-    //            break;
-    //        case CHASE:
-    //            if (!canChase() && !target.isOnMoonlight()) {
-    //                state = FSMState.WANDER;
-    //                chased_ticks = ticks;
-    //                end_chase_pos = new Vector2(enemy.getPosition().x, enemy.getPosition().y);
-    //                goal = getRandomPointtoWander(2f);
-    //            }
-    //            break;
-    //        case WANDER:
-    //            if (detectedPlayer(container)) {
-    //                state = FSMState.CHASE;
-    //            } else if (!canChase() && !target.isOnMoonlight() && (ticks - chased_ticks >= 30)) {
-    //                state = FSMState.PATROL;
-    //            }
-    //            break;
-    //        case IDLE:
-    //            if (enemy.getAlerted()){
-    //                state = FSMState.ALERT;
-    //            }
-    //            idle_ticks++;
-    //            if (idle_ticks >= 15) {
-    //                enemy.getBody().setAngularVelocity(0);
-    //                state = FSMState.PATROL;
-    //                idle_ticks = 0;
-    //                break;
-    //            }
-    //            if (lightDetect(container)) {
-    //                alertAllies();
-    //                enemy.getBody().setAngularVelocity(0);
-    //                state = FSMState.CHASE;
-    //                break;
-    //            }
-    //            if (idle_ticks % 5 == 0) {
-    //                Random rand = new Random();
-    //                if ((rand.nextInt(10) >= 5)) {
-    //                    enemy.getBody().setAngularVelocity(1f);
-    //                } else {
-    //                    enemy.getBody().setAngularVelocity(-1f);
-    //                }
-    //
-    //            }
-    //            break;
-    //        case ALERT:
-    //            if (lightDetect(container)){
-    //                state = FSMState.CHASE;
-    //            }
-    //            if (isAtAlertLocation){
-    //                state = FSMState.IDLE;
-    //            }
-    //        default:
-    //            // Unknown or unhandled state, should never get here
-    //            assert (false);
-    //            break;
-    //    }
-    //}
-
-    //
-    //private void changeDetectionIfApplicable(GameplayController.Phase currentPhase) {
-    //    if (target.isOnMoonlight()) {
-    //        detection = Detection.MOON;
-    //    } else if (state == FSMState.CHASE) {
-    //        detection = Detection.AREA;
-    //        enemy.getFlashlight().setConeDegree(0);
-    //    }else if (currentPhase == GameplayController.Phase.BATTLE){
-    //        enemy.getFlashlight().setConeDegree(0);
-    //        detection = Detection.FULL_MOON;
-    //        state = FSMState.CHASE;
-    //    } else {
-    //        detection = Detection.LIGHT;
-    //        enemy.getFlashlight().setConeDegree(30);
-    //
-    //    }
-    //}
-
-
     /**
      * @return Random point in patrol area
      */
@@ -458,46 +326,4 @@ public class EnemyController {
         //System.out.println("I found a point with x: "+ random_point.x+", y: "+random_point.y+"!");
         return random_point;
     }
-
-    //private Vector2 findPath() {
-    //    //TODO CHANGE--SHOULD GIVE US THE NEXT MOVEMENT
-    //    //Gets enemy position
-    //    Vector2 cur_pos = enemy.getPosition();
-    //    switch (state) {
-    //        case SPAWN:
-    //            break;
-    //        case PATROL:
-    //            Vector2 temp_cur_pos = new Vector2(cur_pos.x, cur_pos.y);
-    //            if (temp_cur_pos.sub(goal).len() <= 0.2f) {
-    //                goal = getRandomPointinRegion();
-    //                state = FSMState.IDLE;
-    //                enemy.setVX(0);
-    //                enemy.setVY(0);
-    //                return new Vector2();
-    //                /**stay there for a while*/
-    //            }
-    //            return new Vector2(goal.x - cur_pos.x, goal.y - cur_pos.y).nor();
-    //        case CHASE:
-    //            Vector2 target_pos = new Vector2(target.getPosition());
-    //            return (target_pos.sub(cur_pos)).nor();
-    //        case WANDER:
-    //            Vector2 temp_cur_pos2 = new Vector2(cur_pos.x, cur_pos.y);
-    //            if (temp_cur_pos2.sub(goal).len() <= 0.3f) {
-    //                goal = getRandomPointtoWander(1f);
-    //            }
-    //            return new Vector2(goal.x - cur_pos.x, goal.y - cur_pos.y).nor();
-    //        case IDLE:
-    //            return new Vector2(0, 0);
-    //        case ALERT:
-    //            //alert_pos = target.getPosition();
-    //            Vector2 temp_cur_pos3 = new Vector2(cur_pos.x, cur_pos.y);
-    //            if (temp_cur_pos3.sub(alert_pos).len() <= 0.2f) {
-    //                enemy.setAlerted(false);
-    //                this.isAtAlertLocation = true;
-    //                return new Vector2(0,0);
-    //            }
-    //            return new Vector2(alert_pos.x - cur_pos.x, alert_pos.y - cur_pos.y).nor();
-    //    }
-    //    return new Vector2(0, 0);
-    //}
 }

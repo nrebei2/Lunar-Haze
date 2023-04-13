@@ -3,9 +3,14 @@ package infinityx.lunarhaze;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import imgui.ImGui;
+import imgui.ImGuiIO;
+import imgui.gl3.ImGuiImplGl3;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.util.ScreenObserver;
+import imgui.glfw.ImGuiImplGlfw;
+
 
 /**
  * Owns and handles switching between Screens
@@ -87,6 +92,7 @@ public class GDXRoot extends Game implements ScreenObserver {
         aboutUs.setObserver(this);
         allocate.setObserver(this);
         editor.setObserver(this);
+        editor.setupImGui();
 
         setScreen(loading);
     }
@@ -164,9 +170,10 @@ public class GDXRoot extends Game implements ScreenObserver {
                     setScreen(editor);
                     break;
                 case MenuMode.GO_PLAY:
-                    game.setLevel(menu.getLevelSelected());
-                    game.setupLevel();
-                    setScreen(game);
+                    //game.setLevel(menu.getLevelSelected());
+                    //game.setupLevel();
+                    //setScreen(game);
+                    setScreen(editor);
                     break;
                 case MenuMode.GO_SETTING:
                     setScreen(setting);
@@ -212,6 +219,8 @@ public class GDXRoot extends Game implements ScreenObserver {
         } else if (screen == editor) {
             if (exitCode == EditorMode.GO_MENU) {
                 setScreen(menu);
+            } else if(exitCode == EditorMode.GO_PLAY) {
+
             }
         } else {
             Gdx.app.exit();

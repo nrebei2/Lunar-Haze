@@ -37,6 +37,8 @@ public class Tile {
      */
     private boolean collectable = false;
 
+    private int tileNum;
+
     /**
      * Texture of tile
      * TODO: Should be a TextureRegion taken from a sprite sheet of tiles to optimize rendering.
@@ -145,6 +147,10 @@ public class Tile {
     public Texture getTileTexture() {
         return TileTexture;
     }
+
+    public int tileNum() { return tileNum; }
+
+    public void setTileNum(int num) { tileNum = num; }
 
     public void setTileTexture(Texture tex) {
         this.TileTexture = tex;

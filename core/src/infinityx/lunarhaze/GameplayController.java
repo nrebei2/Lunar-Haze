@@ -202,6 +202,7 @@ public class GameplayController {
         if (gameState == GameState.PLAY) {
             // Process the player only when the game is in play
             playerController.update(input, delta, currentPhase);
+           // System.out.println("Player position: " + player.getPosition().toString());
             switch (currentPhase) {
                 case STEALTH:
                     phaseTimer -= delta;
