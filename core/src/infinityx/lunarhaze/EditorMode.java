@@ -294,9 +294,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     private void draw(float delta) {
         canvas.clear();
         level.drawLevel(canvas);
+
         canvas.begin(GameCanvas.DrawPass.SHAPE, level.getView().x, level.getView().y);
-        //tiledMapRenderer.setView(canvas.getCamera());
-        //tiledMapRenderer.render();
         board.drawOutline(canvas);
         canvas.end();
 

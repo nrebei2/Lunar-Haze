@@ -1,5 +1,6 @@
 package infinityx.lunarhaze.graphics;
 
+import com.badlogic.gdx.Gdx;
 import imgui.*;
 import imgui.callback.ImPlatformFuncViewport;
 import imgui.flag.ImGuiBackendFlags;
@@ -255,7 +256,7 @@ public class ImGuiImplGLES2 {
                 if (glVersion >= 320) {
                     glDrawElementsBaseVertex(GL_TRIANGLES, elemCount, GL_UNSIGNED_SHORT, indices, vtxBufferOffset);
                 } else {
-                    glDrawElements(GL_TRIANGLES, elemCount, GL_UNSIGNED_SHORT, indices);
+                    Gdx.gl20.glDrawElements(GL_TRIANGLES, elemCount, GL_UNSIGNED_SHORT, indices);
                 }
             }
         }
@@ -431,9 +432,6 @@ public class ImGuiImplGLES2 {
 
     // Setup desired GL state
     private void bind(final int fbWidth, final int fbHeight) {
-        // Recreate the VAO every time (this is to easily allow multiple GL contexts to be rendered to. VAO are not shared among GL contexts)
-        // The renderer would actually work without any VAO bound, but then our VertexAttrib calls would overwrite the default one currently bound.
-
         // Setup render state: alpha-blending enabled, no face culling, no depth testing, scissor enabled, polygon fill
         glEnable(GL_BLEND);
         glBlendEquation(GL_FUNC_ADD);

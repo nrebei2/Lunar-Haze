@@ -534,6 +534,8 @@ public class LevelContainer {
         );
 
         canvas.drawLights(rayHandler);
+
+        canvas.end();
     }
 
     /**
