@@ -3,6 +3,7 @@ package infinityx.lunarhaze;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.JsonWriter;
+import infinityx.lunarhaze.entity.SceneObject;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -94,9 +95,31 @@ public class LevelSerializer {
 
         currLevel.addChild("tiles", tiles);
 
-        // Add scene, player, enemies, and objects here
         JsonValue scene = new JsonValue(JsonValue.ValueType.object);
-        // ...
+
+        // Player
+        JsonValue playerStartPos = new JsonValue(JsonValue.ValueType.array);
+        if(level.getPlayerStartPos() != null) {
+            playerStartPos.addChild(new JsonValue(level.getPlayerStartPos()[0]));
+            playerStartPos.addChild(new JsonValue(level.getPlayerStartPos()[1]));
+        }
+        scene.addChild("player", playerStartPos);
+
+        // Enemy (todo)
+
+        // Scene objects
+        JsonValue objects = new JsonValue(JsonValue.ValueType.array);
+        for(SceneObject obj : level.getSceneObjects()) {
+            JsonValue currObj = new JsonValue(JsonValue.ValueType.object);
+            currObj.addChild("type", new JsonValue(obj.getSceneObjectType()));
+            currObj.addChild("scale", new JsonValue(1));
+            JsonValue objPos = new JsonValue(JsonValue.ValueType.array);
+            objPos.addChild(new JsonValue(board.worldToBoardX(obj.getPosition().x)));
+            objPos.addChild(new JsonValue(board.worldToBoardY(obj.getPosition().y)));
+            currObj.addChild("position", objPos);
+        }
+        scene.addChild("objects", objects);
+
         currLevel.addChild("scene", scene);
         root.addChild("1", currLevel);
 

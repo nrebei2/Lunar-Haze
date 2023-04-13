@@ -9,6 +9,7 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.JsonValue;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.gl3.ImGuiImplGl3;
@@ -22,6 +23,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -191,6 +193,12 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         availableSelections.add(new Tile(directory.getEntry("grass4", Texture.class), "land", 4));
         availableSelections.add(new Tile(directory.getEntry("grass5", Texture.class), "land", 5));
         availableSelections.add(new Tile(directory.getEntry("grass6", Texture.class), "land", 6));
+
+        availableSelections.add(new SceneObject(directory.getEntry("house1", Texture.class), "house"));
+        availableSelections.add(new SceneObject(directory.getEntry("fence1", Texture.class), "fencex"));
+        availableSelections.add(new SceneObject(directory.getEntry("fence2", Texture.class), "fencey"));
+        availableSelections.add(new SceneObject(directory.getEntry("tree1", Texture.class), "tree"));
+        availableSelections.add(new SceneObject(directory.getEntry("stone", Texture.class), "stone"));
         //availableSelections.add(new Enemy(directory.getEntry("villager", Texture.class), "villager"));
         //availableSelections.add(new Player(directory.getEntry("werewolf", Texture.class)));
         selected = availableSelections.get(currentSelectionIndex);
@@ -210,7 +218,10 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             board.removePreview();
             placeTile();
         } else if (selected instanceof Player) {
-            selected = null;
+            level.setPlayerStartPos(new int[]{(int) mouseBoard.x, (int) mouseBoard.y});
+            System.out.println("Player placed at " + (int) mouseBoard.x + ", " + (int) mouseBoard.y);
+        } else if (selected instanceof SceneObject) {
+            placeSceneObject();
         }
     }
 
@@ -218,8 +229,19 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         int x = (int) mouseBoard.x;
         int y = (int) mouseBoard.y;
         board.setLit(x, y, !board.isLit(x, y));
-        board.setSpotlight(x, y, new PointLight(level.getRayHandler(), 10, new Color(0.7f, 0.7f, 0.9f, 0.7f), 4,
-                board.boardCenterToWorldX(x), board.boardCenterToWorldY(y)));
+        PointLight light = new PointLight(level.getRayHandler(), 10, new Color(0.7f, 0.7f, 0.9f, 0.5f), 4, board.boardCenterToWorldX(x), board.boardCenterToWorldY(y));
+        light.setSoft(true);
+        board.setSpotlight(x, y, light);
+    }
+
+    private void placeSceneObject() {
+        SceneObject curr = (SceneObject) selected;
+        level.addSceneObject(
+                curr.type,
+                (int) mouseBoard.x, (int) mouseBoard.y,
+                1
+        );
+        System.out.println(curr.type + " placed at " + (int) mouseBoard.x + ", " + (int) mouseBoard.y);
     }
 
     /**
@@ -284,6 +306,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         createTileMenu();
         createToolbar();
         createBrushSelection();
+        createObjectMenu();
         // ---
 
         ImGui.render();
@@ -528,6 +551,27 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         ImGui.end();
     }
 
+    private void createObjectMenu() {
+        ImGui.getStyle().setFramePadding(15, 15);
+        ImGui.begin("Object Selection");
+
+        for (int i = 0; i < availableSelections.size(); i++) {
+            if(availableSelections.get(i) instanceof SceneObject) {
+                SceneObject obj = (SceneObject) availableSelections.get(i);
+
+                if (ImGui.imageButton(obj.texture.getTextureObjectHandle(), 100, 100 * 3 / 4)) {
+                    placingMoonlight = false;
+                    selected = availableSelections.get(i);
+                }
+
+                // Position the next tile in the row
+                ImGui.sameLine();
+            }
+        }
+
+        ImGui.end();
+    }
+
     private void createToolbar() {
         ImGui.getStyle().setFramePadding(10, 10);
         ImGui.begin("Toolbar");
@@ -554,11 +598,10 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         ImGui.begin("Brush Select");
         if (ImGui.button("Moonlight")) {
             placingMoonlight = true;
-            System.out.println("Note: needs to be fixed, as the spotlight is not created");
         }
         ImGui.spacing();
         if (ImGui.button("Werewolf")) {
-
+            selected = new Player(directory.getEntry("player", Texture.class));
         }
         ImGui.spacing();
         if (ImGui.button("Enemy")) {
