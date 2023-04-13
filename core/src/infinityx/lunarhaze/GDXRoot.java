@@ -170,10 +170,10 @@ public class GDXRoot extends Game implements ScreenObserver {
                     setScreen(editor);
                     break;
                 case MenuMode.GO_PLAY:
-                    game.setLevel(menu.getLevelSelected());
-                    game.setupLevel();
-                    setScreen(game);
-                    //setScreen(editor);
+                    //game.setLevel(menu.getLevelSelected());
+                    //game.setupLevel();
+                    //setScreen(game);
+                    setScreen(editor);
                     break;
                 case MenuMode.GO_SETTING:
                     setScreen(setting);
@@ -219,6 +219,8 @@ public class GDXRoot extends Game implements ScreenObserver {
         } else if (screen == editor) {
             if (exitCode == EditorMode.GO_MENU) {
                 setScreen(menu);
+            } else if(exitCode == EditorMode.GO_PLAY) {
+
             }
         } else {
             Gdx.app.exit();

@@ -167,12 +167,13 @@ public class Board {
      * @param x The x index for the Tile cell
      * @param y The y index for the Tile cell
      */
-    public void setTileTexture(int x, int y, Texture tex) {
+    public void setTileTexture(int x, int y, Texture tex, int index) {
         Tile tile = getTile(x, y);
         if (tile == null) {
             return;
         }
         tile.setTileTexture(tex);
+        tile.setTileNum(index);
     }
 
     /**
@@ -645,4 +646,20 @@ public class Board {
     public int getRemainingMoonlight() {
         return moonlightTiles;
     }
+
+    public int getTileNum(int x, int y) {
+        if(getTile(x,y) == null) return 1;
+        return getTile(x, y).tileNum();
+    }
+
+    public ArrayList<Integer[]> getMoonlightTiles() {
+        ArrayList<Integer[]> lst = new ArrayList<>();
+        for(int x = 0; x < height; x++) {
+            for(int y = 0; y < width; y++) {
+                if(isLit(x, y)) lst.add(new Integer[]{x, y});
+            }
+        }
+        return lst;
+    }
+
 }

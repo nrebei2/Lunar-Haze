@@ -558,3 +558,4 @@ class DrawableCompare implements Comparator<Drawable> {
         return (int) Math.signum(d2.getDepth() - d1.getDepth());
     }
 }
+

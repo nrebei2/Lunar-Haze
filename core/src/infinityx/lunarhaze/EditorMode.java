@@ -1,5 +1,6 @@
 package infinityx.lunarhaze;
 
+import box2dLight.PointLight;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
@@ -12,6 +13,7 @@ import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
+import imgui.type.ImInt;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.util.ScreenObservable;
@@ -43,16 +45,18 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     private Board board;
     private TiledMap tiledMap;
-    private OrthogonalTiledMapRenderer tiledMapRenderer;
 
     /**
      * User requested to go to menu
      */
     public final static int GO_MENU = 0;
+    public final static int GO_PLAY = 1;
 
     /** ImGui classes */
     private ImGuiImplGlfw imGuiGlfw;
     private ImGuiImplGl3 imGuiGl3;
+
+    private boolean placingMoonlight;
 
     /** ImGui initialization */
     public void setupImGui() {
@@ -86,12 +90,14 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     private int currentSelectionIndex;
 
     class Tile extends Selected {
-        public Tile(Texture texture, String type) {
+        public Tile(Texture texture, String type, int num) {
             this.type = type;
             this.texture = texture;
+            this.num = num;
         }
 
         public String type;
+        public int num;
     }
 
     class Player extends Selected {
@@ -140,6 +146,10 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     private final Vector2 mouseBoard = new Vector2();
 
+    private ImInt sliderValue1 = new ImInt();
+    private ImInt sliderValue2 = new ImInt();
+    private ImInt sliderValue3 = new ImInt();
+
     // Scene graph is just a tree of length 1 with root `EditorMode` and leaves buttons
     // therefore no need to have children for buttons
     // we can edit this later if we want
@@ -162,6 +172,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         this.canvas = canvas;
         availableSelections = new ArrayList<>();
         currentSelectionIndex = 0;
+        placingMoonlight = false;
     }
 
     /**
@@ -174,21 +185,22 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     public void gatherAssets(AssetDirectory directory) {
         this.directory = directory;
-        availableSelections.add(new Tile(directory.getEntry("grass1", Texture.class), "land"));
-        availableSelections.add(new Tile(directory.getEntry("grass2", Texture.class), "land"));
-        availableSelections.add(new Tile(directory.getEntry("grass3", Texture.class), "land"));
-        availableSelections.add(new Tile(directory.getEntry("grass4", Texture.class), "land"));
-        availableSelections.add(new Tile(directory.getEntry("grass5", Texture.class), "land"));
-        availableSelections.add(new Tile(directory.getEntry("grass6", Texture.class), "land"));
+        availableSelections.add(new Tile(directory.getEntry("grass1", Texture.class), "land", 1));
+        availableSelections.add(new Tile(directory.getEntry("grass2", Texture.class), "land", 2));
+        availableSelections.add(new Tile(directory.getEntry("grass3", Texture.class), "land", 3));
+        availableSelections.add(new Tile(directory.getEntry("grass4", Texture.class), "land", 4));
+        availableSelections.add(new Tile(directory.getEntry("grass5", Texture.class), "land", 5));
+        availableSelections.add(new Tile(directory.getEntry("grass6", Texture.class), "land", 6));
         //availableSelections.add(new Enemy(directory.getEntry("villager", Texture.class), "villager"));
         //availableSelections.add(new Player(directory.getEntry("werewolf", Texture.class)));
         selected = availableSelections.get(currentSelectionIndex);
     }
 
     private void placeTile() {
+        Tile curr = (Tile) selected;
         board.setTileTexture(
                 (int) mouseBoard.x, (int) mouseBoard.y,
-                selected.texture
+                curr.texture, curr.num
         );
         board.setTileType((int) mouseBoard.x, (int) mouseBoard.y, infinityx.lunarhaze.Tile.TileType.Road);
     }
@@ -202,17 +214,26 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         }
     }
 
+    private void placeMoonlightTile() {
+        int x = (int) mouseBoard.x;
+        int y = (int) mouseBoard.y;
+        board.setLit(x, y, !board.isLit(x, y));
+        board.setSpotlight(x, y, new PointLight(level.getRayHandler(), 10, Color.WHITE, 4,
+                board.boardCenterToWorldX(x), board.boardCenterToWorldY(y)));
+    }
+
     /**
      * Called when this screen becomes the current screen for a {@link com.badlogic.gdx.Game}.
      */
     @Override
     public void show() {
+        //ImGuiIO io = ImGui.getIO();
+        //io.getFonts().addFontFromFileTTF()
         tiledMap = new TmxMapLoader().load("assets/maps/default.tmx");
-        tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
         level = LevelParser.LevelParser().loadEmpty();
         level.hidePlayer();
         board = level.getBoard();
-        selected = new Tile(directory.getEntry("grass2", Texture.class), "land");
+        selected = new Tile(directory.getEntry("grass2", Texture.class), "land", 2);
         //selected = new Player(level.getPlayer().getTexture().getTexture());
         Gdx.input.setInputProcessor(this);
     }
@@ -241,10 +262,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
             observer.exitScreen(this, GO_MENU);
         }
-        if(Gdx.input.isKeyPressed(Input.Keys.R)) {
-            currentSelectionIndex = (currentSelectionIndex + 1) % availableSelections.size();
-            selected = availableSelections.get(currentSelectionIndex);
-        }
 
     }
 
@@ -264,8 +281,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         ImGui.newFrame();
 
         // --- ImGUI draw commands go here ---
-        ImGui.showDemoWindow();
-        ImGui.imageButton(selected.texture.getTextureObjectHandle(), 200, 200 * 3/4);
+        createTileMenu();
+        createToolbar();
+        createBrushSelection();
         // ---
 
         ImGui.render();
@@ -337,7 +355,11 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     @Override
     public boolean keyDown(int keycode) {
-
+        if (keycode == Input.Keys.R) {
+            currentSelectionIndex = (currentSelectionIndex + 1) % availableSelections.size();
+            selected = availableSelections.get(currentSelectionIndex);
+            return true;
+        }
         return false;
     }
 
@@ -379,8 +401,11 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         if (selected == null) {
             return false;
         }
-
-        placeSelection();
+        if(!placingMoonlight) {
+            placeSelection();
+        } else {
+            placeMoonlightTile();
+        }
         return true;
     }
 
@@ -479,4 +504,67 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     public boolean scrolled(float amountX, float amountY) {
         return false;
     }
+
+    // IMGUI FUNCTIONS
+
+    private void createTileMenu() {
+        ImGui.getStyle().setFramePadding(15, 15);
+        ImGui.begin("Tile Selection");
+
+        for (int i = 0; i < availableSelections.size(); i++) {
+            if(availableSelections.get(i) instanceof Tile) {
+                Tile tile = (Tile) availableSelections.get(i);
+
+                if (ImGui.imageButton(tile.texture.getTextureObjectHandle(), 100, 100 * 3 / 4)) {
+                    placingMoonlight = false;
+                    selected = availableSelections.get(i);
+                }
+
+                // Position the next tile in the row
+                ImGui.sameLine();
+            }
+        }
+
+        ImGui.end();
+    }
+
+    private void createToolbar() {
+        ImGui.getStyle().setFramePadding(10, 10);
+        ImGui.begin("Toolbar");
+        /*if (ImGui.button("Undo")) {
+            // TODO: create a stack and use stack to undo/redo
+        }
+        ImGui.spacing();
+        if (ImGui.button("Redo")) {
+            // TODO: create a stack and use stack to undo/redo
+        }
+        ImGui.spacing(); */
+        if (ImGui.button("Save")) {
+            LevelSerializer.saveBoardToJsonFile(level, board, "newLevel");
+        }
+        ImGui.spacing();
+        if (ImGui.button("Test")) {
+            // Initialize the level etc
+            //observer.exitScreen(this, GO_PLAY);
+        }
+        ImGui.end();
+    }
+    private void createBrushSelection() {
+        ImGui.getStyle().setFramePadding(10, 10);
+        ImGui.begin("Brush Select");
+        if (ImGui.button("Moonlight")) {
+            placingMoonlight = true;
+            System.out.println("Note: needs to be fixed, as the spotlight is not created");
+        }
+        ImGui.spacing();
+        if (ImGui.button("Werewolf")) {
+
+        }
+        ImGui.spacing();
+        if (ImGui.button("Enemy")) {
+
+        }
+        ImGui.end();
+    }
+
 }

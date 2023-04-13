@@ -164,7 +164,7 @@ public class LevelParser {
         // LevelContainer empty at this point
         levelContainer.flush();
 
-        Board board = new Board(10, 10);
+        Board board = new Board(30, 30);
 
         board.setTileScreenDim(sSize[0], sSize[1]);
         board.setTileWorldDim(wSize[0], wSize[1]);
@@ -210,7 +210,7 @@ public class LevelParser {
             for (int x = 0; x < board.getWidth(); x++) {
                 int tileNum = tileData.get((board.getHeight() - y - 1) * board.getWidth() + x);
                 board.setTileTexture(x, y,
-                        directory.getEntry(texType + tileNum, Texture.class)
+                        directory.getEntry(texType + tileNum, Texture.class), tileNum
                 );
                 board.setTileType(x, y, tileTypeFromNum(tileNum));
                 board.setWalkable(x, y, true);
