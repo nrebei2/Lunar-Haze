@@ -14,6 +14,7 @@ import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.graphics.GameCanvas;
+import infinityx.lunarhaze.graphics.ImGuiImplGLES2;
 import infinityx.util.ScreenObservable;
 
 public class EditorMode extends ScreenObservable implements Screen, InputProcessor {
@@ -43,13 +44,13 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
     /** ImGui classes */
     private ImGuiImplGlfw imGuiGlfw;
-    private ImGuiImplGl3 imGuiGl3;
+    private ImGuiImplGLES2 imGuiGl;
 
     /** ImGui initialization */
     public void setupImGui() {
         // ImGui initialization
         this.imGuiGlfw = new ImGuiImplGlfw();
-        this.imGuiGl3 = new ImGuiImplGl3();
+        this.imGuiGl = new ImGuiImplGLES2();
 
         long windowHandle = ((Lwjgl3Graphics) Gdx.graphics).getWindow().getWindowHandle();
         ImGui.createContext();
@@ -59,7 +60,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         io.getFonts().build();
 
         imGuiGlfw.init(windowHandle, true);
-        imGuiGl3.init("#version 110");
+        imGuiGl.init("#version 110");
     }
 
     /**
@@ -239,7 +240,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         // ---
 
         ImGui.render();
-        imGuiGl3.renderDrawData(ImGui.getDrawData());
+        imGuiGl.renderDrawData(ImGui.getDrawData());
     }
 
     /**
