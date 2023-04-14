@@ -40,7 +40,7 @@ public class RaycastInfo implements RayCastCallback {
     public GameObject hitObject;
 
     /**
-     * @param obj The requesting object
+     * @param obj The requesting object. Use null if none.
      */
     public RaycastInfo(GameObject obj) {
         fixture = null;

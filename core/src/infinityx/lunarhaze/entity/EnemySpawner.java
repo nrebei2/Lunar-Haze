@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- * Think of this as a monster spawner in minecraft, instead spawning our enemies.
+ * Basically a monster spawner. Used for the battle phase.
  */
 public class EnemySpawner {
 
@@ -67,9 +67,11 @@ public class EnemySpawner {
         if (tick % enemyAddTick == 0) {
             // TODO: enemies in battle phase should not use patrol path
             // TODO: smart placement for enemies
-            container.addEnemy("villager", 6, 5,
+            Enemy newEnemy = container.addEnemy("villager", 6, 5,
                     new ArrayList<>(Arrays.asList(new Vector2(), new Vector2()))
             );
+            // This spawner is only used in battle phase
+            container.getEnemyControllers().get(newEnemy).setInBattle(true);
             enemyAddTick = MathUtils.random(addMin, addMax);
             this.count--;
         }

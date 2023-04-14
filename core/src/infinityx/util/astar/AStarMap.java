@@ -5,6 +5,8 @@ import infinityx.lunarhaze.LevelContainer;
 
 /** Grid (tiled) map */
 public class AStarMap {
+
+    /** The node grid */
     private Node[][] map;
 
     /** Map width in grids */

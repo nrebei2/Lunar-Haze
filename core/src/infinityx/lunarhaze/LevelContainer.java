@@ -93,6 +93,9 @@ public class LevelContainer {
      */
     private Board board;
 
+    /**
+     *
+     */
     public AStarPathFinding pathfinder;
 
     /**
@@ -431,7 +434,7 @@ public class LevelContainer {
             }
         }
 
-        pathfinder = new AStarPathFinding(aStarMap);
+        pathfinder = new AStarPathFinding(aStarMap, world);
     }
 
     /**

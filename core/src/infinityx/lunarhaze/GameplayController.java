@@ -262,7 +262,12 @@ public class GameplayController {
      */
     public void switchPhase(float delta) {
         updateAmbientLight(delta);
-        if (ambientLightTransitionTimer >= container.getPhaseTransitionTime()) currentPhase = Phase.ALLOCATE;
+        if (ambientLightTransitionTimer >= container.getPhaseTransitionTime()) {
+            currentPhase = Phase.ALLOCATE;
+            for (int i = 0; i < enemies.size; i++) {
+                controls.get(enemies.get(i)).setInBattle(true);
+            }
+        }
     }
 
     /**
@@ -302,7 +307,7 @@ public class GameplayController {
             }
         }
         for (int i = 0; i < enemies.size; i++) {
-            controls.get(enemies.get(i)).update(container, currentPhase, delta);
+            controls.get(enemies.get(i)).update(container, delta);
         }
     }
 }

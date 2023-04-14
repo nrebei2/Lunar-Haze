@@ -6,11 +6,14 @@ import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
 import com.badlogic.gdx.ai.steer.utils.Path;
 import com.badlogic.gdx.ai.steer.utils.paths.LinePath;
 import com.badlogic.gdx.ai.utils.RaycastCollisionDetector;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
-import infinityx.lunarhaze.LevelContainer;
+import infinityx.lunarhaze.GameObject;
+import infinityx.lunarhaze.physics.Box2DRaycastCollision;
+import infinityx.lunarhaze.physics.RaycastInfo;
 
+/** */
 public class AStarPathFinding {
     /**
      * Map containing all the nodes in our level
@@ -26,22 +29,35 @@ public class AStarPathFinding {
      * Heuristic function used in A* algorithm
      */
     private final Heuristic<Node> heuristic;
+
     /**
-     * Graph of nodes and edges. Used for A* pathfinding
+     * The output path for pathfinder
      */
     private final SmoothableGraphPath<Node, Vector2> connectionPath;
 
-    public AStarPathFinding(AStarMap map) {
+    /** Waypoints cache for findPath */
+    private Array<Vector2> waypoints;
+
+    /** Collision detector for path smoothing */
+    public RaycastCollisionDetector raycastCollisionDetector;
+
+    public AStarPathFinding(AStarMap map, World world) {
         this.map = map;
-        this.pathfinder = new IndexedAStarPathFinder<Node>(createGraph(map));
+        this.pathfinder = new IndexedAStarPathFinder(createGraph(map));
         this.connectionPath = new SmoothGraphPath();
+        this.waypoints = new Array<>();
         this.heuristic = new Heuristic<Node>() {
             @Override
             public float estimate(Node node, Node endNode) {
                 // Euclidean distance, enemy should prefer diagonal movement if possible
-                return Vector2.dst(endNode.wx, endNode.wy, node.wx, node.wy);
+                return endNode.position.dst(node.position);
             }
         };
+
+        RaycastInfo collRay = new RaycastInfo(null);
+        // collider should only care about scene objects
+        collRay.addIgnores(GameObject.ObjectType.WEREWOLF, GameObject.ObjectType.HITBOX, GameObject.ObjectType.ENEMY);
+        this.raycastCollisionDetector = new Box2DRaycastCollision(world, collRay);
     }
 
     /**
@@ -49,7 +65,7 @@ public class AStarPathFinding {
      * @param target world position of target
      * @return Path from source to target using A*
      */
-    public Path findPath(Vector2 source, Vector2 target, RaycastCollisionDetector ray) {
+    public Path findPath(Vector2 source, Vector2 target) {
 
         // World to grid
         int sourceX = map.worldToGridX(source.x);
@@ -73,15 +89,15 @@ public class AStarPathFinding {
 
 
         // TODO
-        //PathSmoother smoother = new PathSmoother(ray);
+        //PathSmoother smoother = new PathSmoother(raycastCollisionDetector);
         //int removed = smoother.smoothPath(connectionPath);
         //System.out.println("removed " + removed);
 
 
-        Array<Vector2> waypoints = new Array<>();
 
         // Use the source and target world positions instead of start and goal node
         // This is so we always have at least two waypoints and the path is more accurate
+        waypoints.clear();
         waypoints.add(source);
         for (int i = 1; i < connectionPath.getCount() - 1; i++) {
             Node node = connectionPath.get(i);
@@ -110,6 +126,9 @@ public class AStarPathFinding {
 
     };
 
+    /**
+     *
+     */
     public static AStarGraph createGraph(AStarMap map) {
         final int height = map.getHeight();
         final int width = map.getWidth();

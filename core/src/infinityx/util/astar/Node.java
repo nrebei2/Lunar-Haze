@@ -4,7 +4,7 @@ import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
-/** A single node in  */
+/** A single node in our grid graph */
 public class Node {
     /**
      * Whether there is an obstacle on this node
@@ -23,14 +23,14 @@ public class Node {
      */
     private final Array<Connection<Node>> connections;
 
-    public final int x;
-    public final int y;
+    /** Grid position in map */
+    public final int x, y;
 
     /**
      * Create a new Node with attributes
      * @param map Map holding this node
-     * @param x x-position in grid map
-     * @param y y-position in grid map
+     * @param x Grid x-position in map
+     * @param y Grid y-position map
      * @param wx world x-position
      * @param wy world y-position
      */
