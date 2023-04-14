@@ -257,16 +257,94 @@
     },
 
     "villager":{
-      "file": 	"images/villager.png",
+      "file": 	"images/villager/enemy1-walk-down.png",
       "wrap":  	false,
       "sprites":	{
-        "movement" : {
-          "size" : 1,
+        "walk-f" : {
+          "size" : 3,
           "rows" : 1,
-          "cols" : 1
+          "cols" : 3
+        }
+      }
+    },
+    "villager":{
+      "file": 	"images/villager/enemy1-walk-up.png",
+      "wrap":  	false,
+      "sprites":	{
+        "walk-b" : {
+          "size" : 3,
+          "rows" : 1,
+          "cols" : 3
+        }
+      }
+    },
+    "villager":{
+      "file": 	"images/villager/enemy1-walk-left.png",
+      "wrap":  	false,
+      "sprites":	{
+        "walk-l" : {
+          "size" : 5,
+          "rows" : 1,
+          "cols" : 5
+        }
+      }
+    },
+    "villager":{
+      "file": 	"images/villager/enemy1-walk-right.png",
+      "wrap":  	false,
+      "sprites":	{
+        "walk-r" : {
+          "size" : 5,
+          "rows" : 1,
+          "cols" : 5
+        }
+      }
+    },
+    "villager":{
+      "file": 	"images/villager/enemy1-attack-down.png",
+      "wrap":  	false,
+      "sprites":	{
+        "attack-f" : {
+          "size" : 3,
+          "rows" : 1,
+          "cols" : 3
+        }
+      }
+    },
+    "villager":{
+      "file": 	"images/villager/enemy1-attack-up.png",
+      "wrap":  	false,
+      "sprites":	{
+        "attack-b" : {
+          "size" : 3,
+          "rows" : 1,
+          "cols" : 3
+        }
+      }
+    },
+    "villager":{
+      "file": 	"images/villager/enemy1-attack-left.png",
+      "wrap":  	false,
+      "sprites":	{
+        "attack-l" : {
+          "size" : 3,
+          "rows" : 1,
+          "cols" : 3
+        }
+      }
+    },
+    "villager":{
+      "file": 	"images/villager/enemy1-attack-right.png",
+      "wrap":  	false,
+      "sprites":	{
+        "attack-r" : {
+          "size" : 3,
+          "rows" : 1,
+          "cols" : 3
         }
       }
     }
+
 },
   "shaders": {
     "meter": {

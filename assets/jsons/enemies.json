@@ -8,12 +8,23 @@
       "degrees": 30
     },
     "textures": {
-      "walk": "villager.movement"
+      "attack-l": "villager.attack-l",
+      "attack-r": "villager.attack-r",
+      "attack-f": "villager.attack-f",
+      "attack-b": "villager.attack-b",
+      "walk-l": "villager.walk-l",
+      "walk-r": "villager.walk-r",
+      "walk-f": "villager.walk-f",
+      "walk-b": "villager.walk-b",
+      "idle-l": "villager.idle-l",
+      "idle-r": "villager.idle-r",
+      "idle-f": "villager.idle-f",
+      "idle-b": "villager.idle-b"
     },
     "texture": {
-      "name": "walk",
-      "origin": [750, 220],
-      "scale": 0.11
+      "name": "walk-l",
+      "origin" : [1050, 320],
+      "scale": 0.1
     },
     "colliders": {
       "body": {
