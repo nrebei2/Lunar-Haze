@@ -50,10 +50,12 @@ public class AStarPathFinding {
      * @return Path from source to target using A*
      */
     public Path findPath(Vector2 source, Vector2 target, RaycastCollisionDetector ray) {
-        int sourceX = MathUtils.floor(source.x);
-        int sourceY = MathUtils.floor(source.y);
-        int targetX = MathUtils.floor(target.x);
-        int targetY = MathUtils.floor(target.y);
+
+        // World to grid
+        int sourceX = map.worldToGridX(source.x);
+        int sourceY = map.worldToGridY(source.y);
+        int targetX = map.worldToGridX(target.x);
+        int targetY = map.worldToGridY(target.y);
 
         if (map == null
                 || sourceX < 0 || sourceX >= map.getWidth()
@@ -62,7 +64,6 @@ public class AStarPathFinding {
                 || targetY < 0 || targetY >= map.getHeight()) {
             return null;
         }
-
 
         Node sourceNode = map.getNodeAt(sourceX, sourceY);
         Node targetNode = map.getNodeAt(targetX, targetY);
@@ -76,15 +77,17 @@ public class AStarPathFinding {
         //int removed = smoother.smoothPath(connectionPath);
         //System.out.println("removed " + removed);
 
-        if (connectionPath.getCount() < 2) {
-            return null;
-        }
 
         Array<Vector2> waypoints = new Array<>();
-        for (int i = 0; i < connectionPath.getCount(); i++) {
+
+        // Use the source and target world positions instead of start and goal node
+        // This is so we always have at least two waypoints and the path is more accurate
+        waypoints.add(source);
+        for (int i = 1; i < connectionPath.getCount() - 1; i++) {
             Node node = connectionPath.get(i);
-            waypoints.add(new Vector2(node.wx, node.wy));
+            waypoints.add(node.position);
         }
+        waypoints.add(target);
 
         //System.out.println("source "  + sourceNode.wx + ", " + sourceNode.wy );
         //System.out.println("target " + targetNode.wx + ", " + targetNode.wy );
@@ -92,9 +95,7 @@ public class AStarPathFinding {
         //System.out.println(waypoints);
 
         Path path = new LinePath(waypoints);
-
         return path;
-
     }
 
     private static final int[][] NEIGHBORHOOD = new int[][]{
@@ -138,8 +139,8 @@ public class AStarPathFinding {
     }
 
 
+    /** Wrapper around AStarMap to implement IndexedGraph */
     public static class AStarGraph implements IndexedGraph<Node> {
-
         AStarMap map;
 
         public AStarGraph(AStarMap map) {

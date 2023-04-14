@@ -3,11 +3,14 @@ package infinityx.util.astar;
 import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.LevelContainer;
 
-/** Tiled map */
+/** Grid (tiled) map */
 public class AStarMap {
     private Node[][] map;
 
+    /** Map width in grids */
     private final int width;
+
+    /** Map height in grids */
     private final int height;
     private final float gridSize;
 
@@ -57,8 +60,8 @@ public class AStarMap {
     }
 
     /**
-     * @param x units along horizontal
-     * @param y units along vertical
+     * @param x Number of grids along horizontal
+     * @param y Number of grids along vertical
      * @return Node at position (x, y)
      */
     public Node getNodeAt(int x, int y) {
