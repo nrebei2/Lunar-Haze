@@ -44,10 +44,6 @@ public class AStarPathFinding {
         };
     }
 
-    public Vector2 worldToGrid(Vector2 world) {
-        return new Vector2(world.x / LevelContainer.gridSize, world.y / LevelContainer.gridSize);
-    }
-
     /**
      * @param source world position of source
      * @param target world position of target

@@ -408,7 +408,7 @@ public class LevelContainer {
      * Creates a tiled (grid) A* path finder.
      * @param width number of grids horizontally
      * @param height number of grids vertically
-     * @param gridSize width and height of grid
+     * @param gridSize width and height of each grid in world size
      */
     public void setPathFinder(int width, int height, float gridSize) {
         AStarMap aStarMap = new AStarMap(width, height, gridSize);
