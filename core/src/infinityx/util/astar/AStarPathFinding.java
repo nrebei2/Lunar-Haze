@@ -38,8 +38,8 @@ public class AStarPathFinding {
         this.heuristic = new Heuristic<Node>() {
             @Override
             public float estimate(Node node, Node endNode) {
-                // Manhattan distance
-                return Math.abs(endNode.x - node.x) + Math.abs(endNode.y - node.y);
+                // Euclidean distance, enemy should prefer diagonal movement if possible
+                return Vector2.dst(endNode.wx, endNode.wy, node.wx, node.wy);
             }
         };
     }
