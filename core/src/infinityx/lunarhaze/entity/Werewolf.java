@@ -427,6 +427,8 @@ public class Werewolf extends GameObject implements Location<Vector2> {
         activatePhysics(container.getWorld());
         createAttackHitbox(container.getWorld());
         setSpotLight(spotLight);
+
+        body.setFixedRotation(true);
     }
 
     public void createAttackHitbox(World world) {
@@ -455,6 +457,7 @@ public class Werewolf extends GameObject implements Location<Vector2> {
      * @param delta Number of seconds since last animation frame
      */
     public void update(float delta) {
+        System.out.println(body.getAngularVelocity());
         super.update(delta);
         // get the current velocity of the player's Box2D body
         Vector2 velocity = body.getLinearVelocity();

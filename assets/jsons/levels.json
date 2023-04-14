@@ -1294,7 +1294,7 @@
         "lighting": {
           "color":		[0.7, 0.7, 0.9, 0.7],
           "distance":		   4,
-          "rays":			10,
+          "rays":			50,
           "soft":			true
         }
       }
