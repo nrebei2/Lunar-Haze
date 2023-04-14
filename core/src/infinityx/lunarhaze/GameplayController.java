@@ -2,7 +2,6 @@ package infinityx.lunarhaze;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.utils.Array;
@@ -131,11 +130,18 @@ public class GameplayController {
     public GameState getState() {
         return gameState;
     }
-    public void setState(GameState s) { gameState = s; }
 
-    public float getTimeOnMoonlightPercentage(){return playerController.getTimeOnMoonlightPercentage();}
+    public void setState(GameState s) {
+        gameState = s;
+    }
 
-    public boolean getCollectingMoonlight(){return playerController.isCollectingMoonlight();}
+    public float getTimeOnMoonlightPercentage() {
+        return playerController.getTimeOnMoonlightPercentage();
+    }
+
+    public boolean getCollectingMoonlight() {
+        return playerController.isCollectingMoonlight();
+    }
 
     /**
      * @return the current phase of the game
@@ -160,7 +166,6 @@ public class GameplayController {
      */
     public void start(LevelContainer levelContainer, JsonValue jsonValue) {
 
-        System.out.println("GameplayController start method called");
         this.gameState = GameState.PLAY;
         this.currentPhase = Phase.STEALTH;
         this.container = levelContainer;
@@ -202,7 +207,6 @@ public class GameplayController {
         if (gameState == GameState.PLAY) {
             // Process the player only when the game is in play
             playerController.update(input, delta, currentPhase);
-           // System.out.println("Player position: " + player.getPosition().toString());
             switch (currentPhase) {
                 case STEALTH:
                     phaseTimer -= delta;
@@ -221,7 +225,7 @@ public class GameplayController {
                     break;
                 case ALLOCATE:
                     // TODO: Somehow pause the game before drawing allocating screen
-                    if (playerController.getAllocateReady()){
+                    if (playerController.getAllocateReady()) {
                         currentPhase = Phase.BATTLE;
                     }
                     break;

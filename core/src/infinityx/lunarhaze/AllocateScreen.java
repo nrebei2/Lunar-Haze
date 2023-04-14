@@ -240,15 +240,15 @@ public class AllocateScreen extends ScreenObservable implements Screen, InputPro
         this.gameMode = gameMode;
     }
 
-    public void setGameMode(GameMode gm){
+    public void setGameMode(GameMode gm) {
         gameMode = gm;
     }
 
-    public void setCanvas(GameCanvas gc){
+    public void setCanvas(GameCanvas gc) {
         canvas = gc;
     }
 
-    public GameplayController getGameplayController(){
+    public GameplayController getGameplayController() {
         return gameMode.getGameplayController();
     }
 
@@ -334,16 +334,16 @@ public class AllocateScreen extends ScreenObservable implements Screen, InputPro
         canvas.drawOverlay(background, alphaTint, true);
 
         // Temporary position for the display
-        canvas.draw(moon_icon, alphaTint, canvas.getWidth()/4 - MOON_ICON_WIDTH/2, canvas.getHeight()/2, MOON_ICON_WIDTH, MOON_ICON_WIDTH);
+        canvas.draw(moon_icon, alphaTint, canvas.getWidth() / 4 - MOON_ICON_WIDTH / 2, canvas.getHeight() / 2, MOON_ICON_WIDTH, MOON_ICON_WIDTH);
         canvas.drawText("" + playerController.getPlayer().getMoonlightCollected(),
-                UIFont_large, canvas.getWidth()/4 + MOON_ICON_WIDTH, canvas.getHeight()/2 + MOON_ICON_WIDTH * 0.8f);
-        Color gray = new Color(255f/255.0f, 255f/255.0f, 255f/255.0f, 0.4f);
+                UIFont_large, canvas.getWidth() / 4 + MOON_ICON_WIDTH, canvas.getHeight() / 2 + MOON_ICON_WIDTH * 0.8f);
+        Color gray = new Color(255f / 255.0f, 255f / 255.0f, 255f / 255.0f, 0.4f);
         setFontColor(gray);
         canvas.drawText(" / " + totalMoonlightCollected,
-                UIFont_small, canvas.getWidth()/4 + MOON_ICON_WIDTH + UIFont_small.getAscent() * 4, canvas.getHeight()/2 + MOON_ICON_WIDTH/2);
+                UIFont_small, canvas.getWidth() / 4 + MOON_ICON_WIDTH + UIFont_small.getAscent() * 4, canvas.getHeight() / 2 + MOON_ICON_WIDTH / 2);
         setFontColor(alphaTint);
         canvas.drawText("Moonlight Remaining",
-                UIFont_small, canvas.getWidth()/4 - MOON_ICON_WIDTH * 3/2, canvas.getHeight()/2 - MOON_ICON_WIDTH/2);
+                UIFont_small, canvas.getWidth() / 4 - MOON_ICON_WIDTH * 3 / 2, canvas.getHeight() / 2 - MOON_ICON_WIDTH / 2);
 
         Color tint0 = (pressStateHp == 1 ? Color.GRAY : Color.WHITE);
         Color tint1 = (pressStateAttackPow == 1 ? Color.GRAY : Color.WHITE);
@@ -366,7 +366,7 @@ public class AllocateScreen extends ScreenObservable implements Screen, InputPro
     /**
      * Draw stats around button
      */
-    public void drawStats(String s){
+    public void drawStats(String s) {
         float buttonCenterX = centerX;
         float buttonCenterY;
         Texture icon;
@@ -389,19 +389,19 @@ public class AllocateScreen extends ScreenObservable implements Screen, InputPro
         }
 
         canvas.drawText("" + stat,
-                UIFont_small, buttonCenterX - UIFont_small.getAscent() * 17, buttonCenterY + UIFont_small.getLineHeight()/2);
+                UIFont_small, buttonCenterX - UIFont_small.getAscent() * 17, buttonCenterY + UIFont_small.getLineHeight() / 2);
         Color gray = new Color(1.0f, 1.0f, 1.0f, 0.4f);
         setFontColor(gray);
         canvas.drawText(" / " + 10,
-                UIFont_small, buttonCenterX - UIFont_small.getAscent() * 14, buttonCenterY + UIFont_small.getLineHeight()/2);
+                UIFont_small, buttonCenterX - UIFont_small.getAscent() * 14, buttonCenterY + UIFont_small.getLineHeight() / 2);
 
         float starY = buttonCenterY + INLINE_DIST;
         canvas.draw(stroke, Color.WHITE, (float) (stroke.getWidth() / 2), (float) (stroke.getHeight() / 2),
                 centerX - 6 * STAR_WIDTH - STROKE_WIDTH, starY, 0,
                 STROKE_WIDTH / stroke.getWidth(), STROKE_HEIGHT / stroke.getHeight());
         float angle = 0.0f;
-        if (icon == attack_pow_icon){
-            angle = 30.f / 180.0f *  (float) Math.PI;
+        if (icon == attack_pow_icon) {
+            angle = 30.f / 180.0f * (float) Math.PI;
         }
         canvas.draw(icon, Color.WHITE, (float) (icon.getWidth() / 2), (float) (icon.getHeight() / 2),
                 centerX - 6 * STAR_WIDTH - STROKE_WIDTH, starY, angle,
@@ -432,7 +432,7 @@ public class AllocateScreen extends ScreenObservable implements Screen, InputPro
     /**
      * Set color for the two fonts for UI drawing
      */
-    public void setFontColor(Color color){
+    public void setFontColor(Color color) {
         UIFont_large.setColor(color);
         UIFont_small.setColor(color);
     }
@@ -456,19 +456,18 @@ public class AllocateScreen extends ScreenObservable implements Screen, InputPro
             }
             update(delta);
             draw();
-//            System.out.println("States: " + pressStateHp + pressStateAttackPow + pressStateAttackRan);
 
-            if (pressStateHp == 2 && playerController.getPlayer().getHp() < Werewolf.MAX_HP){
+            if (pressStateHp == 2 && playerController.getPlayer().getHp() < Werewolf.MAX_HP) {
                 playerController.allocateHp();
                 pressStateHp = 0;
-            } else if (pressStateAttackPow == 2 && playerController.getPlayer().getAttackPower() < Werewolf.MAX_POWER){
+            } else if (pressStateAttackPow == 2 && playerController.getPlayer().getAttackPower() < Werewolf.MAX_POWER) {
                 playerController.allocateAttackPow();
                 pressStateAttackPow = 0;
-            } else if (pressStateAttackRan == 2 && playerController.getPlayer().getAttackRange() < Werewolf.MAX_RANGE){
+            } else if (pressStateAttackRan == 2 && playerController.getPlayer().getAttackRange() < Werewolf.MAX_RANGE) {
                 playerController.allocateAttackRange();
                 pressStateAttackRan = 0;
             }
-            if (playerController.getPlayer().getMoonlightCollected() <= 0 && observer != null){
+            if (playerController.getPlayer().getMoonlightCollected() <= 0 && observer != null) {
                 active = false;
                 playerController.setAllocateReady(true);
                 PlayerAttackHandler.setAttackPower(playerController.getPlayer().getAttackPower());
@@ -579,12 +578,11 @@ public class AllocateScreen extends ScreenObservable implements Screen, InputPro
             float radius = BUTTON_SCALE * scale * curr_button.getWidth() / 2.0f;
             float dist = (screenX - centerX) * (screenX - centerX) + (screenY - buttonheights[i]) * (screenY - buttonheights[i]);
             if (dist < radius * radius) {
-                System.out.println("Button" + i + "touch down");
-                if (i == 0){
+                if (i == 0) {
                     pressStateHp = 1;
-                } else if (i == 1){
+                } else if (i == 1) {
                     pressStateAttackPow = 1;
-                } else if (i == 2){
+                } else if (i == 2) {
                     pressStateAttackRan = 1;
                 }
             }
@@ -604,11 +602,11 @@ public class AllocateScreen extends ScreenObservable implements Screen, InputPro
      * @return whether to hand the event to other listeners.
      */
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        if (pressStateHp == 1){
+        if (pressStateHp == 1) {
             pressStateHp = 2;
-        } else if (pressStateAttackPow == 1){
+        } else if (pressStateAttackPow == 1) {
             pressStateAttackPow = 2;
-        } else if (pressStateAttackRan == 1){
+        } else if (pressStateAttackRan == 1) {
             pressStateAttackRan = 2;
         }
         return true;

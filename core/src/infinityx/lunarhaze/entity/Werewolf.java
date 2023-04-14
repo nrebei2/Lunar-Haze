@@ -3,18 +3,13 @@ package infinityx.lunarhaze.entity;
 import box2dLight.PointLight;
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Polygon;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.GameObject;
 import infinityx.lunarhaze.LevelContainer;
-import infinityx.lunarhaze.SteeringGameObject;
 import infinityx.lunarhaze.combat.AttackHitbox;
-import infinityx.util.FilmStrip;
 import infinityx.util.Box2dLocation;
 import infinityx.util.Box2dSteeringUtils;
 
@@ -37,7 +32,9 @@ public class Werewolf extends GameObject implements Location<Vector2> {
      **/
     public static int MAX_HP = 10;
 
-    /** Size of attack hitbox */
+    /**
+     * Size of attack hitbox
+     */
     public static float HITBOX_SIZE = 3f;
 
     /**
@@ -307,18 +304,24 @@ public class Werewolf extends GameObject implements Location<Vector2> {
         attackRange = range;
     }
 
-    /** Sets the cooldown bar to be drawn or not */
+    /**
+     * Sets the cooldown bar to be drawn or not
+     */
     public void setDrawCooldownBar(boolean b, float percentage) {
         drawCooldownBar = b;
         cooldownPercent = percentage;
     }
 
-    /** @return whether the cooldown bar should be drawn */
+    /**
+     * @return whether the cooldown bar should be drawn
+     */
     public boolean drawCooldownBar() {
         return drawCooldownBar;
     }
 
-    /** @return the percentage of the cooldown bar */
+    /**
+     * @return the percentage of the cooldown bar
+     */
     public float getCooldownPercent() {
         return cooldownPercent;
     }
@@ -441,15 +444,15 @@ public class Werewolf extends GameObject implements Location<Vector2> {
     /**
      public void resolveAttack(GameObject enemy, int damage, float knockback) {
 
-        Body enemyBody = enemy.getBody();
-        Vector2 pos = body.getPosition();
-        Vector2 enemyPos = enemyBody.getPosition();
-        Vector2 direction = pos.sub(enemyPos).nor();
+     Body enemyBody = enemy.getBody();
+     Vector2 pos = body.getPosition();
+     Vector2 enemyPos = enemyBody.getPosition();
+     Vector2 direction = pos.sub(enemyPos).nor();
 
-        canMove = false;
-        body.applyLinearImpulse(direction.scl(knockback), body.getWorldCenter(), true);
-        setHp(hp - damage);
-    } */
+     canMove = false;
+     body.applyLinearImpulse(direction.scl(knockback), body.getWorldCenter(), true);
+     setHp(hp - damage);
+     } */
 
     /**
      * Updates the animation frame and position of this werewolf.
@@ -457,7 +460,6 @@ public class Werewolf extends GameObject implements Location<Vector2> {
      * @param delta Number of seconds since last animation frame
      */
     public void update(float delta) {
-        System.out.println(body.getAngularVelocity());
         super.update(delta);
         // get the current velocity of the player's Box2D body
         Vector2 velocity = body.getLinearVelocity();
@@ -472,7 +474,7 @@ public class Werewolf extends GameObject implements Location<Vector2> {
                 direction = Direction.UP;
             } else if (movementH < 0) {
                 direction = Direction.LEFT;
-            } else  if (movementH > 0) {
+            } else if (movementH > 0) {
                 direction = Direction.RIGHT;
             }
 

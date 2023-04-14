@@ -5,19 +5,13 @@ import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.steer.behaviors.FollowPath;
-import com.badlogic.gdx.ai.steer.behaviors.ReachOrientation;
 import com.badlogic.gdx.ai.steer.utils.Path;
 import com.badlogic.gdx.ai.utils.ArithmeticUtils;
-import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.ai.TacticalManager;
 import infinityx.lunarhaze.entity.Enemy;
-import infinityx.lunarhaze.physics.Box2DRaycastCollision;
-import infinityx.lunarhaze.physics.RaycastInfo;
 import infinityx.util.Box2dLocation;
-import infinityx.lunarhaze.LevelContainer;
-import infinityx.util.astar.Node;
 
 public enum EnemyState implements State<EnemyController> {
 
@@ -53,9 +47,9 @@ public enum EnemyState implements State<EnemyController> {
 
     NOTICED() {
         Box2dLocation target;
+
         @Override
         public void enter(EnemyController entity) {
-            //System.out.println("NOTICED");
             target = new Box2dLocation(entity.target);
             entity.getEnemy().setIndependentFacing(true);
             entity.getEnemy().setLinearVelocity(Vector2.Zero);
@@ -88,9 +82,9 @@ public enum EnemyState implements State<EnemyController> {
 
     INDICATOR() {
         Box2dLocation target = new Box2dLocation();
+
         @Override
         public void enter(EnemyController entity) {
-            System.out.println("INDICATOR");
             entity.getEnemy().setDetection(Enemy.Detection.INDICATOR);
             entity.getEnemy().setIndicatorAmount(0);
             entity.target.setStealth(entity.target.getStealth() + 1f);
@@ -109,8 +103,6 @@ public enum EnemyState implements State<EnemyController> {
             float dist = entity.getEnemy().getPosition().dst(entity.arriveSB.getTarget().getPosition());
             if (dist <= entity.arriveSB.getArrivalTolerance()) entity.getStateMachine().changeState(LOOK_AROUND);
 
-            //System.out.println(entity.getDetection());
-            //System.out.println(entity.getEnemy().getIndicatorAmount());
             switch (entity.getDetection()) {
                 case NOTICED:
                 case ALERT:
@@ -141,22 +133,22 @@ public enum EnemyState implements State<EnemyController> {
     ALERT() {
         /** Tick count */
         int tick;
-       @Override
-       public void enter(EnemyController entity) {
-           System.out.println("!");
+
+        @Override
+        public void enter(EnemyController entity) {
             entity.getEnemy().setDetection(Enemy.Detection.ALERT);
             entity.target.setStealth(entity.target.getStealth() + 1);
 
-           Vector2 cur_pos = worldToGrid(entity.getEnemy().getPosition());
-           Vector2 player_pos = worldToGrid(entity.getTarget().getPosition());
-           Path path = entity.pathfinder.findPath(cur_pos, player_pos, entity.raycastCollisionDetector);
-           if (path!= null) {
-               entity.followPathSB = new FollowPath(entity.getEnemy(), path, 0.05f, 0.5f);
-               entity.getEnemy().setSteeringBehavior(entity.followPathSB);
-           }
-           MessageManager.getInstance().dispatchMessage(TacticalManager.ADD, entity);
+            Vector2 cur_pos = worldToGrid(entity.getEnemy().getPosition());
+            Vector2 player_pos = worldToGrid(entity.getTarget().getPosition());
+            Path path = entity.pathfinder.findPath(cur_pos, player_pos, entity.raycastCollisionDetector);
+            if (path != null) {
+                entity.followPathSB = new FollowPath(entity.getEnemy(), path, 0.05f, 0.5f);
+                entity.getEnemy().setSteeringBehavior(entity.followPathSB);
+            }
+            MessageManager.getInstance().dispatchMessage(TacticalManager.ADD, entity);
 
-           tick = 0;
+            tick = 0;
         }
 
         @Override
@@ -174,7 +166,6 @@ public enum EnemyState implements State<EnemyController> {
             tick++;
             // Update path every 30 frames
             if (tick % 30 == 0) {
-                System.out.println("updating path");
                 Vector2 cur_pos = worldToGrid(entity.getEnemy().getPosition());
                 Vector2 player_pos = worldToGrid(entity.getTarget().getPosition());
                 Path path = entity.pathfinder.findPath(cur_pos, player_pos, entity.raycastCollisionDetector);
@@ -186,27 +177,25 @@ public enum EnemyState implements State<EnemyController> {
 
         @Override
         public void exit(EnemyController entity) {
-           entity.getEnemy().setIndependentFacing(false);
-           MessageManager.getInstance().dispatchMessage(TacticalManager.REMOVE, entity);
-           entity.target.setStealth(entity.target.getStealth() - 1);
+            entity.getEnemy().setIndependentFacing(false);
+            MessageManager.getInstance().dispatchMessage(TacticalManager.REMOVE, entity);
+            entity.target.setStealth(entity.target.getStealth() - 1);
         }
 
         @Override
         public boolean onMessage(EnemyController control, Telegram telegram) {
-            if (telegram.message == TacticalManager.FLANK ) {
-                System.out.println("flanking");
+            if (telegram.message == TacticalManager.FLANK) {
                 Vector2 flank_pos = worldToGrid((Vector2) telegram.extraInfo);
                 Vector2 cur_pos = worldToGrid(control.getEnemy().getPosition());
                 Path path = control.pathfinder.findPath(cur_pos, flank_pos, control.raycastCollisionDetector);
-                if (path != null){
+                if (path != null) {
                     control.followPathSB = new FollowPath(control.getEnemy(), path, 0.05f, 0.5f);
                     control.getEnemy().setSteeringBehavior(control.followPathSB);
                 }
 //                Vector2 flank_pos = (Vector2) telegram.extraInfo;
 //                control.setArriveSB(control.getEnemy(), new Box2dLocation(flank_pos));
 //                control.getEnemy().setSteeringBehavior(control.arriveSB);
-            }
-            else{
+            } else {
                 control.getStateMachine().changeState(ALERT);
             }
             return true;
@@ -216,21 +205,18 @@ public enum EnemyState implements State<EnemyController> {
     PATROL() {
         @Override
         public void enter(EnemyController entity) {
-//            entity.arriveSB.setTarget(new Box2dLocation(entity.getPatrolTarget()));
-//            System.out.println("Patrolling now...");
-
             Vector2 patrol = entity.getPatrolTarget();
             patrol = worldToGrid(patrol);
-            while (entity.pathfinder.map.getNodeAt((int)patrol.x, (int)patrol.y).isObstacle){
+            while (entity.pathfinder.map.getNodeAt((int) patrol.x, (int) patrol.y).isObstacle) {
                 patrol = entity.getPatrolTarget();
                 patrol = worldToGrid(patrol);
             }
-            entity.nextNode = entity.pathfinder.map.getNodeAt((int)patrol.x, (int)patrol.y);
+            entity.nextNode = entity.pathfinder.map.getNodeAt((int) patrol.x, (int) patrol.y);
             Vector2 cur_pos = worldToGrid(entity.getEnemy().getPosition());
 
 
             Path path = entity.pathfinder.findPath(cur_pos, new Vector2(entity.nextNode.x, entity.nextNode.y), entity.raycastCollisionDetector);
-            if (path!= null) {
+            if (path != null) {
                 entity.followPathSB = new FollowPath(entity.getEnemy(), path, 0.05f, 1f);
                 entity.getEnemy().setSteeringBehavior(entity.followPathSB);
             }
@@ -266,10 +252,10 @@ public enum EnemyState implements State<EnemyController> {
     LOOK_AROUND() {
         @Override
         public void enter(EnemyController entity) {
-            //System.out.println("Looking around now...");
             entity.lookAroundSB.reset();
             entity.getEnemy().setIndependentFacing(true);
             entity.getEnemy().setLinearVelocity(Vector2.Zero);
+            entity.getEnemy().setAngularVelocity(0);
             entity.getEnemy().setSteeringBehavior(entity.lookAroundSB);
 
             entity.getEnemy().setDetection(Enemy.Detection.NONE);
@@ -308,9 +294,12 @@ public enum EnemyState implements State<EnemyController> {
         return false;
     }
 
-    public Vector2 worldToGrid(Vector2 world){
-        return new Vector2(world.x/LevelContainer.gridSize, world.y/LevelContainer.gridSize);
+    public Vector2 worldToGrid(Vector2 world) {
+        return new Vector2(world.x / LevelContainer.gridSize, world.y / LevelContainer.gridSize);
     }
 
-    protected void setTarget(Vector2 pos) {};
+    protected void setTarget(Vector2 pos) {
+    }
+
+    ;
 }

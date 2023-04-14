@@ -2,9 +2,7 @@ package infinityx.lunarhaze;
 
 import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
@@ -400,14 +398,11 @@ public class LevelContainer {
         this.totalMoonlight = board.getRemainingMoonlight();
     }
 
-    public void setGridSize(float size){
+    public void setGridSize(float size) {
         gridSize = size;
     }
 
     public void setPathFinder(int width, int height, float gridsize) {
-        System.out.println("width" + width);
-        System.out.println("height" + height);
-
         AStarMap aStarMap = new AStarMap(width, height, gridsize);
 
         QueryCallback queryCallback = new QueryCallback() {
@@ -421,7 +416,7 @@ public class LevelContainer {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 scene = false;
-                world.QueryAABB(queryCallback, x*gridSize , y*gridSize, x*gridSize + gridSize, y*gridSize + gridSize);
+                world.QueryAABB(queryCallback, x * gridSize, y * gridSize, x * gridSize + gridSize, y * gridSize + gridSize);
                 if (scene) {
                     aStarMap.getNodeAt(x, y).isObstacle = true;
                 }
@@ -452,14 +447,16 @@ public class LevelContainer {
     public SceneObject addSceneObject(String type, float x, float y, float scale) {
         SceneObject object = new SceneObject(type);
         object.initialize(directory, objectJson.get(type), this);
-        
+
         object.setPosition(x, y);
         object.setScale(scale);
 
         return addSceneObject(object);
     }
 
-    public Array<SceneObject> getSceneObjects() { return sceneObjects; }
+    public Array<SceneObject> getSceneObjects() {
+        return sceneObjects;
+    }
 
     /**
      * Set view translation
@@ -488,9 +485,13 @@ public class LevelContainer {
         return view;
     }
 
-    public int[] getPlayerStartPos() { return playerStartPos; }
+    public int[] getPlayerStartPos() {
+        return playerStartPos;
+    }
 
-    public void setPlayerStartPos(int[] pos) { playerStartPos = pos; }
+    public void setPlayerStartPos(int[] pos) {
+        playerStartPos = pos;
+    }
 
     public Color backgroundColor = new Color(0x0f4f47ff).mul(0.8f);
 
@@ -529,8 +530,8 @@ public class LevelContainer {
         // In an ideal world they would be the same, but lights should be scaled while textures shouldn't
         // Mimic same view transform
         canvas.begin(GameCanvas.DrawPass.LIGHT,
-                (view.x - canvas.getWidth()/2) / canvas.WorldToScreenX(1),
-                (view.y - canvas.getHeight()/2) / canvas.WorldToScreenY(1)
+                (view.x - canvas.getWidth() / 2) / canvas.WorldToScreenX(1),
+                (view.y - canvas.getHeight() / 2) / canvas.WorldToScreenY(1)
         );
 
         canvas.drawLights(rayHandler);

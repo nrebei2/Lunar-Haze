@@ -1,7 +1,6 @@
 package infinityx.lunarhaze;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
@@ -71,6 +70,7 @@ public class AboutUsMode extends ScreenObservable implements Screen, InputProces
      * Ratio of play height from bottom
      */
     private static final float BACK_HEIGHT_RATIO = 0.9f;
+
     /**
      * Returns true if all assets are loaded and the player is ready to go.
      *
@@ -95,7 +95,7 @@ public class AboutUsMode extends ScreenObservable implements Screen, InputProces
         canvas.begin(GameCanvas.DrawPass.SPRITE);
         Color alphaTint = Color.WHITE;
         canvas.drawOverlay(background, alphaTint, true);
-        Color color = new Color(45.0f/255.0f, 74.0f/255.0f, 133.0f/255.0f, 1.0f);
+        Color color = new Color(45.0f / 255.0f, 74.0f / 255.0f, 133.0f / 255.0f, 1.0f);
         Color tintBack = (pressBackState == 1 ? color : Color.WHITE);
         canvas.draw(backButton, tintBack, backButton.getWidth() / 2, backButton.getHeight() / 2,
                 centerX, centerY, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
@@ -106,7 +106,7 @@ public class AboutUsMode extends ScreenObservable implements Screen, InputProces
      * Update the status of this menu.
      */
     private void update(float delta) {
-        //System.out.println(pressPlayState);
+
     }
 
     @Override
@@ -182,8 +182,6 @@ public class AboutUsMode extends ScreenObservable implements Screen, InputProces
         }
         // Flip to match graphics coordinates
         screenY = heightY - screenY;
-
-        //System.out.printf("%d, %d", screenX, screenY);
 
         // TODO: Fix scaling
         // Play button is a circle.

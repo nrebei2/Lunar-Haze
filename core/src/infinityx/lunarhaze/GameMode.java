@@ -4,20 +4,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.GameplayController.GameState;
 import infinityx.lunarhaze.GameplayController.Phase;
-import infinityx.lunarhaze.graphics.CameraShake;
 import infinityx.lunarhaze.graphics.GameCanvas;
-import infinityx.lunarhaze.graphics.GameCanvas.DrawPass;
-import infinityx.lunarhaze.graphics.ScreenFlash;
 import infinityx.util.ScreenObservable;
 
 
@@ -162,38 +156,41 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
     public boolean isReadyResume() {
         return pressResumeState == 2;
     }
+
     /**
      * @return true if the player is ready to restart the game
      */
     public boolean isReadyRestart() {
         return pressRestartState == 2;
     }
+
     /**
      * @return true if the player is ready to review the setting
      */
     public boolean isReadyReview() {
         return pressReviewState == 2;
     }
+
     /**
      * @return true if the player is ready to exit to the menu
      */
     public boolean isReadyExit() {
         return pressExitState == 2;
     }
+
     /**
      * @return true if the player is ready to quit the game
      */
     public boolean isReadyQuit() {
         return pressQuitState == 2;
     }
+
     /**
      * @return true if the player is ready to quit the game
      */
     public boolean isReadyBack() {
         return pressBackState == 2;
     }
-
-
 
 
     /**
@@ -234,11 +231,11 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
         gameplayController = new GameplayController();
     }
 
-    public GameplayController getGameplayController(){
+    public GameplayController getGameplayController() {
         return gameplayController;
     }
 
-    public void setGameplayController(GameplayController gc){
+    public void setGameplayController(GameplayController gc) {
         gameplayController = gc;
     }
 
@@ -281,7 +278,6 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
         pause_quit = directory.getEntry("pause-quit", Texture.class);
 
 //        win_sound = directory.getEntry("level-passed", Sound.class);
-        System.out.println("gatherAssets called");
     }
 
     /**
@@ -308,26 +304,26 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
                 }
                 break;
             case PAUSED:
-                if(isReadyResume()){
+                if (isReadyResume()) {
                     gameplayController.setState(GameState.PLAY);
                     pressResumeState = 0;
-                }else if(isReadyRestart()){
+                } else if (isReadyRestart()) {
                     gameplayController.setState(GameState.PLAY);
                     setupLevel();
                     pressRestartState = 0;
-                }else if(isReadyBack()){
+                } else if (isReadyBack()) {
                     pressBackState = 0;
                     pressReviewState = 0;
                     gameplayController.setState(GameState.PAUSED);
-                }else if(isReadyQuit()){
+                } else if (isReadyQuit()) {
                     Gdx.app.exit();
                 }
                 break;
             case PLAY:
-                if(inputController.didExit()){
+                if (inputController.didExit()) {
                     gameplayController.setState(GameState.PAUSED);
                 }
-                switch (gameplayController.getPhase()){
+                switch (gameplayController.getPhase()) {
                     case STEALTH:
                     case TRANSITION:
                         if (!stealth_background.isPlaying()) {
@@ -353,7 +349,6 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
      * Initializes the levelContainer given level.
      */
     public void setupLevel() {
-        System.out.println("GameMode setupLevel is callsed");
         LevelParser ps = LevelParser.LevelParser();
         levelContainer = ps.loadLevel(directory, levelFormat.get(String.valueOf(level)));
         gameplayController.start(levelContainer, levelFormat.get(String.valueOf(level)));
@@ -396,7 +391,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
                 canvas.end();
                 break;
             case PAUSED:
-                if(pressReviewState != 2) {
+                if (pressReviewState != 2) {
                     canvas.begin(GameCanvas.DrawPass.SPRITE);
                     Color alphaTint = Color.WHITE;
                     canvas.drawOverlay(pause_menu, alphaTint, true);
@@ -421,11 +416,11 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
                             pause_quit.getHeight() / 2,
                             centerX, centerYQuit, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
                     canvas.end();
-                }else{
+                } else {
                     canvas.begin(GameCanvas.DrawPass.SPRITE);
                     Color alphaTint = Color.WHITE;
                     canvas.drawOverlay(review, alphaTint, true);
-                    Color color = new Color(45.0f/255.0f, 74.0f/255.0f, 133.0f/255.0f, 1.0f);
+                    Color color = new Color(45.0f / 255.0f, 74.0f / 255.0f, 133.0f / 255.0f, 1.0f);
                     Color tintBack = (pressBackState == 1 ? color : Color.WHITE);
                     canvas.draw(back, tintBack, back.getWidth() / 2, back.getHeight() / 2,
                             centerXBack, centerYBack, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
@@ -470,7 +465,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
 //            observer.exitScreen(this, GO_EXIT);
 //        }
 
-        if (gameplayController.getPhase() == Phase.ALLOCATE && observer != null){
+        if (gameplayController.getPhase() == Phase.ALLOCATE && observer != null) {
             observer.exitScreen(this, GO_ALLOCATE);
         }
 
@@ -499,10 +494,10 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
         scale = (sx < sy ? sx : sy);
 
         centerYResume = (int) (BACK_HEIGHT_RATIO * height);
-        centerYRestart = centerYResume - (int)(0.6 * pause_resume.getHeight());
-        centerYReview = centerYRestart - (int)(0.6 * pause_resume.getHeight());
-        centerYExit = centerYReview - (int)(0.6 * pause_resume.getHeight());
-        centerYQuit = centerYExit - (int)(0.6 * pause_resume.getHeight());
+        centerYRestart = centerYResume - (int) (0.6 * pause_resume.getHeight());
+        centerYReview = centerYRestart - (int) (0.6 * pause_resume.getHeight());
+        centerYExit = centerYReview - (int) (0.6 * pause_resume.getHeight());
+        centerYQuit = centerYExit - (int) (0.6 * pause_resume.getHeight());
         centerX = width / 2;
         heightY = height;
         centerYBack = (int) (0.9f * height);
@@ -555,33 +550,31 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
         // Flip to match graphics coordinates
         screenY = heightY - screenY;
 
-        //System.out.printf("%d, %d", screenX, screenY);
-
         // TODO: Fix scaling
         // Button are rectangles with same x-coordinate and shapes.
-        float x = BUTTON_SCALE * scale * pause_resume.getWidth()/2;
+        float x = BUTTON_SCALE * scale * pause_resume.getWidth() / 2;
         float distX = Math.abs(screenX - centerX);
-        float y = BUTTON_SCALE * scale * pause_resume.getHeight()/2;
+        float y = BUTTON_SCALE * scale * pause_resume.getHeight() / 2;
 
         float distYResume = Math.abs(screenY - centerYResume);
-        if(distX < x && distYResume <y){
-            pressResumeState =1;
+        if (distX < x && distYResume < y) {
+            pressResumeState = 1;
         }
         float distYRestart = Math.abs(screenY - centerYRestart);
-        if(distX < x && distYRestart <y){
-            pressRestartState =1;
+        if (distX < x && distYRestart < y) {
+            pressRestartState = 1;
         }
         float distYReview = Math.abs(screenY - centerYReview);
-        if(distX < x && distYReview <y){
-            pressReviewState =1;
+        if (distX < x && distYReview < y) {
+            pressReviewState = 1;
         }
         float distYExit = Math.abs(screenY - centerYExit);
-        if(distX < x && distYExit <y){
-            pressExitState =1;
+        if (distX < x && distYExit < y) {
+            pressExitState = 1;
         }
         float distYQuit = Math.abs(screenY - centerYQuit);
-        if(distX < x && distYQuit <y){
-            pressQuitState =1;
+        if (distX < x && distYQuit < y) {
+            pressQuitState = 1;
         }
         float radiusBack = BUTTON_SCALE * scale * back.getWidth() / 2.0f;
         float distBack = (screenX - centerXBack) * (screenX - centerXBack) + (screenY - centerYBack) * (screenY - centerYBack);

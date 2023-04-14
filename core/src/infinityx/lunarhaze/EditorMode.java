@@ -8,6 +8,8 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
 import imgui.ImGui;
 import imgui.ImGuiIO;
@@ -17,8 +19,6 @@ import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.graphics.ImGuiImplGLES2;
 import infinityx.util.ScreenObservable;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,13 +50,17 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     public final static int GO_MENU = 0;
     public final static int GO_PLAY = 1;
 
-    /** ImGui classes */
+    /**
+     * ImGui classes
+     */
     private ImGuiImplGlfw imGuiGlfw;
     private ImGuiImplGLES2 imGuiGl;
 
     private boolean placingMoonlight;
 
-    /** ImGui initialization */
+    /**
+     * ImGui initialization
+     */
     public void setupImGui() {
         // ImGui initialization
         this.imGuiGlfw = new ImGuiImplGlfw();
@@ -234,7 +238,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         SceneObject curr = (SceneObject) selected;
         level.addSceneObject(
                 curr.type,
-                board.boardToWorldX((int)mouseBoard.x), board.boardToWorldY((int) mouseBoard.y),
+                board.boardToWorldX((int) mouseBoard.x), board.boardToWorldY((int) mouseBoard.y),
                 1
         );
         System.out.println(curr.type + " placed at " + (int) mouseBoard.x + ", " + (int) mouseBoard.y);
@@ -425,7 +429,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         if (selected == null) {
             return false;
         }
-        if(!placingMoonlight) {
+        if (!placingMoonlight) {
             placeSelection();
         } else {
             placeMoonlightTile();
@@ -488,7 +492,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         if (ImGui.getIO().getWantCaptureMouse()) return false;
         // Cursor world position
         mouseWorld.set(canvas.ScreenToWorldX(Gdx.input.getX()), canvas.ScreenToWorldY(Gdx.input.getY()));
-        //System.out.printf("mouse world: (%f, %f)\n", mouseWorld.x, mouseWorld.y);
 
         if (selected == null) {
             return true;
@@ -504,7 +507,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 mouseBoard.set(boardX, boardY);
                 board.setPreviewTile((int) mouseBoard.x, (int) mouseBoard.y, selected.texture);
             }
-            //System.out.printf("board pos: (%d, %d)", boardX, boardY);
         } else if (selected instanceof Player) {
             if (board.inBounds(boardX, boardY)) {
                 level.showPlayer();
@@ -536,7 +538,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         ImGui.begin("Tile Selection");
 
         for (int i = 0; i < availableSelections.size(); i++) {
-            if(availableSelections.get(i) instanceof Tile) {
+            if (availableSelections.get(i) instanceof Tile) {
                 Tile tile = (Tile) availableSelections.get(i);
 
                 if (ImGui.imageButton(tile.texture.getTextureObjectHandle(), 100, 100 * 3 / 4)) {
@@ -557,7 +559,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         ImGui.begin("Object Selection");
 
         for (int i = 0; i < availableSelections.size(); i++) {
-            if(availableSelections.get(i) instanceof SceneObject) {
+            if (availableSelections.get(i) instanceof SceneObject) {
                 SceneObject obj = (SceneObject) availableSelections.get(i);
 
                 if (ImGui.imageButton(obj.texture.getTextureObjectHandle(), 100, 100 * 3 / 4)) {
@@ -594,6 +596,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         }
         ImGui.end();
     }
+
     private void createBrushSelection() {
         ImGui.getStyle().setFramePadding(10, 10);
         ImGui.begin("Brush Select");

@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
 import infinityx.lunarhaze.entity.Direction;
-import infinityx.util.FilmStrip;
 
 public enum PlayerState implements State<PlayerController> {
 
@@ -37,7 +36,7 @@ public enum PlayerState implements State<PlayerController> {
                     (entity.getInputController().getHorizontal() != 0 || entity.getInputController().getVertical() != 0)) {
                 entity.getStateMachine().changeState(PlayerState.RUN);
             } else if (!entity.getInputController().didRun() &&
-                    (entity.getInputController().getHorizontal() != 0 || entity.getInputController().getVertical() != 0)){
+                    (entity.getInputController().getHorizontal() != 0 || entity.getInputController().getVertical() != 0)) {
                 entity.getStateMachine().changeState(PlayerState.WALK);
             }
         }
@@ -45,14 +44,15 @@ public enum PlayerState implements State<PlayerController> {
 
     WALK() {
         Direction direction;
+
         @Override
         public void enter(PlayerController entity) {
-            //System.out.println("Player switched to walk state");
             direction = entity.player.direction;
             entity.player.setStealth(entity.WALK_STEALTH);
             setTexture(entity, "walk");
             entity.player.texUpdate = 0.1f;
         }
+
         @Override
         public void update(PlayerController entity) {
             // Handle state transitions
@@ -73,22 +73,22 @@ public enum PlayerState implements State<PlayerController> {
 
     RUN() {
         Direction direction;
+
         @Override
         public void enter(PlayerController entity) {
-            //System.out.println("Player switched to run state");
             direction = entity.player.direction;
             entity.player.setStealth(entity.RUN_STEALTH);
             setTexture(entity, "walk");
             entity.player.texUpdate = 0.1f * entity.player.walkSpeed / entity.player.runSpeed;
 
         }
+
         @Override
         public void update(PlayerController entity) {
             // Handle state transitions
             if (entity.isAttacking()) {
                 entity.getStateMachine().changeState(PlayerState.ATTACK);
-            }
-            else if (entity.player.getLinearVelocity().isZero()) {
+            } else if (entity.player.getLinearVelocity().isZero()) {
                 entity.getStateMachine().changeState(PlayerState.IDLE);
             } else if (!entity.getInputController().didRun()) {
                 entity.getStateMachine().changeState(PlayerState.WALK);
@@ -104,15 +104,15 @@ public enum PlayerState implements State<PlayerController> {
     ATTACK() {
         @Override
         public void enter(PlayerController entity) {
-            //System.out.println("Player switched to attack state");
             entity.getAttackSound().play();
             setTexture(entity, "attack");
             entity.player.texUpdate = 0.06f;
         }
+
         @Override
         public void update(PlayerController entity) {
             // Handle state transitions
-            if(!entity.isAttacking()) {
+            if (!entity.isAttacking()) {
                 entity.getStateMachine().changeState(PlayerState.IDLE);
             }
         }
@@ -121,15 +121,15 @@ public enum PlayerState implements State<PlayerController> {
     COLLECT() {
         @Override
         public void enter(PlayerController entity) {
-            //System.out.println("Player switched to collect state");
             entity.player.setStealth(entity.MOON_STEALTH);
         }
+
         @Override
         public void update(PlayerController entity) {
             // Handle state transitions
             if (entity.isAttacking()) {
                 entity.getStateMachine().changeState(PlayerState.ATTACK);
-            } else if (!entity.isCollectingMoonlight()){
+            } else if (!entity.isCollectingMoonlight()) {
                 entity.getStateMachine().changeState(PlayerState.IDLE);
             }
         }
