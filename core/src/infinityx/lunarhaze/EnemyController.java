@@ -108,9 +108,9 @@ public class EnemyController {
     public Werewolf target;
 
     /**
-     * The number of ticks since we started this controller
+     * Used for look-around, time in seconds
      */
-    private long ticks;
+    public float time;
 
     /**
      * The last time the enemy was in the CHASING state.
@@ -160,7 +160,6 @@ public class EnemyController {
      */
     public EnemyController(Enemy enemy) {
         this.enemy = enemy;
-        this.ticks = 0;
         this.chased_ticks = 0;
         this.idle_ticks = 0;
         this.end_chase_pos = new Vector2();
@@ -218,7 +217,6 @@ public class EnemyController {
      * @param delta
      */
     public void update(LevelContainer container, GameplayController.Phase currentPhase, float delta) {
-        ticks++;
         if (enemy.getHp() <= 0) container.removeEnemy(enemy);
 
         // Process the FSM

@@ -45,6 +45,7 @@ public enum EnemyState implements State<EnemyController> {
         }
     },
 
+    /** Question mark above enemy, turns towards location */
     NOTICED() {
         Box2dLocation target;
 
@@ -80,41 +81,60 @@ public enum EnemyState implements State<EnemyController> {
         }
     },
 
+    /** The enemy is going towards last known player position and indicator bar is (maybe) increasing */
     INDICATOR() {
+        /** Last known player position */
         Box2dLocation target = new Box2dLocation();
 
         @Override
         public void enter(EnemyController entity) {
             entity.getEnemy().setDetection(Enemy.Detection.INDICATOR);
             entity.getEnemy().setIndicatorAmount(0);
+
+            // TODO
             entity.target.setStealth(entity.target.getStealth() + 1f);
-            entity.arriveSB.setTarget(target);
-            entity.getEnemy().setSteeringBehavior(entity.patrolSB);
+
+            Vector2 cur_pos = worldToGrid(entity.getEnemy().getPosition());
+            Vector2 target_pos = worldToGrid(target.getPosition());
+            Path path = entity.pathfinder.findPath(cur_pos, target_pos, entity.raycastCollisionDetector);
+            if (path != null) {
+                entity.followPathSB = new FollowPath(entity.getEnemy(), path, 0.05f, 0.5f);
+                entity.getEnemy().setSteeringBehavior(entity.followPathSB);
+            }
         }
 
         @Override
         public void update(EnemyController entity) {
 
+            // If the indicator is full, the enemy is alerted
             if (entity.getEnemy().getIndicatorAmount() == 1) {
                 entity.getStateMachine().changeState(ALERT);
             }
 
-            // Check if have arrived to target position
-            float dist = entity.getEnemy().getPosition().dst(entity.arriveSB.getTarget().getPosition());
-            if (dist <= entity.arriveSB.getArrivalTolerance()) entity.getStateMachine().changeState(LOOK_AROUND);
-
             switch (entity.getDetection()) {
                 case NOTICED:
                 case ALERT:
+                    // Update target and thus path
                     target.setPosition(entity.target.getPosition());
+                    Vector2 cur_pos = worldToGrid(entity.getEnemy().getPosition());
+                    Vector2 target_pos = worldToGrid(target.getPosition());
+                    Path path = entity.pathfinder.findPath(cur_pos, target_pos, entity.raycastCollisionDetector);
+                    if (path != null) {
+                        entity.followPathSB.setPath(path);
+                    }
+                    // Increase indicator
                     entity.getEnemy().setIndicatorAmount(
                             MathUtils.clamp(entity.getEnemy().getIndicatorAmount() + Gdx.graphics.getDeltaTime() / 2, 0, 1)
                     );
                     break;
                 case NONE:
+                    // Decrease indicator
                     entity.getEnemy().setIndicatorAmount(
-                            MathUtils.clamp(entity.getEnemy().getIndicatorAmount() - Gdx.graphics.getDeltaTime() / 3, 0, 1)
+                            MathUtils.clamp(entity.getEnemy().getIndicatorAmount() - Gdx.graphics.getDeltaTime() / 4, 0, 1)
                     );
+                    // If the enemy has arrived to target and there is no detection, go back to looking around
+                    float dist = entity.getEnemy().getPosition().dst(target.getPosition());
+                    if (dist <= 0.5) entity.getStateMachine().changeState(LOOK_AROUND);
             }
         }
 
@@ -130,6 +150,7 @@ public enum EnemyState implements State<EnemyController> {
         }
     },
 
+    /** Enemy knows where player is (!) and is actively moving towards player */
     ALERT() {
         /** Tick count */
         int tick;
@@ -252,12 +273,11 @@ public enum EnemyState implements State<EnemyController> {
     LOOK_AROUND() {
         @Override
         public void enter(EnemyController entity) {
-            entity.lookAroundSB.reset();
-            entity.getEnemy().setIndependentFacing(true);
-            entity.getEnemy().setLinearVelocity(Vector2.Zero);
-            entity.getEnemy().setAngularVelocity(0);
-            entity.getEnemy().setSteeringBehavior(entity.lookAroundSB);
+            entity.time = 0;
 
+            entity.getEnemy().setLinearVelocity(Vector2.Zero);
+
+            entity.getEnemy().setSteeringBehavior(null);
             entity.getEnemy().setDetection(Enemy.Detection.NONE);
         }
 
@@ -265,19 +285,26 @@ public enum EnemyState implements State<EnemyController> {
         public void update(EnemyController entity) {
             switch (entity.getDetection()) {
                 case NOTICED:
-                    entity.getStateMachine().changeState(NOTICED);
-                    break;
                 case ALERT:
-                    entity.getStateMachine().changeState(ALERT);
+                    entity.getStateMachine().changeState(NOTICED);
                     break;
             }
 
-            if (entity.lookAroundSB.isFinished()) entity.getStateMachine().changeState(PATROL);
-        }
+            float lookTime = 1.5f;
+            float restTime = 0.9f;
 
-        @Override
-        public void exit(EnemyController entity) {
-            entity.getEnemy().setIndependentFacing(false);
+            // Look, rest, look, rest, then back to patrol
+            if (entity.time < lookTime) {
+                entity.getEnemy().setAngularVelocity(1);
+            } else if (entity.time >= lookTime + restTime && entity.time < 3*lookTime + restTime) {
+                entity.getEnemy().setAngularVelocity(-1);
+            } else if ((entity.time >= lookTime && entity.time < lookTime + restTime) || (entity.time >= 3 * lookTime + restTime && entity.time < 3 * lookTime + 2 * restTime)) {
+                entity.getEnemy().setAngularVelocity(0);
+            } else {
+                entity.getStateMachine().changeState(PATROL);
+            }
+
+            entity.time += Gdx.graphics.getDeltaTime();
         }
     };
 

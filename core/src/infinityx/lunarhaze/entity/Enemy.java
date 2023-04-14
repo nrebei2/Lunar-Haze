@@ -236,4 +236,9 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
     public float getHealthPercentage() {
         return hp / maxHp;
     }
+
+    @Override
+    public void update(float delta) {
+        super.update(delta);
+    }
 }

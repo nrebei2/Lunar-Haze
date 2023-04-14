@@ -6,6 +6,7 @@ import com.badlogic.gdx.ai.steer.behaviors.ReachOrientation;
 import com.badlogic.gdx.ai.utils.ArithmeticUtils;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import infinityx.lunarhaze.SteeringGameObject;
 import infinityx.util.Box2dLocation;
 
 
@@ -32,7 +33,7 @@ public class LookAround extends ReachOrientation<Vector2> {
      *
      * @param angle The total amount (in degrees) the owner will look around for
      */
-    public LookAround(Steerable<Vector2> owner, float angle) {
+    public LookAround(SteeringGameObject owner, float angle) {
         super(owner);
         this.angle = angle;
         reset();
