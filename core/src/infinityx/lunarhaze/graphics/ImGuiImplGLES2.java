@@ -1,6 +1,12 @@
 package infinityx.lunarhaze.graphics;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Mesh;
+import com.badlogic.gdx.graphics.VertexAttribute;
+import com.badlogic.gdx.graphics.VertexAttributes;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.math.Matrix4;
 import imgui.*;
 import imgui.callback.ImPlatformFuncViewport;
 import imgui.flag.ImGuiBackendFlags;
@@ -10,105 +16,26 @@ import imgui.gl3.ImGuiImplGl3;
 import imgui.type.ImInt;
 
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+import java.nio.ShortBuffer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.lwjgl.opengl.GL11.GL_BLEND;
-import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
-import static org.lwjgl.opengl.GL11.GL_FALSE;
-import static org.lwjgl.opengl.GL11.GL_FLOAT;
-import static org.lwjgl.opengl.GL11.GL_LINEAR;
-import static org.lwjgl.opengl.GL11.GL_ONE;
-import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
-import static org.lwjgl.opengl.GL11.GL_RGBA;
-import static org.lwjgl.opengl.GL11.GL_SCISSOR_BOX;
-import static org.lwjgl.opengl.GL11.GL_SCISSOR_TEST;
-import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
-import static org.lwjgl.opengl.GL11.GL_STENCIL_TEST;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_BINDING_2D;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_MAG_FILTER;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_MIN_FILTER;
-import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
-import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
-import static org.lwjgl.opengl.GL11.GL_UNSIGNED_SHORT;
-import static org.lwjgl.opengl.GL11.GL_VIEWPORT;
-import static org.lwjgl.opengl.GL11.glBindTexture;
-import static org.lwjgl.opengl.GL11.glClear;
-import static org.lwjgl.opengl.GL11.glClearColor;
-import static org.lwjgl.opengl.GL11.glDeleteTextures;
-import static org.lwjgl.opengl.GL11.glDisable;
-import static org.lwjgl.opengl.GL11.glDrawElements;
-import static org.lwjgl.opengl.GL11.glEnable;
-import static org.lwjgl.opengl.GL11.glGenTextures;
-import static org.lwjgl.opengl.GL11.glGetIntegerv;
-import static org.lwjgl.opengl.GL11.glIsEnabled;
-import static org.lwjgl.opengl.GL11.glScissor;
-import static org.lwjgl.opengl.GL11.glTexImage2D;
-import static org.lwjgl.opengl.GL11.glTexParameteri;
-import static org.lwjgl.opengl.GL11.glViewport;
-import static org.lwjgl.opengl.GL13.GL_ACTIVE_TEXTURE;
-import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
-import static org.lwjgl.opengl.GL13.glActiveTexture;
-import static org.lwjgl.opengl.GL14.GL_BLEND_DST_ALPHA;
-import static org.lwjgl.opengl.GL14.GL_BLEND_DST_RGB;
-import static org.lwjgl.opengl.GL14.GL_BLEND_SRC_ALPHA;
-import static org.lwjgl.opengl.GL14.GL_BLEND_SRC_RGB;
-import static org.lwjgl.opengl.GL14.GL_FUNC_ADD;
-import static org.lwjgl.opengl.GL14.glBlendEquation;
-import static org.lwjgl.opengl.GL14.glBlendFuncSeparate;
-import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL20.GL_BLEND_EQUATION_ALPHA;
-import static org.lwjgl.opengl.GL20.GL_BLEND_EQUATION_RGB;
-import static org.lwjgl.opengl.GL20.GL_COMPILE_STATUS;
-import static org.lwjgl.opengl.GL20.GL_CURRENT_PROGRAM;
-import static org.lwjgl.opengl.GL20.GL_FRAGMENT_SHADER;
-import static org.lwjgl.opengl.GL20.GL_LINK_STATUS;
-import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
-import static org.lwjgl.opengl.GL20.glAttachShader;
-import static org.lwjgl.opengl.GL20.glBlendEquationSeparate;
-import static org.lwjgl.opengl.GL20.glCompileShader;
-import static org.lwjgl.opengl.GL20.glCreateProgram;
-import static org.lwjgl.opengl.GL20.glCreateShader;
-import static org.lwjgl.opengl.GL20.glDeleteProgram;
-import static org.lwjgl.opengl.GL20.glDetachShader;
-import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
-import static org.lwjgl.opengl.GL20.glGetAttribLocation;
-import static org.lwjgl.opengl.GL20.glGetProgramInfoLog;
-import static org.lwjgl.opengl.GL20.glGetProgrami;
-import static org.lwjgl.opengl.GL20.glGetShaderInfoLog;
-import static org.lwjgl.opengl.GL20.glGetShaderi;
-import static org.lwjgl.opengl.GL20.glGetUniformLocation;
-import static org.lwjgl.opengl.GL20.glLinkProgram;
-import static org.lwjgl.opengl.GL20.glShaderSource;
-import static org.lwjgl.opengl.GL20.glUniform1i;
-import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
-import static org.lwjgl.opengl.GL20.glUseProgram;
-import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL14.*;
+import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.opengl.GL32.glDrawElementsBaseVertex;
 
 /**
  * This class is just a simple rewrite of {@link ImGuiImplGl3} to work with GL ES 2.0.
- * Really, all it does is remove any occurrences of VAOs.
+ * To work nicely with LibGDX, it uses a {@link Mesh} to render.
  */
 public class ImGuiImplGLES2 {
     // OpenGL Data
     private int glVersion = 0;
     private String glslVersion = "";
     private int gFontTexture = 0;
-    private int gShaderHandle = 0;
-    private int gVertHandle = 0;
-    private int gFragHandle = 0;
-    private int gAttribLocationTex = 0;
-    private int gAttribLocationProjMtx = 0;
-    private int gAttribLocationVtxPos = 0;
-    private int gAttribLocationVtxUV = 0;
-    private int gAttribLocationVtxColor = 0;
-    private int gVboHandle = 0;
-    private int gElementsHandle = 0;
 
     // Used to store tmp renderer data
     private final ImVec2 displaySize = new ImVec2();
@@ -118,10 +45,6 @@ public class ImGuiImplGLES2 {
     private final float[] orthoProjMatrix = new float[4 * 4];
 
     // Variables used to backup GL state before and after the rendering of Dear ImGui
-    private final int[] lastActiveTexture = new int[1];
-    private final int[] lastProgram = new int[1];
-    private final int[] lastTexture = new int[1];
-    private final int[] lastArrayBuffer = new int[1];
     private final int[] lastViewport = new int[4];
     private final int[] lastScissorBox = new int[4];
     private final int[] lastBlendSrcRgb = new int[1];
@@ -136,9 +59,16 @@ public class ImGuiImplGLES2 {
     private boolean lastEnableStencilTest = false;
     private boolean lastEnableScissorTest = false;
 
+
+    /** Shader to render ImGui output  */
+    private ShaderProgram program;
+
+    /** Mesh holding ImGui vertex and index buffer dump */
+    private Mesh mesh;
+
     /**
-     * Method to do an initialization of the {@link imgui.gl3.ImGuiImplGl3} state.
-     * It SHOULD be called before calling of the {@link imgui.gl3.ImGuiImplGl3#renderDrawData(ImDrawData)} method.
+     * Method to do an initialization of the {@link ImGuiImplGl3} state.
+     * It SHOULD be called before calling of the {@link ImGuiImplGl3#renderDrawData(ImDrawData)} method.
      * <p>
      * Unlike in the {@link #init(String)} method, here the glslVersion argument is omitted.
      * Thus a "#version 130" string will be used instead.
@@ -148,8 +78,8 @@ public class ImGuiImplGLES2 {
     }
 
     /**
-     * Method to do an initialization of the {@link imgui.gl3.ImGuiImplGl3} state.
-     * It SHOULD be called before calling of the {@link imgui.gl3.ImGuiImplGl3#renderDrawData(ImDrawData)} method.
+     * Method to do an initialization of the {@link ImGuiImplGl3} state.
+     * It SHOULD be called before calling of the {@link ImGuiImplGl3#renderDrawData(ImDrawData)} method.
      * <p>
      * Method takes an argument, which should be a valid GLSL string with the version to use.
      * <pre>
@@ -225,9 +155,33 @@ public class ImGuiImplGLES2 {
 
         // Render command lists
         for (int cmdListIdx = 0; cmdListIdx < drawData.getCmdListsCount(); cmdListIdx++) {
-            // Upload vertex/index buffers
-            glBufferData(GL_ARRAY_BUFFER, drawData.getCmdListVtxBufferData(cmdListIdx), GL_STREAM_DRAW);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, drawData.getCmdListIdxBufferData(cmdListIdx), GL_STREAM_DRAW);
+
+            // Get vertex buffer
+            FloatBuffer vertBuf = drawData.getCmdListVtxBufferData(cmdListIdx).asFloatBuffer();
+
+            // In floats
+            int vtxBufferCapacity = drawData.getCmdListVtxBufferSize(cmdListIdx) * drawData.sizeOfImDrawVert() / 4;
+            float[] vertz = new float[vtxBufferCapacity];
+
+            int i = 0;
+            while (vertBuf.remaining() > 0) {
+                vertz[i++] = vertBuf.get();
+            }
+
+            // Get index buffer
+            ShortBuffer indBuf = drawData.getCmdListIdxBufferData(cmdListIdx).asShortBuffer();
+
+            // In shorts
+            final int idxBufferCapacity = drawData.getCmdListIdxBufferSize(cmdListIdx) * drawData.sizeOfImDrawIdx() / 2;
+            short[] indz = new short[idxBufferCapacity];
+
+            int j = 0;
+            while (indBuf.remaining() > 0) {
+                indz[j++] = indBuf.get();
+            }
+
+            mesh.setVertices(vertz);
+            mesh.setIndices(indz);
 
             for (int cmdBufferIdx = 0; cmdBufferIdx < drawData.getCmdListCmdBufferSize(cmdListIdx); cmdBufferIdx++) {
                 drawData.getCmdListCmdBufferClipRect(cmdListIdx, cmdBufferIdx, clipRect);
@@ -248,16 +202,9 @@ public class ImGuiImplGLES2 {
                 final int textureId = drawData.getCmdListCmdBufferTextureId(cmdListIdx, cmdBufferIdx);
                 final int elemCount = drawData.getCmdListCmdBufferElemCount(cmdListIdx, cmdBufferIdx);
                 final int idxBufferOffset = drawData.getCmdListCmdBufferIdxOffset(cmdListIdx, cmdBufferIdx);
-                final int vtxBufferOffset = drawData.getCmdListCmdBufferVtxOffset(cmdListIdx, cmdBufferIdx);
-                final int indices = idxBufferOffset * ImDrawData.SIZEOF_IM_DRAW_IDX;
 
-                glBindTexture(GL_TEXTURE_2D, textureId);
-
-                if (glVersion >= 320) {
-                    glDrawElementsBaseVertex(GL_TRIANGLES, elemCount, GL_UNSIGNED_SHORT, indices, vtxBufferOffset);
-                } else {
-                    Gdx.gl20.glDrawElements(GL_TRIANGLES, elemCount, GL_UNSIGNED_SHORT, indices);
-                }
+                Gdx.gl20.glBindTexture(GL_TEXTURE_2D, textureId);
+                mesh.render(program, GL20.GL_TRIANGLES, idxBufferOffset, elemCount);
             }
         }
 
@@ -265,16 +212,13 @@ public class ImGuiImplGLES2 {
     }
 
     /**
-     * Call this method in the end of your application cycle to dispose resources used by {@link imgui.gl3.ImGuiImplGl3}.
+     * Call this method in the end of your application cycle to dispose resources used by {@link ImGuiImplGl3}.
      */
     public void dispose() {
-        glDeleteBuffers(gVboHandle);
-        glDeleteBuffers(gElementsHandle);
-        glDetachShader(gShaderHandle, gVertHandle);
-        glDetachShader(gShaderHandle, gFragHandle);
-        glDeleteProgram(gShaderHandle);
         glDeleteTextures(gFontTexture);
         shutdownPlatformInterface();
+        mesh.dispose();
+        program.dispose();
     }
 
     /**
@@ -321,37 +265,25 @@ public class ImGuiImplGLES2 {
     }
 
     private void createDeviceObjects() {
-        // Backup GL state
-        final int[] lastTexture = new int[1];
-        final int[] lastArrayBuffer = new int[1];
-        glGetIntegerv(GL_TEXTURE_BINDING_2D, lastTexture);
-        glGetIntegerv(GL_ARRAY_BUFFER_BINDING, lastArrayBuffer);
-
         createShaders();
-
-        gAttribLocationTex = glGetUniformLocation(gShaderHandle, "Texture");
-        gAttribLocationProjMtx = glGetUniformLocation(gShaderHandle, "ProjMtx");
-        gAttribLocationVtxPos = glGetAttribLocation(gShaderHandle, "Position");
-        gAttribLocationVtxUV = glGetAttribLocation(gShaderHandle, "UV");
-        gAttribLocationVtxColor = glGetAttribLocation(gShaderHandle, "Color");
-
-        // Create buffers
-        gVboHandle = glGenBuffers();
-        gElementsHandle = glGenBuffers();
-
+        createMesh();
         updateFontsTexture();
+    }
 
-        // Restore modified GL state
-        glBindTexture(GL_TEXTURE_2D, lastTexture[0]);
-        glBindBuffer(GL_ARRAY_BUFFER, lastArrayBuffer[0]);
+    private void createMesh() {
+        // Safe bet for max Vertices/Indices
+        this.mesh = new Mesh(Mesh.VertexDataType.VertexArray, false, 1000, 1000 * 2,
+                new VertexAttribute(VertexAttributes.Usage.Position, 2, "Position"),
+                new VertexAttribute(VertexAttributes.Usage.TextureCoordinates, 2, "UV"),
+                new VertexAttribute(VertexAttributes.Usage.ColorPacked, 4, "Color"));
     }
 
     private void createShaders() {
         final int glslVersionValue = parseGlslVersionString();
 
         // Select shaders matching our GLSL versions
-        final CharSequence vertShaderSource;
-        final CharSequence fragShaderSource;
+        final String vertShaderSource;
+        final String fragShaderSource;
 
         if (glslVersionValue < 130) {
             vertShaderSource = getVertexShaderGlsl120();
@@ -367,17 +299,7 @@ public class ImGuiImplGLES2 {
             fragShaderSource = getFragmentShaderGlsl130();
         }
 
-        gVertHandle = createAndCompileShader(GL_VERTEX_SHADER, vertShaderSource);
-        gFragHandle = createAndCompileShader(GL_FRAGMENT_SHADER, fragShaderSource);
-
-        gShaderHandle = glCreateProgram();
-        glAttachShader(gShaderHandle, gVertHandle);
-        glAttachShader(gShaderHandle, gFragHandle);
-        glLinkProgram(gShaderHandle);
-
-        if (glGetProgrami(gShaderHandle, GL_LINK_STATUS) == GL_FALSE) {
-            throw new IllegalStateException("Failed to link shader program:\n" + glGetProgramInfoLog(gShaderHandle));
-        }
+        this.program = new ShaderProgram(vertShaderSource, fragShaderSource);
     }
 
     private int parseGlslVersionString() {
@@ -392,11 +314,6 @@ public class ImGuiImplGLES2 {
     }
 
     private void backupGlState() {
-        glGetIntegerv(GL_ACTIVE_TEXTURE, lastActiveTexture);
-        glActiveTexture(GL_TEXTURE0);
-        glGetIntegerv(GL_CURRENT_PROGRAM, lastProgram);
-        glGetIntegerv(GL_TEXTURE_BINDING_2D, lastTexture);
-        glGetIntegerv(GL_ARRAY_BUFFER_BINDING, lastArrayBuffer);
         glGetIntegerv(GL_VIEWPORT, lastViewport);
         glGetIntegerv(GL_SCISSOR_BOX, lastScissorBox);
         glGetIntegerv(GL_BLEND_SRC_RGB, lastBlendSrcRgb);
@@ -413,10 +330,6 @@ public class ImGuiImplGLES2 {
     }
 
     private void restoreModifiedGlState() {
-        glUseProgram(lastProgram[0]);
-        glBindTexture(GL_TEXTURE_2D, lastTexture[0]);
-        glActiveTexture(lastActiveTexture[0]);
-        glBindBuffer(GL_ARRAY_BUFFER, lastArrayBuffer[0]);
         glBlendEquationSeparate(lastBlendEquationRgb[0], lastBlendEquationAlpha[0]);
         glBlendFuncSeparate(lastBlendSrcRgb[0], lastBlendDstRgb[0], lastBlendSrcAlpha[0], lastBlendDstAlpha[0]);
         // @formatter:off CHECKSTYLE:OFF
@@ -459,20 +372,9 @@ public class ImGuiImplGLES2 {
         orthoProjMatrix[15] = 1.0f;
 
         // Bind shader
-        glUseProgram(gShaderHandle);
-        glUniform1i(gAttribLocationTex, 0);
-        glUniformMatrix4fv(gAttribLocationProjMtx, false, orthoProjMatrix);
-
-
-        // Bind vertex/index buffers and setup attributes for ImDrawVert
-        glBindBuffer(GL_ARRAY_BUFFER, gVboHandle);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gElementsHandle);
-        glEnableVertexAttribArray(gAttribLocationVtxPos);
-        glEnableVertexAttribArray(gAttribLocationVtxUV);
-        glEnableVertexAttribArray(gAttribLocationVtxColor);
-        glVertexAttribPointer(gAttribLocationVtxPos, 2, GL_FLOAT, false, ImDrawData.SIZEOF_IM_DRAW_VERT, 0);
-        glVertexAttribPointer(gAttribLocationVtxUV, 2, GL_FLOAT, false, ImDrawData.SIZEOF_IM_DRAW_VERT, 8);
-        glVertexAttribPointer(gAttribLocationVtxColor, 4, GL_UNSIGNED_BYTE, true, ImDrawData.SIZEOF_IM_DRAW_VERT, 16);
+        program.bind();
+        program.setUniformi("Texture", 0);
+        program.setUniformMatrix("ProjMtx", new Matrix4(orthoProjMatrix));
     }
 
     //--------------------------------------------------------------------------------------------------------

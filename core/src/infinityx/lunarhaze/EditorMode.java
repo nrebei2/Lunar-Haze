@@ -9,10 +9,8 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.JsonValue;
 import imgui.ImGui;
 import imgui.ImGuiIO;
-import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
 import imgui.type.ImInt;
 import infinityx.assets.AssetDirectory;
@@ -20,11 +18,8 @@ import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.graphics.ImGuiImplGLES2;
 import infinityx.util.ScreenObservable;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
