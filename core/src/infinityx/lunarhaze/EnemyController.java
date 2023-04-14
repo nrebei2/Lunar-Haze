@@ -2,23 +2,25 @@ package infinityx.lunarhaze;
 
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.fsm.StateMachine;
-import com.badlogic.gdx.ai.steer.behaviors.*;
-import com.badlogic.gdx.ai.steer.utils.rays.CentralRayWithWhiskersConfiguration;
+import com.badlogic.gdx.ai.steer.behaviors.Face;
+import com.badlogic.gdx.ai.steer.behaviors.FollowPath;
+import com.badlogic.gdx.ai.steer.utils.Path;
+import com.badlogic.gdx.ai.steer.utils.paths.LinePath;
 import com.badlogic.gdx.ai.utils.Collision;
 import com.badlogic.gdx.ai.utils.Ray;
-import com.badlogic.gdx.ai.utils.RaycastCollisionDetector;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import infinityx.lunarhaze.ai.LookAround;
+import com.badlogic.gdx.utils.Array;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.Werewolf;
 import infinityx.lunarhaze.physics.Box2DRaycastCollision;
 import infinityx.lunarhaze.physics.RaycastInfo;
 import infinityx.util.astar.AStarPathFinding;
-import infinityx.util.astar.Node;
 
-/** Controller class, handles logic for a single enemy */
+/**
+ * Controller class, handles logic for a single enemy
+ */
 public class EnemyController {
     /**
      * Raycast cache for target detection
@@ -36,9 +38,14 @@ public class EnemyController {
     Collision<Vector2> collisionCache = new Collision<>(new Vector2(), new Vector2());
 
 
+    /**
+     * Pathfinder reference from level container
+     */
     public AStarPathFinding pathfinder;
 
-    /** Whether the game is in BATTLE phase */
+    /**
+     * Whether the game is in BATTLE phase
+     */
     private boolean inBattle;
 
     /**
@@ -61,11 +68,25 @@ public class EnemyController {
      */
     private final StateMachine<EnemyController, EnemyState> stateMachine;
 
-    /** Face direction behavior */
+    /**
+     * Face direction behavior
+     */
     public Face<Vector2> faceSB;
 
-    /** Pathfinding behavior */
+    /**
+     * Pathfinding behavior
+     */
     public FollowPath followPathSB;
+
+    /**
+     * Current target position for pathfinding
+     */
+    public Vector2 targetPos;
+
+    /**
+     * Patrol target cache
+     */
+    public Vector2 patrolTarget;
 
     /**
      * Creates an EnemyController for the enemy with the given id.
@@ -73,13 +94,18 @@ public class EnemyController {
      * @param enemy The enemy being controlled by this AIController
      */
     public EnemyController(Enemy enemy) {
+        patrolTarget = new Vector2();
         this.enemy = enemy;
         this.inBattle = false;
-
         this.stateMachine = new DefaultStateMachine<>(this, EnemyState.INIT, EnemyState.ANY_STATE);
-
         this.raycast = new RaycastInfo(enemy);
         raycast.addIgnores(GameObject.ObjectType.ENEMY, GameObject.ObjectType.HITBOX);
+
+        // Dummy path
+        Array<Vector2> waypoints = new Array<>();
+        waypoints.add(new Vector2());
+        waypoints.add(new Vector2());
+        followPathSB = new FollowPath(enemy, new LinePath(waypoints), 0.05f, 0.5f);
     }
 
     /**
@@ -130,7 +156,7 @@ public class EnemyController {
      */
     public Enemy.Detection getDetection() {
         /* Area of interests:
-         * Focused view - same angle as flashlight, extends between [1, 4]
+         * Focused view - same angle as flashlight, extends between [2, 4.5]
          * Short distance - angle of 100, extends between [0.6, 2.5]
          * Peripheral vision - angle of 180, extends between [0.4, 1.75]
          * Hearing radius - angle of 360, extends between [1.5, 3.5]
@@ -154,7 +180,7 @@ public class EnemyController {
         // degree between enemy orientation and enemy-to-player
         double degree = Math.abs(enemy.getOrientation() - enemy.vectorToAngle(enemyToPlayer)) * MathUtils.radiansToDegrees;
         if (raycast.hitObject == target) {
-            if (degree <= enemy.getFlashlight().getConeDegree() / 2 && dist <= lerp.apply(1, 4, target.getStealth())) {
+            if (degree <= enemy.getFlashlight().getConeDegree() / 2 && dist <= lerp.apply(2, 4.5f, target.getStealth())) {
                 return Enemy.Detection.ALERT;
             }
             if (degree <= 50 && dist <= lerp.apply(0.6f, 2.5f, target.getStealth())) {
@@ -182,10 +208,17 @@ public class EnemyController {
      * @return Random point in patrol area
      */
     public Vector2 getPatrolTarget() {
-        Vector2 random_point = new Vector2(
+        return patrolTarget.set(
                 MathUtils.random(enemy.getBottomLeftOfRegion().x, enemy.getTopRightOfRegion().x),
                 MathUtils.random(enemy.getBottomLeftOfRegion().y, enemy.getTopRightOfRegion().y)
         );
-        return random_point;
+    }
+
+    /**
+     * Updates path for pathfinding. Source is the enemy position and target is {@link #targetPos}
+     */
+    public void updatePath() {
+        Path path = pathfinder.findPath(enemy.getPosition(), targetPos);
+        followPathSB.setPath(path);
     }
 }

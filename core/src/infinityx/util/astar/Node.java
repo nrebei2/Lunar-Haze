@@ -4,7 +4,9 @@ import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
-/** A single node in our grid graph */
+/**
+ * A node for a {@link AStarMap}
+ */
 public class Node {
     /**
      * Whether there is an obstacle on this node
@@ -15,7 +17,9 @@ public class Node {
      */
     private final int index;
 
-    /** World position assigned to this node. Represents the center of the grid tile */
+    /**
+     * World position assigned to this node. Represents the center of the grid tile
+     */
     public Vector2 position;
 
     /**
@@ -23,16 +27,19 @@ public class Node {
      */
     private final Array<Connection<Node>> connections;
 
-    /** Grid position in map */
+    /**
+     * Grid position in map
+     */
     public final int x, y;
 
     /**
      * Create a new Node with attributes
+     *
      * @param map Map holding this node
-     * @param x Grid x-position in map
-     * @param y Grid y-position map
-     * @param wx world x-position
-     * @param wy world y-position
+     * @param x   Grid x-position in map
+     * @param y   Grid y-position map
+     * @param wx  world x-position
+     * @param wy  world y-position
      */
     public Node(AStarMap map, int x, int y, float wx, float wy) {
         this.x = x;

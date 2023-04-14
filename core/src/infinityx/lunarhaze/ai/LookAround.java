@@ -1,6 +1,5 @@
 package infinityx.lunarhaze.ai;
 
-import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.behaviors.ReachOrientation;
 import com.badlogic.gdx.ai.utils.ArithmeticUtils;

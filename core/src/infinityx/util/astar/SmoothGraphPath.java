@@ -19,7 +19,7 @@ public class SmoothGraphPath<N extends Node> extends DefaultGraphPath<N> impleme
     @Override
     public Vector2 getNodePosition(int index) {
         N node = nodes.get(index);
-        return tmpPosition.set(node.wx, node.wy);
+        return tmpPosition.set(node.position);
     }
 
     @Override

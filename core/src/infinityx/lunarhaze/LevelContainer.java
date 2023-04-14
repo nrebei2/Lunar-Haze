@@ -94,12 +94,12 @@ public class LevelContainer {
     private Board board;
 
     /**
-     *
+     * Path finding utility
      */
     public AStarPathFinding pathfinder;
 
     /**
-     * Keeps player centered
+     * View translation
      */
     private final Vector2 view = new Vector2();
 
@@ -159,8 +159,6 @@ public class LevelContainer {
      */
     private float[] battleAmbience;
 
-    private boolean scene;
-
     private int[] playerStartPos;
 
     /**
@@ -179,14 +177,6 @@ public class LevelContainer {
         Werewolf player = new Werewolf();
         player.initialize(directory, playerJson, this);
         setPlayer(player);
-
-        //create pathfinder
-        float playerSize = player.getBoundingRadius() * 2;
-        setPathFinder(
-                (int) (board.getWidth() * board.getTileWorldDim().x / playerSize),
-                (int) (board.getHeight() * board.getTileWorldDim().y / playerSize),
-                playerSize
-        );
 
         board = null;
         pathfinder = null;
@@ -408,36 +398,6 @@ public class LevelContainer {
     }
 
     /**
-     * Creates a tiled (grid) A* path finder.
-     * @param width number of grids horizontally
-     * @param height number of grids vertically
-     * @param gridSize width and height of each grid in world size
-     */
-    public void setPathFinder(int width, int height, float gridSize) {
-        AStarMap aStarMap = new AStarMap(width, height, gridSize);
-
-        QueryCallback queryCallback = new QueryCallback() {
-            @Override
-            public boolean reportFixture(Fixture fixture) {
-                scene = (fixture.getUserData() instanceof SceneObject);
-                return false; // stop finding other fixtures in the query area
-            }
-        };
-
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                scene = false;
-                world.QueryAABB(queryCallback, x * gridSize, y * gridSize, (x + 1) * gridSize, (y + 1) * gridSize);
-                if (scene) {
-                    aStarMap.getNodeAt(x, y).isObstacle = true;
-                }
-            }
-        }
-
-        pathfinder = new AStarPathFinding(aStarMap, world);
-    }
-
-    /**
      * @param obj Scene Object to add
      * @return scene object added
      */
@@ -567,6 +527,42 @@ public class LevelContainer {
         backing = drawables;
         drawables = tmp;
         backing.clear();
+    }
+
+    private boolean scene;
+
+    /**
+     * Creates a tiled (grid) A* path finder.
+     *
+     * @param gridSize width and height of each grid in world size
+     */
+    public void createPathFinder(float gridSize) {
+        // fill board space
+        int width = (int) (board.getWidth() * board.getTileWorldDim().x / gridSize);
+        int height = (int) (board.getHeight() * board.getTileWorldDim().y / gridSize);
+        AStarMap aStarMap = new AStarMap(width, height, gridSize);
+
+        QueryCallback queryCallback = new QueryCallback() {
+            @Override
+            public boolean reportFixture(Fixture fixture) {
+                scene = (fixture.getUserData() instanceof SceneObject);
+                return false; // stop finding other fixtures in the query area
+            }
+        };
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                scene = false;
+                world.QueryAABB(queryCallback, x * gridSize, y * gridSize, (x + 1) * gridSize, (y + 1) * gridSize);
+                if (scene) {
+                    aStarMap.getNodeAt(x, y).isObstacle = true;
+                }
+            }
+        }
+
+        System.out.println(aStarMap);
+
+        pathfinder = new AStarPathFinding(aStarMap, world);
     }
 }
 
