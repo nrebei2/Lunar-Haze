@@ -37,7 +37,9 @@ public abstract class SimpleObstacle extends Obstacle {
      */
     protected Body body;
 
-    /** Scale of the body */
+    /**
+     * Scale of the body
+     */
     protected float scale = 1;
 
     /// BodyDef Methods

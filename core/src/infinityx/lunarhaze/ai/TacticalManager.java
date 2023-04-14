@@ -16,7 +16,9 @@ import java.util.Random;
 public class TacticalManager implements Telegraph {
     private Werewolf target;
 
-    /** Set of alert enemy controllers */
+    /**
+     * Set of alert enemy controllers
+     */
     OrderedSet<EnemyController> enemies = new OrderedSet<>();
 
     public TacticalManager(LevelContainer container) {
@@ -29,14 +31,16 @@ public class TacticalManager implements Telegraph {
         sendFlankMessage();
     }
 
-    /** Send a flank message to all alert enemies */
+    /**
+     * Send a flank message to all alert enemies
+     */
     public void sendFlankMessage() {
         int i = 0;
         for (EnemyController control : enemies) {
             StateMachine<EnemyController, EnemyState> enemy = control.getStateMachine();
             if (!enemy.isInState(EnemyState.ALERT)) continue;
             Random rand = new Random();
-            if (rand.nextFloat()<=0.3) {
+            if (rand.nextFloat() <= 0.3) {
                 // Calculate angle step for evenly distributing the enemies around the target
                 float angleStep = 360.0f / enemies.size;
 
@@ -46,8 +50,7 @@ public class TacticalManager implements Telegraph {
                 // Calculate a flanking position relative to the target
                 Vector2 flankingPosition = target.getPosition().cpy().add(new Vector2(1, 0).rotateDeg(enemyAngle));
                 MessageManager.getInstance().dispatchMessage(null, enemy, FLANK, flankingPosition);
-            }
-            else {
+            } else {
                 MessageManager.getInstance().dispatchMessage(null, enemy, ATTACK);
             }
 

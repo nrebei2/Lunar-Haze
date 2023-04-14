@@ -29,7 +29,6 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.graphics.GameCanvas;
-import infinityx.lunarhaze.physics.BoxObstacle;
 import infinityx.lunarhaze.physics.MultiShapeObstacle;
 import infinityx.util.Drawable;
 import infinityx.util.FilmStrip;
@@ -78,10 +77,14 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
      */
     protected boolean destroyed;
 
-    /** Counter with texUpdate to update frame */
+    /**
+     * Counter with texUpdate to update frame
+     */
     private float texTime;
 
-    /** Time (in seconds) texture frame should change */
+    /**
+     * Time (in seconds) texture frame should change
+     */
     public float texUpdate;
 
     /**
@@ -217,7 +220,7 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
         this.texTime += delta;
         if (filmstrip != null) {
             if (texTime >= texUpdate) {
-                int next = (filmstrip.getFrame()+1) % filmstrip.getSize();
+                int next = (filmstrip.getFrame() + 1) % filmstrip.getSize();
                 filmstrip.setFrame(next);
                 texTime = 0;
             }

@@ -3,13 +3,16 @@ package infinityx.lunarhaze.graphics;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 
-/** Represents a uniform in a shader file */
+/**
+ * Represents a uniform in a shader file
+ */
 public class ShaderUniform {
     private final String name;
     private float[] values;
 
     /**
      * Creates a ShaderUniform that can be applied to a shader.
+     *
      * @param name of attribute. Must match name in shader.
      */
     public ShaderUniform(String name) {

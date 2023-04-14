@@ -13,8 +13,8 @@ public class AStarMap {
         map = new Node[height][width];
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                float wx = (float) ((x+0.5)*gridsize);
-                float wy = (float) ((y+0.5)*gridsize);
+                float wx = (float) ((x + 0.5) * gridsize);
+                float wy = (float) ((y + 0.5) * gridsize);
                 map[y][x] = new Node(this, x, y, wx, wy);
             }
         }

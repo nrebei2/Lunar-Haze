@@ -3,10 +3,8 @@ package infinityx.assets;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.ShaderProgramLoader;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
-import infinityx.util.FilmStrip;
 
 /**
  * This class parses a JSON entry into a {@link ShaderProgram}.
@@ -26,7 +24,7 @@ public class ShaderParser implements AssetParser<ShaderProgram> {
 
     @Override
     public Class<ShaderProgram> getType() {
-       return ShaderProgram.class;
+        return ShaderProgram.class;
     }
 
     @Override
@@ -37,7 +35,7 @@ public class ShaderParser implements AssetParser<ShaderProgram> {
 
     @Override
     public boolean hasNext() {
-       return root != null;
+        return root != null;
     }
 
     @Override

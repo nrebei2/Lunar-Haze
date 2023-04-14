@@ -13,6 +13,7 @@ import infinityx.util.Drawable;
 public class SceneObject extends GameObject implements Drawable {
 
     private String type;
+
     /**
      * Initialize a scene object.
      */
@@ -50,5 +51,7 @@ public class SceneObject extends GameObject implements Drawable {
         return ObjectType.SCENE;
     }
 
-    public String getSceneObjectType() { return type; }
+    public String getSceneObjectType() {
+        return type;
+    }
 }

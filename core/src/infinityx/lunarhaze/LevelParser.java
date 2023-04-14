@@ -119,11 +119,11 @@ public class LevelParser {
             }
         }
         /**Currently hard coded, need to add way to acess collider size*/
-        float playerSize =  0.5f;
+        float playerSize = 0.5f;
 
         levelContainer.setGridSize(playerSize);
         //create path finder
-        levelContainer.setPathFinder((int) (board.getWidth()/ playerSize), (int) (board.getHeight()/playerSize), playerSize);
+        levelContainer.setPathFinder((int) (board.getWidth() / playerSize), (int) (board.getHeight() / playerSize), playerSize);
 
         // Generate enemies
         JsonValue enemies = scene.get("enemies");

@@ -22,17 +22,14 @@ package infinityx.lunarhaze;
  * Updated asset version, 2/6/2021
  */
 
-import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
-import com.badlogic.gdx.math.Vector2;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.util.ScreenObservable;
@@ -347,26 +344,26 @@ public class LoadingMode extends ScreenObservable implements Screen {
 
         TextureRegion currentFrame = moonAnimation.getKeyFrame(stateTime, true);
 //        canvas.draw(currentFrame, centerX-100, 0.3f*centerY);
-        canvas.draw(currentFrame, Color.WHITE, currentFrame.getRegionWidth()/2,
-                currentFrame.getRegionY()/2, centerX, 0.5f*centerY, 0f, 0.1f, 0.1f);
+        canvas.draw(currentFrame, Color.WHITE, currentFrame.getRegionWidth() / 2,
+                currentFrame.getRegionY() / 2, centerX, 0.5f * centerY, 0f, 0.1f, 0.1f);
 
         canvas.end();
     }
 
-    private void drawBackground(GameCanvas canvas){
+    private void drawBackground(GameCanvas canvas) {
         canvas.drawOverlay(background, alphaTint, true);
-        canvas.draw(title, alphaTint, title.getWidth() / 2,title.getHeight()/2,canvas.getWidth()/2,canvas.getHeight()/2,0,0.2f,0.2f);
+        canvas.draw(title, alphaTint, title.getWidth() / 2, title.getHeight() / 2, canvas.getWidth() / 2, canvas.getHeight() / 2, 0, 0.2f, 0.2f);
         canvas.draw(
                 studios, alphaTint,
-                studios.getWidth() / 2,studios.getHeight()/2,
-                canvas.getWidth()/2,canvas.getHeight()/2 - 230,
-                0,0.2f,0.2f
+                studios.getWidth() / 2, studios.getHeight() / 2,
+                canvas.getWidth() / 2, canvas.getHeight() / 2 - 230,
+                0, 0.2f, 0.2f
         );
         canvas.draw(
                 loading, alphaTint,
-                loading.getWidth() / 2,loading.getHeight()/2,
-                canvas.getWidth()/2,canvas.getHeight()/2 - 380,
-                0,0.3f,0.3f
+                loading.getWidth() / 2, loading.getHeight() / 2,
+                canvas.getWidth() / 2, canvas.getHeight() / 2 - 380,
+                0, 0.3f, 0.3f
         );
     }
 

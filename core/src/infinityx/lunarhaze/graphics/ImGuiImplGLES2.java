@@ -24,8 +24,8 @@ import java.util.regex.Pattern;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL14.*;
 import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL30.*;
-import static org.lwjgl.opengl.GL32.glDrawElementsBaseVertex;
+import static org.lwjgl.opengl.GL30.GL_MAJOR_VERSION;
+import static org.lwjgl.opengl.GL30.GL_MINOR_VERSION;
 
 /**
  * This class is just a simple rewrite of {@link ImGuiImplGl3} to work with GL ES 2.0.
@@ -60,10 +60,14 @@ public class ImGuiImplGLES2 {
     private boolean lastEnableScissorTest = false;
 
 
-    /** Shader to render ImGui output  */
+    /**
+     * Shader to render ImGui output
+     */
     private ShaderProgram program;
 
-    /** Mesh holding ImGui vertex and index buffer dump */
+    /**
+     * Mesh holding ImGui vertex and index buffer dump
+     */
     private Mesh mesh;
 
     /**
@@ -333,11 +337,16 @@ public class ImGuiImplGLES2 {
         glBlendEquationSeparate(lastBlendEquationRgb[0], lastBlendEquationAlpha[0]);
         glBlendFuncSeparate(lastBlendSrcRgb[0], lastBlendDstRgb[0], lastBlendSrcAlpha[0], lastBlendDstAlpha[0]);
         // @formatter:off CHECKSTYLE:OFF
-        if (lastEnableBlend) glEnable(GL_BLEND); else glDisable(GL_BLEND);
-        if (lastEnableCullFace) glEnable(GL_CULL_FACE); else glDisable(GL_CULL_FACE);
-        if (lastEnableDepthTest) glEnable(GL_DEPTH_TEST); else glDisable(GL_DEPTH_TEST);
-        if (lastEnableStencilTest) glEnable(GL_STENCIL_TEST); else glDisable(GL_STENCIL_TEST);
-        if (lastEnableScissorTest) glEnable(GL_SCISSOR_TEST); else glDisable(GL_SCISSOR_TEST);
+        if (lastEnableBlend) glEnable(GL_BLEND);
+        else glDisable(GL_BLEND);
+        if (lastEnableCullFace) glEnable(GL_CULL_FACE);
+        else glDisable(GL_CULL_FACE);
+        if (lastEnableDepthTest) glEnable(GL_DEPTH_TEST);
+        else glDisable(GL_DEPTH_TEST);
+        if (lastEnableStencilTest) glEnable(GL_STENCIL_TEST);
+        else glDisable(GL_STENCIL_TEST);
+        if (lastEnableScissorTest) glEnable(GL_SCISSOR_TEST);
+        else glDisable(GL_SCISSOR_TEST);
         // @formatter:on CHECKSTYLE:ON
         glViewport(lastViewport[0], lastViewport[1], lastViewport[2], lastViewport[3]);
         glScissor(lastScissorBox[0], lastScissorBox[1], lastScissorBox[2], lastScissorBox[3]);

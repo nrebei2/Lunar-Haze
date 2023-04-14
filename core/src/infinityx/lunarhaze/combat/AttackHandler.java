@@ -2,27 +2,34 @@ package infinityx.lunarhaze.combat;
 
 import com.badlogic.gdx.math.Vector2;
 
-/** Base model class for all attack/combat systems.
+/**
+ * Base model class for all attack/combat systems.
  */
 public abstract class AttackHandler {
 
-    /** Cooldown between attacks */
+    /**
+     * Cooldown between attacks
+     */
     protected float attackCooldown;
 
-    /** Attack direction as vector */
+    /**
+     * Attack direction as vector
+     */
     protected Vector2 attackDirection;
 
     /**
-    * Counter for attacking (used to determine when to set attacking to false)
-    */
+     * Counter for attacking (used to determine when to set attacking to false)
+     */
     protected float attackCounter;
 
     /**
-    * Length of an attack
-    */
+     * Length of an attack
+     */
     protected float attackLength;
 
-    /** Counter for attack cooldowns*/
+    /**
+     * Counter for attack cooldowns
+     */
     protected float attackCooldownCounter;
 
     protected AttackHandler(float attackCooldown, float attackLength) {
@@ -33,29 +40,37 @@ public abstract class AttackHandler {
         this.attackLength = attackLength;
     }
 
-    /** Processes an attack, called every frame while attacking.
-     *  This implementation just calls endAttack() when the attack
-     *  should end. */
+    /**
+     * Processes an attack, called every frame while attacking.
+     * This implementation just calls endAttack() when the attack
+     * should end.
+     */
     protected void processAttack(float delta) {
         attackCounter += delta;
         if (attackCounter >= attackLength) {
-           endAttack();
+            endAttack();
         }
     }
 
-    /** Called when an attack ends */
+    /**
+     * Called when an attack ends
+     */
     protected void endAttack() {
-         attackCounter = 0f;
+        attackCounter = 0f;
     }
 
-    /** @return if a new attack can be started */
+    /**
+     * @return if a new attack can be started
+     */
     protected boolean canStartNewAttack() {
         return attackCooldownCounter >= attackCooldown;
     }
 
-    /** Initiates an attack */
+    /**
+     * Initiates an attack
+     */
     protected void initiateAttack() {
-         attackCooldownCounter = 0f;
+        attackCooldownCounter = 0f;
     }
 
 }

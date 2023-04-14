@@ -3,13 +3,9 @@ package infinityx.lunarhaze;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import imgui.ImGui;
-import imgui.ImGuiIO;
-import imgui.gl3.ImGuiImplGl3;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.util.ScreenObserver;
-import imgui.glfw.ImGuiImplGlfw;
 
 
 /**
@@ -185,13 +181,13 @@ public class GDXRoot extends Game implements ScreenObserver {
                     Gdx.app.exit();
                     break;
             }
-        }else if (screen == setting){
-            switch(exitCode){
+        } else if (screen == setting) {
+            switch (exitCode) {
                 case SettingMode.GO_MENU:
                     setScreen(menu);
                     break;
             }
-        }else if(screen == aboutUs){
+        } else if (screen == aboutUs) {
             switch (exitCode) {
                 case AboutUsMode.GO_MENU:
                     setScreen(menu);
@@ -219,7 +215,7 @@ public class GDXRoot extends Game implements ScreenObserver {
         } else if (screen == editor) {
             if (exitCode == EditorMode.GO_MENU) {
                 setScreen(menu);
-            } else if(exitCode == EditorMode.GO_PLAY) {
+            } else if (exitCode == EditorMode.GO_PLAY) {
 
             }
         } else {

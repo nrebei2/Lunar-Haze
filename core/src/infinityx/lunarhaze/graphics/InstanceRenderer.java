@@ -50,7 +50,7 @@ public class InstanceRenderer implements Renderer {
      * The supplied shader is {@link SpriteBatch#createDefaultShader()}.
      */
     public InstanceRenderer() {
-       this(SpriteBatch.createDefaultShader());
+        this(SpriteBatch.createDefaultShader());
     }
 
     /**

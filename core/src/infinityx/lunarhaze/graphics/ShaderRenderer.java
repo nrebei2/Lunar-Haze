@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
 
@@ -77,24 +76,24 @@ public class ShaderRenderer implements Renderer {
      * The position of the bottom-left corner is set to (x,y).
      * uv coordinates span from (0, 0) on the bottom-left to (1, 1) on the top right of the quad mesh.
      *
-     * @param x x-position
-     * @param y y-position
+     * @param x      x-position
+     * @param y      y-position
      * @param height height of quad
      * @param width  width of quad
      */
     public void draw(float x, float y, float height, float width) {
-         vertices[0] = x;
-         vertices[1] = y;
-         vertices[4] = x + width;
-         vertices[5] = y;
-         vertices[8] = x;
-         vertices[9] = y + width;
-         vertices[12] = x + width;
-         vertices[13] = y;
-         vertices[16] = x + width;
-         vertices[17] = y + height;
-         vertices[20] = x;
-         vertices[21] = y + height;
+        vertices[0] = x;
+        vertices[1] = y;
+        vertices[4] = x + width;
+        vertices[5] = y;
+        vertices[8] = x;
+        vertices[9] = y + width;
+        vertices[12] = x + width;
+        vertices[13] = y;
+        vertices[16] = x + width;
+        vertices[17] = y + height;
+        vertices[20] = x;
+        vertices[21] = y + height;
 
         mesh.setVertices(vertices);
     }

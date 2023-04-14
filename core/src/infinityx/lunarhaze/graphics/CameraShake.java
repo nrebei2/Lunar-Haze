@@ -1,14 +1,13 @@
 package infinityx.lunarhaze.graphics;
 
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 
-/** Static utility class for shaking the camera.
- *  When updated, generates a random offset to move the camera by.
- *  The offset is then applied to the camera in the LevelContainer.
- *  The 'shake()' method is called when a player attack makes
- *  contact with an enemy.
+/**
+ * Static utility class for shaking the camera.
+ * When updated, generates a random offset to move the camera by.
+ * The offset is then applied to the camera in the LevelContainer.
+ * The 'shake()' method is called when a player attack makes
+ * contact with an enemy.
  */
 public class CameraShake {
 

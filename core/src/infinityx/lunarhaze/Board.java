@@ -648,15 +648,15 @@ public class Board {
     }
 
     public int getTileNum(int x, int y) {
-        if(getTile(x,y) == null) return 1;
+        if (getTile(x, y) == null) return 1;
         return getTile(x, y).tileNum();
     }
 
     public ArrayList<Integer[]> getMoonlightTiles() {
         ArrayList<Integer[]> lst = new ArrayList<>();
-        for(int x = 0; x < height; x++) {
-            for(int y = 0; y < width; y++) {
-                if(isLit(x, y)) lst.add(new Integer[]{x, y});
+        for (int x = 0; x < height; x++) {
+            for (int y = 0; y < width; y++) {
+                if (isLit(x, y)) lst.add(new Integer[]{x, y});
             }
         }
         return lst;

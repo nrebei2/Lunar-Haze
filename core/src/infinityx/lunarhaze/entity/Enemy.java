@@ -29,7 +29,9 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
          * The enemy has noticed sometime amiss (Question mark?)
          */
         NOTICED,
-        /** The enemy indicator is increasing */
+        /**
+         * The enemy indicator is increasing
+         */
         INDICATOR,
         /**
          * Neither heard nor seen anything
@@ -37,10 +39,14 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
         NONE
     }
 
-    /** The current detection level */
+    /**
+     * The current detection level
+     */
     private Detection detection;
 
-    /** How much the indicator has been filled */
+    /**
+     * How much the indicator has been filled
+     */
     float indicatorAmount;
 
     /**
@@ -81,7 +87,6 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
     public ConeSource getFlashlight() {
         return flashlight;
     }
-
 
 
     /**

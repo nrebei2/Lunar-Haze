@@ -1,6 +1,5 @@
 package infinityx.lunarhaze;
 
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -42,11 +41,11 @@ public class CollisionController implements ContactListener {
             Werewolf player = (Werewolf) obj2;
             Enemy enemy = (Enemy) obj1;
             resolveEnemyAttack(player, enemy, enemy.getAttackDamage(), enemy.getAttackKnockback());
-        } else if(obj1.getType() == GameObject.ObjectType.HITBOX && obj2.getType() == GameObject.ObjectType.ENEMY) {
+        } else if (obj1.getType() == GameObject.ObjectType.HITBOX && obj2.getType() == GameObject.ObjectType.ENEMY) {
             AttackHitbox hitbox = (AttackHitbox) body1.getUserData();
             Enemy enemy = (Enemy) body2.getUserData();
             resolvePlayerAttack(hitbox, enemy);
-        } else if(obj1.getType() == GameObject.ObjectType.ENEMY && obj2.getType() == GameObject.ObjectType.HITBOX) {
+        } else if (obj1.getType() == GameObject.ObjectType.ENEMY && obj2.getType() == GameObject.ObjectType.HITBOX) {
             AttackHitbox hitbox = (AttackHitbox) body2.getUserData();
             Enemy enemy = (Enemy) body1.getUserData();
             resolvePlayerAttack(hitbox, enemy);

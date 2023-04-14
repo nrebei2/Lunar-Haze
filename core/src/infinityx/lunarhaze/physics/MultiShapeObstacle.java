@@ -6,7 +6,6 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.Shape;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 
 /**
@@ -15,22 +14,32 @@ import com.badlogic.gdx.utils.ObjectMap;
  */
 public class MultiShapeObstacle extends SimpleObstacle {
 
-    /** Holds information regarding a shape on this object */
+    /**
+     * Holds information regarding a shape on this object
+     */
     public static class ShapeCache {
-        /** Attached fixture, may be null if activatePhysics has not been called yet */
+        /**
+         * Attached fixture, may be null if activatePhysics has not been called yet
+         */
         public Fixture fixture;
 
-        /** Actual shape */
+        /**
+         * Actual shape
+         */
         public Shape shape;
 
-        /** Width of square if shape is a box, diameter if shape is a circle */
+        /**
+         * Width of square if shape is a box, diameter if shape is a circle
+         */
         public float width;
         public float height;
         public Vector2 offset;
         public float angle;
     }
 
-    /** Maps names of shapes to information regarding it */
+    /**
+     * Maps names of shapes to information regarding it
+     */
     private ObjectMap<String, ShapeCache> geometries;
 
 
@@ -47,6 +56,7 @@ public class MultiShapeObstacle extends SimpleObstacle {
 
     /**
      * Return may be null if there is no shape with the given name.
+     *
      * @return ShapeCache object holding some information regarding the shape
      */
     protected ShapeCache getShapeInformation(String name) {
@@ -56,7 +66,7 @@ public class MultiShapeObstacle extends SimpleObstacle {
     @Override
     public void setScale(float s) {
         super.setScale(s);
-        for (ObjectMap.Entry<String, ShapeCache> entry: geometries) {
+        for (ObjectMap.Entry<String, ShapeCache> entry : geometries) {
             ShapeCache cache = entry.value;
             switch (cache.shape.getType()) {
                 case Polygon:
@@ -71,7 +81,9 @@ public class MultiShapeObstacle extends SimpleObstacle {
         }
     }
 
-    /** Add an oriented box shape to this object */
+    /**
+     * Add an oriented box shape to this object
+     */
     protected void addBox(String name, float width, float height, Vector2 offset, float angle) {
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(width / 2, height / 2, offset, angle);
@@ -132,7 +144,9 @@ public class MultiShapeObstacle extends SimpleObstacle {
         addBox(name, width, height, offset, angle);
     }
 
-    /** Add a circle shape to this object */
+    /**
+     * Add a circle shape to this object
+     */
     protected void addCircle(String name, float radius, Vector2 offset) {
         CircleShape shape = new CircleShape();
         shape.setRadius(radius);
@@ -140,7 +154,7 @@ public class MultiShapeObstacle extends SimpleObstacle {
 
         ShapeCache cache = new ShapeCache();
         cache.shape = shape;
-        cache.width = radius*2;
+        cache.width = radius * 2;
         cache.offset = offset;
 
         createFixture(name, cache);
@@ -192,7 +206,7 @@ public class MultiShapeObstacle extends SimpleObstacle {
     protected void createFixtures() {
         releaseFixtures();
 
-        for (ObjectMap.Entry<String, ShapeCache> entry: geometries) {
+        for (ObjectMap.Entry<String, ShapeCache> entry : geometries) {
             createFixture(entry.key, entry.value);
         }
     }
@@ -208,7 +222,7 @@ public class MultiShapeObstacle extends SimpleObstacle {
     }
 
     protected void releaseFixtures() {
-        for (String name: geometries.keys()) {
+        for (String name : geometries.keys()) {
             releaseFixture(name);
         }
     }

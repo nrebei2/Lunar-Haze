@@ -1,12 +1,8 @@
 package infinityx.lunarhaze;
 
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.fsm.StateMachine;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.GameplayController.Phase;
 import infinityx.lunarhaze.combat.PlayerAttackHandler;
 import infinityx.lunarhaze.entity.Werewolf;
@@ -44,12 +40,12 @@ public class PlayerController {
     public static final int ADD_HP_AMOUNT = 1;
 
     /**
-     *  Attack power increase for each moonlight allocated during phase ALLOCATE
+     * Attack power increase for each moonlight allocated during phase ALLOCATE
      */
     public static final float ADD_ATTACK_AMOUNT = 0.1f;
 
     /**
-     *  Attack range percentage increase for each moonlight allocated during phase ALLOCATE
+     * Attack range percentage increase for each moonlight allocated during phase ALLOCATE
      */
     public static final float ADD_RANGE_AMOUNT = 0.1f;
 
@@ -73,7 +69,9 @@ public class PlayerController {
      */
     private LevelContainer levelContainer;
 
-    /**If the player is collecting moonlight then true, false otherwise */
+    /**
+     * If the player is collecting moonlight then true, false otherwise
+     */
     private boolean collectingMoonlight;
 
     /**
@@ -101,8 +99,8 @@ public class PlayerController {
 
     private GameplayController.Phase phase;
 
-    public float getTimeOnMoonlightPercentage(){
-        return timeOnMoonlight/MOONLIGHT_COLLECT_TIME;
+    public float getTimeOnMoonlightPercentage() {
+        return timeOnMoonlight / MOONLIGHT_COLLECT_TIME;
     }
 
     public InputController getInputController() {
@@ -121,7 +119,7 @@ public class PlayerController {
         return player;
     }
 
-    public boolean isOnMoonlight(){
+    public boolean isOnMoonlight() {
         return player.isOnMoonlight();
     }
 
@@ -129,21 +127,22 @@ public class PlayerController {
         return stateMachine;
     }
 
-    public LightingController getLightingController(){
+    public LightingController getLightingController() {
         return lightingController;
     }
 
-    public boolean isAttacking(){
+    public boolean isAttacking() {
         return player.isAttacking();
     }
 
-    public Sound getAttackSound () {
+    public Sound getAttackSound() {
         return attack_sound;
     }
 
-    public Sound getCollectSound () {
+    public Sound getCollectSound() {
         return collect_sound;
     }
+
     /**
      * Initializer of a PlayerController
      */
@@ -207,7 +206,7 @@ public class PlayerController {
                 board.setCollected(px, py);
                 lightingController.removeDust(px, py);
             }
-            if(!board.isCollectable(px, py)){
+            if (!board.isCollectable(px, py)) {
                 collectingMoonlight = false;
             }
         } else {
@@ -220,7 +219,6 @@ public class PlayerController {
     /**
      * Process the player's stealth value. This depends on the walk/run mode.
      * <p>
-     *
      */
     public void resolveStealthBar() {
         if (Math.abs(inputController.getHorizontal()) == inputController.getWalkSpeed() ||
@@ -242,14 +240,14 @@ public class PlayerController {
      * Whether the player is currently collecting moonlight
      * (Need to stand on a moonlight tile and in IDLE state)
      */
-    public boolean isCollectingMoonlight(){
+    public boolean isCollectingMoonlight() {
         return collectingMoonlight;
     }
 
     /**
      * Player allocates one moonlight to increase hp by ADD_HP_AMOUNT
      */
-    public void allocateHp(){
+    public void allocateHp() {
         player.reduceMoonlightCollected();
         player.setHp(player.getHp() + ADD_HP_AMOUNT);
     }
@@ -257,7 +255,7 @@ public class PlayerController {
     /**
      * Player allocates one moonlight to increase attack power by ADD_ATTACK_AMOUNT
      */
-    public void allocateAttackPow(){
+    public void allocateAttackPow() {
         player.reduceMoonlightCollected();
         player.setAttackPower(player.getAttackPower() + ADD_ATTACK_AMOUNT);
     }
@@ -265,7 +263,7 @@ public class PlayerController {
     /**
      * Player allocates one moonlight to multiply attack range by (1 + ADD_RANGE_AMOUNT)
      */
-    public void allocateAttackRange(){
+    public void allocateAttackRange() {
         player.reduceMoonlightCollected();
         player.setAttackRange(player.getAttackRange() + ADD_RANGE_AMOUNT);
     }
@@ -273,14 +271,14 @@ public class PlayerController {
     /**
      * Returns if player finished allocating the attibutes
      */
-    public boolean getAllocateReady(){
+    public boolean getAllocateReady() {
         return allocateReady;
     }
 
     /**
      * Sets whether player finished allocating the attibutes
      */
-    public void setAllocateReady(boolean b){
+    public void setAllocateReady(boolean b) {
         allocateReady = b;
     }
 

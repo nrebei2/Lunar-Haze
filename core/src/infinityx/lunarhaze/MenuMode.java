@@ -175,6 +175,7 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
     public boolean isAboutUsReady() {
         return pressAboutUsState == 2;
     }
+
     /**
      * Returns true if all assets are loaded and the player is ready to quit game.
      *
@@ -248,8 +249,8 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
         Color alphaTint = Color.WHITE;
         canvas.drawOverlay(background, alphaTint, true);
 //        canvas.draw(background, 0, 0);
-        Color colorplay = new Color(142.0f/255.0f, 157.0f/255.0f, 189.0f/255.0f, 1.0f);
-        Color colorother = new Color(89.0f/255.0f, 18.0f/255.0f, 13.0f/255.0f, 1.0f);
+        Color colorplay = new Color(142.0f / 255.0f, 157.0f / 255.0f, 189.0f / 255.0f, 1.0f);
+        Color colorother = new Color(89.0f / 255.0f, 18.0f / 255.0f, 13.0f / 255.0f, 1.0f);
         Color tintPlay = (pressPlayState == 1 ? colorplay : Color.WHITE);
         canvas.draw(playButton, tintPlay, playButton.getWidth() / 2, playButton.getHeight() / 2,
                 centerX, centerY, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
@@ -329,9 +330,9 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
         centerYAboutUs = (int) (ABOUT_US_HEIGHT_RATIO * height);
         centerYExit = (int) (EXIT_HEIGHT_RATIO * height);
         centerX = width / 2;
-        centerXSetting = width/32*21;
-        centerXAboutUs = width/32*24;
-        centerXExit = width/32*27;
+        centerXSetting = width / 32 * 21;
+        centerXAboutUs = width / 32 * 24;
+        centerXExit = width / 32 * 27;
         heightY = height;
     }
 

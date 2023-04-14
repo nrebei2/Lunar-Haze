@@ -148,9 +148,13 @@ public class Tile {
         return TileTexture;
     }
 
-    public int tileNum() { return tileNum; }
+    public int tileNum() {
+        return tileNum;
+    }
 
-    public void setTileNum(int num) { tileNum = num; }
+    public void setTileNum(int num) {
+        tileNum = num;
+    }
 
     public void setTileTexture(Texture tex) {
         this.TileTexture = tex;

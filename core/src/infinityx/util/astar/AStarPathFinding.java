@@ -9,20 +9,25 @@ import com.badlogic.gdx.ai.utils.RaycastCollisionDetector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
-import infinityx.lunarhaze.physics.Box2DRaycastCollision;
-
-import java.util.Iterator;
 
 public class AStarPathFinding {
-    /**Map containing all the nodes in our level*/
+    /**
+     * Map containing all the nodes in our level
+     */
     public final AStarMap map;
 
-    /**Libgdx's pathfinder*/
+    /**
+     * Libgdx's pathfinder
+     */
     private final PathFinder<Node> pathfinder;
 
-    /**Heuristic function used in A* algorithm*/
+    /**
+     * Heuristic function used in A* algorithm
+     */
     private final Heuristic<Node> heuristic;
-    /**Graph of nodes and edges. Used for A* pathfinding*/
+    /**
+     * Graph of nodes and edges. Used for A* pathfinding
+     */
     private final SmoothableGraphPath<Node, Vector2> connectionPath;
 
     public AStarPathFinding(AStarMap map) {
@@ -31,13 +36,16 @@ public class AStarPathFinding {
         this.connectionPath = new SmoothGraphPath();
         this.heuristic = new Heuristic<Node>() {
             @Override
-            public float estimate (Node node, Node endNode) {
+            public float estimate(Node node, Node endNode) {
                 // Manhattan distance
                 return Math.abs(endNode.x - node.x) + Math.abs(endNode.y - node.y);
             }
         };
     }
-    /**Finds the next node to move to, given a source and target*/
+
+    /**
+     * Finds the next node to move to, given a source and target
+     */
     public Path findPath(Vector2 source, Vector2 target, RaycastCollisionDetector ray) {
         int sourceX = MathUtils.floor(source.x);
         int sourceY = MathUtils.floor(source.y);
@@ -53,7 +61,6 @@ public class AStarPathFinding {
         }
 
 
-
         Node sourceNode = map.getNodeAt(sourceX, sourceY);
         Node targetNode = map.getNodeAt(targetX, targetY);
 
@@ -66,7 +73,7 @@ public class AStarPathFinding {
         //int removed = smoother.smoothPath(connectionPath);
         //System.out.println("removed " + removed);
 
-        if (connectionPath.getCount() < 2){
+        if (connectionPath.getCount() < 2) {
             return null;
         }
 
@@ -87,7 +94,7 @@ public class AStarPathFinding {
 
     }
 
-    private static final int[][] NEIGHBORHOOD = new int[][] {
+    private static final int[][] NEIGHBORHOOD = new int[][]{
             new int[]{-1, 0},
             new int[]{0, -1},
             new int[]{0, 1},
@@ -99,7 +106,7 @@ public class AStarPathFinding {
 
     };
 
-    public static AStarGraph createGraph (AStarMap map) {
+    public static AStarGraph createGraph(AStarMap map) {
         final int height = map.getHeight();
         final int width = map.getWidth();
         AStarGraph graph = new AStarGraph(map);

@@ -20,7 +20,10 @@ package infinityx.lunarhaze.graphics;
 
 import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
@@ -29,14 +32,9 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.utils.Array;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.Werewolf;
-
-import java.nio.FloatBuffer;
 
 /**
  * Primary view class for the game, abstracting the basic graphics calls.
@@ -67,7 +65,9 @@ public class GameCanvas {
          * We are drawing a shader
          */
         SHADER,
-        /** We are drawing Box2D lights */
+        /**
+         * We are drawing Box2D lights
+         */
         LIGHT
     }
 
@@ -245,7 +245,9 @@ public class GameCanvas {
         this.layout = new GlyphLayout();
     }
 
-    /** Set up the cameras on the canvas */
+    /**
+     * Set up the cameras on the canvas
+     */
     private void setupCameras() {
         // Set the projection matrix (for proper scaling)
         camera = new OrthographicCamera(getWidth(), getHeight());
@@ -480,15 +482,15 @@ public class GameCanvas {
 
     /**
      * Start a standard drawing sequence the given pass.if(CameraShake.timeLeft() > 0) {
-            CameraShake.update(Gdx.graphics.getDeltaTime());
-            levelContainer.translateView(CameraShake.getShakeOffset().x, CameraShake.getShakeOffset().y);
-        }
+     * CameraShake.update(Gdx.graphics.getDeltaTime());
+     * levelContainer.translateView(CameraShake.getShakeOffset().x, CameraShake.getShakeOffset().y);
+     * }
      * <p>
      * Nothing is flushed to the graphics card until the method end() is called.
      *
      * @param pass What pass you would like to draw in
-     * @param tx the amount to translate on the x-axis
-     * @param ty the amount to translate on the y-axis
+     * @param tx   the amount to translate on the x-axis
+     * @param ty   the amount to translate on the y-axis
      */
     public void begin(DrawPass pass, float tx, float ty) {
         if (pass == DrawPass.INACTIVE) {
@@ -762,24 +764,24 @@ public class GameCanvas {
     }
 
 
-        /**
-         * Draws the tinted texture at the given position.
-         * <p>
-         * The texture colors will be multiplied by the given color.  This will turn
-         * any white into the given color.  Other colors will be similarly affected.
-         * <p>
-         * Unless otherwise transformed by the global transform (@see begin(Affine2)),
-         * the texture will be unscaled.  The bottom left of the texture will be positioned
-         * at the given coordinates.
-         * region
-         *
-         * @param region The texture to draw
-         * @param tint   The color tint
-         * @param x      The x-coordinate of the bottom left corner
-         * @param y      The y-coordinate of the bottom left corner
-         * @param width  The texture width
-         * @param height The texture height
-         */
+    /**
+     * Draws the tinted texture at the given position.
+     * <p>
+     * The texture colors will be multiplied by the given color.  This will turn
+     * any white into the given color.  Other colors will be similarly affected.
+     * <p>
+     * Unless otherwise transformed by the global transform (@see begin(Affine2)),
+     * the texture will be unscaled.  The bottom left of the texture will be positioned
+     * at the given coordinates.
+     * region
+     *
+     * @param region The texture to draw
+     * @param tint   The color tint
+     * @param x      The x-coordinate of the bottom left corner
+     * @param y      The y-coordinate of the bottom left corner
+     * @param width  The texture width
+     * @param height The texture height
+     */
     public void draw(TextureRegion region, Color tint, float x, float y, float width, float height) {
         if (active != DrawPass.SPRITE) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SPRITE", new IllegalStateException());
@@ -834,6 +836,7 @@ public class GameCanvas {
 
     /**
      * Update and render lights
+     *
      * @param handler holding lights
      */
     public void drawLights(RayHandler handler) {
@@ -1011,25 +1014,27 @@ public class GameCanvas {
         shapeRenderer.end();
     }
 
-    /** Flashes the screen. Normally this draws transparent (alpha = 0) rect, but when screen flashes, draws another
-     *  colr based on the flash.
+    /**
+     * Flashes the screen. Normally this draws transparent (alpha = 0) rect, but when screen flashes, draws another
+     * colr based on the flash.
      */
-    public void drawScreenFlash(Werewolf player){
+    public void drawScreenFlash(Werewolf player) {
         Color flashColor = ScreenFlash.getFlashColor();
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(flashColor);
 
-        float x = WorldToScreenX(player.getPosition().x) - Gdx.graphics.getWidth()/2.0f;
-        float y = WorldToScreenY(player.getPosition().y) - Gdx.graphics.getHeight()/2.0f;
+        float x = WorldToScreenX(player.getPosition().x) - Gdx.graphics.getWidth() / 2.0f;
+        float y = WorldToScreenY(player.getPosition().y) - Gdx.graphics.getHeight() / 2.0f;
         shapeRenderer.rect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         shapeRenderer.end();
     }
 
     /**
      * Draws a shader instanced on quads with given width and height.
-     * @param shader Sets the shader which will draw
-     * @param width width of quad
-     * @param height height of quad
+     *
+     * @param shader   Sets the shader which will draw
+     * @param width    width of quad
+     * @param height   height of quad
      * @param uniforms uniforms for which will be passed in to shader
      */
     public void drawShader(ShaderProgram shader, float x, float y, float width, float height, ShaderUniform... uniforms) {
@@ -1041,7 +1046,7 @@ public class GameCanvas {
         shaderRenderer.setShader(shader);
         shaderRenderer.draw(x, y, width, height);
         shaderRenderer.begin();
-        for (ShaderUniform uniform: uniforms) {
+        for (ShaderUniform uniform : uniforms) {
             uniform.apply(shaderRenderer.getShader());
         }
         shaderRenderer.end();
