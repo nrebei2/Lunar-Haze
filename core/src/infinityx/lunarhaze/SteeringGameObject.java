@@ -122,14 +122,6 @@ public abstract class SteeringGameObject extends GameObject implements Steerable
     }
 
     /**
-     * Returns the bounding radius of this Steerable.
-     */
-    @Override
-    public float getBoundingRadius() {
-        return getShapeInformation("body").width / 2;
-    }
-
-    /**
      * Returns {@code true} if this Steerable is tagged; {@code false} otherwise.
      */
     @Override

@@ -1,7 +1,9 @@
 package infinityx.util.astar;
 
+/** Tiled map */
 public class AStarMap {
     private Node[][] map;
+
 
     private final int width;
     private final int height;

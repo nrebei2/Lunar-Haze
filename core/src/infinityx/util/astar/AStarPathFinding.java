@@ -9,6 +9,7 @@ import com.badlogic.gdx.ai.utils.RaycastCollisionDetector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import infinityx.lunarhaze.LevelContainer;
 
 public class AStarPathFinding {
     /**
@@ -43,8 +44,14 @@ public class AStarPathFinding {
         };
     }
 
+    public Vector2 worldToGrid(Vector2 world) {
+        return new Vector2(world.x / LevelContainer.gridSize, world.y / LevelContainer.gridSize);
+    }
+
     /**
-     * Finds the next node to move to, given a source and target
+     * @param source world position of source
+     * @param target world position of target
+     * @return Path from source to target using A*
      */
     public Path findPath(Vector2 source, Vector2 target, RaycastCollisionDetector ray) {
         int sourceX = MathUtils.floor(source.x);
@@ -133,6 +140,7 @@ public class AStarPathFinding {
         }
         return graph;
     }
+
 
     public static class AStarGraph implements IndexedGraph<Node> {
 

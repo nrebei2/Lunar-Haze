@@ -9,7 +9,7 @@ public class Node {
     public final int y;
 
     /**
-     * Is this node an obstable
+     * Whether there is an obstacle on this node
      */
     public boolean isObstacle;
     /**

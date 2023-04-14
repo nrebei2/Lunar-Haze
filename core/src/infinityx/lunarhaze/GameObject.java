@@ -154,6 +154,13 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
         }
     }
 
+    /**
+     * Returns the bounding radius of this object. Assumes the name of the collider is "body".
+     */
+    public float getBoundingRadius() {
+        return getShapeInformation("body").width / 2;
+    }
+
     @Override
     public void setDestroyed() {
         this.destroyed = true;

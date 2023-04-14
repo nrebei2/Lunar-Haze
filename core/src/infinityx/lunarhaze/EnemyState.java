@@ -321,10 +321,6 @@ public enum EnemyState implements State<EnemyController> {
         return false;
     }
 
-    public Vector2 worldToGrid(Vector2 world) {
-        return new Vector2(world.x / LevelContainer.gridSize, world.y / LevelContainer.gridSize);
-    }
-
     protected void setTarget(Vector2 pos) {
     }
 

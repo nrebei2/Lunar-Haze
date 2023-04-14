@@ -95,8 +95,6 @@ public class LevelContainer {
 
     public AStarPathFinding pathfinder;
 
-    public static float gridSize = 1f;
-
     /**
      * Keeps player centered
      */
@@ -178,6 +176,14 @@ public class LevelContainer {
         Werewolf player = new Werewolf();
         player.initialize(directory, playerJson, this);
         setPlayer(player);
+
+        //create pathfinder
+        float playerSize = player.getBoundingRadius() * 2;
+        setPathFinder(
+                (int) (board.getWidth() * board.getTileWorldDim().x / playerSize),
+                (int) (board.getHeight() * board.getTileWorldDim().y / playerSize),
+                playerSize
+        );
 
         board = null;
         pathfinder = null;
@@ -398,12 +404,14 @@ public class LevelContainer {
         this.totalMoonlight = board.getRemainingMoonlight();
     }
 
-    public void setGridSize(float size) {
-        gridSize = size;
-    }
-
-    public void setPathFinder(int width, int height, float gridsize) {
-        AStarMap aStarMap = new AStarMap(width, height, gridsize);
+    /**
+     * Creates a tiled (grid) A* path finder.
+     * @param width number of grids horizontally
+     * @param height number of grids vertically
+     * @param gridSize width and height of grid
+     */
+    public void setPathFinder(int width, int height, float gridSize) {
+        AStarMap aStarMap = new AStarMap(width, height, gridSize);
 
         QueryCallback queryCallback = new QueryCallback() {
             @Override
@@ -416,7 +424,7 @@ public class LevelContainer {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 scene = false;
-                world.QueryAABB(queryCallback, x * gridSize, y * gridSize, x * gridSize + gridSize, y * gridSize + gridSize);
+                world.QueryAABB(queryCallback, x * gridSize, y * gridSize, (x + 1) * gridSize, (y + 1) * gridSize);
                 if (scene) {
                     aStarMap.getNodeAt(x, y).isObstacle = true;
                 }
