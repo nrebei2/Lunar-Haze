@@ -15,11 +15,6 @@ import java.util.ArrayList;
  * Model class representing an enemy.
  */
 public class Enemy extends SteeringGameObject implements Pool.Poolable {
-    /**
-     * Current animation frame for this werewolf
-     */
-    private final float animeframe;
-
     public enum Detection {
         /**
          * The enemy is alerted (Exclamation point!)
@@ -95,7 +90,6 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
     public Enemy() {
         super(false);
         this.patrolPath = new ArrayList<>();
-        animeframe = 0.0f;
         detection = Detection.NONE;
 
         // TODO

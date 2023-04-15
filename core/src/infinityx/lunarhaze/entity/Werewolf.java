@@ -105,14 +105,8 @@ public class Werewolf extends GameObject implements Location<Vector2> {
     private int moonlightCollected;
 
     /**
-     * Current animation frame for this werewolf
-     */
-    private final float animeframe;
-
-    /**
      * Health point (hp) of the werewolf
      */
-
     private int hp;
 
     /**
@@ -127,12 +121,10 @@ public class Werewolf extends GameObject implements Location<Vector2> {
      */
     private float stealth;
 
-
     /**
      * Controls how long the werewolf gets knocked back by an attack and the window of the
      * damage animation.
      */
-
     private float lockoutTime;
 
     /**
@@ -385,7 +377,6 @@ public class Werewolf extends GameObject implements Location<Vector2> {
      */
     public Werewolf() {
         super();
-        animeframe = 0.0f;
         lockoutTime = 0.0f;
         moonlight = false;
         light = INITIAL_LIGHT;
