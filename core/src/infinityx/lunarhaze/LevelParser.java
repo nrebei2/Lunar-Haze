@@ -119,6 +119,10 @@ public class LevelParser {
             }
         }
 
+        // create pathfinder
+        float playerSize = levelContainer.getPlayer().getBoundingRadius();
+        levelContainer.createPathFinder(playerSize);
+
         // Generate enemies
         JsonValue enemies = scene.get("enemies");
         int curId = 0;

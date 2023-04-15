@@ -352,10 +352,6 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
         LevelParser ps = LevelParser.LevelParser();
         levelContainer = ps.loadLevel(directory, levelFormat.get(String.valueOf(level)));
         gameplayController.start(levelContainer, levelFormat.get(String.valueOf(level)));
-
-        // create pathfinder
-        float playerSize = levelContainer.getPlayer().getBoundingRadius() * 2;
-        levelContainer.createPathFinder(playerSize);
     }
 
     /**
