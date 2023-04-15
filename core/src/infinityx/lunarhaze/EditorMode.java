@@ -11,9 +11,12 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
+import imgui.ImFont;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.glfw.ImGuiImplGlfw;
+import imgui.type.ImBoolean;
+import imgui.type.ImFloat;
 import imgui.type.ImInt;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.graphics.GameCanvas;
@@ -42,7 +45,11 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * Reference to levels board
      */
     private Board board;
+
+    private int[] boardSize;
     private TiledMap tiledMap;
+
+    private ImFont font;
 
     /**
      * User requested to go to menu
@@ -58,6 +65,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
     private boolean placingMoonlight;
 
+    private boolean showNewBoardWindow;
+
     /**
      * ImGui initialization
      */
@@ -70,7 +79,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         ImGui.createContext();
         ImGuiIO io = ImGui.getIO();
         io.setIniFilename(null);
-        io.getFonts().addFontDefault();
+        font = io.getFonts().addFontFromFileTTF("assets/fonts/font.ttf", 24);
+        io.setFontDefault(font);
         io.getFonts().build();
 
         imGuiGlfw.init(windowHandle, true);
@@ -148,9 +158,12 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     private final Vector2 mouseBoard = new Vector2();
 
-    private ImInt sliderValue1 = new ImInt();
-    private ImInt sliderValue2 = new ImInt();
-    private ImInt sliderValue3 = new ImInt();
+    private float[] stealthLighting;
+    private float[] battleLighting;
+    private float[] moonlightLighting;
+
+    /* Holds a reference to the enemies, so that the enemy menu can let you modify them */
+    private ArrayList<Enemy> enemies;
 
     // Scene graph is just a tree of length 1 with root `EditorMode` and leaves buttons
     // therefore no need to have children for buttons
@@ -249,12 +262,12 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     @Override
     public void show() {
-        //ImGuiIO io = ImGui.getIO();
-        //io.getFonts().addFontFromFileTTF()
-        tiledMap = new TmxMapLoader().load("assets/maps/default.tmx");
-        level = LevelParser.LevelParser().loadEmpty();
+        boardSize = new int[]{10, 10};
+        level = LevelParser.LevelParser().loadEmpty(boardSize[0], boardSize[1]);
         level.hidePlayer();
         board = level.getBoard();
+        showNewBoardWindow = false;
+        enemies = new ArrayList<Enemy>();
         selected = new Tile(directory.getEntry("grass2", Texture.class), "land", 2);
         //selected = new Player(level.getPlayer().getTexture().getTexture());
         Gdx.input.setInputProcessor(this);
@@ -306,6 +319,12 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         createToolbar();
         createBrushSelection();
         createObjectMenu();
+
+        if (showNewBoardWindow) {
+            createNewBoardWindow();
+        }
+
+        //createAmbientLightingMenu();
         // ---
 
         ImGui.render();
@@ -576,24 +595,114 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     }
 
     private void createToolbar() {
-        ImGui.getStyle().setFramePadding(10, 10);
-        ImGui.begin("Toolbar");
-        /*if (ImGui.button("Undo")) {
-            // TODO: create a stack and use stack to undo/redo
+        if (ImGui.beginMainMenuBar()) {
+            createFileMenu();
+            createEditMenu();
+            createEnemyMenu();
+
+            ImGui.endMainMenuBar();
         }
-        ImGui.spacing();
-        if (ImGui.button("Redo")) {
-            // TODO: create a stack and use stack to undo/redo
+    }
+
+    private void createFileMenu() {
+        if (ImGui.beginMenu("File")) {
+            if (ImGui.menuItem("New")) {
+                showNewBoardWindow = true;
+            }
+            ImGui.spacing();
+            ImGui.spacing();
+            if (ImGui.menuItem("Save")) {
+                LevelSerializer.saveBoardToJsonFile(level, board, "newLevel");
+                System.out.println("Save clicked");
+            }
+            ImGui.endMenu();
         }
-        ImGui.spacing(); */
-        if (ImGui.button("Save")) {
-            LevelSerializer.saveBoardToJsonFile(level, board, "newLevel");
+    }
+
+    private void createEditMenu() {
+        if (ImGui.beginMenu("Edit")) {
+            if (ImGui.menuItem("Undo")) {
+                // TODO
+                System.out.println("Unimplemented");
+            }
+            ImGui.spacing();
+            ImGui.spacing();
+            if (ImGui.menuItem("Redo")) {
+                // TODO
+                System.out.println("Unimplemented");
+            }
+            ImGui.spacing();
+            ImGui.spacing();
+            if (ImGui.menuItem("Redo")) {
+                // TODO
+                System.out.println("Unimplemented");
+            }
+            ImGui.spacing();
+            ImGui.spacing();
+            if (ImGui.menuItem("Clear Board")) {
+                // TODO
+                System.out.println("Unimplemented");
+            }
+            ImGui.endMenu();
         }
-        ImGui.spacing();
-        if (ImGui.button("Test")) {
-            // Initialize the level etc
-            //observer.exitScreen(this, GO_PLAY);
+    }
+
+    private void createViewMenu () {
+        if (ImGui.beginMenu("Edit")) {
+            if (ImGui.menuItem("Toggle Grid")) {
+                // TODO
+                System.out.println("Unimplemented");
+            }
+            ImGui.spacing();
+            ImGui.spacing();
+            if (ImGui.menuItem("Show Ambient Lighting Window")) {
+                // TODO
+                System.out.println("Unimplemented");
+            }
+            ImGui.spacing();
+            ImGui.spacing();
+            if (ImGui.menuItem("Show Tile Select Window")) {
+                // TODO
+                System.out.println("Unimplemented");
+            }
+            ImGui.spacing();
+            ImGui.spacing();
+            if (ImGui.menuItem("Show Brush Window")) {
+                // TODO
+                System.out.println("Unimplemented");
+            }
+            ImGui.endMenu();
         }
+    }
+
+    private void createEnemyMenu() {
+        if(ImGui.beginMenu("Enemy")) {
+
+            // Iterate through enemies and create options for menu
+            for(int i = 0; i < enemies.size(); i++) {
+                if(ImGui.menuItem("Show Enemy " + i + " Menu")) {
+                    // TODO
+                }
+            }
+
+            ImGui.endMenu();
+        }
+    }
+
+    private void createNewBoardWindow() {
+        ImGui.begin("New Board", new ImBoolean(true));
+
+        ImGui.text("Enter board size (width and height):");
+        ImGui.inputInt2("Size", boardSize);
+
+        if (ImGui.button("Create")) {
+            level = LevelParser.LevelParser().loadEmpty(boardSize[0], boardSize[1]);
+            level.hidePlayer();
+            board = level.getBoard();
+            System.out.printf("New board size: Width = %d, Height = %d\n", boardSize[0], boardSize[1]);
+            showNewBoardWindow = false;
+        }
+
         ImGui.end();
     }
 
@@ -610,7 +719,26 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         ImGui.spacing();
         if (ImGui.button("Enemy")) {
 
+            //TODO
+
         }
+        ImGui.end();
+    }
+
+    private void createAmbientLightingMenu() {
+        ImGui.begin("Lighting");
+        ImGui.colorEdit4("Stealth Phase Lighting", stealthLighting);
+        ImGui.spacing();
+        ImGui.colorEdit4("Battle Phase Lighting", battleLighting);
+        ImGui.spacing();
+        ImGui.colorEdit4("Moonlight Lighting", moonlightLighting);
+        ImGui.spacing();
+        if (ImGui.button("Preview")) {
+
+            // TODO
+
+        }
+
         ImGui.end();
     }
 

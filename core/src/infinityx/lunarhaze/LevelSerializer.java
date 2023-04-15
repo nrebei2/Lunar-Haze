@@ -86,7 +86,7 @@ public class LevelSerializer {
         lighting.addChild("color", moonlightColor);
         lighting.addChild("distance", new JsonValue(4));
         lighting.addChild("rays", new JsonValue(10));
-        lighting.addChild("soft", new JsonValue(true));
+        lighting.addChild("soft", new JsonValue(false));
 
         moonlight.addChild("lighting", lighting);
 
