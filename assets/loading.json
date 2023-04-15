@@ -16,5 +16,8 @@
                 "foreright"  : [384, 40, 400, 70]
             }
         }
-	}
+	},
+  "music": {
+    "lobbyBackground": "sounds/lobby_music.mp3"
+  }
 }

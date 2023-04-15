@@ -361,8 +361,9 @@
     "dust": "jsons/dust.json"
   },
   "music": {
-    "stealthBackground": "sounds/stealthBackground.mp3",
-    "battleBackground": "sounds/battleBackground.mp3"
+    "stealthBackground": "sounds/village_no_drum.mp3",
+    "battleBackground": "sounds/village_with_drum.mp3",
+    "lobbyBackground": "sounds/lobby_music.mp3"
   },
   "sounds": {
     "collect": "sounds/collect.mp3",

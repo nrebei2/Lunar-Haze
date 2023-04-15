@@ -47,6 +47,11 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
     private UIRender uiRender;
 
     /**
+     * Lobby and pause background music
+     */
+    private Music lobby_background;
+
+    /**
      * Stealth background music
      */
     private Music stealth_background;
@@ -55,6 +60,22 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
      * Battle background music
      */
     private Music battle_background;
+
+    /**
+     * Whether lobby background is set
+     */
+    private boolean lobby_playing = false;
+
+    /**
+     * Whether stealth background is set
+     */
+    private boolean stealth_playing = false;
+
+    /**
+     * Whether battle background is set
+     */
+    private boolean battle_playing = false;
+
     /**
      * Background texture for paused screen
      */
@@ -268,6 +289,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
         uiRender = new UIRender(UIFont_large, UIFont_small, directory);
         stealth_background = directory.getEntry("stealthBackground", Music.class);
         battle_background = directory.getEntry("battleBackground", Music.class);
+        lobby_background = directory.getEntry("lobbyBackground", Music.class);
         pause_menu = directory.getEntry("pause", Texture.class);
         review = directory.getEntry("review", Texture.class);
         back = directory.getEntry("back", Texture.class);
@@ -278,6 +300,52 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
         pause_quit = directory.getEntry("pause-quit", Texture.class);
 
 //        win_sound = directory.getEntry("level-passed", Sound.class);
+    }
+
+    public void updateMusic(float delta){
+        switch (gameplayController.getState()) {
+            case OVER:
+            case WIN:
+            case PAUSED:
+                if (stealth_playing) {
+                    stealth_background.stop();
+                    stealth_playing = false;
+                } else if (battle_playing){
+                    battle_background.stop();
+                    stealth_playing = false;
+                }
+                if (!lobby_playing) {
+                    lobby_background.setLooping(true);
+                    lobby_background.play();
+                    lobby_playing = true;
+                }
+                break;
+            case PLAY:
+                if (lobby_playing){
+                    lobby_background.stop();
+                    lobby_playing = false;
+                }
+                switch (gameplayController.getPhase()) {
+                    case STEALTH:
+                    case TRANSITION:
+                    case ALLOCATE:
+                        if (!stealth_playing) {
+                            stealth_background.setLooping(true);
+                            stealth_background.play();
+                            stealth_playing = true;
+                        }
+                    case BATTLE:
+                        stealth_background.stop();
+                        if (!battle_playing) {
+                            battle_background.setLooping(true);
+                            battle_background.play();
+                            battle_playing = true;
+                        }
+                }
+                break;
+            default:
+                break;
+        }
     }
 
     /**
@@ -292,6 +360,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
     public void update(float delta) {
         // Process the game input
         inputController.readKeyboard();
+        updateMusic(delta);
 
         switch (gameplayController.getState()) {
             case OVER:
@@ -326,17 +395,8 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
                 switch (gameplayController.getPhase()) {
                     case STEALTH:
                     case TRANSITION:
-                        if (!stealth_background.isPlaying()) {
-                            //stealth_background.setLooping(true);
-                            //stealth_background.play();
-                        }
-                    case BATTLE:
-                        stealth_background.stop();
-                        if (!battle_background.isPlaying()) {
-                            //battle_background.setLooping(true);
-                            //battle_background.play();
-                        }
                     case ALLOCATE:
+                    case BATTLE:
                 }
                 play(delta);
                 break;
