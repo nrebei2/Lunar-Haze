@@ -156,14 +156,15 @@ public class EnemyController {
      */
     public Enemy.Detection getDetection() {
         /* Area of interests:
-         * Focused view - same angle as flashlight, extends between [2, 4.5]
-         * Short distance - angle of 100, extends between [0.6, 2.5]
-         * Peripheral vision - angle of 180, extends between [0.4, 1.75]
+         * Focused view - same angle as flashlight, extends between [2.75, 4.5]
+         * Short distance - angle of 100, extends between [1.75, 3]
+         * Peripheral vision - angle of 180, extends between [1.25, 2.25]
          * Hearing radius - angle of 360, extends between [1.5, 3.5]
          * Lerp between player stealth for max distance,
          * but maybe add cutoffs for NONE?
          */
 
+        // TODO: right now there is no difference in logic between a return of ALERT and NOTICED
         if (inBattle) return Enemy.Detection.ALERT;
 
         Interpolation lerp = Interpolation.linear;
@@ -179,20 +180,21 @@ public class EnemyController {
 
         // degree between enemy orientation and enemy-to-player
         double degree = Math.abs(enemy.getOrientation() - enemy.vectorToAngle(enemyToPlayer)) * MathUtils.radiansToDegrees;
+
         if (raycast.hitObject == target) {
-            if (degree <= enemy.getFlashlight().getConeDegree() / 2 && dist <= lerp.apply(2, 4.5f, target.getStealth())) {
+            if (degree <= enemy.getFlashlight().getConeDegree() / 2 && dist <= lerp.apply(2.75f, 4.5f, target.getStealth())) {
                 return Enemy.Detection.ALERT;
             }
-            if (degree <= 50 && dist <= lerp.apply(0.6f, 2.5f, target.getStealth())) {
+            if (degree <= 50 && dist <= lerp.apply(1.75f, 3.0f, target.getStealth())) {
                 return Enemy.Detection.ALERT;
             }
-            if (degree <= 90 && dist <= lerp.apply(0.4f, 1.75f, target.getStealth())) {
+            if (degree <= 90 && dist <= lerp.apply(1.25f, 2.25f, target.getStealth())) {
                 return Enemy.Detection.ALERT;
             }
         }
 
         // target may be behind object, but enemy should still be able to hear
-        if (dist <= lerp.apply(1.5f, 3.5f, target.getStealth())) {
+        if (dist <= lerp.apply(1.75f, 3.5f, target.getStealth())) {
             return Enemy.Detection.NOTICED;
         }
 

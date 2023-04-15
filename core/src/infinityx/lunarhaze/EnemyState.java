@@ -106,6 +106,7 @@ public enum EnemyState implements State<EnemyController> {
                 entity.getStateMachine().changeState(ALERT);
             }
 
+
             switch (entity.getDetection()) {
                 case NOTICED:
                 case ALERT:
@@ -125,7 +126,9 @@ public enum EnemyState implements State<EnemyController> {
                     );
                     // If the enemy has arrived to target and there is no detection, go back to looking around
                     float dist = entity.getEnemy().getPosition().dst(entity.targetPos);
-                    if (dist <= 0.5) entity.getStateMachine().changeState(LOOK_AROUND);
+                    if (dist <= 0.5) {
+                        entity.getStateMachine().changeState(LOOK_AROUND);
+                    }
             }
         }
 
@@ -148,7 +151,7 @@ public enum EnemyState implements State<EnemyController> {
             entity.getEnemy().setDetection(Enemy.Detection.ALERT);
 
             // TODO
-            entity.target.setStealth(entity.target.getStealth() + 1);
+            entity.target.setStealth(entity.target.getStealth() + 2);
 
             entity.targetPos.set(entity.getTarget().getPosition());
             entity.updatePath();
@@ -166,14 +169,14 @@ public enum EnemyState implements State<EnemyController> {
 
             switch (entity.getDetection()) {
                 case NONE:
-                    entity.targetPos = entity.target.getPosition();
-                    entity.getStateMachine().changeState(NOTICED);
+                    entity.targetPos.set(entity.target.getPosition());
+                    entity.getStateMachine().changeState(INDICATOR);
                     break;
             }
 
             tick++;
-            // Update path every 30 frames
-            if (tick % 30 == 0) {
+            // Update path every 10 frames
+            if (tick % 10 == 0) {
                 entity.targetPos.set(entity.getTarget().getPosition());
                 entity.updatePath();
             }
@@ -183,7 +186,7 @@ public enum EnemyState implements State<EnemyController> {
         public void exit(EnemyController entity) {
             entity.getEnemy().setIndependentFacing(false);
             MessageManager.getInstance().dispatchMessage(TacticalManager.REMOVE, entity);
-            entity.target.setStealth(entity.target.getStealth() - 1);
+            entity.target.setStealth(entity.target.getStealth() - 2);
         }
 
         @Override
@@ -223,10 +226,8 @@ public enum EnemyState implements State<EnemyController> {
 
             switch (entity.getDetection()) {
                 case NOTICED:
-                    entity.getStateMachine().changeState(NOTICED);
-                    break;
                 case ALERT:
-                    entity.getStateMachine().changeState(ALERT);
+                    entity.getStateMachine().changeState(NOTICED);
                     break;
             }
         }
