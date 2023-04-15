@@ -24,6 +24,7 @@ package infinityx.lunarhaze;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
@@ -169,6 +170,11 @@ public class LoadingMode extends ScreenObservable implements Screen {
      */
     private final Color alphaTint = new Color(1, 1, 1, 0);
 
+    /**
+     * Lobby and pause background music
+     */
+    private Music lobby_background;
+
 
     /**
      * Returns the budget for the asset loader.
@@ -253,6 +259,8 @@ public class LoadingMode extends ScreenObservable implements Screen {
         loading = internal.getEntry("loadtext", Texture.class);
         title = internal.getEntry("title", Texture.class);
 
+        lobby_background = internal.getEntry("lobbyBackground", Music.class);
+
         // No progress so far.
         progress = 0;
 
@@ -285,6 +293,11 @@ public class LoadingMode extends ScreenObservable implements Screen {
      */
     private void update(float delta) {
         stateTime += Gdx.graphics.getDeltaTime();
+        if (!lobby_background.isPlaying()) {
+            lobby_background.setLooping(true);
+            lobby_background.play();
+            System.out.println("Lobby background played");
+        }
         switch (loadingState) {
             case FADE_IN:
                 elapsed += delta;
