@@ -84,7 +84,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         ImGui.createContext();
         ImGuiIO io = ImGui.getIO();
         io.setIniFilename(null);
-        font = io.getFonts().addFontFromFileTTF("assets/fonts/font.ttf", 24);
+        font = io.getFonts().addFontFromFileTTF("fonts/font.ttf", 24);
         io.setFontDefault(font);
         io.getFonts().build();
 
