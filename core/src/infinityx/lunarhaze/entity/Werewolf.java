@@ -428,8 +428,9 @@ public class Werewolf extends GameObject implements Location<Vector2> {
 
     public void createAttackHitbox(World world) {
         attackHitbox = new AttackHitbox(HITBOX_SIZE, this);
-
+        attackHitbox.setSensor(true);
         attackHitbox.activatePhysics(world);
+        attackHitbox.setSensor(true);
         attackHitbox.setActive(false);
     }
 

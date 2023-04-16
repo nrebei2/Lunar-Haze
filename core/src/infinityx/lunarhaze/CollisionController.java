@@ -40,14 +40,14 @@ public class CollisionController implements ContactListener {
         if (obj1.getType() == GameObject.ObjectType.WEREWOLF && obj2.getType() == GameObject.ObjectType.ENEMY) {
             Werewolf player = (Werewolf) obj1;
             Enemy enemy = (Enemy) obj2;
-            if (cooldown == 0) {
+            if (cooldown == 0&&!enemy.getImmunityState()) {
                 resolveEnemyAttack(player, enemy, enemy.getAttackDamage(), enemy.getAttackKnockback());
                 cooldown = ATTACK_COOLDOWN;
             }
         } else if (obj1.getType() == GameObject.ObjectType.ENEMY && obj2.getType() == GameObject.ObjectType.WEREWOLF) {
             Werewolf player = (Werewolf) obj2;
             Enemy enemy = (Enemy) obj1;
-            if (cooldown == 0) {
+            if (cooldown == 0&&!enemy.getImmunityState()) {
                 resolveEnemyAttack(player, enemy, enemy.getAttackDamage(), enemy.getAttackKnockback());
                 cooldown = ATTACK_COOLDOWN;
             }
@@ -86,7 +86,7 @@ public class CollisionController implements ContactListener {
     public void resolvePlayerAttack(AttackHitbox hitbox, Enemy enemy) {
         // Apply damage to the enemy
         enemy.setHp(enemy.getHp() - MAX_KILL_POWER * PlayerAttackHandler.getAttackPower());
-
+        enemy.setImmune(1f);
         // Apply knockback to the enemy
         Body enemyBody = enemy.getBody();
         Vector2 playerPos = hitbox.getBody().getPosition();
