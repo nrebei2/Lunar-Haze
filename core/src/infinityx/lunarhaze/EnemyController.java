@@ -205,6 +205,10 @@ public class EnemyController {
         this.inBattle = inBattle;
     }
 
+    public boolean isInBattle() {
+        return inBattle;
+    }
+
     /**
      * @return Random point in patrol area
      */
