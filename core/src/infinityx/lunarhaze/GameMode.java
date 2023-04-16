@@ -60,6 +60,22 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
      * Battle background music
      */
     private Music battle_background;
+
+    /**
+     * Whether lobby background is set
+     */
+    private boolean lobby_playing = false;
+
+    /**
+     * Whether stealth background is set
+     */
+    private boolean stealth_playing = false;
+
+    /**
+     * Whether battle background is set
+     */
+    private boolean battle_playing = false;
+
     /**
      * Background texture for paused screen
      */
@@ -291,34 +307,39 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
             case OVER:
             case WIN:
             case PAUSED:
-                if (stealth_background.isPlaying()) {
+                if (stealth_playing) {
                     stealth_background.stop();
-                } else if (battle_background.isPlaying()){
+                    stealth_playing = false;
+                } else if (battle_playing){
                     battle_background.stop();
+                    stealth_playing = false;
                 }
-                if (!lobby_background.isPlaying()) {
+                if (!lobby_playing) {
                     lobby_background.setLooping(true);
                     lobby_background.play();
-                    System.out.println("Lobby background played");
+                    lobby_playing = true;
                 }
                 break;
             case PLAY:
-                if (lobby_background.isPlaying()){
+                if (lobby_playing){
                     lobby_background.stop();
+                    lobby_playing = false;
                 }
                 switch (gameplayController.getPhase()) {
                     case STEALTH:
                     case TRANSITION:
                     case ALLOCATE:
-                        if (!stealth_background.isPlaying()) {
+                        if (!stealth_playing) {
                             stealth_background.setLooping(true);
                             stealth_background.play();
+                            stealth_playing = true;
                         }
                     case BATTLE:
                         stealth_background.stop();
-                        if (!battle_background.isPlaying()) {
+                        if (!battle_playing) {
                             battle_background.setLooping(true);
                             battle_background.play();
+                            battle_playing = true;
                         }
                 }
                 break;

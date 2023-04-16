@@ -175,6 +175,11 @@ public class LoadingMode extends ScreenObservable implements Screen {
      */
     private Music lobby_background;
 
+    /**
+     * Already started lobby background
+     */
+    private boolean set_lobby = false;
+
 
     /**
      * Returns the budget for the asset loader.
@@ -293,9 +298,10 @@ public class LoadingMode extends ScreenObservable implements Screen {
      */
     private void update(float delta) {
         stateTime += Gdx.graphics.getDeltaTime();
-        if (!lobby_background.isPlaying()) {
+        if (!set_lobby) {
             lobby_background.setLooping(true);
             lobby_background.play();
+            set_lobby = true;
             System.out.println("Lobby background played");
         }
         switch (loadingState) {
