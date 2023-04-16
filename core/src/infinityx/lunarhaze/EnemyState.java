@@ -103,6 +103,7 @@ public enum EnemyState implements State<EnemyController> {
 
             // If the indicator is full, the enemy is alerted
             if (entity.getEnemy().getIndicatorAmount() == 1) {
+                MessageManager.getInstance().dispatchMessage(TacticalManager.FOUND, entity);
                 entity.getStateMachine().changeState(ALERT);
             }
 
@@ -197,8 +198,6 @@ public enum EnemyState implements State<EnemyController> {
                 Path path = control.pathfinder.findPath(cur_pos, flank_pos);
                 control.followPathSB.setPath(path);
                 control.getEnemy().setSteeringBehavior(control.followPathSB);
-            } else {
-                control.getStateMachine().changeState(ALERT);
             }
             return true;
         }

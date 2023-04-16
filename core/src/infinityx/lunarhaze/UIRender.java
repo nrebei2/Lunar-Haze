@@ -282,7 +282,7 @@ public class UIRender {
         canvas.draw(counter, Color.WHITE, canvas.getWidth() / 2 - COUNTER_WIDTH / 2, canvas.getHeight() - COUNTER_HEIGHT - TOP_MARGIN / 2, COUNTER_WIDTH, COUNTER_HEIGHT);
         String text;
         Texture icon;
-        if (phase == Phase.STEALTH) {
+        if (phase == Phase.STEALTH || phase == Phase.TRANSITION) {
             text = "night";
             icon = dusk_icon;
         } else {
