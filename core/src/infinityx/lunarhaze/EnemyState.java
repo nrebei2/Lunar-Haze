@@ -50,11 +50,13 @@ public enum EnemyState implements State<EnemyController> {
     NOTICED() {
         Box2dLocation target;
 
+        // FIXME: this solution is so ass
+        boolean start = true;
+
         @Override
         public void enter(EnemyController entity) {
             target = new Box2dLocation(entity.target);
             entity.getEnemy().setIndependentFacing(true);
-            entity.getEnemy().setLinearVelocity(Vector2.Zero);
             entity.getEnemy().setDetection(Enemy.Detection.NOTICED);
             entity.targetPos = target.getPosition();
             entity.faceSB.setTarget(target);
@@ -63,6 +65,12 @@ public enum EnemyState implements State<EnemyController> {
 
         @Override
         public void update(EnemyController entity) {
+            if (start) {
+                // Zero out velocity on start
+                entity.getEnemy().setLinearVelocity(Vector2.Zero);
+                entity.getEnemy().setAngularVelocity(0);
+                start = true;
+            }
 
             // Check if we faced target
             Vector2 toTarget = (target.getPosition()).cpy().sub(entity.getEnemy().getPosition());

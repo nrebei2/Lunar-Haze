@@ -37,7 +37,6 @@ public class EnemyController {
      */
     Collision<Vector2> collisionCache = new Collision<>(new Vector2(), new Vector2());
 
-
     /**
      * Pathfinder reference from level container
      */

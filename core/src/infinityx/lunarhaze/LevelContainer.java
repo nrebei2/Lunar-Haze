@@ -563,7 +563,6 @@ public class LevelContainer {
         }
 
         System.out.println(aStarMap);
-
         pathfinder = new AStarPathFinding(aStarMap, world);
     }
 }
