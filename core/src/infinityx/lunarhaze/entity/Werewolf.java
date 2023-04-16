@@ -423,6 +423,7 @@ public class Werewolf extends GameObject implements Location<Vector2> {
         setSpotLight(spotLight);
 
         body.setFixedRotation(true);
+        body.setBullet(true);
     }
 
     public void createAttackHitbox(World world) {

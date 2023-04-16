@@ -15,6 +15,7 @@ import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.Werewolf;
 
 import java.util.Random;
+import java.util.logging.Level;
 
 public class TacticalManager implements Telegraph {
     private Werewolf target;
@@ -23,6 +24,8 @@ public class TacticalManager implements Telegraph {
     private Array<Enemy> activeEnemies;
 
     private ObjectMap<Enemy, EnemyController> enemyMap;
+
+    private LevelContainer container;
 
 
 
@@ -35,6 +38,7 @@ public class TacticalManager implements Telegraph {
         target = container.getPlayer();
         activeEnemies = container.getEnemies();
         enemyMap = container.getEnemyControllers();
+        this.container = container;
         MessageManager.getInstance().addListener(this, ADD);
         MessageManager.getInstance().addListener(this, REMOVE);
         MessageManager.getInstance().addListener(this, FOUND);
@@ -62,6 +66,9 @@ public class TacticalManager implements Telegraph {
                 // Calculate a flanking position relative to the target
                 /* TODO: remove new  (make own rotate Deg)*/
                 Vector2 flankingPosition = target.getPosition().cpy().add(new Vector2(1, 0).rotateDeg(enemyAngle));
+                if (container.pathfinder.map.getNodeAtWorld(flankingPosition.x, flankingPosition.y) == null){
+                    continue;
+                }
                 MessageManager.getInstance().dispatchMessage(null, enemy, FLANK, flankingPosition);
             } else {
                 MessageManager.getInstance().dispatchMessage(null, enemy, ATTACK);
