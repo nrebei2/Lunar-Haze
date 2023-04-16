@@ -161,7 +161,6 @@ public class PlayerAttackHandler extends AttackHandler {
         // movement component
         attackDirection.set(input.getHorizontal(), input.getVertical()).nor();
         player.getBody().applyLinearImpulse(attackDirection, player.getBody().getWorldCenter(), true);
-
         comboAttackCooldownCounter = 0f;
         super.initiateAttack();
     }

@@ -47,7 +47,7 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
     /**
      * rectangular region represented by [[b_lx, b_ly], [t_rx, t_ry]]
      */
-    private ArrayList<Vector2> patrolPath;
+    private ArrayList<Vector2>  patrolPath;
 
     /**
      * The light source on this enemy representing the flashlight

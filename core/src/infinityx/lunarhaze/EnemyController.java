@@ -94,6 +94,7 @@ public class EnemyController {
      */
     public EnemyController(Enemy enemy) {
         patrolTarget = new Vector2();
+        this.targetPos = new Vector2();
         this.enemy = enemy;
         this.inBattle = false;
         this.stateMachine = new DefaultStateMachine<>(this, EnemyState.INIT, EnemyState.ANY_STATE);
