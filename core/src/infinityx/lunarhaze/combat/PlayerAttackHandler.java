@@ -101,7 +101,7 @@ public class PlayerAttackHandler extends AttackHandler {
      * Adjusts hitbox based on user input
      */
     private void updateHitboxPosition(InputController input) {
-        player.attackHitbox.getBody().setTransform(player.getPosition().x + (input.getHorizontal() / 4.0f), player.getPosition().y + (input.getVertical() / 4.0f) + 1.0f, 0f);
+        player.attackHitbox.getBody().setTransform(player.getPosition().x + (input.getHorizontal() / 4.0f), player.getPosition().y + (input.getVertical() / 4.0f) + 10.0f, 0f);
     }
 
     /**
@@ -160,7 +160,7 @@ public class PlayerAttackHandler extends AttackHandler {
 
         // movement component
         attackDirection.set(input.getHorizontal(), input.getVertical()).nor();
-        player.getBody().applyLinearImpulse(attackDirection, player.getBody().getWorldCenter(), true);
+        //player.getBody().applyLinearImpulse(attackDirection, player.getBody().getWorldCenter(), true);
 
         comboAttackCooldownCounter = 0f;
         super.initiateAttack();

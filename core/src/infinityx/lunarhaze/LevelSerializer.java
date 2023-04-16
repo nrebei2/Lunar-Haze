@@ -120,7 +120,7 @@ public class LevelSerializer {
             JsonValue patrol = new JsonValue(JsonValue.ValueType.array);
 
 
-            if(e.getPatrolPath() != null) {
+            if(e.getPatrolPath() != null && e.getPatrolPath().size() > 0) {
                 // Tile 1
                 JsonValue pos1 = new JsonValue(JsonValue.ValueType.array);
                 pos1.addChild(new JsonValue(board.worldToBoardX(e.getPatrolPath().get(0).x)));
