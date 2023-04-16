@@ -397,6 +397,7 @@ public class Board {
             return;
         }
         getTile(x, y).setLit(lit);
+        System.out.println("Set " + x + ", " + y + " to " + lit);
     }
 
     /**
@@ -652,11 +653,11 @@ public class Board {
         return getTile(x, y).tileNum();
     }
 
-    public ArrayList<Integer[]> getMoonlightTiles() {
-        ArrayList<Integer[]> lst = new ArrayList<>();
+    public ArrayList<int[]> getMoonlightTiles() {
+        ArrayList<int[]> lst = new ArrayList<>();
         for (int x = 0; x < height; x++) {
             for (int y = 0; y < width; y++) {
-                if (isLit(x, y)) lst.add(new Integer[]{x, y});
+                if (isLit(x, y)) lst.add(new int[]{x, y});
             }
         }
         return lst;

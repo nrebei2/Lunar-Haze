@@ -68,8 +68,8 @@ public class LevelSerializer {
 
         JsonValue moonlight = new JsonValue(JsonValue.ValueType.object);
         JsonValue positions = new JsonValue(JsonValue.ValueType.array);
-        ArrayList<Integer[]> moonlightPositions = board.getMoonlightTiles();
-        for (Integer[] position : moonlightPositions) {
+        ArrayList<int[]> moonlightPositions = board.getMoonlightTiles();
+        for (int[] position : moonlightPositions) {
             JsonValue pos = new JsonValue(JsonValue.ValueType.array);
             pos.addChild(new JsonValue(position[0]));
             pos.addChild(new JsonValue(position[1]));

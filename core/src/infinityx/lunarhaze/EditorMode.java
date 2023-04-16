@@ -1,6 +1,7 @@
 package infinityx.lunarhaze;
 
 import box2dLight.PointLight;
+import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
@@ -8,21 +9,20 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
 import imgui.ImFont;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.glfw.ImGuiImplGlfw;
 import imgui.type.ImBoolean;
-import imgui.type.ImFloat;
-import imgui.type.ImInt;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.graphics.ImGuiImplGLES2;
 import infinityx.util.ScreenObservable;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,6 +66,11 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     private boolean placingMoonlight;
 
     private boolean showNewBoardWindow;
+    private boolean showEnemyControllerWindow;
+
+    private boolean playerPlaced;
+
+    private ArrayList<PointLight> pointLights;
 
     /**
      * ImGui initialization
@@ -163,7 +168,12 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     private float[] moonlightLighting;
 
     /* Holds a reference to the enemies, so that the enemy menu can let you modify them */
-    private ArrayList<Enemy> enemies;
+    private ArrayList<infinityx.lunarhaze.entity.Enemy> enemies;
+
+    private infinityx.lunarhaze.entity.Enemy currEnemyControlled;
+    private int[] patrol1;
+    private int[] patrol2;
+    private boolean showBattleLighting;
 
     // Scene graph is just a tree of length 1 with root `EditorMode` and leaves buttons
     // therefore no need to have children for buttons
@@ -188,6 +198,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         availableSelections = new ArrayList<>();
         currentSelectionIndex = 0;
         placingMoonlight = false;
+        pointLights = new ArrayList<>();
     }
 
     /**
@@ -212,6 +223,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         availableSelections.add(new SceneObject(directory.getEntry("fence2", Texture.class), "fencey"));
         availableSelections.add(new SceneObject(directory.getEntry("tree1", Texture.class), "tree"));
         availableSelections.add(new SceneObject(directory.getEntry("stone", Texture.class), "stone"));
+
         //availableSelections.add(new Enemy(directory.getEntry("villager", Texture.class), "villager"));
         //availableSelections.add(new Player(directory.getEntry("werewolf", Texture.class)));
         selected = availableSelections.get(currentSelectionIndex);
@@ -232,19 +244,31 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             placeTile();
         } else if (selected instanceof Player) {
             level.setPlayerStartPos(new int[]{(int) mouseBoard.x, (int) mouseBoard.y});
+            level.getPlayer().setPosition(mouseWorld);
+            playerPlaced = true;
             System.out.println("Player placed at " + (int) mouseBoard.x + ", " + (int) mouseBoard.y);
         } else if (selected instanceof SceneObject) {
             placeSceneObject();
+        } else if (selected instanceof Enemy) {
+            placeEnemy();
         }
+    }
+
+    private void placeEnemy() {
+        Enemy e = (Enemy) selected;
+        currEnemyControlled = level.addEnemy(e.type, mouseBoard.x, mouseBoard.y, null);
+        enemies.add(currEnemyControlled);
     }
 
     private void placeMoonlightTile() {
         int x = (int) mouseBoard.x;
         int y = (int) mouseBoard.y;
-        board.setLit(x, y, !board.isLit(x, y));
-        PointLight light = new PointLight(level.getRayHandler(), 10, new Color(0.7f, 0.7f, 0.9f, 0.5f), 4, board.boardCenterToWorldX(x), board.boardCenterToWorldY(y));
+        PointLight light = new PointLight(level.getRayHandler(), 10, new Color(moonlightLighting[0], moonlightLighting[1], moonlightLighting[2], moonlightLighting[3]), 4, board.boardCenterToWorldX(x), board.boardCenterToWorldY(y));
         light.setSoft(true);
         board.setSpotlight(x, y, light);
+        board.setLit(x, y, true);
+        pointLights.add(light);
+        System.out.println(x + ", " + y + " is " + board.isLit(x, y));
     }
 
     private void placeSceneObject() {
@@ -263,14 +287,24 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     @Override
     public void show() {
         boardSize = new int[]{10, 10};
+        patrol1 = new int[]{0,0};
+        patrol2 = new int[]{0,0};
         level = LevelParser.LevelParser().loadEmpty(boardSize[0], boardSize[1]);
         level.hidePlayer();
+        playerPlaced = false;
         board = level.getBoard();
         showNewBoardWindow = false;
-        enemies = new ArrayList<Enemy>();
+        showEnemyControllerWindow = false;
+        showBattleLighting = false;
+        enemies = new ArrayList<infinityx.lunarhaze.entity.Enemy>();
+        stealthLighting = new float[]{1, 1, 1, 1};
+        battleLighting = new float[]{1, 1, 1, 1};
+        moonlightLighting = new float[]{1, 1, 1, 1};
         selected = new Tile(directory.getEntry("grass2", Texture.class), "land", 2);
         //selected = new Player(level.getPlayer().getTexture().getTexture());
         Gdx.input.setInputProcessor(this);
+        RayHandler.setGammaCorrection(true);
+        RayHandler.useDiffuseLight(true);
     }
 
     /**
@@ -298,6 +332,13 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             observer.exitScreen(this, GO_MENU);
         }
 
+        for(PointLight light : pointLights) {
+            light.setColor(new Color (moonlightLighting[0], moonlightLighting[1], moonlightLighting[2], moonlightLighting[3]));
+        }
+        level.setBattleAmbience(battleLighting);
+        level.setStealthAmbience(stealthLighting);
+        if(showBattleLighting) level.getRayHandler().setAmbientLight(battleLighting[0], battleLighting[1], battleLighting[2], battleLighting[3]);
+        else level.getRayHandler().setAmbientLight(stealthLighting[0], stealthLighting[1], stealthLighting[2], stealthLighting[3]);
     }
 
     /**
@@ -323,9 +364,11 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         if (showNewBoardWindow) {
             createNewBoardWindow();
         }
+        if (showEnemyControllerWindow) {
+            createEnemyControllerWindow();
+        }
 
-        //createAmbientLightingMenu();
-        // ---
+        createAmbientLightingMenu();
 
         ImGui.render();
         imGuiGl.renderDrawData(ImGui.getDrawData());
@@ -526,11 +569,11 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 mouseBoard.set(boardX, boardY);
                 board.setPreviewTile((int) mouseBoard.x, (int) mouseBoard.y, selected.texture);
             }
-        } else if (selected instanceof Player) {
+        } else if (selected instanceof Player && !playerPlaced) {
             if (board.inBounds(boardX, boardY)) {
-                level.showPlayer();
                 level.getPlayer().setPosition(mouseWorld);
-            } else {
+                level.showPlayer();
+            } else if (!playerPlaced) {
                 level.hidePlayer();
             }
         }
@@ -599,13 +642,14 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             createFileMenu();
             createEditMenu();
             createEnemyMenu();
+            createViewMenu();
 
             ImGui.endMainMenuBar();
         }
     }
 
     private void createFileMenu() {
-        if (ImGui.beginMenu("File")) {
+        if (ImGui.beginMenu("   File   ")) {
             if (ImGui.menuItem("New")) {
                 showNewBoardWindow = true;
             }
@@ -620,7 +664,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     }
 
     private void createEditMenu() {
-        if (ImGui.beginMenu("Edit")) {
+        if (ImGui.beginMenu("   Edit   ")) {
             if (ImGui.menuItem("Undo")) {
                 // TODO
                 System.out.println("Unimplemented");
@@ -648,40 +692,22 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     }
 
     private void createViewMenu () {
-        if (ImGui.beginMenu("Edit")) {
-            if (ImGui.menuItem("Toggle Grid")) {
-                // TODO
-                System.out.println("Unimplemented");
-            }
-            ImGui.spacing();
-            ImGui.spacing();
-            if (ImGui.menuItem("Show Ambient Lighting Window")) {
-                // TODO
-                System.out.println("Unimplemented");
-            }
-            ImGui.spacing();
-            ImGui.spacing();
-            if (ImGui.menuItem("Show Tile Select Window")) {
-                // TODO
-                System.out.println("Unimplemented");
-            }
-            ImGui.spacing();
-            ImGui.spacing();
-            if (ImGui.menuItem("Show Brush Window")) {
-                // TODO
-                System.out.println("Unimplemented");
+        if (ImGui.beginMenu("View")) {
+            if (ImGui.menuItem("Toggle Stealth / Battle Lighting")) {
+                showBattleLighting = !showBattleLighting;
             }
             ImGui.endMenu();
         }
     }
 
     private void createEnemyMenu() {
-        if(ImGui.beginMenu("Enemy")) {
+        if(ImGui.beginMenu("   Enemy   ")) {
 
             // Iterate through enemies and create options for menu
             for(int i = 0; i < enemies.size(); i++) {
                 if(ImGui.menuItem("Show Enemy " + i + " Menu")) {
-                    // TODO
+                    currEnemyControlled = enemies.get(i);
+                    showEnemyControllerWindow = true;
                 }
             }
 
@@ -706,6 +732,27 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         ImGui.end();
     }
 
+    private void createEnemyControllerWindow() {
+        System.out.println("Got ehre");
+        ImGui.begin(currEnemyControlled.getName() + " Controller", new ImBoolean(true));
+        System.out.println("Got here too");
+        ImGui.text("Enter patrol region:");
+        ImGui.inputInt2("Bottom Left Tile", patrol1);
+        ImGui.inputInt2("Top Right Tile", patrol2);
+        ArrayList<Vector2> patrolPath = new ArrayList<>();
+        patrolPath.add(new Vector2(patrol1[0], patrol1[1]));
+        patrolPath.add(new Vector2(patrol2[0], patrol2[1]));
+
+        if (ImGui.button("Set Patrol Region")) {
+            currEnemyControlled.setPatrolPath(new ArrayList<Vector2>());
+            patrol1 = new int[]{0, 0};
+            patrol2 = new int[]{0, 0};
+            showEnemyControllerWindow = false;
+        }
+        System.out.println("Gothere2");
+        ImGui.end();
+    }
+
     private void createBrushSelection() {
         ImGui.getStyle().setFramePadding(10, 10);
         ImGui.begin("Brush Select");
@@ -713,14 +760,19 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             placingMoonlight = true;
         }
         ImGui.spacing();
+        ImGui.spacing();
+        ImGui.spacing();
         if (ImGui.button("Werewolf")) {
+            placingMoonlight = false;
+            playerPlaced = false;
             selected = new Player(directory.getEntry("player", Texture.class));
         }
         ImGui.spacing();
+        ImGui.spacing();
+        ImGui.spacing();
         if (ImGui.button("Enemy")) {
-
-            //TODO
-
+            placingMoonlight = false;
+            selected = new Enemy(directory.getEntry("villager", Texture.class), "villager");
         }
         ImGui.end();
     }
