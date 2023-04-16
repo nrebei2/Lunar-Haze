@@ -2,6 +2,7 @@ package infinityx.lunarhaze;
 
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.JsonWriter;
+import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.SceneObject;
 
 import java.io.BufferedWriter;
@@ -21,10 +22,11 @@ public class LevelSerializer {
         settings.addChild("phaseLength", new JsonValue(2));
 
         JsonValue battlecolor = new JsonValue(JsonValue.ValueType.array);
-        battlecolor.addChild(new JsonValue(0.8f));
-        battlecolor.addChild(new JsonValue(0.7f));
-        battlecolor.addChild(new JsonValue(1f));
-        battlecolor.addChild(new JsonValue(1f));
+        float battleArray[] = level.getStealthAmbience();
+        battlecolor.addChild(new JsonValue(battleArray[0]));
+        battlecolor.addChild(new JsonValue(battleArray[1]));
+        battlecolor.addChild(new JsonValue(battleArray[2]));
+        battlecolor.addChild(new JsonValue(battleArray[3]));
 
         settings.addChild("battle-ambiance", battlecolor);
 
@@ -41,10 +43,11 @@ public class LevelSerializer {
 
         JsonValue ambient = new JsonValue(JsonValue.ValueType.object);
         JsonValue color = new JsonValue(JsonValue.ValueType.array);
-        color.addChild(new JsonValue(0.47f));
-        color.addChild(new JsonValue(0.35f));
-        color.addChild(new JsonValue(0.55f));
-        color.addChild(new JsonValue(0.55f));
+        float ambientArray[] = level.getStealthAmbience();
+        color.addChild(new JsonValue(ambientArray[0]));
+        color.addChild(new JsonValue(ambientArray[1]));
+        color.addChild(new JsonValue(ambientArray[2]));
+        color.addChild(new JsonValue(ambientArray[3]));
         ambient.addChild("color", color);
         ambient.addChild("gamma", new JsonValue(true));
         ambient.addChild("diffuse", new JsonValue(true));
@@ -105,7 +108,37 @@ public class LevelSerializer {
         scene.addChild("player", playerStartPos);
 
         // Enemy (todo)
+        JsonValue enemy = new JsonValue(JsonValue.ValueType.array);
+        for(Enemy e : level.getEnemies()) {
+            JsonValue currEnemy = new JsonValue(JsonValue.ValueType.object);
+            currEnemy.addChild("type", new JsonValue(e.getName()));
+            JsonValue pos = new JsonValue(JsonValue.ValueType.array);
+            pos.addChild(new JsonValue(board.worldToBoardX(e.getPosition().x)));
+            pos.addChild(new JsonValue(board.worldToBoardY(e.getPosition().y)));
+            currEnemy.addChild("position", pos);
 
+            JsonValue patrol = new JsonValue(JsonValue.ValueType.array);
+
+
+            if(e.getPatrolPath() != null) {
+                // Tile 1
+                JsonValue pos1 = new JsonValue(JsonValue.ValueType.array);
+                pos1.addChild(new JsonValue(board.worldToBoardX(e.getPatrolPath().get(0).x)));
+                pos1.addChild(new JsonValue(board.worldToBoardY(e.getPatrolPath().get(0).y)));
+                patrol.addChild(pos1);
+
+                // Tile 2
+                JsonValue pos2 = new JsonValue(JsonValue.ValueType.array);
+                pos2.addChild(new JsonValue(board.worldToBoardX(e.getPatrolPath().get(1).x)));
+                pos2.addChild(new JsonValue(board.worldToBoardY(e.getPatrolPath().get(1).y)));
+                patrol.addChild(pos2);
+            }
+
+            currEnemy.addChild("patrol", patrol);
+            enemy.addChild(currEnemy);
+
+        }
+        scene.addChild("enemies", enemy);
         // Scene objects
         JsonValue objects = new JsonValue(JsonValue.ValueType.array);
         for (SceneObject obj : level.getSceneObjects()) {

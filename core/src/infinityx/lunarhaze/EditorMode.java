@@ -640,7 +640,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     private void createToolbar() {
         if (ImGui.beginMainMenuBar()) {
             createFileMenu();
-            createEditMenu();
+            //createEditMenu(); //TODO: implement edit menu
             createEnemyMenu();
             createViewMenu();
 
@@ -657,21 +657,15 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             ImGui.spacing();
             if (ImGui.menuItem("Save")) {
                 LevelSerializer.saveBoardToJsonFile(level, board, "newLevel");
-                System.out.println("Save clicked");
             }
             ImGui.endMenu();
         }
     }
 
+    /*
     private void createEditMenu() {
         if (ImGui.beginMenu("   Edit   ")) {
             if (ImGui.menuItem("Undo")) {
-                // TODO
-                System.out.println("Unimplemented");
-            }
-            ImGui.spacing();
-            ImGui.spacing();
-            if (ImGui.menuItem("Redo")) {
                 // TODO
                 System.out.println("Unimplemented");
             }
@@ -689,7 +683,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             }
             ImGui.endMenu();
         }
-    }
+    }*/
 
     private void createViewMenu () {
         if (ImGui.beginMenu("View")) {
@@ -725,7 +719,13 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             level = LevelParser.LevelParser().loadEmpty(boardSize[0], boardSize[1]);
             level.hidePlayer();
             board = level.getBoard();
-            System.out.printf("New board size: Width = %d, Height = %d\n", boardSize[0], boardSize[1]);
+            showEnemyControllerWindow = false;
+            showBattleLighting = false;
+            enemies = new ArrayList<infinityx.lunarhaze.entity.Enemy>();
+            stealthLighting = new float[]{1, 1, 1, 1};
+            battleLighting = new float[]{1, 1, 1, 1};
+            moonlightLighting = new float[]{1, 1, 1, 1};
+            playerPlaced = false;
             showNewBoardWindow = false;
         }
 
@@ -733,9 +733,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     }
 
     private void createEnemyControllerWindow() {
-        System.out.println("Got ehre");
-        ImGui.begin(currEnemyControlled.getName() + " Controller", new ImBoolean(true));
-        System.out.println("Got here too");
+        ImGui.begin("Enemy Controller", new ImBoolean(true));
         ImGui.text("Enter patrol region:");
         ImGui.inputInt2("Bottom Left Tile", patrol1);
         ImGui.inputInt2("Top Right Tile", patrol2);
@@ -749,7 +747,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             patrol2 = new int[]{0, 0};
             showEnemyControllerWindow = false;
         }
-        System.out.println("Gothere2");
         ImGui.end();
     }
 
@@ -785,12 +782,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         ImGui.spacing();
         ImGui.colorEdit4("Moonlight Lighting", moonlightLighting);
         ImGui.spacing();
-        if (ImGui.button("Preview")) {
-
-            // TODO
-
-        }
-
         ImGui.end();
     }
 
