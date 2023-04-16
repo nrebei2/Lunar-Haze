@@ -158,11 +158,11 @@ public class LevelParser {
      * Creates an empty level to be filled in the level editor.
      * You gotta call loadConstants before calling this method.
      */
-    public LevelContainer loadEmpty() {
+    public LevelContainer loadEmpty(int width, int height) {
         // LevelContainer empty at this point
         levelContainer.flush();
 
-        Board board = new Board(30, 30);
+        Board board = new Board(width, height);
 
         board.setTileScreenDim(sSize[0], sSize[1]);
         board.setTileWorldDim(wSize[0], wSize[1]);

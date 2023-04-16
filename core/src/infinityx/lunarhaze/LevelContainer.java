@@ -261,6 +261,8 @@ public class LevelContainer {
         enemy.setPatrolPath(patrol);
         enemy.setPosition(x, y);
 
+        enemy.setName(type);
+
         return addEnemy(enemy);
     }
 

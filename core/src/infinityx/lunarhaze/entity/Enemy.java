@@ -145,6 +145,7 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
         this.patrolPath = path;
     }
 
+    public ArrayList<Vector2> getPatrolPath() { return patrolPath; }
     public void setDetection(Detection detection) {
         this.detection = detection;
     }
