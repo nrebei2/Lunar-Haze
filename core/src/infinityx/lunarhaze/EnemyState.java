@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.ai.TacticalManager;
 import infinityx.lunarhaze.entity.Enemy;
 import infinityx.util.Box2dLocation;
+import java.util.ArrayList;
 
 public enum EnemyState implements State<EnemyController> {
 
@@ -215,6 +216,9 @@ public enum EnemyState implements State<EnemyController> {
         @Override
         public void enter(EnemyController entity) {
             Vector2 patrol = entity.getPatrolTarget();
+            ArrayList<Vector2> pat = entity.getEnemy().getPatrolPath();
+            System.out.println(pat.get(0).x+" "+pat.get(0).y);
+            System.out.println(pat.get(1).x+" "+pat.get(1).y);
             while (entity.pathfinder.map.getNodeAtWorld(patrol.x, patrol.y).isObstacle) {
                 patrol = entity.getPatrolTarget();
             }
