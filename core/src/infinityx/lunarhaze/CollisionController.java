@@ -60,7 +60,7 @@ public class CollisionController implements ContactListener {
             Enemy enemy = (Enemy) body1.getUserData();
             resolvePlayerAttack(hitbox, enemy);
         }
-        if (cooldown > 0){
+        if (cooldown > 0) {
             cooldown--;
         }
 

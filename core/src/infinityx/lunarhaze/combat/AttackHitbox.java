@@ -28,7 +28,8 @@ public class AttackHitbox extends GameObject {
         addBox("body", hitboxSize, hitboxSize, new Vector2(), 0);
 
         super.activatePhysics(world);
-        body.setBullet(true); // For better collision detection
+        setBullet(true); // For better collision detection
+        setSensor(true); // Dont push around player
 
         return false;
     }

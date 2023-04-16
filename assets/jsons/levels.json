@@ -1255,7 +1255,7 @@
   "2": {
     "settings": {
       "transition": 2,
-      "phaseLength": 5,
+      "phaseLength": 75,
       "battle-ambiance": [0.8, 0.7, 1, 1],
       "enemy-spawner": {
         "count": 5,

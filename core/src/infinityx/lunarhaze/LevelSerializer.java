@@ -109,7 +109,7 @@ public class LevelSerializer {
 
         // Enemy (todo)
         JsonValue enemy = new JsonValue(JsonValue.ValueType.array);
-        for(Enemy e : level.getEnemies()) {
+        for (Enemy e : level.getEnemies()) {
             JsonValue currEnemy = new JsonValue(JsonValue.ValueType.object);
             currEnemy.addChild("type", new JsonValue(e.getName()));
             JsonValue pos = new JsonValue(JsonValue.ValueType.array);
@@ -120,7 +120,7 @@ public class LevelSerializer {
             JsonValue patrol = new JsonValue(JsonValue.ValueType.array);
 
 
-            if(e.getPatrolPath() != null) {
+            if (e.getPatrolPath() != null) {
                 // Tile 1
                 JsonValue pos1 = new JsonValue(JsonValue.ValueType.array);
                 pos1.addChild(new JsonValue(board.worldToBoardX(e.getPatrolPath().get(0).x)));

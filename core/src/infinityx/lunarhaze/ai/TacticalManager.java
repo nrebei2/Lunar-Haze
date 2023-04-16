@@ -15,7 +15,6 @@ import infinityx.lunarhaze.entity.Enemy;
 import infinityx.lunarhaze.entity.Werewolf;
 
 import java.util.Random;
-import java.util.logging.Level;
 
 public class TacticalManager implements Telegraph {
     private Werewolf target;
@@ -26,7 +25,6 @@ public class TacticalManager implements Telegraph {
     private ObjectMap<Enemy, EnemyController> enemyMap;
 
     private LevelContainer container;
-
 
 
     /**
@@ -66,7 +64,7 @@ public class TacticalManager implements Telegraph {
                 // Calculate a flanking position relative to the target
                 /* TODO: remove new  (make own rotate Deg)*/
                 Vector2 flankingPosition = target.getPosition().cpy().add(new Vector2(1, 0).rotateDeg(enemyAngle));
-                if (container.pathfinder.map.getNodeAtWorld(flankingPosition.x, flankingPosition.y) == null){
+                if (container.pathfinder.map.getNodeAtWorld(flankingPosition.x, flankingPosition.y) == null) {
                     continue;
                 }
                 MessageManager.getInstance().dispatchMessage(null, enemy, FLANK, flankingPosition);
@@ -78,8 +76,8 @@ public class TacticalManager implements Telegraph {
         }
     }
 
-    public void alertAllies(EnemyController entity){
-        for (Enemy enemy: activeEnemies){
+    public void alertAllies(EnemyController entity) {
+        for (Enemy enemy : activeEnemies) {
             EnemyController control = enemyMap.get(enemy);
             if (control != entity && (entity.getEnemy().getPosition()).cpy().dst(control.getEnemy().getPosition()) <= 5f) {
                 System.out.println("alerting");

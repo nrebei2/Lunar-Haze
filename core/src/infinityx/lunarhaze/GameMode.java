@@ -302,7 +302,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
 //        win_sound = directory.getEntry("level-passed", Sound.class);
     }
 
-    public void updateMusic(float delta){
+    public void updateMusic(float delta) {
         switch (gameplayController.getState()) {
             case OVER:
             case WIN:
@@ -310,7 +310,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
                 if (stealth_playing) {
                     stealth_background.stop();
                     stealth_playing = false;
-                } else if (battle_playing){
+                } else if (battle_playing) {
                     battle_background.stop();
                     stealth_playing = false;
                 }
@@ -321,7 +321,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
                 }
                 break;
             case PLAY:
-                if (lobby_playing){
+                if (lobby_playing) {
                     lobby_background.stop();
                     lobby_playing = false;
                 }
