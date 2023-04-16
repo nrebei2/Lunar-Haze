@@ -9,6 +9,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector2;
@@ -49,7 +50,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     private int[] boardSize;
     private TiledMap tiledMap;
 
-    private ImFont font;
+    private BitmapFont font;
 
     /**
      * User requested to go to menu
@@ -84,9 +85,11 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         ImGui.createContext();
         ImGuiIO io = ImGui.getIO();
         io.setIniFilename(null);
-        font = io.getFonts().addFontFromFileTTF("assets/fonts/font.ttf", 24);
-        io.setFontDefault(font);
-        io.getFonts().build();
+//        font = directory.getEntry("libre-small", BitmapFont.class);
+////        font = io.getFonts().addFontFromFileTTF("assets/fonts/font.ttf", 24);
+//        ImFont
+//        io.setFontDefault(font.);
+//        io.getFonts().build();
 
         imGuiGlfw.init(windowHandle, true);
         imGuiGl.init("#version 110");
