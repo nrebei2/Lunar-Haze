@@ -1,6 +1,7 @@
 package infinityx.lunarhaze.entity;
 
 import com.badlogic.gdx.graphics.Color;
+
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Pool;
@@ -68,6 +69,17 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
      */
     private float hp;
 
+    private boolean isImmune;
+    private float immunityTime;
+    public void setImmune(float duration) {
+        isImmune = true;
+        immunityTime = duration;
+    }
+
+    public boolean getImmunityState() {
+        return isImmune;
+    }
+
     /**
      * Returns the type of this object.
      * <p>
@@ -97,6 +109,8 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
         setMaxLinearSpeed(0.7f);
         setMaxAngularAcceleration(1);
         setMaxAngularSpeed(1);
+        isImmune = false;
+        immunityTime = 0;
     }
 
     /**
@@ -145,7 +159,10 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
         this.patrolPath = path;
     }
 
-    public ArrayList<Vector2> getPatrolPath() { return patrolPath; }
+    public ArrayList<Vector2> getPatrolPath() {
+        return patrolPath;
+    }
+
     public void setDetection(Detection detection) {
         this.detection = detection;
     }
@@ -234,6 +251,13 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
 
     @Override
     public void update(float delta) {
+        System.out.println("isImmune" + isImmune);
         super.update(delta);
+        if (isImmune) {
+            immunityTime -= delta;
+            if (immunityTime <= 0) {
+                isImmune = false;
+            }
+        }
     }
 }

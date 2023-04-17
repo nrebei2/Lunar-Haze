@@ -3,6 +3,7 @@ package infinityx.lunarhaze.entity;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
+import infinityx.lunarhaze.EnemyState;
 import infinityx.lunarhaze.LevelContainer;
 
 import java.util.ArrayList;
@@ -72,6 +73,7 @@ public class EnemySpawner {
             );
             // This spawner is only used in battle phase
             container.getEnemyControllers().get(newEnemy).setInBattle(true);
+            container.getEnemyControllers().get(newEnemy).getStateMachine().changeState(EnemyState.ALERT);
             enemyAddTick = MathUtils.random(addMin, addMax);
             this.count--;
         }

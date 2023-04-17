@@ -2,7 +2,7 @@ Lunar Haze
 
 Instructions for players: 
 
-Move the players using the arrow keys. The main objective of this protoype is
+Move the players using the arrow keys. The main objective of this prototype is
 to collect all the lighted moonlight tiles on the map. To collect moonlight,
 you must stand on the tile for two consecutive seconds. However, standing on
 a moonlight tile will also reveal you to the enemy.
@@ -14,4 +14,4 @@ How the enemy works:
 
 The enemy will walk in a set patrol path. Their current line of vision is a
 line. Once you get into an enemy's sight, they will chase you until you are
-out of a set chase distance. 
+out of a set chase distance.

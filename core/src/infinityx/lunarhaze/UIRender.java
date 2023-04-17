@@ -312,7 +312,7 @@ public class UIRender {
             stroke_width = HEALTH_STROKE_WIDTH;
             max_hp = Werewolf.INITIAL_HP;
         } else if (phase == Phase.BATTLE) {
-            stroke_width = HEALTH_STROKE_WIDTH * 2;
+            stroke_width = HEALTH_STROKE_WIDTH * (level.getPlayer().getHp() + 1) / Werewolf.INITIAL_HP;
             max_hp = Werewolf.MAX_HP;
         }
         canvas.draw(health_stroke, Color.WHITE, 0, canvas.getHeight() - HEALTH_STROKE_HEIGHT * 2, stroke_width, HEALTH_STROKE_HEIGHT);

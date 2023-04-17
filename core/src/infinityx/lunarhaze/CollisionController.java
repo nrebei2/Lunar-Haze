@@ -21,6 +21,10 @@ public class CollisionController implements ContactListener {
      */
     private final float MAX_KILL_POWER = 5.0f;
 
+    private final int ATTACK_COOLDOWN = 20;
+
+    private int cooldown = 0;
+
     public CollisionController(LevelContainer level) {
         level.getWorld().setContactListener(this);
     }
@@ -36,11 +40,17 @@ public class CollisionController implements ContactListener {
         if (obj1.getType() == GameObject.ObjectType.WEREWOLF && obj2.getType() == GameObject.ObjectType.ENEMY) {
             Werewolf player = (Werewolf) obj1;
             Enemy enemy = (Enemy) obj2;
-            resolveEnemyAttack(player, enemy, enemy.getAttackDamage(), enemy.getAttackKnockback());
+            if (cooldown == 0&&!enemy.getImmunityState()) {
+                resolveEnemyAttack(player, enemy, enemy.getAttackDamage(), enemy.getAttackKnockback());
+                cooldown = ATTACK_COOLDOWN;
+            }
         } else if (obj1.getType() == GameObject.ObjectType.ENEMY && obj2.getType() == GameObject.ObjectType.WEREWOLF) {
             Werewolf player = (Werewolf) obj2;
             Enemy enemy = (Enemy) obj1;
-            resolveEnemyAttack(player, enemy, enemy.getAttackDamage(), enemy.getAttackKnockback());
+            if (cooldown == 0&&!enemy.getImmunityState()) {
+                resolveEnemyAttack(player, enemy, enemy.getAttackDamage(), enemy.getAttackKnockback());
+                cooldown = ATTACK_COOLDOWN;
+            }
         } else if (obj1.getType() == GameObject.ObjectType.HITBOX && obj2.getType() == GameObject.ObjectType.ENEMY) {
             AttackHitbox hitbox = (AttackHitbox) body1.getUserData();
             Enemy enemy = (Enemy) body2.getUserData();
@@ -49,6 +59,9 @@ public class CollisionController implements ContactListener {
             AttackHitbox hitbox = (AttackHitbox) body2.getUserData();
             Enemy enemy = (Enemy) body1.getUserData();
             resolvePlayerAttack(hitbox, enemy);
+        }
+        if (cooldown > 0) {
+            cooldown--;
         }
 
     }
@@ -73,7 +86,7 @@ public class CollisionController implements ContactListener {
     public void resolvePlayerAttack(AttackHitbox hitbox, Enemy enemy) {
         // Apply damage to the enemy
         enemy.setHp(enemy.getHp() - MAX_KILL_POWER * PlayerAttackHandler.getAttackPower());
-
+        enemy.setImmune(1f);
         // Apply knockback to the enemy
         Body enemyBody = enemy.getBody();
         Vector2 playerPos = hitbox.getBody().getPosition();

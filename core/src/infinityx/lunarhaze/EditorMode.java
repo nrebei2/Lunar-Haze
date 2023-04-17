@@ -9,10 +9,9 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector2;
-import imgui.ImFont;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.glfw.ImGuiImplGlfw;
@@ -22,7 +21,6 @@ import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.graphics.ImGuiImplGLES2;
 import infinityx.util.ScreenObservable;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +47,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     private int[] boardSize;
     private TiledMap tiledMap;
 
-    private ImFont font;
+    private BitmapFont font;
 
     /**
      * User requested to go to menu
@@ -84,9 +82,11 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         ImGui.createContext();
         ImGuiIO io = ImGui.getIO();
         io.setIniFilename(null);
-        font = io.getFonts().addFontFromFileTTF("assets/fonts/font.ttf", 24);
-        io.setFontDefault(font);
-        io.getFonts().build();
+//        font = directory.getEntry("libre-small", BitmapFont.class);
+//        font = io.getFonts().addFontFromFileTTF("assets/fonts/font.ttf", 24);
+//        ImFont
+//        io.setFontDefault(font.);
+//        io.getFonts().build();
 
         imGuiGlfw.init(windowHandle, true);
         imGuiGl.init("#version 110");
@@ -287,8 +287,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     @Override
     public void show() {
         boardSize = new int[]{10, 10};
-        patrol1 = new int[]{0,0};
-        patrol2 = new int[]{0,0};
+        patrol1 = new int[]{0, 0};
+        patrol2 = new int[]{0, 0};
         level = LevelParser.LevelParser().loadEmpty(boardSize[0], boardSize[1]);
         level.hidePlayer();
         playerPlaced = false;
@@ -332,13 +332,15 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             observer.exitScreen(this, GO_MENU);
         }
 
-        for(PointLight light : pointLights) {
-            light.setColor(new Color (moonlightLighting[0], moonlightLighting[1], moonlightLighting[2], moonlightLighting[3]));
+        for (PointLight light : pointLights) {
+            light.setColor(new Color(moonlightLighting[0], moonlightLighting[1], moonlightLighting[2], moonlightLighting[3]));
         }
         level.setBattleAmbience(battleLighting);
         level.setStealthAmbience(stealthLighting);
-        if(showBattleLighting) level.getRayHandler().setAmbientLight(battleLighting[0], battleLighting[1], battleLighting[2], battleLighting[3]);
-        else level.getRayHandler().setAmbientLight(stealthLighting[0], stealthLighting[1], stealthLighting[2], stealthLighting[3]);
+        if (showBattleLighting)
+            level.getRayHandler().setAmbientLight(battleLighting[0], battleLighting[1], battleLighting[2], battleLighting[3]);
+        else
+            level.getRayHandler().setAmbientLight(stealthLighting[0], stealthLighting[1], stealthLighting[2], stealthLighting[3]);
     }
 
     /**
@@ -685,7 +687,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         }
     }*/
 
-    private void createViewMenu () {
+    private void createViewMenu() {
         if (ImGui.beginMenu("View")) {
             if (ImGui.menuItem("Toggle Stealth / Battle Lighting")) {
                 showBattleLighting = !showBattleLighting;
@@ -695,11 +697,11 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     }
 
     private void createEnemyMenu() {
-        if(ImGui.beginMenu("   Enemy   ")) {
+        if (ImGui.beginMenu("   Enemy   ")) {
 
             // Iterate through enemies and create options for menu
-            for(int i = 0; i < enemies.size(); i++) {
-                if(ImGui.menuItem("Show Enemy " + i + " Menu")) {
+            for (int i = 0; i < enemies.size(); i++) {
+                if (ImGui.menuItem("Show Enemy " + i + " Menu")) {
                     currEnemyControlled = enemies.get(i);
                     showEnemyControllerWindow = true;
                 }

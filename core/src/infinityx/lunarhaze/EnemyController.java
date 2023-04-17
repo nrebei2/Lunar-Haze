@@ -37,7 +37,6 @@ public class EnemyController {
      */
     Collision<Vector2> collisionCache = new Collision<>(new Vector2(), new Vector2());
 
-
     /**
      * Pathfinder reference from level container
      */
@@ -95,6 +94,7 @@ public class EnemyController {
      */
     public EnemyController(Enemy enemy) {
         patrolTarget = new Vector2();
+        this.targetPos = new Vector2();
         this.enemy = enemy;
         this.inBattle = false;
         this.stateMachine = new DefaultStateMachine<>(this, EnemyState.INIT, EnemyState.ANY_STATE);
@@ -204,6 +204,10 @@ public class EnemyController {
 
     public void setInBattle(boolean inBattle) {
         this.inBattle = inBattle;
+    }
+
+    public boolean isInBattle() {
+        return inBattle;
     }
 
     /**
