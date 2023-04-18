@@ -302,7 +302,6 @@ public class LoadingMode extends ScreenObservable implements Screen {
             lobby_background.setLooping(true);
             lobby_background.play();
             set_lobby = true;
-            System.out.println("Lobby background played");
         }
         switch (loadingState) {
             case FADE_IN:

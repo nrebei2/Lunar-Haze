@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.utils.Array;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.GameplayController.GameState;
@@ -219,9 +220,25 @@ public class UIRender {
     private ShaderUniform meterUniform;
 
 
-    Color full = new Color(138f / 255.0f, 25f / 255.0f, 45f / 255.0f, 1f);
+    /**
+     * current time (in seconds) transition screen has been alive
+     */
+    private float elapsed;
 
-    Color empty = new Color(41f / 255.0f, 41f / 255.0f, 41f / 255.0f, 0.8f);
+    /**
+     * time (in seconds) it should take this screen to fade-in and fade-out
+     */
+    private static final float FADE_TIME = 1f;
+
+    /**
+     * Easing in function, easing out is reversed
+     */
+    private static final Interpolation EAS_FN = Interpolation.exp5Out;
+
+    /**
+     * alpha tint, rgb should be 1 as we are only changing transparency
+     */
+    private final Color alphaTint = new Color(1, 1, 1, 1);
 
     /**
      * Create a new UIRender with font and directory assigned.
@@ -316,6 +333,9 @@ public class UIRender {
 
             if (phase == Phase.TRANSITION){
                 drawTransitionScreen(canvas, level, delta);
+            } else if (phase == Phase.STEALTH){
+                moon_centerY_ratio = MOON_CENTER_LOW;
+                elapsed = 0;
             }
         }
     }
@@ -333,8 +353,16 @@ public class UIRender {
      * @param delta  Number of seconds since last animation frame
      */
     public void drawTransitionScreen(GameCanvas canvas, LevelContainer level, float delta){
+        System.out.println("drawTransitionScreen called here");
+        elapsed = elapsed + delta;
+
+        if (level.getPhaseTransitionTime() - elapsed <= FADE_TIME){
+            float outProg = Math.min(1f, elapsed - (level.getPhaseTransitionTime() - FADE_TIME) / FADE_TIME);
+            alphaTint.a = EAS_FN.apply(1 - outProg);
+        }
+
         canvas.begin(GameCanvas.DrawPass.SPRITE);
-        canvas.drawOverlay(transition_background, Color.WHITE, true);
+        canvas.drawOverlay(transition_background, alphaTint, true);
 
         float moon_low = canvas.getHeight() * MOON_CENTER_LOW;
         float moon_high = canvas.getHeight() * MOON_CENTER_HIGH;
@@ -351,12 +379,12 @@ public class UIRender {
             moon_centerY = moon_high;
         }
 
-        canvas.draw(moon, Color.WHITE, moon_centerX - moon_size/2,
+        canvas.draw(moon, alphaTint, moon_centerX - moon_size/2,
                 moon_centerY - moon_size/2, moon_size, moon_size);
 
         float tree_width = canvas.getWidth();
         float tree_height = (float) trees.getHeight() / trees.getWidth() * tree_width;
-        canvas.draw(trees, Color.WHITE, 0, 0, tree_width, tree_height);
+        canvas.draw(trees, alphaTint, 0, 0, tree_width, tree_height);
         canvas.end();
     }
 
