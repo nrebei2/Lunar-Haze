@@ -228,7 +228,7 @@ public class UIRender {
     /**
      * time (in seconds) it should take this screen to fade-in and fade-out
      */
-    private static final float FADE_TIME = 1f;
+    private static final float FADE_TIME_PROP = 1/8f;
 
     /**
      * Easing in function, easing out is reversed
@@ -272,6 +272,13 @@ public class UIRender {
         this.meter = directory.get("meter", ShaderProgram.class);
         this.meterUniform = new ShaderUniform("u_amount");
 
+    }
+
+    /**
+     * @return Elapsed time of transition phase
+     */
+    public float getElapsed(){
+        return elapsed;
     }
 
 
@@ -352,16 +359,17 @@ public class UIRender {
      * @param level  container holding all models
      * @param delta  Number of seconds since last animation frame
      */
-    public void drawTransitionScreen(GameCanvas canvas, LevelContainer level, float delta) {
-        System.out.println("drawTransitionScreen called here");
+    public void drawTransitionScreen(GameCanvas canvas, LevelContainer level, float delta){
         elapsed = elapsed + delta;
 
-        if (level.getPhaseTransitionTime() - elapsed <= FADE_TIME) {
-            float outProg = Math.min(1f, elapsed - (level.getPhaseTransitionTime() - FADE_TIME) / FADE_TIME);
+        float fade_time = FADE_TIME_PROP * level.getPhaseTransitionTime();
+        if (level.getPhaseTransitionTime() - elapsed <= fade_time){
+            float outProg = Math.min(1f, elapsed - (level.getPhaseTransitionTime() - fade_time) / fade_time);
             alphaTint.a = EAS_FN.apply(1 - outProg);
         }
 
         canvas.begin(GameCanvas.DrawPass.SPRITE);
+        canvas.drawOverlay(transition_background, Color.BLACK, true);
         canvas.drawOverlay(transition_background, alphaTint, true);
 
         float moon_low = canvas.getHeight() * MOON_CENTER_LOW;
