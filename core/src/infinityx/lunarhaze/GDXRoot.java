@@ -67,9 +67,13 @@ public class GDXRoot extends Game implements ScreenObserver {
     private EditorMode editor;
 
     /**
-     * The game is paused or not
+     * The game's previous screen
      */
-    private boolean isPaused;
+    private String previousScreen;
+
+    public String getPreviousScreen(){
+        return previousScreen;
+    }
 
     /**
      * Creates a new game from the configuration settings.
@@ -90,7 +94,7 @@ public class GDXRoot extends Game implements ScreenObserver {
         loading = new LoadingMode("assets.json", canvas, 1);
         game = new GameMode(canvas);
         menu = new MenuMode(canvas);
-        setting = new SettingMode(canvas);
+        setting = new SettingMode(canvas, this);
         aboutUs = new AboutUsMode(canvas);
         pause = new PauseMode(canvas);
         allocate = new AllocateScreen(canvas, game);
@@ -105,8 +109,6 @@ public class GDXRoot extends Game implements ScreenObserver {
         pause.setObserver(this);
         allocate.setObserver(this);
         editor.setObserver(this);
-
-        isPaused = false;
 
         setScreen(loading);
     }
@@ -136,15 +138,6 @@ public class GDXRoot extends Game implements ScreenObserver {
             directory = null;
         }
         super.dispose();
-    }
-    public void togglePause() {
-        if (isPaused) {
-            setScreen(game);
-            isPaused = false;
-        } else {
-            setScreen(pause);
-            isPaused = true;
-        }
     }
 
     /**
@@ -205,6 +198,7 @@ public class GDXRoot extends Game implements ScreenObserver {
                     //setScreen(editor);
                     break;
                 case MenuMode.GO_SETTING:
+                    previousScreen = "menu";
                     setScreen(setting);
                     break;
                 case MenuMode.GO_ABOUT_US:
@@ -218,6 +212,9 @@ public class GDXRoot extends Game implements ScreenObserver {
             switch (exitCode) {
                 case SettingMode.GO_MENU:
                     setScreen(menu);
+                    break;
+                case SettingMode.GO_PAUSE:
+                    setScreen(pause);
                     break;
             }
         } else if (screen == aboutUs) {
@@ -244,6 +241,10 @@ public class GDXRoot extends Game implements ScreenObserver {
                         break;
                     case PauseMode.GO_MENU:
                         setScreen(menu);
+                        break;
+                    case PauseMode.GO_SETTING:
+                        previousScreen = "pause";
+                        setScreen(setting);
                         break;
                     case PauseMode.GO_EXIT:
                         Gdx.app.exit();
