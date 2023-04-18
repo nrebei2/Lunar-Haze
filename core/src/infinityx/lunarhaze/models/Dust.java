@@ -1,4 +1,4 @@
-package infinityx.lunarhaze.entity;
+package infinityx.lunarhaze.models;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Interpolation;

@@ -1,12 +1,12 @@
-package infinityx.lunarhaze.entity;
+package infinityx.lunarhaze.models.entity;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Pool;
 import infinityx.assets.AssetDirectory;
-import infinityx.lunarhaze.LevelContainer;
-import infinityx.lunarhaze.SteeringGameObject;
+import infinityx.lunarhaze.models.LevelContainer;
+import infinityx.lunarhaze.models.SteeringGameObject;
 import infinityx.lunarhaze.physics.ConeSource;
 
 import java.util.ArrayList;
@@ -96,7 +96,7 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
         setMaxLinearAcceleration(0.5f);
         setMaxLinearSpeed(0.7f);
         setMaxAngularAcceleration(1);
-        setMaxAngularSpeed(1);
+        setMaxAngularSpeed(0.7f);
     }
 
     @Override

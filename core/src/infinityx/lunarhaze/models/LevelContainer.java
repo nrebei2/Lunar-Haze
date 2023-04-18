@@ -1,4 +1,4 @@
-package infinityx.lunarhaze;
+package infinityx.lunarhaze.models;
 
 import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
@@ -11,12 +11,13 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
 import infinityx.assets.AssetDirectory;
-import infinityx.lunarhaze.entity.Enemy;
-import infinityx.lunarhaze.entity.EnemyPool;
-import infinityx.lunarhaze.entity.SceneObject;
-import infinityx.lunarhaze.entity.Werewolf;
+import infinityx.lunarhaze.controllers.EnemyController;
 import infinityx.lunarhaze.graphics.CameraShake;
 import infinityx.lunarhaze.graphics.GameCanvas;
+import infinityx.lunarhaze.models.entity.Enemy;
+import infinityx.lunarhaze.models.entity.EnemyPool;
+import infinityx.lunarhaze.models.entity.SceneObject;
+import infinityx.lunarhaze.models.entity.Werewolf;
 import infinityx.util.Drawable;
 import infinityx.util.astar.AStarMap;
 import infinityx.util.astar.AStarPathFinding;

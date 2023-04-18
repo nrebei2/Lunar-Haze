@@ -1,4 +1,4 @@
-package infinityx.lunarhaze.entity;
+package infinityx.lunarhaze.models.entity;
 
 import box2dLight.PointLight;
 import com.badlogic.gdx.ai.utils.Location;
@@ -7,11 +7,12 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
-import infinityx.lunarhaze.GameObject;
-import infinityx.lunarhaze.InputController;
-import infinityx.lunarhaze.LevelContainer;
 import infinityx.lunarhaze.combat.AttackHitbox;
+import infinityx.lunarhaze.controllers.InputController;
+import infinityx.lunarhaze.models.GameObject;
+import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.util.Box2dLocation;
+import infinityx.util.Direction;
 import infinityx.util.MathUtil;
 
 /**
@@ -160,6 +161,7 @@ public class Werewolf extends GameObject implements Location<Vector2> {
      * Time duration for immune state
      */
     private float immunityTime;
+
     /**
      * Let werewolf to be immune from enemies' attacking with time length duration
      */
@@ -167,6 +169,7 @@ public class Werewolf extends GameObject implements Location<Vector2> {
         isImmune = true;
         immunityTime = duration;
     }
+
     /**
      * Return the immune state for the werewolf
      */

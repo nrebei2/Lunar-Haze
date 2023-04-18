@@ -1,4 +1,4 @@
-package infinityx.lunarhaze;
+package infinityx.lunarhaze.screens;
 
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
@@ -17,8 +17,12 @@ import imgui.ImGuiIO;
 import imgui.glfw.ImGuiImplGlfw;
 import imgui.type.ImBoolean;
 import infinityx.assets.AssetDirectory;
+import infinityx.lunarhaze.controllers.LevelParser;
+import infinityx.lunarhaze.controllers.LevelSerializer;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.graphics.ImGuiImplGLES2;
+import infinityx.lunarhaze.models.Board;
+import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.util.ScreenObservable;
 
 import java.util.ArrayList;
@@ -168,9 +172,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     private float[] moonlightLighting;
 
     /* Holds a reference to the enemies, so that the enemy menu can let you modify them */
-    private ArrayList<infinityx.lunarhaze.entity.Enemy> enemies;
+    private ArrayList<infinityx.lunarhaze.models.entity.Enemy> enemies;
 
-    private infinityx.lunarhaze.entity.Enemy currEnemyControlled;
+    private infinityx.lunarhaze.models.entity.Enemy currEnemyControlled;
     private int[] patrol1;
     private int[] patrol2;
     private boolean showBattleLighting;
@@ -217,7 +221,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 (int) mouseBoard.x, (int) mouseBoard.y,
                 curr.texture, curr.num
         );
-        board.setTileType((int) mouseBoard.x, (int) mouseBoard.y, infinityx.lunarhaze.Tile.TileType.Road);
+        board.setTileType((int) mouseBoard.x, (int) mouseBoard.y, infinityx.lunarhaze.models.Tile.TileType.Road);
     }
 
     private void placeSelection() {
@@ -704,7 +708,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             board = level.getBoard();
             showEnemyControllerWindow = false;
             showBattleLighting = false;
-            enemies = new ArrayList<infinityx.lunarhaze.entity.Enemy>();
+            enemies = new ArrayList<infinityx.lunarhaze.models.entity.Enemy>();
             stealthLighting = new float[]{1, 1, 1, 1};
             battleLighting = new float[]{1, 1, 1, 1};
             moonlightLighting = new float[]{1, 1, 1, 1};

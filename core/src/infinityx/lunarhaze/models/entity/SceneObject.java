@@ -1,9 +1,9 @@
-package infinityx.lunarhaze.entity;
+package infinityx.lunarhaze.models.entity;
 
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
-import infinityx.lunarhaze.GameObject;
-import infinityx.lunarhaze.LevelContainer;
+import infinityx.lunarhaze.models.GameObject;
+import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.util.Drawable;
 
 /**

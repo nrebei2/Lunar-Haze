@@ -1,10 +1,12 @@
-package infinityx.lunarhaze;
+package infinityx.lunarhaze.controllers;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.JsonValue;
-import infinityx.lunarhaze.entity.Dust;
+import infinityx.lunarhaze.models.Board;
+import infinityx.lunarhaze.models.Dust;
+import infinityx.lunarhaze.models.LevelContainer;
 
 import java.util.Iterator;
 

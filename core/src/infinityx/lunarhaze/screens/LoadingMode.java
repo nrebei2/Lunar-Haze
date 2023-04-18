@@ -427,5 +427,6 @@ public class LoadingMode extends ScreenObservable implements Screen {
     /**
      * Called when this screen is no longer the current screen for a Game.
      */
-    public void hide() {}
+    public void hide() {
+    }
 }

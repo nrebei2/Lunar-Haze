@@ -8,11 +8,11 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import infinityx.assets.AssetDirectory;
-import infinityx.lunarhaze.GameplayController;
-import infinityx.lunarhaze.PlayerController;
 import infinityx.lunarhaze.combat.PlayerAttackHandler;
-import infinityx.lunarhaze.entity.Werewolf;
+import infinityx.lunarhaze.controllers.GameplayController;
+import infinityx.lunarhaze.controllers.PlayerController;
 import infinityx.lunarhaze.graphics.GameCanvas;
+import infinityx.lunarhaze.models.entity.Werewolf;
 import infinityx.util.ScreenObservable;
 
 /**

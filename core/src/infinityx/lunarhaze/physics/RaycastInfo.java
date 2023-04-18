@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.utils.ObjectSet;
-import infinityx.lunarhaze.GameObject;
+import infinityx.lunarhaze.models.GameObject;
 
 public class RaycastInfo implements RayCastCallback {
     /**

@@ -1,4 +1,4 @@
-package infinityx.lunarhaze;
+package infinityx.lunarhaze.controllers;
 
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.fsm.StateMachine;
@@ -12,8 +12,10 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
-import infinityx.lunarhaze.entity.Enemy;
-import infinityx.lunarhaze.entity.Werewolf;
+import infinityx.lunarhaze.models.GameObject;
+import infinityx.lunarhaze.models.LevelContainer;
+import infinityx.lunarhaze.models.entity.Enemy;
+import infinityx.lunarhaze.models.entity.Werewolf;
 import infinityx.lunarhaze.physics.Box2DRaycastCollision;
 import infinityx.lunarhaze.physics.RaycastInfo;
 import infinityx.util.astar.AStarPathFinding;

@@ -1,4 +1,4 @@
-package infinityx.lunarhaze;
+package infinityx.lunarhaze.models;
 
 import box2dLight.PointLight;
 import com.badlogic.gdx.graphics.Texture;

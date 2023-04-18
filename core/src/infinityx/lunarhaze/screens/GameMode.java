@@ -2,23 +2,19 @@ package infinityx.lunarhaze.screens;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
-import infinityx.lunarhaze.GameplayController;
-import infinityx.lunarhaze.GameplayController.GameState;
-import infinityx.lunarhaze.GameplayController.Phase;
-import infinityx.lunarhaze.InputController;
-import infinityx.lunarhaze.LevelContainer;
-import infinityx.lunarhaze.LevelParser;
-import infinityx.lunarhaze.UIRender;
+import infinityx.lunarhaze.controllers.GameplayController;
+import infinityx.lunarhaze.controllers.GameplayController.Phase;
+import infinityx.lunarhaze.controllers.InputController;
+import infinityx.lunarhaze.controllers.LevelParser;
 import infinityx.lunarhaze.graphics.GameCanvas;
+import infinityx.lunarhaze.graphics.UIRender;
+import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.util.ScreenObservable;
 
 

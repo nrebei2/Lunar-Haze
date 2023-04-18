@@ -1,8 +1,8 @@
 package infinityx.lunarhaze.combat;
 
-import infinityx.lunarhaze.GameplayController;
-import infinityx.lunarhaze.InputController;
-import infinityx.lunarhaze.entity.Werewolf;
+import infinityx.lunarhaze.controllers.GameplayController;
+import infinityx.lunarhaze.controllers.InputController;
+import infinityx.lunarhaze.models.entity.Werewolf;
 
 /**
  * Handles all attacking for the player by extending the base

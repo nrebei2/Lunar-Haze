@@ -1,4 +1,4 @@
-package infinityx.lunarhaze;
+package infinityx.lunarhaze.models;
 
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;

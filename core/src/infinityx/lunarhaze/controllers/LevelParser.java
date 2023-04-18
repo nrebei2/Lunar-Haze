@@ -1,4 +1,4 @@
-package infinityx.lunarhaze;
+package infinityx.lunarhaze.controllers;
 
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
@@ -9,6 +9,9 @@ import com.badlogic.gdx.utils.IntArray;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.graphics.GameCanvas;
+import infinityx.lunarhaze.models.Board;
+import infinityx.lunarhaze.models.LevelContainer;
+import infinityx.lunarhaze.models.Tile;
 
 import java.util.ArrayList;
 

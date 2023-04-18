@@ -1,4 +1,4 @@
-package infinityx.lunarhaze;
+package infinityx.lunarhaze.graphics;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -8,13 +8,12 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.utils.Array;
 import infinityx.assets.AssetDirectory;
-import infinityx.lunarhaze.GameplayController.GameState;
-import infinityx.lunarhaze.GameplayController.Phase;
-import infinityx.lunarhaze.entity.Enemy;
-import infinityx.lunarhaze.entity.Werewolf;
-import infinityx.lunarhaze.graphics.GameCanvas;
-import infinityx.lunarhaze.graphics.ScreenFlash;
-import infinityx.lunarhaze.graphics.ShaderUniform;
+import infinityx.lunarhaze.controllers.GameplayController;
+import infinityx.lunarhaze.controllers.GameplayController.GameState;
+import infinityx.lunarhaze.controllers.GameplayController.Phase;
+import infinityx.lunarhaze.models.LevelContainer;
+import infinityx.lunarhaze.models.entity.Enemy;
+import infinityx.lunarhaze.models.entity.Werewolf;
 
 /**
  * This is a class used for drawing player and enemies' game UI state: HP, Stealth, MoonLight
@@ -228,7 +227,7 @@ public class UIRender {
     /**
      * time (in seconds) it should take this screen to fade-in and fade-out
      */
-    private static final float FADE_TIME_PROP = 1/8f;
+    private static final float FADE_TIME_PROP = 1 / 8f;
 
     /**
      * Easing in function, easing out is reversed
@@ -277,7 +276,7 @@ public class UIRender {
     /**
      * @return Elapsed time of transition phase
      */
-    public float getElapsed(){
+    public float getElapsed() {
         return elapsed;
     }
 
@@ -289,7 +288,7 @@ public class UIRender {
      * @param level  container holding all models
      * @param phase  current phase of the game
      */
-    public void drawUI(GameCanvas canvas, LevelContainer level, GameplayController.Phase phase,
+    public void drawUI(GameCanvas canvas, LevelContainer level, Phase phase,
                        GameplayController gameplayController, float delta) {
         if (gameplayController.getState() == GameState.PLAY) {
             setFontColor(Color.WHITE);
@@ -359,11 +358,11 @@ public class UIRender {
      * @param level  container holding all models
      * @param delta  Number of seconds since last animation frame
      */
-    public void drawTransitionScreen(GameCanvas canvas, LevelContainer level, float delta){
+    public void drawTransitionScreen(GameCanvas canvas, LevelContainer level, float delta) {
         elapsed = elapsed + delta;
 
         float fade_time = FADE_TIME_PROP * level.getPhaseTransitionTime();
-        if (level.getPhaseTransitionTime() - elapsed <= fade_time){
+        if (level.getPhaseTransitionTime() - elapsed <= fade_time) {
             float outProg = Math.min(1f, elapsed - (level.getPhaseTransitionTime() - fade_time) / fade_time);
             alphaTint.a = EAS_FN.apply(1 - outProg);
         }

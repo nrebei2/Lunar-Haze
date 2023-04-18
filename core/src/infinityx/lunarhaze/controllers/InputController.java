@@ -1,4 +1,4 @@
-package infinityx.lunarhaze;
+package infinityx.lunarhaze.controllers;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;

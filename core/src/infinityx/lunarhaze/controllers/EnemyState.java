@@ -1,4 +1,4 @@
-package infinityx.lunarhaze;
+package infinityx.lunarhaze.controllers;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.fsm.State;
@@ -9,7 +9,7 @@ import com.badlogic.gdx.ai.utils.ArithmeticUtils;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.ai.TacticalManager;
-import infinityx.lunarhaze.entity.Enemy;
+import infinityx.lunarhaze.models.entity.Enemy;
 import infinityx.util.Box2dLocation;
 
 import java.util.ArrayList;

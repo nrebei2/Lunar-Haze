@@ -6,7 +6,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import infinityx.assets.AssetDirectory;
-import infinityx.lunarhaze.InputController;
+import infinityx.lunarhaze.controllers.InputController;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.util.ScreenObservable;
 
@@ -210,7 +210,7 @@ public class PauseMode extends ScreenObservable implements Screen, InputProcesso
         pause_quit = directory.getEntry("pause-quit", Texture.class);
     }
 
-    private void update(float delta){
+    private void update(float delta) {
 
     }
 
@@ -222,30 +222,30 @@ public class PauseMode extends ScreenObservable implements Screen, InputProcesso
      * prefer this in lecture.
      */
     private void draw() {
-            canvas.begin(GameCanvas.DrawPass.SPRITE);
-            Color alphaTint = Color.WHITE;
-            canvas.drawOverlay(pause_menu, alphaTint, true);
-            Color tintResume = (pressResumeState == 1 ? Color.BLACK : Color.WHITE);
-            canvas.draw(pause_resume, tintResume, pause_resume.getWidth() / 2,
-                    pause_resume.getHeight() / 2,
-                    centerX, centerYResume, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
-            Color tintRestart = (pressRestartState == 1 ? Color.BLACK : Color.WHITE);
-            canvas.draw(pause_restart, tintRestart, pause_restart.getWidth() / 2,
-                    pause_restart.getHeight() / 2,
-                    centerX, centerYRestart, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
-            Color tintReview = (pressReviewState == 1 ? Color.BLACK : Color.WHITE);
-            canvas.draw(pause_review, tintReview, pause_review.getWidth() / 2,
-                    pause_review.getHeight() / 2,
-                    centerX, centerYReview, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
-            Color tintExit = (pressExitState == 1 ? Color.BLACK : Color.WHITE);
-            canvas.draw(pause_exit, tintExit, pause_exit.getWidth() / 2,
-                    pause_exit.getHeight() / 2,
-                    centerX, centerYExit, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
-            Color tintQuit = (pressQuitState == 1 ? Color.BLACK : Color.WHITE);
-            canvas.draw(pause_quit, tintQuit, pause_quit.getWidth() / 2,
-                    pause_quit.getHeight() / 2,
-                    centerX, centerYQuit, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
-            canvas.end();
+        canvas.begin(GameCanvas.DrawPass.SPRITE);
+        Color alphaTint = Color.WHITE;
+        canvas.drawOverlay(pause_menu, alphaTint, true);
+        Color tintResume = (pressResumeState == 1 ? Color.BLACK : Color.WHITE);
+        canvas.draw(pause_resume, tintResume, pause_resume.getWidth() / 2,
+                pause_resume.getHeight() / 2,
+                centerX, centerYResume, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
+        Color tintRestart = (pressRestartState == 1 ? Color.BLACK : Color.WHITE);
+        canvas.draw(pause_restart, tintRestart, pause_restart.getWidth() / 2,
+                pause_restart.getHeight() / 2,
+                centerX, centerYRestart, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
+        Color tintReview = (pressReviewState == 1 ? Color.BLACK : Color.WHITE);
+        canvas.draw(pause_review, tintReview, pause_review.getWidth() / 2,
+                pause_review.getHeight() / 2,
+                centerX, centerYReview, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
+        Color tintExit = (pressExitState == 1 ? Color.BLACK : Color.WHITE);
+        canvas.draw(pause_exit, tintExit, pause_exit.getWidth() / 2,
+                pause_exit.getHeight() / 2,
+                centerX, centerYExit, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
+        Color tintQuit = (pressQuitState == 1 ? Color.BLACK : Color.WHITE);
+        canvas.draw(pause_quit, tintQuit, pause_quit.getWidth() / 2,
+                pause_quit.getHeight() / 2,
+                centerX, centerYQuit, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
+        canvas.end();
     }
 
     @Override
@@ -268,10 +268,10 @@ public class PauseMode extends ScreenObservable implements Screen, InputProcesso
             if (isReadyResume() && observer != null) {
                 observer.exitScreen(this, GO_RESUME);
             }
-            if(isReadyRestart()&& observer !=null){
+            if (isReadyRestart() && observer != null) {
                 observer.exitScreen(this, GO_RESTART);
             }
-            if(isReadyReview()&& observer !=null){
+            if (isReadyReview() && observer != null) {
                 observer.exitScreen(this, GO_SETTING);
             }
             if (isReadyExit() && observer != null) {

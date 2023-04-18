@@ -1,12 +1,14 @@
-package infinityx.lunarhaze;
+package infinityx.lunarhaze.controllers;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.fsm.StateMachine;
 import com.badlogic.gdx.audio.Sound;
-import infinityx.lunarhaze.GameplayController.Phase;
 import infinityx.lunarhaze.combat.PlayerAttackHandler;
-import infinityx.lunarhaze.entity.Werewolf;
+import infinityx.lunarhaze.controllers.GameplayController.Phase;
+import infinityx.lunarhaze.models.Board;
+import infinityx.lunarhaze.models.LevelContainer;
+import infinityx.lunarhaze.models.entity.Werewolf;
 
 
 /**

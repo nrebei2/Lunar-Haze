@@ -1,9 +1,11 @@
-package infinityx.lunarhaze;
+package infinityx.lunarhaze.controllers;
 
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.JsonWriter;
-import infinityx.lunarhaze.entity.Enemy;
-import infinityx.lunarhaze.entity.SceneObject;
+import infinityx.lunarhaze.models.Board;
+import infinityx.lunarhaze.models.LevelContainer;
+import infinityx.lunarhaze.models.entity.Enemy;
+import infinityx.lunarhaze.models.entity.SceneObject;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;

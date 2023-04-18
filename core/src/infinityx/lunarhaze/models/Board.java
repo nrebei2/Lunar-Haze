@@ -1,4 +1,4 @@
-package infinityx.lunarhaze;
+package infinityx.lunarhaze.models;
 
 import box2dLight.PointLight;
 import com.badlogic.gdx.Gdx;
@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.graphics.GameCanvas;
+import infinityx.lunarhaze.screens.EditorMode;
 
 import java.util.ArrayList;
 
@@ -271,7 +272,7 @@ public class Board {
      * @param y       The y index for the Tile cell
      * @param texture The texture used for preview
      */
-    void setPreviewTile(int x, int y, Texture texture) {
+    public void setPreviewTile(int x, int y, Texture texture) {
         if (!inBounds(x, y)) {
             removePreview();
             return;
@@ -279,7 +280,7 @@ public class Board {
         this.previewTile = new PreviewTile(x, y, texture);
     }
 
-    void removePreview() {
+    public void removePreview() {
         previewTile = null;
     }
 

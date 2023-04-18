@@ -135,10 +135,10 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
         }
         // We are are ready, notify our listener
         if (isReady() && observer != null) {
-            if(game.getPreviousScreen()=="pause") {
+            if (game.getPreviousScreen() == "pause") {
                 observer.exitScreen(this, GO_PAUSE);
             }
-            if(game.getPreviousScreen()=="menu") {
+            if (game.getPreviousScreen() == "menu") {
                 observer.exitScreen(this, GO_MENU);
             }
 

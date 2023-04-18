@@ -1,9 +1,9 @@
-package infinityx.lunarhaze.entity;
+package infinityx.lunarhaze.models.entity;
 
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.Pool;
-import infinityx.lunarhaze.EnemyController;
+import infinityx.lunarhaze.controllers.EnemyController;
 
 
 /**

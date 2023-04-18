@@ -1,10 +1,10 @@
-package infinityx.lunarhaze.entity;
+package infinityx.lunarhaze.controllers;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
-import infinityx.lunarhaze.EnemyState;
-import infinityx.lunarhaze.LevelContainer;
+import infinityx.lunarhaze.models.LevelContainer;
+import infinityx.lunarhaze.models.entity.Enemy;
 
 import java.util.ArrayList;
 import java.util.Arrays;

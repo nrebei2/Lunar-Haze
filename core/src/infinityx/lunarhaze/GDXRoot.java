@@ -4,14 +4,10 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import infinityx.assets.AssetDirectory;
+import infinityx.lunarhaze.controllers.InputController;
+import infinityx.lunarhaze.controllers.LevelParser;
 import infinityx.lunarhaze.graphics.GameCanvas;
-import infinityx.lunarhaze.screens.AboutUsMode;
-import infinityx.lunarhaze.screens.AllocateScreen;
-import infinityx.lunarhaze.screens.GameMode;
-import infinityx.lunarhaze.screens.LoadingMode;
-import infinityx.lunarhaze.screens.MenuMode;
-import infinityx.lunarhaze.screens.PauseMode;
-import infinityx.lunarhaze.screens.SettingMode;
+import infinityx.lunarhaze.screens.*;
 import infinityx.util.ScreenObserver;
 
 
@@ -71,7 +67,7 @@ public class GDXRoot extends Game implements ScreenObserver {
      */
     private String previousScreen;
 
-    public String getPreviousScreen(){
+    public String getPreviousScreen() {
         return previousScreen;
     }
 
@@ -234,26 +230,26 @@ public class GDXRoot extends Game implements ScreenObserver {
                     setScreen(allocate);
                     break;
             }
-        }else if (screen == pause){
-                switch (exitCode){
-                    case PauseMode.GO_RESUME:
-                        setScreen(game);
-                        break;
-                    case PauseMode.GO_MENU:
-                        setScreen(menu);
-                        break;
-                    case PauseMode.GO_SETTING:
-                        previousScreen = "pause";
-                        setScreen(setting);
-                        break;
-                    case PauseMode.GO_EXIT:
-                        Gdx.app.exit();
-                        break;
-                    case PauseMode.GO_RESTART:
-                        game.setupLevel();
-                        setScreen(game);
-                        break;
-                }
+        } else if (screen == pause) {
+            switch (exitCode) {
+                case PauseMode.GO_RESUME:
+                    setScreen(game);
+                    break;
+                case PauseMode.GO_MENU:
+                    setScreen(menu);
+                    break;
+                case PauseMode.GO_SETTING:
+                    previousScreen = "pause";
+                    setScreen(setting);
+                    break;
+                case PauseMode.GO_EXIT:
+                    Gdx.app.exit();
+                    break;
+                case PauseMode.GO_RESTART:
+                    game.setupLevel();
+                    setScreen(game);
+                    break;
+            }
         } else if (screen == allocate) {
             if (exitCode == AllocateScreen.GO_PLAY) {
                 System.out.println("Exit code switch to GO_PLAY");
