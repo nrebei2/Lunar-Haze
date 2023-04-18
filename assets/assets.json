@@ -361,14 +361,14 @@
     "dust": "jsons/dust.json"
   },
   "music": {
-    "stealthBackground": "sounds/village_no_drum.mp3",
-    "battleBackground": "sounds/village_with_drum.mp3",
-    "lobbyBackground": "sounds/lobby_music.mp3"
+    "stealthBackground": "sounds/village_no_drum.ogg",
+    "battleBackground": "sounds/village_with_drum.ogg",
+    "lobbyBackground": "sounds/lobby_music.ogg"
   },
   "sounds": {
-    "collect": "sounds/collect.mp3",
-    "level-passed": "sounds/level-passed.mp3",
-    "whip": "sounds/whip.mp3"
+    "collect": "sounds/collect.wav",
+    "level-passed": "sounds/level-passed.wav",
+    "whip": "sounds/whip.wav"
   },
   "fonts": {
     "retro": {
