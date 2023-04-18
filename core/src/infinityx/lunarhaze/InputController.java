@@ -108,7 +108,7 @@ public class InputController {
      */
     private static InputController theController;
 
-    public InputController() {
+    private InputController() {
     }
 
     /**
