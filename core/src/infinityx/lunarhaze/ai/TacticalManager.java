@@ -8,11 +8,11 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.OrderedSet;
-import infinityx.lunarhaze.EnemyController;
-import infinityx.lunarhaze.EnemyState;
-import infinityx.lunarhaze.LevelContainer;
-import infinityx.lunarhaze.entity.Enemy;
-import infinityx.lunarhaze.entity.Werewolf;
+import infinityx.lunarhaze.controllers.EnemyController;
+import infinityx.lunarhaze.controllers.EnemyState;
+import infinityx.lunarhaze.models.LevelContainer;
+import infinityx.lunarhaze.models.entity.Enemy;
+import infinityx.lunarhaze.models.entity.Werewolf;
 
 import java.util.Random;
 

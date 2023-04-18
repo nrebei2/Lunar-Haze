@@ -5,7 +5,7 @@ import com.badlogic.gdx.ai.steer.behaviors.ReachOrientation;
 import com.badlogic.gdx.ai.utils.ArithmeticUtils;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import infinityx.lunarhaze.SteeringGameObject;
+import infinityx.lunarhaze.models.SteeringGameObject;
 import infinityx.util.Box2dLocation;
 
 

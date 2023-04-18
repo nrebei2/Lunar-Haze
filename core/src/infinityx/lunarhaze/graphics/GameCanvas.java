@@ -33,8 +33,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
-import infinityx.lunarhaze.entity.Enemy;
-import infinityx.lunarhaze.entity.Werewolf;
+import infinityx.lunarhaze.models.entity.Enemy;
+import infinityx.lunarhaze.models.entity.Werewolf;
 
 /**
  * Primary view class for the game, abstracting the basic graphics calls.
