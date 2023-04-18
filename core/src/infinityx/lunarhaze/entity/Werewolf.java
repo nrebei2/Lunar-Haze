@@ -157,6 +157,17 @@ public class Werewolf extends GameObject implements Location<Vector2> {
 
     public Direction direction;
 
+    private boolean isImmune;
+    private float immunityTime;
+    public void setImmune(float duration) {
+        isImmune = true;
+        immunityTime = duration;
+    }
+
+    public boolean getImmunityState() {
+        return isImmune;
+    }
+
     /**
      * Returns the type of this object.
      * <p>
@@ -387,6 +398,8 @@ public class Werewolf extends GameObject implements Location<Vector2> {
         canMove = true;
         attackPower = INITIAL_POWER;
         attackRange = INITIAL_RANGE;
+        isImmune = false;
+        immunityTime = 0;
     }
 
     /**
@@ -454,6 +467,12 @@ public class Werewolf extends GameObject implements Location<Vector2> {
      */
     public void update(float delta) {
         super.update(delta);
+        if (isImmune) {
+            immunityTime -= delta;
+            if (immunityTime <= 0) {
+                isImmune = false;
+            }
+        }
         // get the current velocity of the player's Box2D body
         Vector2 velocity = body.getLinearVelocity();
         if (canMove) {

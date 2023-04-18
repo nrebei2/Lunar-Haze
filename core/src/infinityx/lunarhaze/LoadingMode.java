@@ -95,44 +95,19 @@ public class LoadingMode extends ScreenObservable implements Screen {
     /**
      * Standard window size (for scaling)
      */
-    private static final int STANDARD_WIDTH = 800;
+    private static final int STANDARD_WIDTH = 2560;
     /**
      * Standard window height (for scaling)
      */
-    private static final int STANDARD_HEIGHT = 700;
-    /**
-     * Ratio of the bar width to the screen
-     */
-    private static final float BAR_WIDTH_RATIO = 0.66f;
-    /**
-     * Ration of the bar height to the screen
-     */
-    private static final float BAR_HEIGHT_RATIO = 0.25f;
+    private static final int STANDARD_HEIGHT = 1600;
 
     /**
      * Reference to GameCanvas created by the root
      */
     private final GameCanvas canvas;
-    /** Listener that will update the player mode when we are done */
 
     /**
-     * The width of the progress bar
-     */
-    private int width;
-    /**
-     * The y-coordinate of the center of the progress bar
-     */
-    private int centerY;
-    /**
-     * The x-coordinate of the center of the progress bar
-     */
-    private int centerX;
-    /**
-     * The height of the canvas window (necessary since sprite origin != screen origin)
-     */
-    private int heightY;
-    /**
-     * Scaling factor for when the student changes the resolution.
+     * Scaling factor for when the resolution changes.
      */
     private float scale;
 
@@ -144,11 +119,6 @@ public class LoadingMode extends ScreenObservable implements Screen {
      * The amount of time to devote to loading assets (as opposed to on screen hints, etc.)
      */
     private int budget;
-
-    /**
-     * Whether or not this player mode is still active
-     */
-    private boolean active;
 
     /**
      * current time (in seconds) this screen has been alive
@@ -272,7 +242,6 @@ public class LoadingMode extends ScreenObservable implements Screen {
         // Start loading the real assets
         assets = new AssetDirectory(file);
         assets.loadAssets();
-        active = true;
 
         loadingState = LoadingState.FADE_IN;
         create();
@@ -316,6 +285,7 @@ public class LoadingMode extends ScreenObservable implements Screen {
                 break;
             case LOAD:
                 if (progress < 1.0f) {
+                    // Begin loading assets
                     assets.update(budget);
                     this.progress = assets.getProgress();
                     if (progress >= 1.0f) {
@@ -359,29 +329,31 @@ public class LoadingMode extends ScreenObservable implements Screen {
                 break;
         }
 
-
         TextureRegion currentFrame = moonAnimation.getKeyFrame(stateTime, true);
-//        canvas.draw(currentFrame, centerX-100, 0.3f*centerY);
-        canvas.draw(currentFrame, Color.WHITE, currentFrame.getRegionWidth() / 2,
-                currentFrame.getRegionY() / 2, centerX, 0.5f * centerY, 0f, 0.1f, 0.1f);
-
+        canvas.draw(
+                currentFrame, alphaTint,
+                currentFrame.getRegionWidth() / 2, currentFrame.getRegionY() / 2,
+                canvas.getWidth() / 2, canvas.getHeight() / 2 - 400 * scale,
+                0f,
+                0.2f * scale, 0.2f * scale
+        );
         canvas.end();
     }
 
     private void drawBackground(GameCanvas canvas) {
         canvas.drawOverlay(background, alphaTint, true);
-        canvas.draw(title, alphaTint, title.getWidth() / 2, title.getHeight() / 2, canvas.getWidth() / 2, canvas.getHeight() / 2, 0, 0.2f, 0.2f);
+        canvas.draw(title, alphaTint, title.getWidth() / 2, title.getHeight() / 2, canvas.getWidth() / 2, canvas.getHeight() / 2, 0, 0.2f * scale, 0.2f * scale);
         canvas.draw(
                 studios, alphaTint,
                 studios.getWidth() / 2, studios.getHeight() / 2,
-                canvas.getWidth() / 2, canvas.getHeight() / 2 - 230,
-                0, 0.2f, 0.2f
+                canvas.getWidth() / 2, canvas.getHeight() / 2 - 230 * scale,
+                0, 0.35f * scale, 0.35f * scale
         );
         canvas.draw(
                 loading, alphaTint,
-                loading.getWidth() / 2, loading.getHeight() / 2,
-                canvas.getWidth() / 2, canvas.getHeight() / 2 - 380,
-                0, 0.3f, 0.3f
+                loading.getWidth() / 2, 0,
+                canvas.getWidth() / 2, 20,
+                0, 0.3f * scale, 0.3f * scale
         );
     }
 
@@ -397,10 +369,8 @@ public class LoadingMode extends ScreenObservable implements Screen {
      */
     @Override
     public void render(float delta) {
-        if (active) {
-            update(delta);
-            draw(delta);
-        }
+        update(delta);
+        draw(delta);
     }
 
     public void create() {
@@ -428,14 +398,11 @@ public class LoadingMode extends ScreenObservable implements Screen {
      */
     public void resize(int width, int height) {
         // Compute the drawing scale
-        float sx = ((float) width) / STANDARD_WIDTH;
+        // We really only care about the y since our screen items are along a single column
+        // A linear interpolation for scale results in a hard-to-read title screen for small resolutions,
+        //  so I used fastSlow instead which is always above y=x.
         float sy = ((float) height) / STANDARD_HEIGHT;
-        scale = (sx < sy ? sx : sy);
-
-        this.width = (int) (BAR_WIDTH_RATIO * width);
-        centerY = (int) (BAR_HEIGHT_RATIO * height);
-        centerX = width / 2;
-        heightY = height;
+        scale = Interpolation.fastSlow.apply(sy);
     }
 
     /**
@@ -463,16 +430,11 @@ public class LoadingMode extends ScreenObservable implements Screen {
      * Called when this screen becomes the current screen for a Game.
      */
     public void show() {
-        // Useless if called in outside animation loop
-        active = true;
         elapsed = 0f;
     }
 
     /**
      * Called when this screen is no longer the current screen for a Game.
      */
-    public void hide() {
-        // Useless if called in outside animation loop
-        active = false;
-    }
+    public void hide() {}
 }

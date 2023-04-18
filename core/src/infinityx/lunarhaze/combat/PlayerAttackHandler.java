@@ -162,6 +162,7 @@ public class PlayerAttackHandler extends AttackHandler {
         attackDirection.set(input.getHorizontal(), input.getVertical()).nor();
         player.getBody().applyLinearImpulse(attackDirection, player.getBody().getWorldCenter(), true);
         comboAttackCooldownCounter = 0f;
+        player.setImmune(1f);
         super.initiateAttack();
     }
 
