@@ -157,13 +157,24 @@ public class Werewolf extends GameObject implements Location<Vector2> {
 
     public Direction direction;
 
+    /**
+     * Whether the werewolf is immune from enemies' attack
+     */
     private boolean isImmune;
+    /**
+     * Time duration for immune state
+     */
     private float immunityTime;
+    /**
+     * Let werewolf to be immune from enemies' attacking with time length duration
+     */
     public void setImmune(float duration) {
         isImmune = true;
         immunityTime = duration;
     }
-
+    /**
+     * Return the immune state for the werewolf
+     */
     public boolean getImmunityState() {
         return isImmune;
     }
