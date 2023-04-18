@@ -5,6 +5,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.graphics.GameCanvas;
+import infinityx.lunarhaze.screens.AboutUsMode;
+import infinityx.lunarhaze.screens.AllocateScreen;
+import infinityx.lunarhaze.screens.GameMode;
+import infinityx.lunarhaze.screens.LoadingMode;
+import infinityx.lunarhaze.screens.MenuMode;
+import infinityx.lunarhaze.screens.PauseMode;
+import infinityx.lunarhaze.screens.SettingMode;
 import infinityx.util.ScreenObserver;
 
 
@@ -44,7 +51,10 @@ public class GDXRoot extends Game implements ScreenObserver {
      * About us Screen
      */
     private AboutUsMode aboutUs;
-
+    /**
+     * Pause Screen
+     */
+    private PauseMode pause;
 
     /**
      * Allocate Screen
@@ -55,6 +65,11 @@ public class GDXRoot extends Game implements ScreenObserver {
      * Level editor
      */
     private EditorMode editor;
+
+    /**
+     * The game is paused or not
+     */
+    private boolean isPaused;
 
     /**
      * Creates a new game from the configuration settings.
@@ -77,6 +92,7 @@ public class GDXRoot extends Game implements ScreenObserver {
         menu = new MenuMode(canvas);
         setting = new SettingMode(canvas);
         aboutUs = new AboutUsMode(canvas);
+        pause = new PauseMode(canvas);
         allocate = new AllocateScreen(canvas, game);
         editor = new EditorMode(canvas);
 
@@ -86,8 +102,11 @@ public class GDXRoot extends Game implements ScreenObserver {
         menu.setObserver(this);
         setting.setObserver(this);
         aboutUs.setObserver(this);
+        pause.setObserver(this);
         allocate.setObserver(this);
         editor.setObserver(this);
+
+        isPaused = false;
 
         setScreen(loading);
     }
@@ -105,6 +124,7 @@ public class GDXRoot extends Game implements ScreenObserver {
         menu.dispose();
         setting.dispose();
         aboutUs.dispose();
+        pause.dispose();
 
         canvas.dispose();
         canvas = null;
@@ -116,6 +136,15 @@ public class GDXRoot extends Game implements ScreenObserver {
             directory = null;
         }
         super.dispose();
+    }
+    public void togglePause() {
+        if (isPaused) {
+            setScreen(game);
+            isPaused = false;
+        } else {
+            setScreen(pause);
+            isPaused = true;
+        }
     }
 
     /**
@@ -148,6 +177,7 @@ public class GDXRoot extends Game implements ScreenObserver {
             menu.gatherAssets(directory);
             setting.gatherAssets(directory);
             aboutUs.gatherAssets(directory);
+            pause.gatherAssets(directory);
             allocate.gatherAssets(directory);
             game.gatherAssets(directory);
 
@@ -197,8 +227,8 @@ public class GDXRoot extends Game implements ScreenObserver {
             }
         } else if (screen == game) {
             switch (exitCode) {
-                case GameMode.GO_MENU:
-                    setScreen(menu);
+                case GameMode.GO_PAUSE:
+                    setScreen(pause);
                     break;
                 case GameMode.GO_ALLOCATE:
                     allocate.setGameMode(game);
@@ -206,6 +236,22 @@ public class GDXRoot extends Game implements ScreenObserver {
                     setScreen(allocate);
                     break;
             }
+        }else if (screen == pause){
+                switch (exitCode){
+                    case PauseMode.GO_RESUME:
+                        setScreen(game);
+                        break;
+                    case PauseMode.GO_MENU:
+                        setScreen(menu);
+                        break;
+                    case PauseMode.GO_EXIT:
+                        Gdx.app.exit();
+                        break;
+                    case PauseMode.GO_RESTART:
+                        game.setupLevel();
+                        setScreen(game);
+                        break;
+                }
         } else if (screen == allocate) {
             if (exitCode == AllocateScreen.GO_PLAY) {
                 System.out.println("Exit code switch to GO_PLAY");
