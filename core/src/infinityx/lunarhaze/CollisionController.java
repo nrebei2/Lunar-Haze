@@ -76,7 +76,7 @@ public class CollisionController implements ContactListener {
         // Get direction
         Vector2 direction = pos.sub(enemyPos).nor();
         boolean immune = ((Werewolf) player).getImmunityState();
-        if(immune == false) {
+        if (immune == false) {
             ((Werewolf) player).setCanMove(false);
             body.applyLinearImpulse(direction.scl(knockback), body.getWorldCenter(), true);
             ((Werewolf) player).setHp((int) (((Werewolf) player).getHp() - damage));

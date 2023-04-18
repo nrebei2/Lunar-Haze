@@ -150,6 +150,7 @@ public class GDXRoot extends Game implements ScreenObserver {
             aboutUs.gatherAssets(directory);
             allocate.gatherAssets(directory);
             game.gatherAssets(directory);
+            InputController.getInstance().loadConstants(directory);
 
             editor.setupImGui();
             editor.gatherAssets(directory);

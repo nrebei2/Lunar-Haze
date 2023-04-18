@@ -218,10 +218,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
      * Reference to drawing context to display graphics (VIEW CLASS)
      */
     private GameCanvas canvas;
-    /**
-     * Reads input from keyboard or game pad (CONTROLLER CLASS)
-     */
-    private InputController inputController;
+
     /**
      * Contains level details! May be null.
      */
@@ -248,7 +245,6 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
     public GameMode(GameCanvas canvas) {
         this.canvas = canvas;
         // Create the controllers:
-        inputController = new InputController();
         gameplayController = new GameplayController();
     }
 
@@ -281,7 +277,6 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
     public void gatherAssets(AssetDirectory directory) {
         this.directory = directory;
 
-        inputController.loadConstants(directory);
         levelFormat = directory.getEntry("levels", JsonValue.class);
         displayFont = directory.getEntry("retro", BitmapFont.class);
         UIFont_large = directory.getEntry("libre-large", BitmapFont.class);
@@ -350,15 +345,12 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
 
     /**
      * Update the game state.
-     * <p>
-     * We prefer to separate update and draw from one another as separate methods, instead
-     * of using the single render() method that LibGDX does.  We will talk about why we
-     * prefer this in lecture.
      *
      * @param delta Number of seconds since last animation frame
      */
     public void update(float delta) {
         // Process the game input
+        InputController inputController = InputController.getInstance();
         inputController.readKeyboard();
         updateMusic(delta);
 
@@ -421,7 +413,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
      */
     protected void play(float delta) {
         levelContainer.getWorld().step(delta, 6, 2);
-        gameplayController.resolveActions(inputController, delta);
+        gameplayController.resolveActions(delta);
     }
 
     /**
@@ -494,7 +486,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
     }
 
     /**
-     * Called when this screen becomes the current screen for a {@link Game}.
+     * Called when this screen becomes the current screen for a {@link com.badlogic.gdx.Game}.
      */
     public void show() {
 //        setupLevel();
@@ -521,9 +513,6 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
         if (isReadyExit() && observer != null) {
             observer.exitScreen(this, GO_MENU);
         }
-//        if (isReadyQuit() && observer != null) {
-//            observer.exitScreen(this, GO_EXIT);
-//        }
 
         if (gameplayController.getPhase() == Phase.ALLOCATE && observer != null) {
             observer.exitScreen(this, GO_ALLOCATE);
@@ -537,7 +526,6 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
     public void dispose() {
         // TODO: save player stats to json for persistence?
         // Though definitely save levels completed
-        inputController = null;
         gameplayController = null;
         //physicsController = null;
         canvas = null;
@@ -569,7 +557,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
      * @see ApplicationListener#pause()
      */
     public void pause() {
-
+        gameplayController.setState(GameState.PAUSED);
     }
 
     /**

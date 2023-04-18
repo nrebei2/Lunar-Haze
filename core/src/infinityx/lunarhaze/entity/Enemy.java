@@ -1,7 +1,6 @@
 package infinityx.lunarhaze.entity;
 
 import com.badlogic.gdx.graphics.Color;
-
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Pool;
@@ -100,9 +99,6 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
         setMaxAngularSpeed(1);
     }
 
-    /**
-     * Resets the object for reuse.
-     */
     @Override
     public void reset() {
         hp = maxHp;

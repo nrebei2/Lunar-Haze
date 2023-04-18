@@ -14,6 +14,9 @@ import infinityx.util.Box2dLocation;
 
 import java.util.ArrayList;
 
+/**
+ * States for each enemy's state machine
+ */
 public enum EnemyState implements State<EnemyController> {
 
     /**
@@ -27,29 +30,10 @@ public enum EnemyState implements State<EnemyController> {
     },
 
     /**
-     * Similar to unity's any state
-     */
-    ANY_STATE() {
-        @Override
-        public void enter(EnemyController entity) {
-
-        }
-
-        @Override
-        public void update(EnemyController entity) {
-
-        }
-
-        @Override
-        public void exit(EnemyController entity) {
-
-        }
-    },
-
-    /**
      * Question mark above enemy, turns towards location
      */
     NOTICED() {
+        /** For use in face steering */
         Box2dLocation target;
 
         // FIXME: this solution is so ass
@@ -60,7 +44,7 @@ public enum EnemyState implements State<EnemyController> {
             target = new Box2dLocation(entity.target);
             entity.getEnemy().setIndependentFacing(true);
             entity.getEnemy().setDetection(Enemy.Detection.NOTICED);
-            entity.targetPos = target.getPosition();
+            entity.targetPos.set(target.getPosition());
             entity.faceSB.setTarget(target);
             entity.getEnemy().setSteeringBehavior(entity.faceSB);
         }
@@ -223,7 +207,7 @@ public enum EnemyState implements State<EnemyController> {
             while (entity.pathfinder.map.getNodeAtWorld(patrol.x, patrol.y).isObstacle) {
                 patrol = entity.getPatrolTarget();
             }
-            entity.targetPos = patrol;
+            entity.targetPos.set(patrol);
             entity.updatePath();
             entity.getEnemy().setSteeringBehavior(entity.followPathSB);
             entity.getEnemy().setDetection(Enemy.Detection.NONE);

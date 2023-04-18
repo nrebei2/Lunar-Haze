@@ -3,8 +3,10 @@ package infinityx.util;
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.math.Vector2;
 
+/**
+ * Simple implementation of Location
+ */
 public class Box2dLocation implements Location<Vector2> {
-
     Vector2 position;
     float orientation;
 
@@ -43,12 +45,12 @@ public class Box2dLocation implements Location<Vector2> {
 
     @Override
     public float vectorToAngle(Vector2 vector) {
-        return Box2dSteeringUtils.vectorToAngle(vector);
+        return MathUtil.vectorToAngle(vector);
     }
 
     @Override
     public Vector2 angleToVector(Vector2 outVector, float angle) {
-        return Box2dSteeringUtils.angleToVector(outVector, angle);
+        return MathUtil.angleToVector(outVector, angle);
     }
 
     @Override

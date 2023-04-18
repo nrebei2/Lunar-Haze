@@ -78,7 +78,7 @@ public class EnemyController {
     public FollowPath followPathSB;
 
     /**
-     * Current target position for pathfinding
+     * Current target position for pathfinding. You should almost always use {@link Vector2#set(Vector2)} to update this.
      */
     public Vector2 targetPos;
 
@@ -97,7 +97,7 @@ public class EnemyController {
         this.targetPos = new Vector2();
         this.enemy = enemy;
         this.inBattle = false;
-        this.stateMachine = new DefaultStateMachine<>(this, EnemyState.INIT, EnemyState.ANY_STATE);
+        this.stateMachine = new DefaultStateMachine<>(this, EnemyState.INIT);
         this.raycast = new RaycastInfo(enemy);
         raycast.addIgnores(GameObject.ObjectType.ENEMY, GameObject.ObjectType.HITBOX);
 
@@ -139,17 +139,6 @@ public class EnemyController {
         enemy.update(delta);
     }
 
-    public StateMachine<EnemyController, EnemyState> getStateMachine() {
-        return stateMachine;
-    }
-
-    public Enemy getEnemy() {
-        return enemy;
-    }
-
-    public Werewolf getTarget() {
-        return target;
-    }
 
     /**
      * @return the current detection the enemy has on the target
@@ -202,14 +191,6 @@ public class EnemyController {
         return Enemy.Detection.NONE;
     }
 
-    public void setInBattle(boolean inBattle) {
-        this.inBattle = inBattle;
-    }
-
-    public boolean isInBattle() {
-        return inBattle;
-    }
-
     /**
      * @return Random point in patrol area
      */
@@ -226,5 +207,25 @@ public class EnemyController {
     public void updatePath() {
         Path path = pathfinder.findPath(enemy.getPosition(), targetPos);
         followPathSB.setPath(path);
+    }
+
+    public void setInBattle(boolean inBattle) {
+        this.inBattle = inBattle;
+    }
+
+    public boolean isInBattle() {
+        return inBattle;
+    }
+
+    public StateMachine<EnemyController, EnemyState> getStateMachine() {
+        return stateMachine;
+    }
+
+    public Enemy getEnemy() {
+        return enemy;
+    }
+
+    public Werewolf getTarget() {
+        return target;
     }
 }

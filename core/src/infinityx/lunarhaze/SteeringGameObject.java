@@ -5,18 +5,27 @@ import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.math.Vector2;
-import infinityx.util.Box2dSteeringUtils;
+import infinityx.util.MathUtil;
 
 
 /**
  * Extension of GameObject implementing Steerable, allowing behaviors to work on this object.
  */
 public abstract class SteeringGameObject extends GameObject implements Steerable<Vector2> {
+    /**
+     * tag bit
+     */
     boolean tagged;
-    float maxLinearSpeed;
-    float maxLinearAcceleration;
-    float maxAngularSpeed;
-    float maxAngularAcceleration;
+
+    /**
+     * Caps the velocity of this object
+     */
+    float maxLinearSpeed, maxAngularSpeed;
+
+    /**
+     * Steering behaviors will use these as a limiter
+     */
+    float maxLinearAcceleration, maxAngularAcceleration;
 
     /**
      * If independent facing is on (true), the object's rotation is independent of its linear velocity.
@@ -37,20 +46,6 @@ public abstract class SteeringGameObject extends GameObject implements Steerable
     public SteeringGameObject(boolean independentFacing) {
         super();
         setIndependentFacing(independentFacing);
-    }
-
-    /**
-     * Returns last linear acceleration applied to this object from steering behavior
-     */
-    public Vector2 getSteeringLinear() {
-        return steeringOutput.linear;
-    }
-
-    /**
-     * Returns last angular acceleration applied to this object from steering behavior
-     */
-    public float getSteeringAngular() {
-        return steeringOutput.angular;
     }
 
     public boolean isIndependentFacing() {
@@ -257,7 +252,7 @@ public abstract class SteeringGameObject extends GameObject implements Steerable
      */
     @Override
     public float vectorToAngle(Vector2 vector) {
-        return Box2dSteeringUtils.vectorToAngle(vector);
+        return MathUtil.vectorToAngle(vector);
     }
 
     /**
@@ -269,7 +264,7 @@ public abstract class SteeringGameObject extends GameObject implements Steerable
      */
     @Override
     public Vector2 angleToVector(Vector2 outVector, float angle) {
-        return Box2dSteeringUtils.angleToVector(outVector, angle);
+        return MathUtil.angleToVector(outVector, angle);
     }
 
     /**

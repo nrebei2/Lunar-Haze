@@ -101,10 +101,8 @@ public class LevelSerializer {
 
         // Player
         JsonValue playerStartPos = new JsonValue(JsonValue.ValueType.array);
-        if (level.getPlayerStartPos() != null) {
-            playerStartPos.addChild(new JsonValue(level.getPlayerStartPos()[0]));
-            playerStartPos.addChild(new JsonValue(level.getPlayerStartPos()[1]));
-        }
+        playerStartPos.addChild(new JsonValue(level.getPlayer().getPosition().x));
+        playerStartPos.addChild(new JsonValue(level.getPlayer().getPosition().y));
         scene.addChild("player", playerStartPos);
 
         // Enemy (todo)

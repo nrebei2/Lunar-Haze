@@ -14,12 +14,34 @@ import com.badlogic.gdx.math.Matrix4;
  */
 public class ShaderRenderer implements Renderer {
 
+    /**
+     * Vertex attribute data (pos, uv) that will be sent to mesh.
+     */
     float[] vertices;
+
+    /**
+     * Holds vertices, for drawing
+     */
     private final Mesh mesh;
+
+    /**
+     * Is this currently drawing? (between begin and end)
+     */
     private boolean drawing;
 
+    /**
+     * Model
+     */
     private final Matrix4 transformMatrix = new Matrix4();
+
+    /**
+     * View-Projection
+     */
     private final Matrix4 projectionMatrix = new Matrix4();
+
+    /**
+     * Model-View-Projection
+     */
     private final Matrix4 combinedMatrix = new Matrix4();
 
     private ShaderProgram shader;

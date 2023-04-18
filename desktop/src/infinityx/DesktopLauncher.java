@@ -8,10 +8,13 @@ import infinityx.lunarhaze.GDXRoot;
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
-		config.setForegroundFPS(60);
+		//config.setForegroundFPS(60);
+		//config.setWindowedMode(1024, 576);
+		config.useVsync(true);
 		config.setTitle("Lunar Haze");
 		config.setResizable(true);
-		config.setWindowedMode(1024, 576);
+		// For some reason getting screen tear on linux if I don't start fullscreen
+		config.setFullscreenMode(Lwjgl3ApplicationConfiguration.getDisplayMode());
 		new Lwjgl3Application(new GDXRoot(), config);
 	}
 }

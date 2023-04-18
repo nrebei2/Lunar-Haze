@@ -79,6 +79,7 @@ public class TacticalManager implements Telegraph {
     public void alertAllies(EnemyController entity) {
         for (Enemy enemy : activeEnemies) {
             EnemyController control = enemyMap.get(enemy);
+            // FIXME: Should only call an enemy that is visible from entity.enemy
             if (control != entity && (entity.getEnemy().getPosition()).cpy().dst(control.getEnemy().getPosition()) <= 5f) {
                 System.out.println("alerting");
                 StateMachine<EnemyController, EnemyState> machine = control.getStateMachine();

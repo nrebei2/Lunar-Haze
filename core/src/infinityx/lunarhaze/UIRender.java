@@ -93,22 +93,22 @@ public class UIRender {
     /**
      * Height of moon center as a percentage of transition screen before rise
      */
-    private final static float MOON_CENTER_LOW = 1/7f;
+    private final static float MOON_CENTER_LOW = 1 / 7f;
 
     /**
      * Height of moon center as a percentage of transition screen after rise
      */
-    private final static float MOON_CENTER_HIGH = 3/5f;
+    private final static float MOON_CENTER_HIGH = 3 / 5f;
 
     /**
      * Width and height of moon as a ratio of canvas height
      */
-    private final static float MOON_SIZE_RATIO = 350/982f;
+    private final static float MOON_SIZE_RATIO = 350 / 982f;
 
     /**
      * Center X of the moon as a ratio of canvas width
      */
-    private final static float MOON_CENTERX_RATIO = 11.8f/16;
+    private final static float MOON_CENTERX_RATIO = 11.8f / 16;
 
     private float moon_centerY_ratio = MOON_CENTER_LOW;
 
@@ -331,9 +331,9 @@ public class UIRender {
 
             drawStealthIndicator(canvas, level);
 
-            if (phase == Phase.TRANSITION){
+            if (phase == Phase.TRANSITION) {
                 drawTransitionScreen(canvas, level, delta);
-            } else if (phase == Phase.STEALTH){
+            } else if (phase == Phase.STEALTH) {
                 moon_centerY_ratio = MOON_CENTER_LOW;
                 elapsed = 0;
             }
@@ -352,11 +352,11 @@ public class UIRender {
      * @param level  container holding all models
      * @param delta  Number of seconds since last animation frame
      */
-    public void drawTransitionScreen(GameCanvas canvas, LevelContainer level, float delta){
+    public void drawTransitionScreen(GameCanvas canvas, LevelContainer level, float delta) {
         System.out.println("drawTransitionScreen called here");
         elapsed = elapsed + delta;
 
-        if (level.getPhaseTransitionTime() - elapsed <= FADE_TIME){
+        if (level.getPhaseTransitionTime() - elapsed <= FADE_TIME) {
             float outProg = Math.min(1f, elapsed - (level.getPhaseTransitionTime() - FADE_TIME) / FADE_TIME);
             alphaTint.a = EAS_FN.apply(1 - outProg);
         }
@@ -370,17 +370,17 @@ public class UIRender {
         float moon_size = canvas.getHeight() * MOON_SIZE_RATIO;
         float moon_centerX = canvas.getWidth() * MOON_CENTERX_RATIO;
 
-        float transition_sec = level.getPhaseTransitionTime()*2/3;
+        float transition_sec = level.getPhaseTransitionTime() * 2 / 3;
         float total_num_updates = transition_sec / delta;
         float rise_amount = moon_rise_dist / total_num_updates;
         moon_centerY_ratio = moon_centerY_ratio + rise_amount / canvas.getHeight();
         float moon_centerY = moon_centerY_ratio * canvas.getHeight();
-        if (moon_centerY > moon_high){
+        if (moon_centerY > moon_high) {
             moon_centerY = moon_high;
         }
 
-        canvas.draw(moon, alphaTint, moon_centerX - moon_size/2,
-                moon_centerY - moon_size/2, moon_size, moon_size);
+        canvas.draw(moon, alphaTint, moon_centerX - moon_size / 2,
+                moon_centerY - moon_size / 2, moon_size, moon_size);
 
         float tree_width = canvas.getWidth();
         float tree_height = (float) trees.getHeight() / trees.getWidth() * tree_width;

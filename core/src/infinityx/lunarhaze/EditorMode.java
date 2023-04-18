@@ -175,24 +175,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     private int[] patrol2;
     private boolean showBattleLighting;
 
-    // Scene graph is just a tree of length 1 with root `EditorMode` and leaves buttons
-    // therefore no need to have children for buttons
-    // we can edit this later if we want
-    // scene2d uses actors as nodes and scene as root
-    //private ArrayList<Button>
-
-    // class Button should hold
-    // float x, y: bottom left position
-    // float width, height
-    // draw function given Game Canvas
-    // onClick : should update color
-    // onHover : should update color
-    // onRelease : should update _selected_
-    // boolean hit(x, y) : is mouse hitting this right now?
-
-    // editor should should check if hit every mouse movement
-    // and call the relevant methods on buttons
-
     public EditorMode(GameCanvas canvas) {
         this.canvas = canvas;
         availableSelections = new ArrayList<>();
@@ -243,7 +225,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             board.removePreview();
             placeTile();
         } else if (selected instanceof Player) {
-            level.setPlayerStartPos(new int[]{(int) mouseBoard.x, (int) mouseBoard.y});
             level.getPlayer().setPosition(mouseWorld);
             playerPlaced = true;
             System.out.println("Player placed at " + (int) mouseBoard.x + ", " + (int) mouseBoard.y);
@@ -275,7 +256,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         SceneObject curr = (SceneObject) selected;
         level.addSceneObject(
                 curr.type,
-                board.boardToWorldX((int) mouseBoard.x), board.boardToWorldY((int) mouseBoard.y),
+                mouseWorld.x, mouseWorld.y,
                 1
         );
         System.out.println(curr.type + " placed at " + (int) mouseBoard.x + ", " + (int) mouseBoard.y);
@@ -296,7 +277,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         showNewBoardWindow = false;
         showEnemyControllerWindow = false;
         showBattleLighting = false;
-        enemies = new ArrayList<infinityx.lunarhaze.entity.Enemy>();
+        enemies = new ArrayList<>();
         stealthLighting = new float[]{1, 1, 1, 1};
         battleLighting = new float[]{1, 1, 1, 1};
         moonlightLighting = new float[]{1, 1, 1, 1};

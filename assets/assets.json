@@ -17,6 +17,16 @@
     "pause-resume": "shared/pause_resume.png",
     "pause-review": "shared/pause_review.png",
     "review": "shared/review.jpg",
+    "theme1": {
+      "file": "images/spritesheet_tile.png",
+      "sprites":	{
+        "static" : {
+          "size" : 6,
+          "rows" : 1,
+          "cols" : 12
+        }
+      }
+    },
     "grass1": "tiles/grass1.png",
     "grass2": "tiles/grass2.png",
     "grass3": "tiles/grass3.png",

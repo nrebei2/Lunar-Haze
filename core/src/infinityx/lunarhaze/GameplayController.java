@@ -17,8 +17,10 @@ import infinityx.lunarhaze.entity.Werewolf;
  */
 public class GameplayController {
     /**
-     * We are separating our main game into two phases:
+     * We are separating our main game into four phases:
      * - Stealth: Collect moonlight
+     * - TRANSITION: Moon rise cutscene
+     * - Allocate: Use collected moonlight to upgrade stats
      * - Battle: Hack-n-slash
      */
     public enum Phase {
@@ -28,13 +30,17 @@ public class GameplayController {
         ALLOCATE,
     }
 
-    public Phase currentPhase;
+    /**
+     * The current phase of the game
+     */
+    public Phase phase;
 
     /**
      * Track the current state of the game for the update loop.
-     * - Play: The player could play the game
+     * - Play: The game is in play
      * - Over: The werewolf has been killed by an enemy!!
-     * - Win: The player has killed all the enemies. Should only be set when the phase is DAY
+     * - Paused: The game is on the pause screen
+     * - Win: The player has killed all the enemies. Should only be set when the current phase is BATTLE
      */
     public enum GameState {
         PLAY,
@@ -43,6 +49,9 @@ public class GameplayController {
         WIN
     }
 
+    /**
+     * The current game state
+     */
     private GameState gameState;
 
     /**
@@ -66,7 +75,7 @@ public class GameplayController {
     public Board board;
 
     /**
-     * Reference of model-contoller map originially from EnemyPool
+     * Reference of enemy model-controller map from container
      */
     private ObjectMap<Enemy, EnemyController> controls;
 
@@ -85,14 +94,16 @@ public class GameplayController {
      */
     private PlayerController playerController;
 
+    /**
+     * Owns the tactical manager
+     */
     private TacticalManager tacticalManager;
 
     /**
-     * Owns the collision controller, handles collisions
+     * Owns the collision controller, handles collisions.
+     * Never accessed due to all methods in the controller being callbacks.
      */
     private CollisionController collisionController;
-
-//    private AllocateScreen allocateScreen;
 
     /**
      * Timer for the ambient light transition
@@ -124,9 +135,6 @@ public class GameplayController {
         board = null;
     }
 
-    /**
-     * @return the current state of the game
-     */
     public GameState getState() {
         return gameState;
     }
@@ -147,14 +155,14 @@ public class GameplayController {
      * @return the current phase of the game
      */
     public Phase getPhase() {
-        return currentPhase;
+        return phase;
     }
 
     /**
      * Set the current phase of the game
      */
-    public void setPhase(Phase p) {
-        currentPhase = p;
+    public void setPhase(Phase phase) {
+        this.phase = phase;
     }
 
     /**
@@ -165,9 +173,8 @@ public class GameplayController {
      * @param jsonValue      json value holding level layout
      */
     public void start(LevelContainer levelContainer, JsonValue jsonValue) {
-
         this.gameState = GameState.PLAY;
-        this.currentPhase = Phase.STEALTH;
+        this.phase = Phase.STEALTH;
         this.container = levelContainer;
         this.collisionController = new CollisionController(levelContainer);
         this.enemySpawner = new EnemySpawner(levelContainer);
@@ -177,7 +184,7 @@ public class GameplayController {
 
         board = levelContainer.getBoard();
         player = levelContainer.getPlayer();
-        this.playerController = new PlayerController(player, board, levelContainer, lightingController);
+        this.playerController = new PlayerController(levelContainer);
 
         phaseTimer = levelContainer.getPhaseLength();
         ambientLightTransitionTimer = 0;
@@ -196,22 +203,21 @@ public class GameplayController {
      * Resolve the actions of all game objects and controllers.
      * This includes the lighting, player, and enemy controllers.
      *
-     * @param input Reference to the input controller
      * @param delta Number of seconds since last animation frame
      */
-    public void resolveActions(InputController input, float delta) {
+    public void resolveActions(float delta) {
         // Update the phase timer
         lightingController.updateDust(delta);
 
         // FSM for state and phase
         if (gameState == GameState.PLAY) {
             // Process the player only when the game is in play
-            playerController.update(input, delta, currentPhase);
-            switch (currentPhase) {
+            playerController.update(phase, lightingController);
+            switch (phase) {
                 case STEALTH:
                     phaseTimer -= delta;
                     if (container.getBoard().getRemainingMoonlight() == 0 || phaseTimer <= 0)
-                        currentPhase = Phase.TRANSITION;
+                        phase = Phase.TRANSITION;
                     break;
                 case BATTLE:
                     battleTicks += 1;
@@ -226,7 +232,7 @@ public class GameplayController {
                 case ALLOCATE:
                     // TODO: Somehow pause the game before drawing allocating screen
                     if (playerController.getAllocateReady()) {
-                        currentPhase = Phase.BATTLE;
+                        phase = Phase.BATTLE;
                     }
                     break;
             }
@@ -253,17 +259,13 @@ public class GameplayController {
         return playerController;
     }
 
-    public void setPlayerController(PlayerController pc) {
-        playerController = pc;
-    }
-
     /**
      * Performs all necessary computations to change the current phase of the game from STEALTH to BATTLE.
      */
     public void switchPhase(float delta) {
         updateAmbientLight(delta);
         if (ambientLightTransitionTimer >= container.getPhaseTransitionTime()) {
-            currentPhase = Phase.ALLOCATE;
+            phase = Phase.ALLOCATE;
             for (int i = 0; i < enemies.size; i++) {
                 controls.get(enemies.get(i)).setInBattle(true);
             }

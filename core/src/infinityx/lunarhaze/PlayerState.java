@@ -1,23 +1,13 @@
 package infinityx.lunarhaze;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
 import infinityx.lunarhaze.entity.Direction;
 
+/**
+ * States for the player's state machine
+ */
 public enum PlayerState implements State<PlayerController> {
-
-    ANY_STATE() {
-        @Override
-        public void update(PlayerController entity) {
-            InputController input = entity.getInputController();
-            entity.getAttackHandler().update(Gdx.graphics.getDeltaTime(), input, entity.getPhase());
-            entity.resolvePlayer(Gdx.graphics.getDeltaTime());
-            if (entity.getPhase() == GameplayController.Phase.STEALTH) {
-                entity.resolveMoonlight(Gdx.graphics.getDeltaTime(), entity.getLightingController());
-            }
-        }
-    },
 
     IDLE() {
         @Override
@@ -28,21 +18,24 @@ public enum PlayerState implements State<PlayerController> {
 
         @Override
         public void update(PlayerController entity) {
+            // Handle state transitions
             if (entity.isAttacking()) {
                 entity.getStateMachine().changeState(PlayerState.ATTACK);
             } else if (entity.isCollectingMoonlight()) {
                 entity.getStateMachine().changeState(PlayerState.COLLECT);
-            } else if (entity.getInputController().didRun() &&
-                    (entity.getInputController().getHorizontal() != 0 || entity.getInputController().getVertical() != 0)) {
+            } else if (entity.player.isRunning()) {
                 entity.getStateMachine().changeState(PlayerState.RUN);
-            } else if (!entity.getInputController().didRun() &&
-                    (entity.getInputController().getHorizontal() != 0 || entity.getInputController().getVertical() != 0)) {
+            } else if (!entity.player.getLinearVelocity().isZero()) {
                 entity.getStateMachine().changeState(PlayerState.WALK);
             }
         }
     },
 
     WALK() {
+        /**
+         * Cache of player direction. Required so the filmstrip is only updated when direction changes.
+         * I'm doing this instead of making separate WALK-L, WALK-R, WALK-F, WALK-B states
+         */
         Direction direction;
 
         @Override
@@ -58,9 +51,9 @@ public enum PlayerState implements State<PlayerController> {
             // Handle state transitions
             if (entity.isAttacking()) {
                 entity.getStateMachine().changeState(PlayerState.ATTACK);
-            } else if (entity.getInputController().getHorizontal() == 0 && entity.getInputController().getVertical() == 0) {
+            } else if (entity.player.getLinearVelocity().isZero()) {
                 entity.getStateMachine().changeState(PlayerState.IDLE);
-            } else if (entity.getInputController().didRun()) {
+            } else if (entity.player.isRunning()) {
                 entity.getStateMachine().changeState(PlayerState.RUN);
             }
 
@@ -72,6 +65,7 @@ public enum PlayerState implements State<PlayerController> {
     },
 
     RUN() {
+        /** Cache of player direction. Required so the filmstrip is only updated when direction changes. */
         Direction direction;
 
         @Override
@@ -79,6 +73,7 @@ public enum PlayerState implements State<PlayerController> {
             direction = entity.player.direction;
             entity.player.setStealth(entity.RUN_STEALTH);
             setTexture(entity, "walk");
+            // texture update should be proportional to speed
             entity.player.texUpdate = 0.1f * entity.player.walkSpeed / entity.player.runSpeed;
 
         }
@@ -90,7 +85,7 @@ public enum PlayerState implements State<PlayerController> {
                 entity.getStateMachine().changeState(PlayerState.ATTACK);
             } else if (entity.player.getLinearVelocity().isZero()) {
                 entity.getStateMachine().changeState(PlayerState.IDLE);
-            } else if (!entity.getInputController().didRun()) {
+            } else if (!InputController.getInstance().didRun()) {
                 entity.getStateMachine().changeState(PlayerState.WALK);
             }
 
@@ -118,6 +113,9 @@ public enum PlayerState implements State<PlayerController> {
         }
     },
 
+    /**
+     * The player is currently collecting moonlight
+     */
     COLLECT() {
         @Override
         public void enter(PlayerController entity) {
@@ -154,19 +152,25 @@ public enum PlayerState implements State<PlayerController> {
         return false;
     }
 
+    /**
+     * Sets the filmstrip animation of the player. Assumes there exists filmstrips for each cardinal direction with suffixes "-b", "-f", "-l", "-r".
+     *
+     * @param entity holding player
+     * @param name   Common prefix of filmstrip family. See {@link GameObject#setTexture(String)}.
+     */
     protected void setTexture(PlayerController entity, String name) {
         switch (entity.player.direction) {
             case UP:
-                entity.player.setTexture(entity.player.filmstrips.get(name + "-b"));
+                entity.player.setTexture(name + "-b");
                 break;
             case DOWN:
-                entity.player.setTexture(entity.player.filmstrips.get(name + "-f"));
+                entity.player.setTexture(name + "-f");
                 break;
             case LEFT:
-                entity.player.setTexture(entity.player.filmstrips.get(name + "-l"));
+                entity.player.setTexture(name + "-l");
                 break;
             case RIGHT:
-                entity.player.setTexture(entity.player.filmstrips.get(name + "-r"));
+                entity.player.setTexture(name + "-r");
                 break;
         }
     }

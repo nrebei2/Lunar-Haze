@@ -37,7 +37,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Base class for all Model objects in the game.
+ * Base class for most model objects in the game.
  */
 public abstract class GameObject extends MultiShapeObstacle implements Drawable {
 
@@ -83,7 +83,7 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
     private float texTime;
 
     /**
-     * Time (in seconds) texture frame should change
+     * Time (in seconds) texture frame should increment
      */
     public float texUpdate;
 
@@ -127,7 +127,7 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
         }
 
         JsonValue texInfo = json.get("texture");
-        setTexture(filmstrips.get(texInfo.get("name").asString()));
+        setTexture(texInfo.get("name").asString());
         int[] texOrigin = texInfo.get("origin").asIntArray();
         setOrigin(texOrigin[0], texOrigin[1]);
         textureScale = texInfo.getFloat("scale");
@@ -171,8 +171,13 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
         return destroyed;
     }
 
-    public void setTexture(FilmStrip filmstrip) {
-        this.filmstrip = filmstrip;
+    /**
+     * Sets the filmstrip texture of this game object.
+     *
+     * @param name Name of filmstrip in {@link #filmstrips} to set.
+     */
+    public void setTexture(String name) {
+        this.filmstrip = filmstrips.get(name);
         filmstrip.setFrame(0);
         this.texTime = 0;
     }

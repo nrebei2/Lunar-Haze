@@ -8,10 +8,11 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.GameObject;
+import infinityx.lunarhaze.InputController;
 import infinityx.lunarhaze.LevelContainer;
 import infinityx.lunarhaze.combat.AttackHitbox;
 import infinityx.util.Box2dLocation;
-import infinityx.util.Box2dSteeringUtils;
+import infinityx.util.MathUtil;
 
 /**
  * Model class representing the player.
@@ -85,21 +86,6 @@ public class Werewolf extends GameObject implements Location<Vector2> {
     private float lockout;
 
     /**
-     * The right/left movement of the werewolf
-     **/
-    private float movementH = 0.0f;
-
-    /**
-     * The up/down movement of the werewolf
-     **/
-    private float movementV = 0.0f;
-
-    /**
-     * Whether the  player stands on a moonlight tile
-     **/
-    private Boolean moonlight;
-
-    /**
      * Number of moonlight tiles collected
      **/
     private int moonlightCollected;
@@ -132,8 +118,14 @@ public class Werewolf extends GameObject implements Location<Vector2> {
      */
     private PointLight spotLight;
 
+    /**
+     * Whether the player is currently attacking
+     */
     private boolean isAttacking;
 
+    /**
+     * Hitbox parented to the player. Only active when {@link #isAttacking}
+     */
     public AttackHitbox attackHitbox;
 
     private boolean drawCooldownBar;
@@ -155,10 +147,14 @@ public class Werewolf extends GameObject implements Location<Vector2> {
      */
     private boolean isRunning;
 
+    /**
+     * The direction the werewolf is facing
+     */
     public Direction direction;
 
     private boolean isImmune;
     private float immunityTime;
+
     public void setImmune(float duration) {
         isImmune = true;
         immunityTime = duration;
@@ -177,42 +173,6 @@ public class Werewolf extends GameObject implements Location<Vector2> {
      */
     public ObjectType getType() {
         return ObjectType.WEREWOLF;
-    }
-
-    /**
-     * Returns the current player (left/right) movement input.
-     *
-     * @return the current player movement input.
-     */
-    public float getMovementH() {
-        return movementH;
-    }
-
-    /**
-     * Returns the current player (up/down) movement input.
-     *
-     * @return the current player movement input.
-     */
-    public float getMovementV() {
-        return movementV;
-    }
-
-    /**
-     * Sets the current player (left/right) movement input.
-     *
-     * @param value the current player movement input.
-     */
-    public void setMovementH(float value) {
-        movementH = value;
-    }
-
-    /**
-     * Sets the current player (uo/down) movement input.
-     *
-     * @param value the current player movement input.
-     */
-    public void setMovementV(float value) {
-        movementV = value;
     }
 
     /**
@@ -345,19 +305,6 @@ public class Werewolf extends GameObject implements Location<Vector2> {
         spotLight.setActive(true);
     }
 
-    /**
-     * Returns true if the player is on a moonlight tile.
-     *
-     * @return true if the player is on a moonlight tile.
-     */
-    public boolean isOnMoonlight() {
-        return moonlight;
-    }
-
-    public void setOnMoonlight(Boolean b) {
-        moonlight = b;
-    }
-
     public void addMoonlightCollected() {
         moonlightCollected++;
     }
@@ -389,7 +336,6 @@ public class Werewolf extends GameObject implements Location<Vector2> {
     public Werewolf() {
         super();
         lockoutTime = 0.0f;
-        moonlight = false;
         light = INITIAL_LIGHT;
         hp = INITIAL_HP;
         stealth = 0.0f;
@@ -441,24 +387,9 @@ public class Werewolf extends GameObject implements Location<Vector2> {
 
     public void createAttackHitbox(World world) {
         attackHitbox = new AttackHitbox(HITBOX_SIZE, this);
-        attackHitbox.setSensor(true);
         attackHitbox.activatePhysics(world);
-        attackHitbox.setSensor(true);
         attackHitbox.setActive(false);
     }
-
-    /**
-     public void resolveAttack(GameObject enemy, int damage, float knockback) {
-
-     Body enemyBody = enemy.getBody();
-     Vector2 pos = body.getPosition();
-     Vector2 enemyPos = enemyBody.getPosition();
-     Vector2 direction = pos.sub(enemyPos).nor();
-
-     canMove = false;
-     body.applyLinearImpulse(direction.scl(knockback), body.getWorldCenter(), true);
-     setHp(hp - damage);
-     } */
 
     /**
      * Updates the animation frame and position of this werewolf.
@@ -476,10 +407,15 @@ public class Werewolf extends GameObject implements Location<Vector2> {
         // get the current velocity of the player's Box2D body
         Vector2 velocity = body.getLinearVelocity();
         if (canMove) {
+            float movementH = InputController.getInstance().getHorizontal();
+            float movementV = InputController.getInstance().getVertical();
+
             float speed = isRunning ? runSpeed : walkSpeed;
             velocity.x = movementH * speed;
             velocity.y = movementV * speed;
 
+            // Set the direction given velocity
+            // For diagonal movement we prefer using UP or DOWN
             if (movementV < 0) {
                 direction = Direction.DOWN;
             } else if (movementV > 0) {
@@ -500,6 +436,8 @@ public class Werewolf extends GameObject implements Location<Vector2> {
         }
     }
 
+    // Location interface methods
+
     @Override
     public float getOrientation() {
         return body.getAngle();
@@ -512,12 +450,12 @@ public class Werewolf extends GameObject implements Location<Vector2> {
 
     @Override
     public float vectorToAngle(Vector2 vector) {
-        return Box2dSteeringUtils.vectorToAngle(vector);
+        return MathUtil.vectorToAngle(vector);
     }
 
     @Override
     public Vector2 angleToVector(Vector2 outVector, float angle) {
-        return Box2dSteeringUtils.angleToVector(outVector, angle);
+        return MathUtil.angleToVector(outVector, angle);
     }
 
     @Override
