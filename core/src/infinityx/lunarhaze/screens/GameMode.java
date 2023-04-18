@@ -117,7 +117,7 @@ public class GameMode extends ScreenObservable implements Screen {
     public GameMode(GameCanvas canvas) {
         this.canvas = canvas;
         // Create the controllers:
-        inputController = new InputController();
+        inputController = InputController.getInstance();
         gameplayController = new GameplayController();
     }
 
@@ -150,7 +150,6 @@ public class GameMode extends ScreenObservable implements Screen {
     public void gatherAssets(AssetDirectory directory) {
         this.directory = directory;
 
-        inputController.loadConstants(directory);
         levelFormat = directory.getEntry("levels", JsonValue.class);
         displayFont = directory.getEntry("retro", BitmapFont.class);
         UIFont_large = directory.getEntry("libre-large", BitmapFont.class);
@@ -263,7 +262,7 @@ public class GameMode extends ScreenObservable implements Screen {
      */
     protected void play(float delta) {
         levelContainer.getWorld().step(delta, 6, 2);
-        gameplayController.resolveActions(inputController, delta);
+        gameplayController.resolveActions(delta);
     }
 
     /**
