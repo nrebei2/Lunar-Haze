@@ -6,7 +6,7 @@ import com.badlogic.gdx.Screen;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.screens.AboutUsMode;
-import infinityx.lunarhaze.screens.AllocateScreen;
+import infinityx.lunarhaze.screens.AllocateMode;
 import infinityx.lunarhaze.screens.GameMode;
 import infinityx.lunarhaze.screens.LoadingMode;
 import infinityx.lunarhaze.screens.MenuMode;
@@ -59,7 +59,7 @@ public class GDXRoot extends Game implements ScreenObserver {
     /**
      * Allocate Screen
      */
-    private AllocateScreen allocate;
+    private AllocateMode allocate;
 
     /**
      * Level editor
@@ -97,7 +97,7 @@ public class GDXRoot extends Game implements ScreenObserver {
         setting = new SettingMode(canvas, this);
         aboutUs = new AboutUsMode(canvas);
         pause = new PauseMode(canvas);
-        allocate = new AllocateScreen(canvas, game);
+        allocate = new AllocateMode(canvas, game);
         editor = new EditorMode(canvas);
 
         // Set screen observer to this game
@@ -255,7 +255,7 @@ public class GDXRoot extends Game implements ScreenObserver {
                         break;
                 }
         } else if (screen == allocate) {
-            if (exitCode == AllocateScreen.GO_PLAY) {
+            if (exitCode == AllocateMode.GO_PLAY) {
                 System.out.println("Exit code switch to GO_PLAY");
                 game.setGameplayController(allocate.getGameplayController());
                 System.out.println("Current phase is " + game.getGameplayController().getPhase());
