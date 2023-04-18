@@ -353,7 +353,6 @@ public class UIRender {
      * @param delta  Number of seconds since last animation frame
      */
     public void drawTransitionScreen(GameCanvas canvas, LevelContainer level, float delta){
-        System.out.println("drawTransitionScreen called here");
         elapsed = elapsed + delta;
 
         if (level.getPhaseTransitionTime() - elapsed <= FADE_TIME){
@@ -362,6 +361,7 @@ public class UIRender {
         }
 
         canvas.begin(GameCanvas.DrawPass.SPRITE);
+        canvas.drawOverlay(transition_background, Color.BLACK, true);
         canvas.drawOverlay(transition_background, alphaTint, true);
 
         float moon_low = canvas.getHeight() * MOON_CENTER_LOW;
