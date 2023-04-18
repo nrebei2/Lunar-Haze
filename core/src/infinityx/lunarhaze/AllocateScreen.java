@@ -333,7 +333,10 @@ public class AllocateScreen extends ScreenObservable implements Screen, InputPro
         Color alphaTint = Color.WHITE;
         canvas.drawOverlay(background, alphaTint, true);
 
-        // Temporary position for the display
+        canvas.drawText("Dear Lycan, you survived the stealth phase... \n Now it's time to allocate moonlights and arm for the battle!",
+                UIFont_small, canvas.getWidth() / 8, canvas.getHeight() / 2 + LINE_DIST);
+
+        // Draw number of moonlight left
         canvas.draw(moon_icon, alphaTint, canvas.getWidth() / 4 - MOON_ICON_WIDTH / 2, canvas.getHeight() / 2, MOON_ICON_WIDTH, MOON_ICON_WIDTH);
         canvas.drawText("" + playerController.getPlayer().getMoonlightCollected(),
                 UIFont_large, canvas.getWidth() / 4 + MOON_ICON_WIDTH, canvas.getHeight() / 2 + MOON_ICON_WIDTH * 0.8f);

@@ -18,6 +18,6 @@
         }
 	},
   "music": {
-    "lobbyBackground": "sounds/lobby_music.mp3"
+    "lobbyBackground": "sounds/lobby_music.ogg"
   }
 }

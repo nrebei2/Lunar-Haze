@@ -488,7 +488,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
                 }
             case PLAY:
                 Phase phase = gameplayController.getPhase();
-                uiRender.drawUI(canvas, levelContainer, phase, gameplayController);
+                uiRender.drawUI(canvas, levelContainer, phase, gameplayController, delta);
                 break;
         }
     }

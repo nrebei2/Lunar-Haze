@@ -42,6 +42,9 @@
     "title-right": "allocateUI/title-right.png",
     "noticed": "images/noticed.png",
     "alert": "images/alert.png",
+    "moon": "transitionUI/moon.png",
+    "transition-background": "transitionUI/transition-background.png",
+    "trees": "transitionUI/trees.png",
     "lamp": {
       "file": "images/objects/Lamp_a_1.png",
       "sprites":	{
