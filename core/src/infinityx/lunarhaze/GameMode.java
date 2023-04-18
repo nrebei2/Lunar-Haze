@@ -394,11 +394,15 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
                 }
                 switch (gameplayController.getPhase()) {
                     case STEALTH:
-                    case TRANSITION:
                     case ALLOCATE:
                     case BATTLE:
+                        play(delta);
+                        break;
+                    case TRANSITION:
+                        if(uiRender.getElapsed() >= levelContainer.getPhaseTransitionTime()){
+                            gameplayController.setPhase(Phase.ALLOCATE);
+                        }
                 }
-                play(delta);
                 break;
             default:
                 break;
