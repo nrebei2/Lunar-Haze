@@ -2,11 +2,10 @@ package infinityx.lunarhaze.controllers;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
 
 /**
- * Device-independent input manager.
+ * Device-independent input manager. Singleton as there is only one player.
  * <p>
  * This class supports keyboard controller.
  */
@@ -55,7 +54,6 @@ public class InputController {
     /**
      * Constants from asset directory
      */
-    JsonValue inputJson;
     float runSpeed;
     float walkSpeed;
 
@@ -108,7 +106,10 @@ public class InputController {
     /**
      * The singleton instance of the input controller
      */
-    private static InputController theController = null;
+    private static InputController theController;
+
+    private InputController() {
+    }
 
     /**
      * Returns the amount of sideways movement.

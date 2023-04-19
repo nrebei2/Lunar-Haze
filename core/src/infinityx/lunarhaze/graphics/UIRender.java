@@ -5,17 +5,15 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.utils.Array;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.controllers.GameplayController;
 import infinityx.lunarhaze.controllers.GameplayController.GameState;
 import infinityx.lunarhaze.controllers.GameplayController.Phase;
+import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.entity.Enemy;
 import infinityx.lunarhaze.models.entity.Werewolf;
-import infinityx.lunarhaze.graphics.GameCanvas;
-import infinityx.lunarhaze.graphics.ScreenFlash;
-import infinityx.lunarhaze.graphics.ShaderUniform;
-import infinityx.lunarhaze.models.LevelContainer;
 
 /**
  * This is a class used for drawing player and enemies' game UI state: HP, Stealth, MoonLight
@@ -92,6 +90,33 @@ public class UIRender {
     private final static float STEALTH_STROKE_HEIGHT = 18f;
 
     /**
+     * Height of moon center as a percentage of transition screen before rise
+     */
+    private final static float MOON_CENTER_LOW = 1 / 7f;
+
+    /**
+     * Height of moon center as a percentage of transition screen after rise
+     */
+    private final static float MOON_CENTER_HIGH = 3 / 5f;
+
+    /**
+     * Width and height of moon as a ratio of canvas height
+     */
+    private final static float MOON_SIZE_RATIO = 350 / 982f;
+
+    /**
+     * Center X of the moon as a ratio of canvas width
+     */
+    private final static float MOON_CENTERX_RATIO = 11.8f / 16;
+
+    private float moon_centerY_ratio = MOON_CENTER_LOW;
+
+    /**
+     * Number of updates in transition phase
+     */
+    private int num_updates = 0;
+
+    /**
      * Display font for the level number
      */
     protected BitmapFont UIFont_large;
@@ -152,6 +177,21 @@ public class UIRender {
     private final Texture noticed;
 
     /**
+     * Texture to represent transition phase background
+     */
+    private final Texture transition_background;
+
+    /**
+     * Texture to represent moon for transition phase
+     */
+    private final Texture moon;
+
+    /**
+     * Texture to represent trees for transition phase
+     */
+    private final Texture trees;
+
+    /**
      * Whether heart indicator length has been changed
      */
     boolean changed = false;
@@ -179,9 +219,25 @@ public class UIRender {
     private ShaderUniform meterUniform;
 
 
-    Color full = new Color(138f / 255.0f, 25f / 255.0f, 45f / 255.0f, 1f);
+    /**
+     * current time (in seconds) transition screen has been alive
+     */
+    private float elapsed;
 
-    Color empty = new Color(41f / 255.0f, 41f / 255.0f, 41f / 255.0f, 0.8f);
+    /**
+     * time (in seconds) it should take this screen to fade-in and fade-out
+     */
+    private static final float FADE_TIME_PROP = 1 / 8f;
+
+    /**
+     * Easing in function, easing out is reversed
+     */
+    private static final Interpolation EAS_FN = Interpolation.exp5Out;
+
+    /**
+     * alpha tint, rgb should be 1 as we are only changing transparency
+     */
+    private final Color alphaTint = new Color(1, 1, 1, 1);
 
     /**
      * Create a new UIRender with font and directory assigned.
@@ -207,11 +263,21 @@ public class UIRender {
         stealth_stroke = directory.getEntry("stealth-stroke", Texture.class);
         alert = directory.getEntry("alert", Texture.class);
         noticed = directory.getEntry("noticed", Texture.class);
+        transition_background = directory.getEntry("transition-background", Texture.class);
+        moon = directory.getEntry("moon", Texture.class);
+        trees = directory.getEntry("trees", Texture.class);
 
         // shaders
         this.meter = directory.get("meter", ShaderProgram.class);
         this.meterUniform = new ShaderUniform("u_amount");
 
+    }
+
+    /**
+     * @return Elapsed time of transition phase
+     */
+    public float getElapsed() {
+        return elapsed;
     }
 
 
@@ -222,7 +288,8 @@ public class UIRender {
      * @param level  container holding all models
      * @param phase  current phase of the game
      */
-    public void drawUI(GameCanvas canvas, LevelContainer level, GameplayController.Phase phase, GameplayController gameplayController) {
+    public void drawUI(GameCanvas canvas, LevelContainer level, Phase phase,
+                       GameplayController gameplayController, float delta) {
         if (gameplayController.getState() == GameState.PLAY) {
             setFontColor(Color.WHITE);
 
@@ -269,12 +336,63 @@ public class UIRender {
             canvas.end();
 
             drawStealthIndicator(canvas, level);
+
+            if (phase == Phase.TRANSITION) {
+                drawTransitionScreen(canvas, level, delta);
+            } else if (phase == Phase.STEALTH) {
+                moon_centerY_ratio = MOON_CENTER_LOW;
+                elapsed = 0;
+            }
         }
     }
 
     public void setFontColor(Color color) {
         UIFont_large.setColor(color);
         UIFont_small.setColor(color);
+    }
+
+    /**
+     * Draw the transition animation
+     *
+     * @param canvas drawing canvas
+     * @param level  container holding all models
+     * @param delta  Number of seconds since last animation frame
+     */
+    public void drawTransitionScreen(GameCanvas canvas, LevelContainer level, float delta) {
+        elapsed = elapsed + delta;
+
+        float fade_time = FADE_TIME_PROP * level.getPhaseTransitionTime();
+        if (level.getPhaseTransitionTime() - elapsed <= fade_time) {
+            float outProg = Math.min(1f, elapsed - (level.getPhaseTransitionTime() - fade_time) / fade_time);
+            alphaTint.a = EAS_FN.apply(1 - outProg);
+        }
+
+        canvas.begin(GameCanvas.DrawPass.SPRITE);
+        canvas.drawOverlay(transition_background, Color.BLACK, true);
+        canvas.drawOverlay(transition_background, alphaTint, true);
+
+        float moon_low = canvas.getHeight() * MOON_CENTER_LOW;
+        float moon_high = canvas.getHeight() * MOON_CENTER_HIGH;
+        float moon_rise_dist = moon_high - moon_low;
+        float moon_size = canvas.getHeight() * MOON_SIZE_RATIO;
+        float moon_centerX = canvas.getWidth() * MOON_CENTERX_RATIO;
+
+        float transition_sec = level.getPhaseTransitionTime() * 2 / 3;
+        float total_num_updates = transition_sec / delta;
+        float rise_amount = moon_rise_dist / total_num_updates;
+        moon_centerY_ratio = moon_centerY_ratio + rise_amount / canvas.getHeight();
+        float moon_centerY = moon_centerY_ratio * canvas.getHeight();
+        if (moon_centerY > moon_high) {
+            moon_centerY = moon_high;
+        }
+
+        canvas.draw(moon, alphaTint, moon_centerX - moon_size / 2,
+                moon_centerY - moon_size / 2, moon_size, moon_size);
+
+        float tree_width = canvas.getWidth();
+        float tree_height = (float) trees.getHeight() / trees.getWidth() * tree_width;
+        canvas.draw(trees, alphaTint, 0, 0, tree_width, tree_height);
+        canvas.end();
     }
 
     /**

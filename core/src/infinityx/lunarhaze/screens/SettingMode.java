@@ -6,6 +6,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import infinityx.assets.AssetDirectory;
+import infinityx.lunarhaze.GDXRoot;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.util.ScreenObservable;
 
@@ -18,11 +19,20 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
      * User requested to go to menu
      */
     public final static int GO_MENU = 0;
+    /**
+     * User requested to go to pause
+     */
+    public final static int GO_PAUSE = 1;
+
 
     /**
      * Reference to GameCanvas created by the root
      */
     private final GameCanvas canvas;
+    /**
+     * Reference to Game created by the root
+     */
+    private final GDXRoot game;
     /**
      * Background texture for start-up
      */
@@ -81,8 +91,9 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
     }
 
 
-    public SettingMode(GameCanvas canvas) {
+    public SettingMode(GameCanvas canvas, GDXRoot game) {
         this.canvas = canvas;
+        this.game = game;
     }
 
     public void gatherAssets(AssetDirectory directory) {
@@ -124,7 +135,13 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
         }
         // We are are ready, notify our listener
         if (isReady() && observer != null) {
-            observer.exitScreen(this, GO_MENU);
+            if (game.getPreviousScreen() == "pause") {
+                observer.exitScreen(this, GO_PAUSE);
+            }
+            if (game.getPreviousScreen() == "menu") {
+                observer.exitScreen(this, GO_MENU);
+            }
+
         }
     }
 

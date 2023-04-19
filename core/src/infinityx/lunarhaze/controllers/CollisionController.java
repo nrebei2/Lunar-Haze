@@ -3,14 +3,14 @@ package infinityx.lunarhaze.controllers;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import infinityx.lunarhaze.models.GameObject;
-import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.combat.AttackHitbox;
 import infinityx.lunarhaze.combat.PlayerAttackHandler;
-import infinityx.lunarhaze.models.entity.Enemy;
-import infinityx.lunarhaze.models.entity.Werewolf;
 import infinityx.lunarhaze.graphics.CameraShake;
 import infinityx.lunarhaze.graphics.ScreenFlash;
+import infinityx.lunarhaze.models.GameObject;
+import infinityx.lunarhaze.models.LevelContainer;
+import infinityx.lunarhaze.models.entity.Enemy;
+import infinityx.lunarhaze.models.entity.Werewolf;
 
 /**
  * Controller to handle gameplay interactions.
@@ -42,14 +42,14 @@ public class CollisionController implements ContactListener {
         if (obj1.getType() == GameObject.ObjectType.WEREWOLF && obj2.getType() == GameObject.ObjectType.ENEMY) {
             Werewolf player = (Werewolf) obj1;
             Enemy enemy = (Enemy) obj2;
-            if (cooldown == 0&&!enemy.getImmunityState()) {
+            if (cooldown == 0) {
                 resolveEnemyAttack(player, enemy, enemy.getAttackDamage(), enemy.getAttackKnockback());
                 cooldown = ATTACK_COOLDOWN;
             }
         } else if (obj1.getType() == GameObject.ObjectType.ENEMY && obj2.getType() == GameObject.ObjectType.WEREWOLF) {
             Werewolf player = (Werewolf) obj2;
             Enemy enemy = (Enemy) obj1;
-            if (cooldown == 0&&!enemy.getImmunityState()) {
+            if (cooldown == 0) {
                 resolveEnemyAttack(player, enemy, enemy.getAttackDamage(), enemy.getAttackKnockback());
                 cooldown = ATTACK_COOLDOWN;
             }
@@ -77,18 +77,19 @@ public class CollisionController implements ContactListener {
 
         // Get direction
         Vector2 direction = pos.sub(enemyPos).nor();
-
-        ((Werewolf) player).setCanMove(false);
-        body.applyLinearImpulse(direction.scl(knockback), body.getWorldCenter(), true);
-        ((Werewolf) player).setHp((int) (((Werewolf) player).getHp() - damage));
-        CameraShake.shake(knockback * 3f, 0.3f);
-        ScreenFlash.flash(new Color(1f, 0.2f, 0.2f, 1), 0.15f, 0.05f, 0.05f, 0.15f);
+        boolean immune = ((Werewolf) player).getImmunityState();
+        if (immune == false) {
+            ((Werewolf) player).setCanMove(false);
+            body.applyLinearImpulse(direction.scl(knockback), body.getWorldCenter(), true);
+            ((Werewolf) player).setHp((int) (((Werewolf) player).getHp() - damage));
+            CameraShake.shake(knockback * 3f, 0.3f);
+            ScreenFlash.flash(new Color(1f, 0.2f, 0.2f, 1), 0.15f, 0.05f, 0.05f, 0.15f);
+        }
     }
 
     public void resolvePlayerAttack(AttackHitbox hitbox, Enemy enemy) {
         // Apply damage to the enemy
         enemy.setHp(enemy.getHp() - MAX_KILL_POWER * PlayerAttackHandler.getAttackPower());
-        enemy.setImmune(1f);
         // Apply knockback to the enemy
         Body enemyBody = enemy.getBody();
         Vector2 playerPos = hitbox.getBody().getPosition();

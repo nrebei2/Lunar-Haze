@@ -60,7 +60,8 @@ public class PlayerAttackHandler extends AttackHandler {
     /**
      * Called up above in the other update method, handles all attacking related logic
      */
-    public void update(float delta, InputController input, GameplayController.Phase phase) {
+    public void update(float delta, GameplayController.Phase phase) {
+        InputController input = InputController.getInstance();
         if (phase == GameplayController.Phase.BATTLE) {
             if (player.isAttacking()) {
                 processAttack(delta, input);
@@ -162,6 +163,7 @@ public class PlayerAttackHandler extends AttackHandler {
         attackDirection.set(input.getHorizontal(), input.getVertical()).nor();
         player.getBody().applyLinearImpulse(attackDirection, player.getBody().getWorldCenter(), true);
         comboAttackCooldownCounter = 0f;
+        player.setImmune(1f);
         super.initiateAttack();
     }
 

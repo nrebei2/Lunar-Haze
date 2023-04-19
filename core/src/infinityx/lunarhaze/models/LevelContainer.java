@@ -12,13 +12,12 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.controllers.EnemyController;
+import infinityx.lunarhaze.graphics.CameraShake;
+import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.models.entity.Enemy;
 import infinityx.lunarhaze.models.entity.EnemyPool;
 import infinityx.lunarhaze.models.entity.SceneObject;
 import infinityx.lunarhaze.models.entity.Werewolf;
-import infinityx.lunarhaze.graphics.CameraShake;
-import infinityx.lunarhaze.graphics.GameCanvas;
-import infinityx.lunarhaze.physics.LightSource;
 import infinityx.util.Drawable;
 import infinityx.util.astar.AStarMap;
 import infinityx.util.astar.AStarPathFinding;
@@ -34,7 +33,7 @@ import java.util.Comparator;
  * This includes the Board, player, enemies, lights, and scene objects.
  * <p>
  * World coordinates:
- * ------------------ (n, n) (board is nxn tiles)
+ * ------------------ (n, m) * {@link Board#getTileWorldDim()} (board is nxm tiles)
  * +---+---+----------+
  * |   |   |   ...    |
  * +-------+----------+
@@ -50,7 +49,8 @@ import java.util.Comparator;
  * +---+---+----------+
  * (0,0)
  * <p>
- * All models' positions are in world coordinates, Drawing should only be doing the relevant transformations
+ * All models' positions are in world coordinates; only once we draw
+ * should the relevant transformation from world to screen be done.
  */
 public class LevelContainer {
     /**
@@ -61,11 +61,6 @@ public class LevelContainer {
      * Rayhandler for storing lights
      */
     protected RayHandler rayHandler;
-
-    /**
-     * All light sources in level
-     */
-    private final Array<LightSource> lights = new Array<LightSource>();
 
     /**
      * The Box2D World
@@ -159,8 +154,6 @@ public class LevelContainer {
      * Ambient lighting values during battle phase
      */
     private float[] battleAmbience;
-
-    private int[] playerStartPos;
 
     /**
      * Initialize attributes
@@ -459,14 +452,6 @@ public class LevelContainer {
         return view;
     }
 
-    public int[] getPlayerStartPos() {
-        return playerStartPos;
-    }
-
-    public void setPlayerStartPos(int[] pos) {
-        playerStartPos = pos;
-    }
-
     public Color backgroundColor = new Color(0x0f4f47ff).mul(0.8f);
 
     /**
@@ -507,9 +492,7 @@ public class LevelContainer {
                 (view.x - canvas.getWidth() / 2) / canvas.WorldToScreenX(1),
                 (view.y - canvas.getHeight() / 2) / canvas.WorldToScreenY(1)
         );
-
         canvas.drawLights(rayHandler);
-
         canvas.end();
     }
 

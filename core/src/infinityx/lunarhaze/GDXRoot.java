@@ -4,6 +4,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import infinityx.assets.AssetDirectory;
+import infinityx.lunarhaze.controllers.InputController;
 import infinityx.lunarhaze.controllers.LevelParser;
 import infinityx.lunarhaze.controllers.LevelSerializer;
 import infinityx.lunarhaze.graphics.GameCanvas;
@@ -47,17 +48,29 @@ public class GDXRoot extends Game implements ScreenObserver {
      * About us Screen
      */
     private AboutUsMode aboutUs;
-
+    /**
+     * Pause Screen
+     */
+    private PauseMode pause;
 
     /**
      * Allocate Screen
      */
-    private AllocateScreen allocate;
+    private AllocateMode allocate;
 
     /**
      * Level editor
      */
     private EditorMode editor;
+
+    /**
+     * The game's previous screen
+     */
+    private String previousScreen;
+
+    public String getPreviousScreen() {
+        return previousScreen;
+    }
 
     /**
      * Creates a new game from the configuration settings.
@@ -78,9 +91,10 @@ public class GDXRoot extends Game implements ScreenObserver {
         loading = new LoadingMode("assets.json", canvas, 1);
         game = new GameMode(canvas);
         menu = new MenuMode(canvas);
-        setting = new SettingMode(canvas);
+        setting = new SettingMode(canvas, this);
         aboutUs = new AboutUsMode(canvas);
-        allocate = new AllocateScreen(canvas, game);
+        pause = new PauseMode(canvas);
+        allocate = new AllocateMode(canvas, game);
         editor = new EditorMode(canvas);
 
         // Set screen observer to this game
@@ -89,6 +103,7 @@ public class GDXRoot extends Game implements ScreenObserver {
         menu.setObserver(this);
         setting.setObserver(this);
         aboutUs.setObserver(this);
+        pause.setObserver(this);
         allocate.setObserver(this);
         editor.setObserver(this);
 
@@ -108,6 +123,7 @@ public class GDXRoot extends Game implements ScreenObserver {
         menu.dispose();
         setting.dispose();
         aboutUs.dispose();
+        pause.dispose();
 
         canvas.dispose();
         canvas = null;
@@ -151,8 +167,10 @@ public class GDXRoot extends Game implements ScreenObserver {
             menu.gatherAssets(directory);
             setting.gatherAssets(directory);
             aboutUs.gatherAssets(directory);
+            pause.gatherAssets(directory);
             allocate.gatherAssets(directory);
             game.gatherAssets(directory);
+            InputController.getInstance().loadConstants(directory);
 
             editor.setupImGui();
             editor.gatherAssets(directory);
@@ -174,8 +192,10 @@ public class GDXRoot extends Game implements ScreenObserver {
                     game.setLevel(menu.getLevelSelected());
                     game.setupLevel();
                     setScreen(game);
+                    //setScreen(editor);
                     break;
                 case MenuMode.GO_SETTING:
+                    previousScreen = "menu";
                     setScreen(setting);
                     break;
                 case MenuMode.GO_ABOUT_US:
@@ -190,6 +210,9 @@ public class GDXRoot extends Game implements ScreenObserver {
                 case SettingMode.GO_MENU:
                     setScreen(menu);
                     break;
+                case SettingMode.GO_PAUSE:
+                    setScreen(pause);
+                    break;
             }
         } else if (screen == aboutUs) {
             switch (exitCode) {
@@ -199,8 +222,8 @@ public class GDXRoot extends Game implements ScreenObserver {
             }
         } else if (screen == game) {
             switch (exitCode) {
-                case GameMode.GO_MENU:
-                    setScreen(menu);
+                case GameMode.GO_PAUSE:
+                    setScreen(pause);
                     break;
                 case GameMode.GO_ALLOCATE:
                     allocate.setGameMode(game);
@@ -208,8 +231,28 @@ public class GDXRoot extends Game implements ScreenObserver {
                     setScreen(allocate);
                     break;
             }
+        } else if (screen == pause) {
+            switch (exitCode) {
+                case PauseMode.GO_RESUME:
+                    setScreen(game);
+                    break;
+                case PauseMode.GO_MENU:
+                    setScreen(menu);
+                    break;
+                case PauseMode.GO_SETTING:
+                    previousScreen = "pause";
+                    setScreen(setting);
+                    break;
+                case PauseMode.GO_EXIT:
+                    Gdx.app.exit();
+                    break;
+                case PauseMode.GO_RESTART:
+                    game.setupLevel();
+                    setScreen(game);
+                    break;
+            }
         } else if (screen == allocate) {
-            if (exitCode == AllocateScreen.GO_PLAY) {
+            if (exitCode == AllocateMode.GO_PLAY) {
                 System.out.println("Exit code switch to GO_PLAY");
                 game.setGameplayController(allocate.getGameplayController());
                 System.out.println("Current phase is " + game.getGameplayController().getPhase());
@@ -220,7 +263,6 @@ public class GDXRoot extends Game implements ScreenObserver {
             if (exitCode == EditorMode.GO_MENU) {
                 setScreen(menu);
             } else if (exitCode == EditorMode.GO_PLAY) {
-                // Test level
                 game.setLevel(LevelSerializer.getMostRecent());
                 game.setupLevel();
                 setScreen(game);

@@ -8,10 +8,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.IntArray;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
-import infinityx.lunarhaze.models.Board;
-import infinityx.lunarhaze.models.Tile;
 import infinityx.lunarhaze.graphics.GameCanvas;
+import infinityx.lunarhaze.models.Board;
 import infinityx.lunarhaze.models.LevelContainer;
+import infinityx.lunarhaze.models.Tile;
 
 import java.util.ArrayList;
 

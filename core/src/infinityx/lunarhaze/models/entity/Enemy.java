@@ -1,7 +1,6 @@
 package infinityx.lunarhaze.models.entity;
 
 import com.badlogic.gdx.graphics.Color;
-
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Pool;
@@ -69,17 +68,6 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
      */
     private float hp;
 
-    private boolean isImmune;
-    private float immunityTime;
-    public void setImmune(float duration) {
-        isImmune = true;
-        immunityTime = duration;
-    }
-
-    public boolean getImmunityState() {
-        return isImmune;
-    }
-
     /**
      * Returns the type of this object.
      * <p>
@@ -108,14 +96,9 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
         setMaxLinearAcceleration(0.5f);
         setMaxLinearSpeed(0.7f);
         setMaxAngularAcceleration(1);
-        setMaxAngularSpeed(1);
-        isImmune = false;
-        immunityTime = 0;
+        setMaxAngularSpeed(0.7f);
     }
 
-    /**
-     * Resets the object for reuse.
-     */
     @Override
     public void reset() {
         hp = maxHp;
@@ -251,13 +234,6 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
 
     @Override
     public void update(float delta) {
-        System.out.println("isImmune" + isImmune);
         super.update(delta);
-        if (isImmune) {
-            immunityTime -= delta;
-            if (immunityTime <= 0) {
-                isImmune = false;
-            }
-        }
     }
 }

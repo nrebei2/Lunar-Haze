@@ -260,7 +260,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             board.removePreview();
             placeTile();
         } else if (selected instanceof Player) {
-            level.setPlayerStartPos(new int[]{(int) mouseBoard.x, (int) mouseBoard.y});
             level.getPlayer().setPosition(mouseWorld);
             playerPlaced = true;
             System.out.println("Player placed at " + (int) mouseBoard.x + ", " + (int) mouseBoard.y);

@@ -1,14 +1,19 @@
 package infinityx.lunarhaze.controllers;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.fsm.StateMachine;
 import com.badlogic.gdx.audio.Sound;
-import infinityx.lunarhaze.models.Board;
-import infinityx.lunarhaze.controllers.GameplayController.Phase;
-import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.combat.PlayerAttackHandler;
+import infinityx.lunarhaze.controllers.GameplayController.Phase;
+import infinityx.lunarhaze.models.Board;
+import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.entity.Werewolf;
 
+
+/**
+ * Controller class, handles logic for the player
+ */
 public class PlayerController {
 
     /**
@@ -57,7 +62,7 @@ public class PlayerController {
     public Werewolf player;
 
     /**
-     * The game board; used for pathfinding
+     * Reference game board
      */
     private final Board board;
 
@@ -86,51 +91,31 @@ public class PlayerController {
      */
     private Sound attack_sound;
 
-    private PlayerAttackHandler attackHandler;
+    /**
+     * Handles attacking logic
+     */
+    private final PlayerAttackHandler attackHandler;
 
     /**
      * Indicate whether player has done with allocating moonlight
      */
     private Boolean allocateReady;
 
+    /**
+     * Player state machine, mostly for animation purposes and setting stealth.
+     */
     private StateMachine<PlayerController, PlayerState> stateMachine;
-
-    private InputController inputController;
-
-    private LightingController lightingController;
-
-    private Phase phase;
 
     public float getTimeOnMoonlightPercentage() {
         return timeOnMoonlight / MOONLIGHT_COLLECT_TIME;
-    }
-
-    public InputController getInputController() {
-        return inputController;
-    }
-
-    public PlayerAttackHandler getAttackHandler() {
-        return attackHandler;
-    }
-
-    public Phase getPhase() {
-        return phase;
     }
 
     public Werewolf getPlayer() {
         return player;
     }
 
-    public boolean isOnMoonlight() {
-        return player.isOnMoonlight();
-    }
-
     public StateMachine<PlayerController, PlayerState> getStateMachine() {
         return stateMachine;
-    }
-
-    public LightingController getLightingController() {
-        return lightingController;
     }
 
     public boolean isAttacking() {
@@ -146,31 +131,37 @@ public class PlayerController {
     }
 
     /**
-     * Initializer of a PlayerController
+     * Initializes
+     *
+     * @param levelContainer
      */
-    public PlayerController(Werewolf player, Board board, LevelContainer levelContainer, LightingController lighting) {
-        this.player = player;
-        this.board = board;
+    public PlayerController(LevelContainer levelContainer) {
+        this.player = levelContainer.getPlayer();
+        this.board = levelContainer.getBoard();
         this.levelContainer = levelContainer;
         collectingMoonlight = false;
         attackHandler = new PlayerAttackHandler(player);
         collect_sound = levelContainer.getDirectory().getEntry("collect", Sound.class);
         attack_sound = levelContainer.getDirectory().getEntry("whip", Sound.class);
-        stateMachine = new DefaultStateMachine<>(this, PlayerState.IDLE, PlayerState.ANY_STATE);
-        lightingController = lighting;
+        stateMachine = new DefaultStateMachine<>(this, PlayerState.IDLE);
         allocateReady = false;
     }
 
     /**
-     * Process the player's movement according to input controller.
+     * Process the player's movement.
      * <p>
      *
      * @param delta Number of seconds since last animation frame
      */
     public void resolvePlayer(float delta) {
-        player.setMovementH(inputController.getHorizontal());
-        player.setMovementV(inputController.getVertical());
-        player.setRunning(inputController.didRun());
+        InputController inputController = InputController.getInstance();
+
+        // Button may be pressed, but player may not be moving!
+        player.setRunning(
+                inputController.didRun() && (
+                        InputController.getInstance().getHorizontal() != 0 || InputController.getInstance().getVertical() != 0
+                )
+        );
         player.update(delta);
     }
 
@@ -191,7 +182,7 @@ public class PlayerController {
      * <p>
      *
      * @param delta              Number of seconds since last animation frame
-     * @param lightingController
+     * @param lightingController lighting controller to update moonlight particles
      */
     public void resolveMoonlight(float delta, LightingController lightingController) {
         int px = board.worldToBoardX(player.getPosition().x);
@@ -199,7 +190,6 @@ public class PlayerController {
 
         if (board.isLit(px, py)) {
             timeOnMoonlight += delta; // Increase variable by time
-            player.setOnMoonlight(true);
             collectingMoonlight = true;
             if (board.isCollectable(px, py) && (timeOnMoonlight > MOONLIGHT_COLLECT_TIME)) {
                 collectMoonlight();
@@ -213,28 +203,7 @@ public class PlayerController {
             }
         } else {
             timeOnMoonlight = 0;
-            player.setOnMoonlight(false);
             collectingMoonlight = false;
-        }
-    }
-
-    /**
-     * Process the player's stealth value. This depends on the walk/run mode.
-     * <p>
-     */
-    public void resolveStealthBar() {
-        if (Math.abs(inputController.getHorizontal()) == inputController.getWalkSpeed() ||
-                Math.abs(inputController.getVertical()) == inputController.getWalkSpeed()) {
-            player.setStealth(WALK_STEALTH);
-        } else if (Math.abs(inputController.getHorizontal()) == inputController.getRunSpeed() ||
-                Math.abs(inputController.getVertical()) == inputController.getRunSpeed()) {
-            player.setStealth(RUN_STEALTH);
-        } else if (inputController.getHorizontal() == 0 || inputController.getVertical() == 0) {
-            player.setStealth(STILL_STEALTH);
-        }
-
-        if (player.isOnMoonlight()) {
-            player.setStealth(MOON_STEALTH);
         }
     }
 
@@ -284,9 +253,20 @@ public class PlayerController {
         allocateReady = b;
     }
 
-    public void update(InputController input, float delta, Phase currPhase) {
-        inputController = inputController == null ? input : inputController;
-        phase = currPhase;
+    /**
+     * Process the update logic for the player
+     *
+     * @param currPhase          Current phase of the game
+     * @param lightingController lighting controller to update moonlight particles
+     */
+    public void update(Phase currPhase, LightingController lightingController) {
+        attackHandler.update(Gdx.graphics.getDeltaTime(), currPhase);
+        resolvePlayer(Gdx.graphics.getDeltaTime());
+        if (currPhase == GameplayController.Phase.STEALTH) {
+            resolveMoonlight(Gdx.graphics.getDeltaTime(), lightingController);
+        }
+
+        // Process the FSM
         stateMachine.update();
     }
 }

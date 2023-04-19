@@ -203,10 +203,6 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
      * @param directory Reference to global asset manager.
      */
     public void gatherAssets(AssetDirectory directory) {
-        //for (String s : directory.getAssetNames()) {
-        //    System.out.println(s);
-        //}
-        //directory.isLoaded("")
         background = directory.getEntry("background", Texture.class);
         background.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         playButton = directory.getEntry("play", Texture.class);

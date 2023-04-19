@@ -5,8 +5,8 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.lunarhaze.models.Board;
-import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.Dust;
+import infinityx.lunarhaze.models.LevelContainer;
 
 import java.util.Iterator;
 
@@ -15,7 +15,6 @@ public class LightingController {
      * Reference of board from container
      */
     private final Board board;
-    private final LevelContainer container;
 
     /**
      * Contains constants for dust particle system settings
@@ -40,7 +39,6 @@ public class LightingController {
      */
     public LightingController(LevelContainer container) {
         this.board = container.getBoard();
-        this.container = container;
 
         dustInfo = container.getDirectory().getEntry("dust", JsonValue.class);
         JsonValue texInfo = dustInfo.get("texture");

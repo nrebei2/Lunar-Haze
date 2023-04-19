@@ -3,7 +3,6 @@ package infinityx.lunarhaze.controllers;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
-import infinityx.lunarhaze.controllers.EnemyState;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.entity.Enemy;
 
