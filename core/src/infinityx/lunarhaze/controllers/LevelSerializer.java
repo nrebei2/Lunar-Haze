@@ -2,6 +2,7 @@ package infinityx.lunarhaze.controllers;
 
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.JsonWriter;
+import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.models.Board;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.entity.Enemy;
@@ -14,8 +15,10 @@ import java.util.ArrayList;
 
 public class LevelSerializer {
 
-    private static String levelToJson(LevelContainer level, Board board) {
-        JsonValue root = new JsonValue(JsonValue.ValueType.object);
+    private static int mostRecentlyCreatedLevel;
+
+    /** returns a string representation of Json based on level and board */
+    private static JsonValue levelToJson(LevelContainer level, Board board, int levelNumber) {
 
         JsonValue currLevel = new JsonValue(JsonValue.ValueType.object);
 
@@ -24,7 +27,7 @@ public class LevelSerializer {
         settings.addChild("phaseLength", new JsonValue(2));
 
         JsonValue battlecolor = new JsonValue(JsonValue.ValueType.array);
-        float battleArray[] = level.getStealthAmbience();
+        float[] battleArray = level.getStealthAmbience();
         battlecolor.addChild(new JsonValue(battleArray[0]));
         battlecolor.addChild(new JsonValue(battleArray[1]));
         battlecolor.addChild(new JsonValue(battleArray[2]));
@@ -109,7 +112,7 @@ public class LevelSerializer {
 
         // Enemy (todo)
         JsonValue enemy = new JsonValue(JsonValue.ValueType.array);
-        for (Enemy e : level.getEnemies()) {
+        for(Enemy e : level.getEnemies()) {
             JsonValue currEnemy = new JsonValue(JsonValue.ValueType.object);
             currEnemy.addChild("type", new JsonValue(e.getName()));
             JsonValue pos = new JsonValue(JsonValue.ValueType.array);
@@ -120,7 +123,7 @@ public class LevelSerializer {
             JsonValue patrol = new JsonValue(JsonValue.ValueType.array);
 
 
-            if (e.getPatrolPath() != null) {
+            if(e.getPatrolPath() != null && e.getPatrolPath().size() > 0) {
                 // Tile 1
                 JsonValue pos1 = new JsonValue(JsonValue.ValueType.array);
                 pos1.addChild(new JsonValue(board.worldToBoardX(e.getPatrolPath().get(0).x)));
@@ -154,20 +157,34 @@ public class LevelSerializer {
         scene.addChild("objects", objects);
 
         currLevel.addChild("scene", scene);
-        root.addChild("1", currLevel);
-
-        return root.prettyPrint(JsonWriter.OutputType.json, 10);
+        return currLevel;
+        //root.addChild(Integer.toString(levelNumber), currLevel);
+        //return root.prettyPrint(JsonWriter.OutputType.json, 10);
     }
 
-    public static void saveBoardToJsonFile(LevelContainer level, Board board, String name) {
-        String jsonString = levelToJson(level, board);
-        String fileName = "assets/jsons/" + name + ".json";
+    /** Saves the level to a json file. */
+    public static void saveBoardToJsonFile(LevelContainer level, Board board, AssetDirectory directory) {
+        JsonValue levels = directory.getEntry("levels", JsonValue.class);
+        if(levels == null) {
+            levels = new JsonValue(JsonValue.ValueType.object);
+        }
+        // The size of the levels is the new index to put the created level, as levels starts at 0
+        mostRecentlyCreatedLevel = levels.size;
 
+        // Merge new level with existing levels
+        JsonValue newLevel = levelToJson(level, board, mostRecentlyCreatedLevel);
+        levels.addChild(Integer.toString(mostRecentlyCreatedLevel), newLevel);
+
+        // Write to assets/jsons
+        String fileName = "assets/jsons/levels.json";
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
-            writer.write(jsonString);
+            writer.write(levels.prettyPrint(JsonWriter.OutputType.json, 10));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+    /** Returns index of the most recently created level. Useful for Save+Test */
+    public static int getMostRecent() { return mostRecentlyCreatedLevel; }
 
 }

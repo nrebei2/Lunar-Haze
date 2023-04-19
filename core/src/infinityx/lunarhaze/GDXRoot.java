@@ -6,6 +6,7 @@ import com.badlogic.gdx.Screen;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.controllers.InputController;
 import infinityx.lunarhaze.controllers.LevelParser;
+import infinityx.lunarhaze.controllers.LevelSerializer;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.screens.*;
 import infinityx.util.ScreenObserver;
@@ -262,7 +263,9 @@ public class GDXRoot extends Game implements ScreenObserver {
             if (exitCode == EditorMode.GO_MENU) {
                 setScreen(menu);
             } else if (exitCode == EditorMode.GO_PLAY) {
-
+                game.setLevel(LevelSerializer.getMostRecent());
+                game.setupLevel();
+                setScreen(game);
             }
         } else {
             Gdx.app.exit();

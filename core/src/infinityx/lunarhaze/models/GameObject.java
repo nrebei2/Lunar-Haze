@@ -29,6 +29,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.graphics.GameCanvas;
+import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.physics.MultiShapeObstacle;
 import infinityx.util.Drawable;
 import infinityx.util.FilmStrip;
@@ -65,7 +66,7 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
     /**
      * Collection of named filmstrips
      */
-    protected Map<String, FilmStrip> filmstrips;
+    public Map<String, FilmStrip> filmstrips;
 
     /**
      * How much the texture of this object should be scaled when drawn
