@@ -33,15 +33,15 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
-import infinityx.lunarhaze.entity.Enemy;
-import infinityx.lunarhaze.entity.Werewolf;
+import infinityx.lunarhaze.models.entity.Enemy;
+import infinityx.lunarhaze.models.entity.Werewolf;
 
 /**
  * Primary view class for the game, abstracting the basic graphics calls.
  * <p>
- * This version of GameCanvas only supports both rectangular and polygonal Sprite
- * drawing.  It also supports a debug mode that draws polygonal outlines.  However,
- * that mode must be done in a separate begin/end pass.
+ * This version of GameCanvas supports both rectangular and polygonal Sprite
+ * drawing using {@link PolygonSpriteBatch}, shape drawing using {@link ShapeRenderer},
+ * and shader rendering using {@link ShaderRenderer}.
  */
 public class GameCanvas {
 

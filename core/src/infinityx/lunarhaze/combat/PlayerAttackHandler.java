@@ -1,8 +1,8 @@
 package infinityx.lunarhaze.combat;
 
-import infinityx.lunarhaze.GameplayController;
-import infinityx.lunarhaze.InputController;
-import infinityx.lunarhaze.entity.Werewolf;
+import infinityx.lunarhaze.controllers.GameplayController;
+import infinityx.lunarhaze.controllers.InputController;
+import infinityx.lunarhaze.models.entity.Werewolf;
 
 /**
  * Handles all attacking for the player by extending the base
@@ -60,7 +60,8 @@ public class PlayerAttackHandler extends AttackHandler {
     /**
      * Called up above in the other update method, handles all attacking related logic
      */
-    public void update(float delta, InputController input, GameplayController.Phase phase) {
+    public void update(float delta, GameplayController.Phase phase) {
+        InputController input = InputController.getInstance();
         if (phase == GameplayController.Phase.BATTLE) {
             if (player.isAttacking()) {
                 processAttack(delta, input);
