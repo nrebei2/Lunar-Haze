@@ -35,6 +35,21 @@ public class EnemyController {
     private Box2DRaycastCollision raycastCollision;
 
     /**
+     * raycast for enemy communication
+     */
+    private final RaycastInfo commRay;
+
+    /**
+     * Collision detector for enemy communication
+     */
+    public Box2DRaycastCollision communicationCollision;
+
+    /**
+     * Cache for collision output from communicationCollision
+     */
+    Collision<Vector2> commCache = new Collision<>(new Vector2(), new Vector2());
+
+    /**
      * Cache for collision output from raycastCollision
      */
     Collision<Vector2> collisionCache = new Collision<>(new Vector2(), new Vector2());
@@ -103,6 +118,10 @@ public class EnemyController {
         this.raycast = new RaycastInfo(enemy);
         raycast.addIgnores(GameObject.ObjectType.ENEMY, GameObject.ObjectType.HITBOX);
 
+        this.commRay = new RaycastInfo(enemy);
+        commRay.addIgnores(GameObject.ObjectType.HITBOX, GameObject.ObjectType.WEREWOLF);
+
+
         // Dummy path
         Array<Vector2> waypoints = new Array<>();
         waypoints.add(new Vector2());
@@ -118,6 +137,7 @@ public class EnemyController {
     public void populate(LevelContainer container) {
         target = container.getPlayer();
         this.raycastCollision = new Box2DRaycastCollision(container.getWorld(), raycast);
+        this.communicationCollision = new Box2DRaycastCollision(container.getWorld(), commRay);
         this.pathfinder = container.pathfinder;
 
         // Steering behaviors
@@ -201,6 +221,11 @@ public class EnemyController {
                 MathUtils.random(enemy.getBottomLeftOfRegion().x, enemy.getTopRightOfRegion().x),
                 MathUtils.random(enemy.getBottomLeftOfRegion().y, enemy.getTopRightOfRegion().y)
         );
+    }
+
+    /**used to find ray collsion between this enemy and another enemy*/
+    public void findCollision(Enemy target){
+        communicationCollision.findCollision(commCache, new Ray<>(enemy.getPosition(), target.getPosition()));
     }
 
     /**

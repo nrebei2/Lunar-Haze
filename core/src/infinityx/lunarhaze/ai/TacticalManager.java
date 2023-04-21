@@ -4,6 +4,7 @@ import com.badlogic.gdx.ai.fsm.StateMachine;
 import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
+import com.badlogic.gdx.ai.utils.Ray;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
@@ -86,8 +87,10 @@ public class TacticalManager implements Telegraph {
     public void alertAllies(EnemyController entity) {
         for (Enemy enemy : activeEnemies) {
             EnemyController control = enemyMap.get(enemy);
+            entity.findCollision(control.getEnemy());
             // FIXME: Should only call an enemy that is visible from entity.enemy
-            if (control != entity && (entity.getEnemy().getPosition()).cpy().dst(control.getEnemy().getPosition()) <= 5f) {
+            if (control != entity && (entity.getEnemy().getPosition()).cpy().dst(control.getEnemy().getPosition()) <= 5f
+                && entity.communicationCollision.hitObject == control.getEnemy()) {
                 System.out.println("alerting");
                 StateMachine<EnemyController, EnemyState> machine = control.getStateMachine();
                 machine.changeState(EnemyState.ALERT);
