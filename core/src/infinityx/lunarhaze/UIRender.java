@@ -320,11 +320,11 @@ public class UIRender {
             // Draw top stroke at the top center of screen
             drawLevelStats(canvas, phase, gameplayController);
             if (phase == Phase.STEALTH) {
-                drawHealthStats(canvas, level, phase);
-                drawMoonlightStats(canvas, level);
+                drawHealthStats(canvas, level, phase, delta);
+                drawMoonlightStats(canvas, level, delta);
                 drawStealthStats(canvas, level);
             } else if (phase == Phase.BATTLE) {
-                drawHealthStats(canvas, level, phase);
+                drawHealthStats(canvas, level, phase, delta);
                 drawPowerStats(canvas, level);
                 drawRangeStats(canvas, level);
             }
@@ -426,7 +426,7 @@ public class UIRender {
     /**
      * Draw the health stroke and health status of the player
      */
-    public void drawHealthStats(GameCanvas canvas, LevelContainer level, Phase phase) {
+    public void drawHealthStats(GameCanvas canvas, LevelContainer level, Phase phase, float delta) {
         float stroke_width = HEALTH_STROKE_WIDTH;
         int max_hp = Werewolf.INITIAL_HP;
         if (phase == Phase.STEALTH) {
@@ -451,7 +451,7 @@ public class UIRender {
             }
         }
         if (level.getPlayer().getHp() < last_hp) {
-            drawHealthLose(canvas, level, phase);
+            drawHealthLose(canvas, delta);
         }
         last_hp = level.getPlayer().getHp();
     }
@@ -459,14 +459,14 @@ public class UIRender {
     /**
      * Draw the moonlight stroke and moonlight status
      */
-    public void drawMoonlightStats(GameCanvas canvas, LevelContainer level) {
+    public void drawMoonlightStats(GameCanvas canvas, LevelContainer level, float delta) {
         canvas.draw(moonlight_stroke, Color.WHITE, MOON_STROKE_WIDTH / 3 + HEALTH_STROKE_WIDTH, canvas.getHeight() - HEALTH_STROKE_HEIGHT - MOON_STROKE_HEIGHT, MOON_STROKE_WIDTH, MOON_STROKE_HEIGHT);
         canvas.draw(moon_icon, Color.WHITE, moon_icon.getWidth() / 2, moon_icon.getHeight() / 2,
                 MOON_STROKE_WIDTH / 2 + moon_icon.getWidth() / 4 + HEALTH_STROKE_WIDTH, canvas.getHeight() - HEALTH_STROKE_HEIGHT - MOON_STROKE_HEIGHT + moon_icon.getHeight() / 2, 0, 0.5f, 0.5f);
         canvas.drawText(level.getPlayer().getMoonlightCollected() + "/" + ((int) level.getTotalMoonlight()), UIFont_small,
                 MOON_STROKE_WIDTH * 4 / 5 + HEALTH_STROKE_WIDTH, canvas.getHeight() - HEALTH_STROKE_HEIGHT * 2 + UIFont_small.getCapHeight() * 2.5f);
         if (level.getPlayer().getMoonlightCollected() > last_moon) {
-            drawMoonCollect(canvas, level);
+            drawMoonCollect(canvas, delta);
         }
         last_moon = level.getPlayer().getMoonlightCollected();
     }
@@ -485,7 +485,8 @@ public class UIRender {
     /**
      * Draw the lose of 1 HP
      */
-    public void drawHealthLose(GameCanvas canvas, LevelContainer level, Phase phase) {
+    public void drawHealthLose(GameCanvas canvas, float delta) {
+        // TODO: Make this draw over multiple frames
         Color healthColor = new Color(202f / 255.0f, 139f / 255.0f, 139f / 255.0f, 1);
         setFontColor(healthColor);
         canvas.drawText("-1", UIFont_small, HEALTH_STROKE_WIDTH / 2, canvas.getHeight() - HEALTH_STROKE_HEIGHT * 3);
@@ -494,7 +495,8 @@ public class UIRender {
     /**
      * Draw the collect of 1 moon
      */
-    public void drawMoonCollect(GameCanvas canvas, LevelContainer level) {
+    public void drawMoonCollect(GameCanvas canvas, float delta) {
+        // TODO: Make this draw over multiple frames
         Color moonColor = new Color(248f / 255.0f, 228f / 255.0f, 184f / 255.0f, 1);
         setFontColor(moonColor);
         canvas.drawText("-1", UIFont_small, HEALTH_STROKE_WIDTH + MOON_STROKE_WIDTH / 2, canvas.getHeight() - HEALTH_STROKE_HEIGHT * 3);
