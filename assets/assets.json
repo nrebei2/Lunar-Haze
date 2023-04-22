@@ -1,22 +1,23 @@
 {
   "textures": {
-    "background": "shared/menu_bg.png",
-    "play": "shared/play.png",
+    "background": "screens/menu-screen/menu_bg.jpg",
+    "play": "screens/menu-screen/play.png",
+    "level-editor": "screens/menu-screen/level_editor.png",
+    "setting": "screens/menu-screen/setting.png",
+    "background-setting": "screens/menu-screen/setting_bg.jpg",
+    "about-us": "screens/menu-screen/about_us.png",
+    "background-about-us": "screens/menu-screen/aboutus_bg.png",
+    "back": "screens/menu-screen/back.png",
+    "exit": "screens/menu-screen/exit.png",
+    "pause": "screens/pause-screen/pause_menu.jpg",
+    "pause-exit": "screens/pause-screen/pause_exit.png",
+    "pause-quit": "screens/pause-screen/pause_quit.png",
+    "pause-restart": "screens/pause-screen/pause_restart.png",
+    "pause-resume": "screens/pause-screen/pause_resume.png",
+    "pause-review": "screens/pause-screen/pause_review.png",
+    "review": "screens/pause-screen/review.jpg",
     "bkg_allocate": "allocateUI/bkg-allocate.png",
     "add": "allocateUI/add-button.png",
-    "setting": "shared/setting.png",
-    "background-setting": "shared/setting_bg.jpg",
-    "about-us": "shared/about_us.png",
-    "background-about-us": "shared/aboutus_bg.png",
-    "back": "shared/back.png",
-    "exit": "shared/exit.png",
-    "pause": "shared/pause_menu.jpg",
-    "pause-exit": "shared/pause_exit.png",
-    "pause-quit": "shared/pause_quit.png",
-    "pause-restart": "shared/pause_restart.png",
-    "pause-resume": "shared/pause_resume.png",
-    "pause-review": "shared/pause_review.png",
-    "review": "shared/review.jpg",
     "theme1": {
       "file": "images/spritesheet_tile.png",
       "sprites":	{
@@ -385,15 +386,15 @@
   },
   "fonts": {
     "retro": {
-      "file": "shared/RetroGame.ttf",
+      "file": "screens/RetroGame.ttf",
       "size": 64
     },
     "libre-large": {
-      "file": "shared/LibreBaskerville-Regular.ttf",
+      "file": "screens/LibreBaskerville-Regular.ttf",
       "size": 30
     },
     "libre-small": {
-      "file": "shared/LibreBaskerville-Regular.ttf",
+      "file": "screens/LibreBaskerville-Regular.ttf",
       "size": 15
     }
   }
