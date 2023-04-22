@@ -138,6 +138,22 @@ public enum PlayerState implements State<PlayerController> {
         public void exit(PlayerController entity) {
             entity.getCollectSound().play();
         }
+    },
+
+    /**
+     * The player is currently dashing
+     */
+    DASH() {
+        // TODO: Add state transitions to DASH from other states
+        @Override
+        public void enter(PlayerController entity) {
+            // TODO: Update frame logic
+        }
+
+        @Override
+        public void update(PlayerController entity) {
+            // TODO: Add state transitions to other states
+        }
     };
 
 

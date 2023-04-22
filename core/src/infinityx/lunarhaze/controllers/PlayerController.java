@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.fsm.StateMachine;
 import com.badlogic.gdx.audio.Sound;
+import infinityx.lunarhaze.combat.AttackHandler;
 import infinityx.lunarhaze.combat.PlayerAttackHandler;
 import infinityx.lunarhaze.controllers.GameplayController.Phase;
 import infinityx.lunarhaze.models.Board;
@@ -269,4 +270,6 @@ public class PlayerController {
         // Process the FSM
         stateMachine.update();
     }
+
+    public PlayerAttackHandler getAttackHandler() { return attackHandler;    }
 }
