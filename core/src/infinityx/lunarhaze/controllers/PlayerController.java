@@ -157,11 +157,11 @@ public class PlayerController {
         InputController inputController = InputController.getInstance();
 
         // Button may be pressed, but player may not be moving!
-        player.setRunning(
+        /*player.setRunning(
                 inputController.didRun() && (
                         InputController.getInstance().getHorizontal() != 0 || InputController.getInstance().getVertical() != 0
                 )
-        );
+        );*/
         player.update(delta);
     }
 

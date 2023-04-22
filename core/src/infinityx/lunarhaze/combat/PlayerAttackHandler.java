@@ -1,5 +1,7 @@
 package infinityx.lunarhaze.combat;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.controllers.GameplayController;
 import infinityx.lunarhaze.controllers.InputController;
 import infinityx.lunarhaze.models.entity.Werewolf;
@@ -42,6 +44,13 @@ public class PlayerAttackHandler extends AttackHandler {
 
     private static float attackRange;
 
+    private static final float DASH_SPEED = 12f; // Adjust the value as needed
+    private static final float DASH_TIME = 0.25f; // Dash duration in seconds
+    private float dashTimer;
+    private Vector2 dashDirection;
+    private boolean isInvincible;
+    private boolean isDashing;
+
     /**
      * Constructor that gets a reference to the player model
      */
@@ -53,6 +62,9 @@ public class PlayerAttackHandler extends AttackHandler {
         comboTime = 0f;
         attackPower = Werewolf.INITIAL_POWER;
         attackRange = Werewolf.INITIAL_RANGE;
+        dashDirection = new Vector2();
+        isInvincible = false;
+        isDashing = false;
     }
 
     //TODO: Make the attack cooldowns and attack lengths decrease with moonlight collected
@@ -63,6 +75,9 @@ public class PlayerAttackHandler extends AttackHandler {
     public void update(float delta, GameplayController.Phase phase) {
         InputController input = InputController.getInstance();
         if (phase == GameplayController.Phase.BATTLE) {
+            if (isDashing) {
+                processDash(dashDirection);
+            }
             if (player.isAttacking()) {
                 processAttack(delta, input);
             } else {
@@ -85,6 +100,10 @@ public class PlayerAttackHandler extends AttackHandler {
                     // Will remove magic numbers later
                     player.setDrawCooldownBar(true, comboAttackCooldownCounter / 0.4f);
                 }
+            }
+
+            if (input.didRun() && !player.isAttacking()) {
+                initiateDash(input);
             }
         }
     }
@@ -148,8 +167,8 @@ public class PlayerAttackHandler extends AttackHandler {
      * Returns true if the player can start a new attack or continue a combo
      */
     public boolean canStartNewAttackOrContinueCombo() {
-        return (comboStep == 0 && canStartNewAttack()) // Can start a new attack
-                || (comboStep > 0 && comboTime <= MAX_COMBO_TIME && comboAttackCooldownCounter >= 0.4f); // Can continue a combo
+        return (comboStep == 0 && canStartNewAttack() && !isDashing) // Can start a new attack
+                || (comboStep > 0 && comboTime <= MAX_COMBO_TIME && comboAttackCooldownCounter >= 0.4f && !isDashing); // Can continue a combo
     }
 
     /**
@@ -165,6 +184,34 @@ public class PlayerAttackHandler extends AttackHandler {
         comboAttackCooldownCounter = 0f;
         player.setImmune(1f);
         super.initiateAttack();
+    }
+
+    /**
+     * Initiates a dash
+     */
+    private void initiateDash(InputController input) {
+        if(!isDashing) {
+            isDashing = true;
+            dashDirection = new Vector2(input.getHorizontal(), input.getVertical()).nor();
+            dashTimer = 0f;
+            isInvincible = true;
+            player.setCanMove(false);
+        }
+    }
+
+    private void processDash(Vector2 direction) {
+        player.getBody().setLinearVelocity(direction.x * DASH_SPEED, direction.y * DASH_SPEED);
+        dashTimer += Gdx.graphics.getDeltaTime();
+        if (dashTimer >= DASH_TIME) {
+            endDash();
+        }
+    }
+
+    private void endDash() {
+        player.getBody().setLinearVelocity(0, 0);
+        isInvincible = false;
+        isDashing = false;
+        player.setCanMove(true);
     }
 
     /**

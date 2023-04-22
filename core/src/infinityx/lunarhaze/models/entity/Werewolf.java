@@ -12,7 +12,7 @@ import infinityx.lunarhaze.controllers.InputController;
 import infinityx.lunarhaze.models.GameObject;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.util.Box2dLocation;
-import infinityx.util.Direction;
+import infinityx.util.*;
 import infinityx.util.MathUtil;
 
 /**

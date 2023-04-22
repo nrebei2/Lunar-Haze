@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
+import imgui.ImFont;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.glfw.ImGuiImplGlfw;
@@ -50,7 +51,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     /** Size of the board (e.g. 10x10 would be [10, 10]) */
     private int[] boardSize;
 
-    private BitmapFont font;
+    private ImFont font;
 
     /**
      * User requested to go to menu
@@ -96,11 +97,11 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         ImGuiIO io = ImGui.getIO();
         io.setIniFilename(null);
         // TODO: why doesn't font work?
-//        font = directory.getEntry("libre-small", BitmapFont.class);
-//        font = io.getFonts().addFontFromFileTTF("assets/fonts/font.ttf", 24);
+       // font = directory.getEntry("libre-small", BitmapFont.class);
+        //font = io.getFonts().addFontFromFileTTF(directory.getDirectory() + "shared/LibreBaskerville-Regular.ttf", 16);
 //        ImFont
-//        io.setFontDefault(font.);
-//        io.getFonts().build();
+        //io.setFontDefault(font);
+        //io.getFonts().build();
 
         imGuiGlfw.init(windowHandle, true);
         imGuiGl.init("#version 110");
