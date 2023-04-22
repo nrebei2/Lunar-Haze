@@ -40,16 +40,19 @@ public class PlayerAttackHandler extends AttackHandler {
      */
     private Werewolf player;
 
+    /** Attack variables */
     private static float attackPower;
 
     private static float attackRange;
 
+    /** Dash variables */
     private static final float DASH_SPEED = 40f;
     private static final float DASH_TIME = 0.25f;
     private float dashTimer;
     private Vector2 dashDirection;
-    private boolean isInvincible;
     private boolean isDashing;
+
+    private boolean isInvincible;
 
     /**
      * Constructor that gets a reference to the player model
@@ -75,25 +78,30 @@ public class PlayerAttackHandler extends AttackHandler {
     public void update(float delta, GameplayController.Phase phase) {
         InputController input = InputController.getInstance();
         if (phase == GameplayController.Phase.BATTLE) {
+            // For each frame/delta, process dash/attack if dashing or attacking (which is set by initiateAttack/Dash)
             if (isDashing) {
                 processDash(dashDirection);
             }
             if (player.isAttacking()) {
                 processAttack(delta, input);
             } else {
+                // If we are not attacking, increment the cooldown counter
                 attackCooldownCounter += delta;
             }
 
+            // If we are in a combo, handle timeout if player does not attack in time
             if (comboStep > 0) {
                 handleComboTimeout(delta);
             }
 
+            // If we can attack, initiate attack when input is given
             if (canStartNewAttackOrContinueCombo()) {
                 player.setDrawCooldownBar(false, 0);
                 if (input.didAttack()) {
                     initiateAttack(input);
                 }
-            } else {
+            } else if (!isDashing) {
+                // Draw cooldown bar if we can't attack and aren't dashing
                 if (comboStep == 0) {
                     player.setDrawCooldownBar(true, attackCooldownCounter / attackCooldown);
                 } else {
@@ -102,8 +110,8 @@ public class PlayerAttackHandler extends AttackHandler {
                 }
             }
 
+            // Initiate dash based on input
             if (input.didRun() && !player.isAttacking()) {
-                System.out.println("Initiated dash");
                 initiateDash(input);
             }
         }
