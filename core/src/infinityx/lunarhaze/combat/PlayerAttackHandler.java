@@ -44,8 +44,8 @@ public class PlayerAttackHandler extends AttackHandler {
 
     private static float attackRange;
 
-    private static final float DASH_SPEED = 12f; // Adjust the value as needed
-    private static final float DASH_TIME = 0.25f; // Dash duration in seconds
+    private static final float DASH_SPEED = 40f;
+    private static final float DASH_TIME = 0.25f;
     private float dashTimer;
     private Vector2 dashDirection;
     private boolean isInvincible;
@@ -103,6 +103,7 @@ public class PlayerAttackHandler extends AttackHandler {
             }
 
             if (input.didRun() && !player.isAttacking()) {
+                System.out.println("Initiated dash");
                 initiateDash(input);
             }
         }
