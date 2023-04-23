@@ -11,7 +11,7 @@ import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.util.ScreenObservable;
 
 /**
- * Provides a menu screen for level select
+ * Provides a menu screen
  */
 public class MenuMode extends ScreenObservable implements Screen, InputProcessor {
     public static final int GO_EDITOR = 0;

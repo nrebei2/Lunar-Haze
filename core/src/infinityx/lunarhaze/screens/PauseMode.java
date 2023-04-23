@@ -44,9 +44,9 @@ public class PauseMode extends ScreenObservable implements Screen, InputProcesso
      */
     private Texture pause_menu;
     /**
-     * Background texture for paused review screen
+     * Game logo texture for paused screen
      */
-    private Texture review;
+    private Texture pause_logo;
     /**
      * Texture for paused screen resume
      */
@@ -96,10 +96,6 @@ public class PauseMode extends ScreenObservable implements Screen, InputProcesso
      */
     private int centerX;
     /**
-     * The x-coordinate of the center of the back button
-     */
-    private int centerXBack;
-    /**
      * The y-coordinate of the center of the buttons
      */
     private int centerYResume;
@@ -107,13 +103,35 @@ public class PauseMode extends ScreenObservable implements Screen, InputProcesso
     private int centerYReview;
     private int centerYExit;
     private int centerYQuit;
-    private int centerYBack;
 
+    /**
+     * Scale for buttons
+     */
     private static final float BUTTON_SCALE = 0.25f;
     /**
      * Ratio of play height from bottom
      */
-    private static final float BACK_HEIGHT_RATIO = 0.45f;
+    private static final float LOGO_HEIGHT_RATIO = 0.7f;
+    /**
+     * Ratio of play height from bottom
+     */
+    private static final float RESUME_HEIGHT_RATIO = 0.42f;
+    /**
+     * Ratio of play height from bottom
+     */
+    private static final float RESTART_HEIGHT_RATIO = 0.35f;
+    /**
+     * Ratio of setting height from bottom
+     */
+    private static final float REVIEW_HEIGHT_RATIO = 0.28f;
+    /**
+     * Ratio of about us height from bottom
+     */
+    private static final float EXIT_HEIGHT_RATIO = 0.21f;
+    /**
+     * Ratio of about us height from bottom
+     */
+    private static final float QUIT_HEIGHT_RATIO = 0.14f;
     /**
      * Scaling factor for when the student changes the resolution.
      */
@@ -202,7 +220,7 @@ public class PauseMode extends ScreenObservable implements Screen, InputProcesso
     public void gatherAssets(AssetDirectory directory) {
         this.directory = directory;
         pause_menu = directory.getEntry("pause", Texture.class);
-        review = directory.getEntry("review", Texture.class);
+        pause_logo = directory.getEntry("pause-logo", Texture.class);
         pause_resume = directory.getEntry("pause-resume", Texture.class);
         pause_restart = directory.getEntry("pause-restart", Texture.class);
         pause_review = directory.getEntry("pause-review", Texture.class);
@@ -225,6 +243,7 @@ public class PauseMode extends ScreenObservable implements Screen, InputProcesso
         canvas.begin(GameCanvas.DrawPass.SPRITE);
         Color alphaTint = Color.WHITE;
         canvas.drawOverlay(pause_menu, alphaTint, true);
+        canvas.draw(pause_logo, alphaTint, pause_logo.getWidth() / 2, pause_logo.getHeight()/2, canvas.getWidth() / 2, canvas.getHeight() * LOGO_HEIGHT_RATIO, 0, 0.2f * scale, 0.2f * scale);
         Color tintResume = (pressResumeState == 1 ? Color.BLACK : Color.WHITE);
         canvas.draw(pause_resume, tintResume, pause_resume.getWidth() / 2,
                 pause_resume.getHeight() / 2,
@@ -289,11 +308,11 @@ public class PauseMode extends ScreenObservable implements Screen, InputProcesso
         float sy = ((float) height) / STANDARD_HEIGHT;
         scale = (sx < sy ? sx : sy);
 
-        centerYResume = (int) (BACK_HEIGHT_RATIO * height);
-        centerYRestart = centerYResume - (int) (0.6 * pause_resume.getHeight());
-        centerYReview = centerYRestart - (int) (0.6 * pause_resume.getHeight());
-        centerYExit = centerYReview - (int) (0.6 * pause_resume.getHeight());
-        centerYQuit = centerYExit - (int) (0.6 * pause_resume.getHeight());
+        centerYResume = (int) (RESUME_HEIGHT_RATIO * height);
+        centerYRestart = (int) (RESTART_HEIGHT_RATIO * height);
+        centerYReview = (int) (REVIEW_HEIGHT_RATIO * height);
+        centerYExit = (int) (EXIT_HEIGHT_RATIO * height);
+        centerYQuit = (int) (QUIT_HEIGHT_RATIO * height);
         centerX = width / 2;
         heightY = height;
     }

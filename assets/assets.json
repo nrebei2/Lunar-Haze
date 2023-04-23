@@ -10,6 +10,7 @@
     "back": "screens/menu-screen/back.png",
     "exit": "screens/menu-screen/exit.png",
     "pause": "screens/pause-screen/pause_menu.jpg",
+    "pause-logo": "screens/pause-screen/pause_logo.png",
     "pause-exit": "screens/pause-screen/pause_exit.png",
     "pause-quit": "screens/pause-screen/pause_quit.png",
     "pause-restart": "screens/pause-screen/pause_restart.png",
