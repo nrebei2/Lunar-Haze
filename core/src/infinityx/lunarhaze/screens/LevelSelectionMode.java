@@ -28,65 +28,9 @@ public class LevelSelectionMode extends ScreenObservable implements Screen, Inpu
      */
     public final static int GO_BACK = 0;
     /**
-     * User requested to go to level 1
+     * User requested to go to a level
      */
     public final static int GO_Play = 1;
-//    /**
-//     * User requested to go to level 2
-//     */
-//    public final static int GO_2 = 2;
-//    /**
-//     * User requested to go to level 3
-//     */
-//    public final static int GO_3 = 3;
-//    /**
-//     * User requested to go to level 4
-//     */
-//    public final static int GO_4 = 4;
-//    /**
-//     * User requested to go to level 5
-//     */
-//    public final static int GO_5 = 5;
-//    /**
-//     * User requested to go to level 6
-//     */
-//    public final static int GO_6 = 6;
-//    /**
-//     * User requested to go to level 7
-//     */
-//    public final static int GO_7 = 7;
-//    /**
-//     * User requested to go to level 8
-//     */
-//    public final static int GO_8 = 8;
-//    /**
-//     * User requested to go to level 9
-//     */
-//    public final static int GO_9 = 9;
-//    /**
-//     * User requested to go to level 10
-//     */
-//    public final static int GO_10 = 10;
-//    /**
-//     * User requested to go to level 11
-//     */
-//    public final static int GO_11 = 11;
-//    /**
-//     * User requested to go to level 12
-//     */
-//    public final static int GO_12 = 12;
-//    /**
-//     * User requested to go to level 13
-//     */
-//    public final static int GO_13 = 13;
-//    /**
-//     * User requested to go to level 14
-//     */
-//    public final static int GO_14 = 14;
-//    /**
-//     * User requested to go to level 15
-//     */
-//    public final static int GO_15 = 15;
     /**
      * Need an ongoing reference to the asset directory
      */
