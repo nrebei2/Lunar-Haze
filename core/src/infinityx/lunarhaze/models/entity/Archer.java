@@ -1,15 +1,9 @@
 package infinityx.lunarhaze.models.entity;
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Pool;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.models.LevelContainer;
-import infinityx.lunarhaze.models.SteeringGameObject;
-import infinityx.lunarhaze.physics.ConeSource;
-
-import java.util.ArrayList;
 
 /**
  * Model class representing an enemy.

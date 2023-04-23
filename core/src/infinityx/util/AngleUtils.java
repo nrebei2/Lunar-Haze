@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 /**
  * Static math helper functions
  */
-public final class MathUtil {
+public final class AngleUtils {
     /**
      * Returns the angle in radians pointing along the specified vector. Ranges from PI to -PI/2.
      */

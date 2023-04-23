@@ -7,9 +7,7 @@ import infinityx.lunarhaze.models.entity.Werewolf;
 /**
  * Handles all attacking for the player by extending the base
  * model class AttackHandler. Compared to AttackHandler, the
- * player has a three-part combo attack system. Additionally
- * this model must set the player to be attacking while attacking
- * for collision purposes and determining who should take damage.
+ * player has a three-part combo attack system.
  */
 public class PlayerAttackHandler extends AttackHandler {
 
@@ -34,25 +32,13 @@ public class PlayerAttackHandler extends AttackHandler {
     private final static float MAX_COMBO_TIME = 1f;
 
     /**
-     * Reference to the player model
+     * Creates a specialized attack system for the given player
      */
-    private Werewolf player;
-
-    private static float attackPower;
-
-    private static float attackRange;
-
-    /**
-     * Constructor that gets a reference to the player model
-     */
-    public PlayerAttackHandler(Werewolf p) {
-        super(1f, 0.5f);
-        player = p;
+    public PlayerAttackHandler(Werewolf player) {
+        super(player);
         comboAttackCooldownCounter = 0f;
         comboStep = 0;
         comboTime = 0f;
-        attackPower = Werewolf.INITIAL_POWER;
-        attackRange = Werewolf.INITIAL_RANGE;
     }
 
     //TODO: Make the attack cooldowns and attack lengths decrease with moonlight collected
@@ -61,10 +47,9 @@ public class PlayerAttackHandler extends AttackHandler {
      * Called up above in the other update method, handles all attacking related logic
      */
     public void update(float delta, GameplayController.Phase phase) {
-        InputController input = InputController.getInstance();
         if (phase == GameplayController.Phase.BATTLE) {
-            if (player.isAttacking()) {
-                processAttack(delta, input);
+            if (entity.isAttacking()) {
+                processAttack(delta);
             } else {
                 attackCooldownCounter += delta;
             }
@@ -72,15 +57,16 @@ public class PlayerAttackHandler extends AttackHandler {
             if (comboStep > 0) {
                 handleComboTimeout(delta);
             }
-
+            // Safe
+            Werewolf player = (Werewolf) entity;
             if (canStartNewAttackOrContinueCombo()) {
                 player.setDrawCooldownBar(false, 0);
-                if (input.didAttack()) {
-                    initiateAttack(input);
+                if (InputController.getInstance().didAttack()) {
+                    initiateAttack();
                 }
             } else {
                 if (comboStep == 0) {
-                    player.setDrawCooldownBar(true, attackCooldownCounter / attackCooldown);
+                    player.setDrawCooldownBar(true, attackCooldownCounter / entity.attackCooldown);
                 } else {
                     // Will remove magic numbers later
                     player.setDrawCooldownBar(true, comboAttackCooldownCounter / 0.4f);
@@ -89,28 +75,8 @@ public class PlayerAttackHandler extends AttackHandler {
         }
     }
 
-    /**
-     * Processes an attack, called every frame while attacking
-     */
-    private void processAttack(float delta, InputController input) {
-        player.setCanMove(false);
-        updateHitboxPosition(input);
-        super.processAttack(delta);
-    }
-
-    /**
-     * Adjusts hitbox based on user input
-     */
-    private void updateHitboxPosition(InputController input) {
-        player.attackHitbox.getBody().setTransform(player.getPosition().x + (input.getHorizontal() / 4.0f), player.getPosition().y + (input.getVertical() / 4.0f) + 1.0f, 0f);
-    }
-
-    /**
-     * Called when an attack ends
-     */
     public void endAttack() {
         super.endAttack();
-        player.setAttacking(false);
 
         // Combo logic
         comboStep++;
@@ -120,14 +86,6 @@ public class PlayerAttackHandler extends AttackHandler {
             comboStep = 0;
             attackCooldownCounter = 0f;
         }
-
-    }
-
-    /**
-     * Sets the attack cooldown
-     */
-    public void setAttackCooldown(float attackCooldown) {
-        this.attackCooldown = attackCooldown;
     }
 
     /**
@@ -152,41 +110,10 @@ public class PlayerAttackHandler extends AttackHandler {
                 || (comboStep > 0 && comboTime <= MAX_COMBO_TIME && comboAttackCooldownCounter >= 0.4f); // Can continue a combo
     }
 
-    /**
-     * Initiates an attack
-     */
-    private void initiateAttack(InputController input) {
-        player.setAttacking(true);
-        player.setCanMove(false); // Movement code in player sets velocity to 0 and overrides this so must not be able to move
-
+    protected void initiateAttack() {
         // movement component
-        attackDirection.set(input.getHorizontal(), input.getVertical()).nor();
-        player.getBody().applyLinearImpulse(attackDirection, player.getBody().getWorldCenter(), true);
+        entity.getBody().applyLinearImpulse(entity.getLinearVelocity().nor(), entity.getBody().getWorldCenter(), true);
         comboAttackCooldownCounter = 0f;
-        player.setImmune(1f);
         super.initiateAttack();
     }
-
-    /**
-     * @return the attack power of the player
-     */
-    public static float getAttackPower() {
-        return attackPower;
-    }
-
-    /**
-     * Sets the attack power of the player
-     */
-    public static void setAttackPower(float power) {
-        attackPower = power;
-    }
-
-    public static float getAttackRange() {
-        return attackRange;
-    }
-
-    public static void setAttackRange(float range) {
-        attackRange = range;
-    }
-
 }

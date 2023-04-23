@@ -494,6 +494,12 @@ public class LevelContainer {
         );
         canvas.drawLights(rayHandler);
         canvas.end();
+
+        // DEBUG
+        canvas.begin(GameCanvas.DrawPass.SHAPE, view.x, view.y);
+        player.getAttackHitbox().drawHitbox(canvas);
+        canvas.end();
+
     }
 
     /**
@@ -546,7 +552,7 @@ public class LevelContainer {
             }
         }
 
-        System.out.println(aStarMap);
+        //System.out.println(aStarMap);
         pathfinder = new AStarPathFinding(aStarMap, world);
     }
 }

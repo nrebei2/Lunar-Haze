@@ -17,7 +17,9 @@ public class LevelSerializer {
 
     private static int mostRecentlyCreatedLevel;
 
-    /** returns a string representation of Json based on level and board */
+    /**
+     * returns a string representation of Json based on level and board
+     */
     private static JsonValue levelToJson(LevelContainer level, Board board, int levelNumber) {
 
         JsonValue currLevel = new JsonValue(JsonValue.ValueType.object);
@@ -112,7 +114,7 @@ public class LevelSerializer {
 
         // Enemy (todo)
         JsonValue enemy = new JsonValue(JsonValue.ValueType.array);
-        for(Enemy e : level.getEnemies()) {
+        for (Enemy e : level.getEnemies()) {
             JsonValue currEnemy = new JsonValue(JsonValue.ValueType.object);
             currEnemy.addChild("type", new JsonValue(e.getName()));
             JsonValue pos = new JsonValue(JsonValue.ValueType.array);
@@ -123,7 +125,7 @@ public class LevelSerializer {
             JsonValue patrol = new JsonValue(JsonValue.ValueType.array);
 
 
-            if(e.getPatrolPath() != null && e.getPatrolPath().size() > 0) {
+            if (e.getPatrolPath() != null && e.getPatrolPath().size() > 0) {
                 // Tile 1
                 JsonValue pos1 = new JsonValue(JsonValue.ValueType.array);
                 pos1.addChild(new JsonValue(board.worldToBoardX(e.getPatrolPath().get(0).x)));
@@ -162,10 +164,12 @@ public class LevelSerializer {
         //return root.prettyPrint(JsonWriter.OutputType.json, 10);
     }
 
-    /** Saves the level to a json file. */
+    /**
+     * Saves the level to a json file.
+     */
     public static void saveBoardToJsonFile(LevelContainer level, Board board, AssetDirectory directory) {
         JsonValue levels = directory.getEntry("levels", JsonValue.class);
-        if(levels == null) {
+        if (levels == null) {
             levels = new JsonValue(JsonValue.ValueType.object);
         }
         // The size of the levels is the new index to put the created level, as levels starts at 0
@@ -184,7 +188,11 @@ public class LevelSerializer {
         }
     }
 
-    /** Returns index of the most recently created level. Useful for Save+Test */
-    public static int getMostRecent() { return mostRecentlyCreatedLevel; }
+    /**
+     * Returns index of the most recently created level. Useful for Save+Test
+     */
+    public static int getMostRecent() {
+        return mostRecentlyCreatedLevel;
+    }
 
 }

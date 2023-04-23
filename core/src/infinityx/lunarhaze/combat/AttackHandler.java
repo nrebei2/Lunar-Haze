@@ -1,6 +1,6 @@
 package infinityx.lunarhaze.combat;
 
-import com.badlogic.gdx.math.Vector2;
+import infinityx.lunarhaze.models.AttackingGameObject;
 
 /**
  * Base model class for all attack/combat systems.
@@ -8,46 +8,55 @@ import com.badlogic.gdx.math.Vector2;
 public abstract class AttackHandler {
 
     /**
-     * Cooldown between attacks
-     */
-    protected float attackCooldown;
-
-    /**
-     * Attack direction as vector
-     */
-    protected Vector2 attackDirection;
-
-    /**
      * Counter for attacking (used to determine when to set attacking to false)
      */
     protected float attackCounter;
-
-    /**
-     * Length of an attack
-     */
-    protected float attackLength;
 
     /**
      * Counter for attack cooldowns
      */
     protected float attackCooldownCounter;
 
-    protected AttackHandler(float attackCooldown, float attackLength) {
-        this.attackCooldown = attackCooldown;
-        attackDirection = new Vector2();
+
+    /**
+     * Attacking entity this class is controlling
+     */
+    protected AttackingGameObject entity;
+
+
+    /**
+     * @param entity attacking entity this class is controlling
+     */
+    protected AttackHandler(AttackingGameObject entity) {
         attackCounter = 0f;
-        attackCooldownCounter = attackCooldown;
-        this.attackLength = attackLength;
+        attackCooldownCounter = entity.attackCooldown;
+        this.entity = entity;
+    }
+
+
+    /**
+     * @return whether a new attack can be started
+     */
+    protected boolean canStartNewAttack() {
+        return attackCooldownCounter >= entity.attackCooldown;
+    }
+
+    /**
+     * Initiates an attack
+     */
+    protected void initiateAttack() {
+        entity.setAttacking(true);
+        entity.setImmune();
+        attackCooldownCounter = 0f;
     }
 
     /**
      * Processes an attack, called every frame while attacking.
-     * This implementation just calls endAttack() when the attack
-     * should end.
      */
     protected void processAttack(float delta) {
         attackCounter += delta;
-        if (attackCounter >= attackLength) {
+        updateHitboxPosition();
+        if (attackCounter >= entity.attackLength) {
             endAttack();
         }
     }
@@ -56,21 +65,20 @@ public abstract class AttackHandler {
      * Called when an attack ends
      */
     protected void endAttack() {
+        entity.setAttacking(false);
         attackCounter = 0f;
     }
 
     /**
-     * @return if a new attack can be started
+     * Adjusts hitbox based on {@link #entity} transform
      */
-    protected boolean canStartNewAttack() {
-        return attackCooldownCounter >= attackCooldown;
+    private void updateHitboxPosition() {
+        // This is the logic that makes the hitbox "parented" to the entity
+        entity.getAttackHitbox()
+                .getBody()
+                .setTransform(
+                        entity.getPosition(),
+                        entity.getAngle()
+                );
     }
-
-    /**
-     * Initiates an attack
-     */
-    protected void initiateAttack() {
-        attackCooldownCounter = 0f;
-    }
-
 }

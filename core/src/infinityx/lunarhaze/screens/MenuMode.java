@@ -163,6 +163,7 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
     public boolean isPlayReady() {
         return pressPlayState == 2;
     }
+
     /**
      * Returns true if all assets are loaded and the player is ready to go level editor.
      *
@@ -473,7 +474,7 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
         }
         // Exit button is a rectangle.
         float distYExit = Math.abs(screenY - centerYExit);
-        if (distX < x && distYExit< y) {
+        if (distX < x && distYExit < y) {
             pressExitState = 1;
         }
 

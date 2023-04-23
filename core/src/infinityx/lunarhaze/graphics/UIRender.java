@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.controllers.GameplayController;
@@ -13,7 +14,6 @@ import infinityx.lunarhaze.controllers.GameplayController.GameState;
 import infinityx.lunarhaze.controllers.GameplayController.Phase;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.entity.Enemy;
-import infinityx.lunarhaze.models.entity.Werewolf;
 
 /**
  * This is a class used for drawing player and enemies' game UI state: HP, Stealth, MoonLight
@@ -197,11 +197,6 @@ public class UIRender {
     boolean changed = false;
 
     /**
-     * Store HP value of last frame
-     */
-    int last_hp = Werewolf.INITIAL_HP;
-
-    /**
      * Store moonlight collected of last frame
      */
     int last_moon = 0;
@@ -238,6 +233,21 @@ public class UIRender {
      * alpha tint, rgb should be 1 as we are only changing transparency
      */
     private final Color alphaTint = new Color(1, 1, 1, 1);
+
+    /**
+     * Filled heart tint
+     */
+    private final Color filled = new Color(138f / 255.0f, 25f / 255.0f, 45f / 255.0f, 1f);
+
+    /**
+     * Empty heart tint
+     */
+    private final Color empty = new Color(41f / 255.0f, 41f / 255.0f, 41f / 255.0f, 0.8f);
+
+    /**
+     * Color cache
+     */
+    private final Color colorCache = new Color();
 
     /**
      * Create a new UIRender with font and directory assigned.
@@ -319,13 +329,13 @@ public class UIRender {
             // Draw top stroke at the top center of screen
             drawLevelStats(canvas, phase, gameplayController);
             if (phase == Phase.STEALTH) {
-                drawHealthStats(canvas, level, phase, delta);
+                drawHealthStats(canvas, level);
                 drawMoonlightStats(canvas, level, delta);
                 drawStealthStats(canvas, level);
             } else if (phase == Phase.BATTLE) {
-                drawHealthStats(canvas, level, phase, delta);
+                drawHealthStats(canvas, level);
                 drawPowerStats(canvas, level);
-                drawRangeStats(canvas, level);
+                //drawRangeStats(canvas, level);
             }
             canvas.end();
 
@@ -425,34 +435,41 @@ public class UIRender {
     /**
      * Draw the health stroke and health status of the player
      */
-    public void drawHealthStats(GameCanvas canvas, LevelContainer level, Phase phase, float delta) {
-        float stroke_width = HEALTH_STROKE_WIDTH;
-        int max_hp = Werewolf.INITIAL_HP;
-        if (phase == Phase.STEALTH) {
-            stroke_width = HEALTH_STROKE_WIDTH;
-            max_hp = Werewolf.INITIAL_HP;
-        } else if (phase == Phase.BATTLE) {
-            stroke_width = HEALTH_STROKE_WIDTH * (level.getPlayer().getHp() + 1) / Werewolf.INITIAL_HP;
-            max_hp = Werewolf.MAX_HP;
-        }
+    public void drawHealthStats(GameCanvas canvas, LevelContainer level) {
+        float cur_hp = level.getPlayer().hp;
+
+        // number of hearts to display
+        int max_hp = MathUtils.ceil(level.getPlayer().maxHp);
+        float stroke_width = max_hp * health_icon.getWidth() * 0.6f + 70;
+        // background
         canvas.draw(health_stroke, Color.WHITE, 0, canvas.getHeight() - HEALTH_STROKE_HEIGHT * 2, stroke_width, HEALTH_STROKE_HEIGHT);
+
         for (int i = 1; i <= max_hp; i++) {
-            if (level.getPlayer().getHp() >= i) {
+            Color tint;
+            if (MathUtils.floor(cur_hp + 1) == i) {
+                float frac = cur_hp - MathUtils.floor(cur_hp);
+                // Draw a partially filled heart for the ith heart
+                Interpolation lerp = Interpolation.linear;
+                colorCache.a = lerp.apply(empty.a, filled.a, frac);
+                colorCache.r = lerp.apply(empty.r, filled.r, frac);
+                colorCache.g = lerp.apply(empty.g, filled.g, frac);
+                colorCache.b = lerp.apply(empty.b, filled.b, frac);
+                tint = colorCache;
+            } else if (cur_hp >= i) {
                 // Draw a filled heart for the ith heart
-                Color full = new Color(138f / 255.0f, 25f / 255.0f, 45f / 255.0f, 1f);
-                canvas.draw(health_icon, full, health_icon.getWidth() / 2, health_icon.getHeight() / 2, HEALTH_STROKE_WIDTH / 8 + HEART_SEP * i, canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f, 0, 0.6f, 0.6f);
+                tint = filled;
             } else {
                 // Draw an empty heart for the ith heart
-                if (phase == Phase.STEALTH) {
-                    Color empty = new Color(41f / 255.0f, 41f / 255.0f, 41f / 255.0f, 0.8f);
-                    canvas.draw(health_icon, empty, health_icon.getWidth() / 2, health_icon.getHeight() / 2, HEALTH_STROKE_WIDTH / 8 + HEART_SEP * i, canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f, 0, 0.6f, 0.6f);
-                }
+                tint = empty;
             }
+            canvas.draw(
+                    health_icon, tint,
+                    health_icon.getWidth() / 2, health_icon.getHeight() / 2,
+                    HEALTH_STROKE_WIDTH / 8 + HEART_SEP * i,
+                    canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f,
+                    0, 0.6f, 0.6f
+            );
         }
-        if (level.getPlayer().getHp() < last_hp) {
-            drawHealthLose(canvas, delta);
-        }
-        last_hp = level.getPlayer().getHp();
     }
 
     /**
@@ -508,14 +525,13 @@ public class UIRender {
         canvas.end();
         canvas.begin(GameCanvas.DrawPass.SHAPE);
         canvas.drawAttackPow(canvas.getWidth() - BAR_WIDTH, canvas.getHeight() - BAR_HEIGHT * 2,
-                BAR_WIDTH, BAR_HEIGHT, level.getPlayer().getAttackPower());
+                BAR_WIDTH, BAR_HEIGHT, level.getPlayer().attackDamage);
         canvas.end();
 
         canvas.begin(GameCanvas.DrawPass.SPRITE);
         canvas.drawText("Attack power ", UIFont_small,
                 canvas.getWidth() - BAR_WIDTH - UIFont_small.getAscent() * ("Attack power ".length()) * 2,
                 canvas.getHeight() - BAR_HEIGHT);
-        canvas.end();
     }
 
     /**
@@ -529,8 +545,8 @@ public class UIRender {
         canvas.end();
 
         canvas.begin(GameCanvas.DrawPass.SHAPE);
-        canvas.drawAttackRange(canvas.getWidth() - BAR_WIDTH, canvas.getHeight() - BAR_HEIGHT * 3 - GAP_DIST,
-                BAR_WIDTH, BAR_HEIGHT, level.getPlayer().getAttackRange());
+        //canvas.drawAttackRange(canvas.getWidth() - BAR_WIDTH, canvas.getHeight() - BAR_HEIGHT * 3 - GAP_DIST,
+        //        BAR_WIDTH, BAR_HEIGHT, level.getPlayer().getAttackRange());
         canvas.end();
         canvas.begin(GameCanvas.DrawPass.SPRITE);
     }

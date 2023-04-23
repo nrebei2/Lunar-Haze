@@ -33,6 +33,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import infinityx.lunarhaze.models.entity.Enemy;
 import infinityx.lunarhaze.models.entity.Werewolf;
 
@@ -481,10 +482,8 @@ public class GameCanvas {
     }
 
     /**
-     * Start a standard drawing sequence the given pass.if(CameraShake.timeLeft() > 0) {
-     * CameraShake.update(Gdx.graphics.getDeltaTime());
-     * levelContainer.translateView(CameraShake.getShakeOffset().x, CameraShake.getShakeOffset().y);
-     * }
+     * Start a standard drawing sequence with the given pass.
+     * In order to draw with a different pass, you must call {@link #end()}.
      * <p>
      * Nothing is flushed to the graphics card until the method end() is called.
      *
@@ -529,6 +528,7 @@ public class GameCanvas {
 
     /**
      * Start a standard drawing sequence the given pass.
+     * In order to draw with a different pass, you must call {@link #end()}.
      * <p>
      * Nothing is flushed to the graphics card until the method end() is called.
      *
@@ -834,6 +834,57 @@ public class GameCanvas {
         spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
     }
 
+
+    /**
+     * Draws the outline of the given shape in the specified color
+     *
+     * @param shape The Box2d shape
+     * @param color The outline color
+     * @param x     The x-coordinate of the shape position
+     * @param y     The y-coordinate of the shape position
+     * @param angle The shape angle of rotation
+     * @param sx    The amount to scale the x-axis
+     * @param sx    The amount to scale the y-axis
+     */
+    public void drawPhysics(PolygonShape shape, Color color, float x, float y, float angle, float sx, float sy) {
+        if (active != DrawPass.SHAPE) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin(SHAPE)", new IllegalStateException());
+            return;
+        }
+
+        local.setToScaling(sx, sy);
+        local.translate(x, y);
+        local.rotateRad(angle);
+
+        float x0, y0, x1, y1;
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setColor(color);
+        Vector2 vertex = new Vector2();
+        for (int ii = 0; ii < shape.getVertexCount() - 1; ii++) {
+            shape.getVertex(ii, vertex);
+            local.applyTo(vertex);
+            x0 = vertex.x;
+            y0 = vertex.y;
+            shape.getVertex(ii + 1, vertex);
+            local.applyTo(vertex);
+            x1 = vertex.x;
+            y1 = vertex.y;
+            shapeRenderer.line(x0, y0, x1, y1);
+        }
+        // Close the loop
+        shape.getVertex(shape.getVertexCount() - 1, vertex);
+        local.applyTo(vertex);
+        x0 = vertex.x;
+        y0 = vertex.y;
+        shape.getVertex(0, vertex);
+        local.applyTo(vertex);
+        x1 = vertex.x;
+        y1 = vertex.y;
+        shapeRenderer.line(x0, y0, x1, y1);
+        shapeRenderer.end();
+    }
+
+
     /**
      * Update and render lights
      *
@@ -924,49 +975,25 @@ public class GameCanvas {
         shapeRenderer.end();
     }
 
-    public void drawHpBar(float x, float y, float width, float height, float hp) {
-        if (active != DrawPass.SHAPE) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
-            return;
-        }
-
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(Color.WHITE);
-        shapeRenderer.rect(x, y, width, height);
-        shapeRenderer.end();
-        Color health;
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        if (hp / Werewolf.INITIAL_HP < 0.5) {
-            health = new Color(169.0f / 255.0f, 50.0f / 255.0f, 38.0f / 255.0f, 1.0f);
-        } else {
-            health = new Color(20.0f / 255.0f, 142.0f / 255.0f, 119.0f / 255.0f, 1.0f);
-        }
-        shapeRenderer.setColor(health);
-        shapeRenderer.rect(x, y, width * hp / Werewolf.MAX_HP, height);
-        shapeRenderer.end();
-
-//        draw(icon, Color.WHITE, x - width, y, width, height);
-    }
-
-    public void drawAttackRange(float x, float y, float width, float height, float range) {
-        if (active != DrawPass.SHAPE) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
-            return;
-        }
-
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(Color.WHITE);
-        shapeRenderer.rect(x, y, width, height);
-        shapeRenderer.end();
-
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        Color blue = new Color(40.0f / 255.0f, 116.0f / 255.0f, 166.0f / 255.0f, 1.0f);
-        shapeRenderer.setColor(blue);
-        shapeRenderer.rect(x, y, width * (range - 1.0f) / (Werewolf.MAX_RANGE - 1.0f), height);
-        shapeRenderer.end();
-
-//        draw(icon, Color.WHITE, x - width, y, width, height);
-    }
+//    public void drawAttackRange(float x, float y, float width, float height, float range) {
+//        if (active != DrawPass.SHAPE) {
+//            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
+//            return;
+//        }
+//
+//        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+//        shapeRenderer.setColor(Color.WHITE);
+//        shapeRenderer.rect(x, y, width, height);
+//        shapeRenderer.end();
+//
+//        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+//        Color blue = new Color(40.0f / 255.0f, 116.0f / 255.0f, 166.0f / 255.0f, 1.0f);
+//        shapeRenderer.setColor(blue);
+//        shapeRenderer.rect(x, y, width * (range - 1.0f) / (Werewolf - 1.0f), height);
+//        shapeRenderer.end();
+//
+////        draw(icon, Color.WHITE, x - width, y, width, height);
+//    }
 
     public void drawEnemyHpBars(float barWidth, float barHeight, Enemy enemy) {
         if (active != DrawPass.SHAPE) {

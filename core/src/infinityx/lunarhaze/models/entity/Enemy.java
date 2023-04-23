@@ -1,6 +1,7 @@
 package infinityx.lunarhaze.models.entity;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Pool;
@@ -8,6 +9,7 @@ import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.SteeringGameObject;
 import infinityx.lunarhaze.physics.ConeSource;
+import infinityx.util.Direction;
 
 import java.util.ArrayList;
 
@@ -54,19 +56,10 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
      */
     private ConeSource flashlight;
 
-    private float attackKnockback;
-
-    private int attackDamage;
-
     /**
-     * The maximum amount of hit-points for this enemy
+     * The direction the enemy is facing
      */
-    private float maxHp;
-
-    /**
-     * The current amount of hit-points for this enemy
-     */
-    private float hp;
+    public Direction direction;
 
     /**
      * Returns the type of this object.
@@ -96,7 +89,8 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
         setMaxLinearAcceleration(0.5f);
         setMaxLinearSpeed(0.7f);
         setMaxAngularAcceleration(1);
-        setMaxAngularSpeed(0.7f);
+        // Angular speed is only used in NOTICED when turning around
+        setMaxAngularSpeed(0.05f);
     }
 
     @Override
@@ -132,10 +126,7 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
         setFlashlight(flashLight);
         setFlashlightOn(true);
 
-        JsonValue attack = json.get("attack");
-        setAttackKnockback(attack.getFloat("knockback"));
-        setAttackDamage(attack.getInt("damage"));
-        setMaxHp(json.getFloat("hp"));
+
     }
 
     public void setPatrolPath(ArrayList<Vector2> path) {
@@ -186,45 +177,6 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
         flashlight.setActive(on);
     }
 
-    public float getAttackKnockback() {
-        return attackKnockback;
-    }
-
-    public int getAttackDamage() {
-        return attackDamage;
-    }
-
-    public void setAttackKnockback(float knockback) {
-        attackKnockback = knockback;
-    }
-
-    public void setAttackDamage(int dmg) {
-        attackDamage = dmg;
-    }
-
-    public float getHp() {
-        return hp;
-    }
-
-    /**
-     * Sets the new hp of this enemy. Clamped to always be non-negative.
-     *
-     * @param value the hp to set
-     */
-    public void setHp(float value) {
-        hp = Math.max(0, value);
-    }
-
-    /**
-     * Sets the max hp (and starting current hp) of this enemy.
-     *
-     * @param value the hp to set
-     */
-    public void setMaxHp(float value) {
-        maxHp = value;
-        hp = maxHp;
-    }
-
     /**
      * @return percentage of current hp to maximum hp
      */
@@ -235,5 +187,18 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
     @Override
     public void update(float delta) {
         super.update(delta);
+
+        float orientation = getOrientation();
+        // Set the direction given velocity
+        // We give each direction an equal amount of degrees (90)
+        if (MathUtils.isEqual(orientation, 0, MathUtils.PI / 4)) {
+            direction = Direction.RIGHT;
+        } else if (MathUtils.isEqual(orientation, MathUtils.PI / 2, MathUtils.PI / 4)) {
+            direction = Direction.UP;
+        } else if (MathUtils.isEqual(orientation, -MathUtils.PI / 2, MathUtils.PI / 4)) {
+            direction = Direction.DOWN;
+        } else {
+            direction = Direction.LEFT;
+        }
     }
 }

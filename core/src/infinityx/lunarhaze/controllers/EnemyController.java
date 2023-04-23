@@ -141,7 +141,9 @@ public class EnemyController {
         this.pathfinder = container.pathfinder;
 
         // Steering behaviors
-        this.faceSB = new Face<>(enemy).setAlignTolerance(MathUtils.degreesToRadians * 10);
+        this.faceSB = new Face<>(enemy)
+                .setAlignTolerance(MathUtils.degreesToRadians * 10)
+                .setDecelerationRadius(MathUtils.degreesToRadians * 20);
     }
 
     /**
@@ -150,7 +152,7 @@ public class EnemyController {
      * @param delta time between last frame in seconds
      */
     public void update(LevelContainer container, float delta) {
-        if (enemy.getHp() <= 0) container.removeEnemy(enemy);
+        if (enemy.hp <= 0) container.removeEnemy(enemy);
 
         //if (inBattle && !stateMachine.isInState(EnemyState.ALERT)) {
         //    stateMachine.changeState(EnemyState.ALERT);
@@ -223,8 +225,10 @@ public class EnemyController {
         );
     }
 
-    /**used to find ray collsion between this enemy and another enemy*/
-    public void findCollision(Enemy target){
+    /**
+     * used to find ray collsion between this enemy and another enemy
+     */
+    public void findCollision(Enemy target) {
         communicationCollision.findCollision(commCache, new Ray<>(enemy.getPosition(), target.getPosition()));
     }
 

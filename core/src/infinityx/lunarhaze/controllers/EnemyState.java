@@ -9,10 +9,9 @@ import com.badlogic.gdx.ai.utils.ArithmeticUtils;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.ai.TacticalManager;
+import infinityx.lunarhaze.models.GameObject;
 import infinityx.lunarhaze.models.entity.Enemy;
 import infinityx.util.Box2dLocation;
-
-import java.util.ArrayList;
 
 /**
  * States for each enemy's state machine
@@ -72,7 +71,6 @@ public enum EnemyState implements State<EnemyController> {
         @Override
         public void exit(EnemyController entity) {
             entity.getEnemy().setIndependentFacing(false);
-
         }
     },
 
@@ -129,8 +127,25 @@ public enum EnemyState implements State<EnemyController> {
 
         @Override
         public void exit(EnemyController entity) {
-            entity.getEnemy().setIndependentFacing(false);
             entity.target.setStealth(entity.target.getStealth() - 1f);
+        }
+    },
+
+    ATTACK() {
+        @Override
+        public void enter(EnemyController entity) {
+            //entity.getAttackSound().play();
+            setTexture(entity, "attack");
+            entity.getEnemy().texUpdate = 0.06f;
+        }
+
+        @Override
+        public void update(EnemyController entity) {
+            // Handle state transitions
+            //if (!entity.isAttacking()) {
+            // Go back to whatever it was doing before. It may always be ALERT.
+            //entity.getStateMachine().revertToPreviousState();
+            //}
         }
     },
 
@@ -179,7 +194,6 @@ public enum EnemyState implements State<EnemyController> {
 
         @Override
         public void exit(EnemyController entity) {
-            entity.getEnemy().setIndependentFacing(false);
             MessageManager.getInstance().dispatchMessage(TacticalManager.REMOVE, entity);
             entity.target.setStealth(entity.target.getStealth() - 2);
         }
@@ -201,9 +215,6 @@ public enum EnemyState implements State<EnemyController> {
         @Override
         public void enter(EnemyController entity) {
             Vector2 patrol = entity.getPatrolTarget();
-            ArrayList<Vector2> pat = entity.getEnemy().getPatrolPath();
-            System.out.println(pat.get(0).x + " " + pat.get(0).y);
-            System.out.println(pat.get(1).x + " " + pat.get(1).y);
             while (entity.pathfinder.map.getNodeAtWorld(patrol.x, patrol.y).isObstacle) {
                 patrol = entity.getPatrolTarget();
             }
@@ -226,11 +237,6 @@ public enum EnemyState implements State<EnemyController> {
                     entity.getStateMachine().changeState(NOTICED);
                     break;
             }
-        }
-
-        @Override
-        public void exit(EnemyController entity) {
-            entity.getEnemy().setIndependentFacing(false);
         }
     },
 
@@ -283,5 +289,28 @@ public enum EnemyState implements State<EnemyController> {
     @Override
     public boolean onMessage(EnemyController control, Telegram telegram) {
         return false;
+    }
+
+    /**
+     * Sets the filmstrip animation of the enemy. Assumes there exists filmstrips for each cardinal direction with suffixes "-b", "-f", "-l", "-r".
+     *
+     * @param entity holding enemy
+     * @param name   Common prefix of filmstrip family. See {@link GameObject#setTexture(String)}.
+     */
+    protected void setTexture(EnemyController entity, String name) {
+        switch (entity.getEnemy().direction) {
+            case UP:
+                entity.getEnemy().setTexture(name + "-b");
+                break;
+            case DOWN:
+                entity.getEnemy().setTexture(name + "-f");
+                break;
+            case LEFT:
+                entity.getEnemy().setTexture(name + "-l");
+                break;
+            case RIGHT:
+                entity.getEnemy().setTexture(name + "-r");
+                break;
+        }
     }
 }

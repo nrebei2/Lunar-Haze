@@ -29,7 +29,6 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.graphics.GameCanvas;
-import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.physics.MultiShapeObstacle;
 import infinityx.util.Drawable;
 import infinityx.util.FilmStrip;
@@ -112,6 +111,7 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
     /**
      * Further parses specific GameObject (collider info, etc.) attributes.
      *
+     * @param directory Asset manager holding textures
      * @param json      Json tree holding information
      * @param container LevelContainer which this player is placed in
      */
@@ -156,7 +156,7 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
     }
 
     /**
-     * Returns the bounding radius of this object. Assumes the name of the collider is "body".
+     * Returns the bounding radius of the body of this object. Assumes the name of the collider is "body".
      */
     public float getBoundingRadius() {
         return getShapeInformation("body").width / 2;

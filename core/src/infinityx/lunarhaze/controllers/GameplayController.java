@@ -237,7 +237,7 @@ public class GameplayController {
                     }
                     break;
             }
-            if (player.getHp() <= 0) gameState = GameState.OVER;
+            if (player.hp <= 0) gameState = GameState.OVER;
         }
         // Enemies should still update even when game is outside play
         resolveEnemies(delta);
