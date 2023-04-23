@@ -374,7 +374,7 @@ public class LoadingMode extends ScreenObservable implements Screen {
                 moonFrames[index++] = moonTextures[i][j];
             }
         }
-        moonAnimation = new Animation<TextureRegion>(0.2f, moonFrames);
+        moonAnimation = new Animation<TextureRegion>(0.18f, moonFrames);
         stateTime = 0f;
     }
 
