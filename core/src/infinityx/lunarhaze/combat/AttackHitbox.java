@@ -63,8 +63,6 @@ public class AttackHitbox extends GameObject {
     }
 
     /**
-     * If you wish to update the hitbox size, call {@link #setScale(float)} or {@link }
-     *
      * @return The current range (width) of this hitbox
      */
     public float getHitboxRange() {
@@ -86,9 +84,10 @@ public class AttackHitbox extends GameObject {
      * @param canvas canvas to draw on
      */
     public void drawHitbox(GameCanvas canvas) {
+        //System.out.printf("(x, y): (%f, %f)\n", canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y));
         canvas.drawPhysics((PolygonShape) getShapeInformation("body").shape, Color.RED,
-                canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y),
-                0.0f, 1, 1
+                getPosition().x, getPosition().y,
+                getAngle(), canvas.WorldToScreenX(1), canvas.WorldToScreenY(1)
         );
     }
 }

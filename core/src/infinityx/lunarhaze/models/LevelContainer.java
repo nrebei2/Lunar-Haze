@@ -496,10 +496,11 @@ public class LevelContainer {
         canvas.end();
 
         // DEBUG
-        canvas.begin(GameCanvas.DrawPass.SHAPE, view.x, view.y);
-        player.getAttackHitbox().drawHitbox(canvas);
-        canvas.end();
-
+        if (player.isAttacking) {
+            canvas.begin(GameCanvas.DrawPass.SHAPE, view.x, view.y);
+            player.getAttackHitbox().drawHitbox(canvas);
+            canvas.end();
+        }
     }
 
     /**

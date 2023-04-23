@@ -215,6 +215,9 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
                 direction = Direction.RIGHT;
             }
 
+            if (!velocity.isZero())
+                setAngle(AngleUtils.vectorToAngle(velocity));
+
             // set the updated velocity to the player's Box2D body
             body.setLinearVelocity(velocity);
         }
