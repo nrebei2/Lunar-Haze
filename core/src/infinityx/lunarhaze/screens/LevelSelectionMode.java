@@ -709,7 +709,7 @@ public class LevelSelectionMode extends ScreenObservable implements Screen, Inpu
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        if (level1 == null || press1State == 2 || press2State == 2 || press3State == 2) {
+        if (level1 == null || press1State == 2 || press2State == 2 || press3State == 2 || press4State == 2) {
             return true;
         }
 
@@ -725,7 +725,6 @@ public class LevelSelectionMode extends ScreenObservable implements Screen, Inpu
             pressBackState = 1;
         }
 
-
         // TODO: Fix scaling
         // Level button is a circle.
         float radius1 = BUTTON_SCALE * scale * level1.getWidth() / 2.0f;
@@ -738,6 +737,84 @@ public class LevelSelectionMode extends ScreenObservable implements Screen, Inpu
         float dist2 = (screenX - centerX_column2) * (screenX - centerX_column2) + (screenY - centerY_row1) * (screenY - centerY_row1);
         if (dist2 < radius2 * radius2) {
             press2State = 1;
+        }
+
+        float radius3 = BUTTON_SCALE * scale * level3.getWidth() / 2.0f;
+        float dist3 = (screenX - centerX_column3) * (screenX - centerX_column3) + (screenY - centerY_row1) * (screenY - centerY_row1);
+        if (dist3 < radius3 * radius3) {
+            press3State = 1;
+        }
+
+        float radius4 = BUTTON_SCALE * scale * level4.getWidth() / 2.0f;
+        float dist4 = (screenX - centerX_column4) * (screenX - centerX_column4) + (screenY - centerY_row1) * (screenY - centerY_row1);
+        if (dist4 < radius4 * radius4) {
+            press4State = 1;
+        }
+
+        float radius5 = BUTTON_SCALE * scale * level5.getWidth() / 2.0f;
+        float dist5 = (screenX - centerX_column5) * (screenX - centerX_column5) + (screenY - centerY_row1) * (screenY - centerY_row1);
+        if (dist5 < radius5 * radius5) {
+            press5State = 1;
+        }
+
+        float radius6 = BUTTON_SCALE * scale * level6.getWidth() / 2.0f;
+        float dist6 = (screenX - centerX_column1) * (screenX - centerX_column1) + (screenY - centerY_row2) * (screenY - centerY_row2);
+        if (dist6 < radius6 * radius6) {
+            press6State = 1;
+        }
+
+        float radius7 = BUTTON_SCALE * scale * level7.getWidth() / 2.0f;
+        float dist7 = (screenX - centerX_column2) * (screenX - centerX_column2) + (screenY - centerY_row2) * (screenY - centerY_row2);
+        if (dist7 < radius7 * radius7) {
+            press7State = 1;
+        }
+
+        float radius8 = BUTTON_SCALE * scale * level8.getWidth() / 2.0f;
+        float dist8 = (screenX - centerX_column3) * (screenX - centerX_column3) + (screenY - centerY_row2) * (screenY - centerY_row2);
+        if (dist8 < radius8 * radius8) {
+            press8State = 1;
+        }
+
+        float radius9 = BUTTON_SCALE * scale * level9.getWidth() / 2.0f;
+        float dist9 = (screenX - centerX_column4) * (screenX - centerX_column4) + (screenY - centerY_row2) * (screenY - centerY_row2);
+        if (dist9 < radius9 * radius9) {
+            press9State = 1;
+        }
+
+        float radius10 = BUTTON_SCALE * scale * level10.getWidth() / 2.0f;
+        float dist10 = (screenX - centerX_column5) * (screenX - centerX_column5) + (screenY - centerY_row2) * (screenY - centerY_row2);
+        if (dist10 < radius10 * radius10) {
+            press10State = 1;
+        }
+
+        float radius11 = BUTTON_SCALE * scale * level11.getWidth() / 2.0f;
+        float dist11 = (screenX - centerX_column1) * (screenX - centerX_column1) + (screenY - centerY_row3) * (screenY - centerY_row3);
+        if (dist11 < radius11 * radius11) {
+            press11State = 1;
+        }
+
+        float radius12 = BUTTON_SCALE * scale * level12.getWidth() / 2.0f;
+        float dist12 = (screenX - centerX_column2) * (screenX - centerX_column2) + (screenY - centerY_row3) * (screenY - centerY_row3);
+        if (dist12 < radius12 * radius12) {
+            press12State = 1;
+        }
+
+        float radius13 = BUTTON_SCALE * scale * level13.getWidth() / 2.0f;
+        float dist13 = (screenX - centerX_column3) * (screenX - centerX_column3) + (screenY - centerY_row3) * (screenY - centerY_row3);
+        if (dist13 < radius13 * radius13) {
+            press13State = 1;
+        }
+
+        float radius14 = BUTTON_SCALE * scale * level14.getWidth() / 2.0f;
+        float dist14 = (screenX - centerX_column4) * (screenX - centerX_column4) + (screenY - centerY_row3) * (screenY - centerY_row3);
+        if (dist14 < radius14 * radius14) {
+            press14State = 1;
+        }
+
+        float radius15 = BUTTON_SCALE * scale * level15.getWidth() / 2.0f;
+        float dist15 = (screenX - centerX_column5) * (screenX - centerX_column5) + (screenY - centerY_row3) * (screenY - centerY_row3);
+        if (dist15 < radius15 * radius15) {
+            press15State = 1;
         }
 
         return false;
