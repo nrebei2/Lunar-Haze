@@ -26,20 +26,20 @@ public class TacticalManager implements Telegraph {
     /**
      * The target of an enemy
      */
-    private Werewolf target;
+    private final Werewolf target;
     Random rand = new Random();
 
     /**
      * The list of current active enemies
      */
-    private Array<Enemy> activeEnemies;
+    private final Array<Enemy> activeEnemies;
 
     /**
      * A map of enemies to their corresponding controllers
      */
-    private ObjectMap<Enemy, EnemyController> enemyMap;
+    private final ObjectMap<Enemy, EnemyController> enemyMap;
 
-    private LevelContainer container;
+    private final LevelContainer container;
 
 
     /**

@@ -44,15 +44,12 @@ public class PlayerAttackHandler extends AttackHandler {
     //TODO: Make the attack cooldowns and attack lengths decrease with moonlight collected
 
     /**
-     * Called up above in the other update method, handles all attacking related logic
+     * See {@link #update(float)}
+     * @param phase current phase of the game 
      */
     public void update(float delta, GameplayController.Phase phase) {
         if (phase == GameplayController.Phase.BATTLE) {
-            if (entity.isAttacking()) {
-                processAttack(delta);
-            } else {
-                attackCooldownCounter += delta;
-            }
+            super.update(delta);
 
             if (comboStep > 0) {
                 handleComboTimeout(delta);

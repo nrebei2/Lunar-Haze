@@ -16,6 +16,7 @@ public final class AngleUtils {
 
     /**
      * Inverse of {@link #vectorToAngle(Vector2)}.
+     * Output is normalized.
      */
     public static Vector2 angleToVector(Vector2 outVector, float angle) {
         outVector.set(MathUtils.cos(angle), MathUtils.sin(angle));
