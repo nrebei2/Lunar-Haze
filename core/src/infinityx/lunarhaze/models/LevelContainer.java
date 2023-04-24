@@ -2,6 +2,7 @@ package infinityx.lunarhaze.models;
 
 import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.steer.SteeringBehavior;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -513,7 +514,6 @@ public class LevelContainer {
                 backing.add(o);
             }
         }
-
         // stop-and-copy garbage collection
         // no removal which is nice since each removal is worst case O(n)
         Array<Drawable> tmp = backing;

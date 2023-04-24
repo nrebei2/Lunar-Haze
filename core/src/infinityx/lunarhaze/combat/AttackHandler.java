@@ -41,6 +41,19 @@ public abstract class AttackHandler {
         return attackCooldownCounter >= entity.attackCooldown;
     }
 
+
+    /**
+     * Handle all attacking related logic
+     * @param delta in seconds
+     */
+    public void update(float delta) {
+        if (entity.isAttacking()) {
+            processAttack(delta);
+        } else {
+            attackCooldownCounter += delta;
+        }
+    }
+
     /**
      * Initiates an attack
      */
