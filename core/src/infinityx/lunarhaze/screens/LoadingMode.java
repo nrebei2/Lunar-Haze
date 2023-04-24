@@ -83,9 +83,13 @@ public class LoadingMode extends ScreenObservable implements Screen {
      */
     float stateTime;
     /**
+     * Loading Text Height Ration
+     */
+    private static final float TEXT_HEIGHT_RATIO = 0.17f;
+    /**
      * Default height ratio for the game title
      */
-    private static final float HEIGHT_RATIO_TITLE = 0.3f;
+    private static final float HEIGHT_RATIO_TITLE = 0.6f;
     /**
      * Default budget for asset loader (do nothing but load 60 fps)
      */
@@ -330,7 +334,7 @@ public class LoadingMode extends ScreenObservable implements Screen {
         canvas.draw(
                 currentFrame, alphaTint,
                 currentFrame.getRegionWidth() / 2, currentFrame.getRegionY() / 2,
-                canvas.getWidth() / 2, canvas.getHeight() / 2 - 400 * scale,
+                canvas.getWidth() / 2, canvas.getHeight() / 2 * 0.4f,
                 0f,
                 0.2f * scale, 0.2f * scale
         );
@@ -339,11 +343,11 @@ public class LoadingMode extends ScreenObservable implements Screen {
 
     private void drawBackground(GameCanvas canvas) {
         canvas.drawOverlay(background, alphaTint, true);
-        canvas.draw(game_title, alphaTint, game_title.getWidth() / 2, game_title.getHeight() * HEIGHT_RATIO_TITLE, canvas.getWidth() / 2, canvas.getHeight() / 2, 0, 0.25f * scale, 0.25f * scale);
+        canvas.draw(game_title, alphaTint, game_title.getWidth() / 2, game_title.getHeight()/2, canvas.getWidth() / 2, canvas.getHeight()  * HEIGHT_RATIO_TITLE, 0, 0.3f * scale, 0.3f * scale);
         canvas.draw(
                 loading_text, alphaTint,
                 loading_text.getWidth() / 2, 0,
-                canvas.getWidth() / 2, 20,
+                canvas.getWidth() / 2, canvas.getHeight() * TEXT_HEIGHT_RATIO,
                 0, 0.3f * scale, 0.3f * scale
         );
     }
@@ -364,13 +368,16 @@ public class LoadingMode extends ScreenObservable implements Screen {
         draw(delta);
     }
 
+    /**
+     * Split the sprite sheet and generate animation frames
+     */
     public void create() {
-        TextureRegion[][] moonTextures = TextureRegion.split(moonphase, moonphase.getWidth() / 29,
+        TextureRegion[][] moonTextures = TextureRegion.split(moonphase, moonphase.getWidth() / 35,
                 moonphase.getHeight() / 1);
-        TextureRegion[] moonFrames = new TextureRegion[29 * 1];
+        TextureRegion[] moonFrames = new TextureRegion[35 * 1];
         int index = 0;
         for (int i = 0; i < 1; i++) {
-            for (int j = 0; j < 29; j++) {
+            for (int j = 0; j < 35; j++) {
                 moonFrames[index++] = moonTextures[i][j];
             }
         }
