@@ -1,10 +1,9 @@
 package infinityx.lunarhaze.screens;
 
-import com.badlogic.gdx.ApplicationListener;
-import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
@@ -23,7 +22,7 @@ import infinityx.util.ScreenObservable;
  * This is the player mode class for running the game. It provides the
  * basic game loop (update-draw).
  */
-public class GameMode extends ScreenObservable implements Screen {
+public class GameMode extends ScreenObservable implements Screen, InputProcessor {
     /**
      * Need an ongoing reference to the asset directory
      */
@@ -40,6 +39,25 @@ public class GameMode extends ScreenObservable implements Screen {
     public final static int GO_ALLOCATE = 1;
 
     /**
+     * Width and height of the pause button
+     */
+    public final static float PAUSE_BUTTON_SIZE = 60f;
+
+    /**
+     * The x-coordinate of the center of the pause button
+     */
+    private int centerXPause;
+    /**
+     * The y-coordinate of the center of the pause button
+     */
+    private int centerYPause;
+
+    /**
+     * The current state of the pause button
+     */
+    private int pressPauseState;
+
+    /**
      * Owns the GameplayController
      */
     private GameplayController gameplayController;
@@ -48,6 +66,11 @@ public class GameMode extends ScreenObservable implements Screen {
      * Owns the UIRender
      */
     private UIRender uiRender;
+
+    /**
+     * Represents the pause button texture
+     */
+    private Texture pauseButton;
 
     /**
      * Lobby and pause background music
@@ -150,12 +173,22 @@ public class GameMode extends ScreenObservable implements Screen {
         displayFont = directory.getEntry("retro", BitmapFont.class);
         UIFont_large = directory.getEntry("libre-large", BitmapFont.class);
         UIFont_small = directory.getEntry("libre-small", BitmapFont.class);
+        pauseButton = directory.getEntry("pause-button", Texture.class);
         uiRender = new UIRender(UIFont_large, UIFont_small, directory);
         stealth_background = directory.getEntry("stealthBackground", Music.class);
         battle_background = directory.getEntry("battleBackground", Music.class);
         lobby_background = directory.getEntry("lobbyBackground", Music.class);
 
 //        win_sound = directory.getEntry("level-passed", Sound.class);
+    }
+
+    /**
+     * Returns true if all assets are loaded and the player is ready to go level editor.
+     *
+     * @return true if the player is ready to go pause screen
+     */
+    public boolean isPauseReady() {
+        return pressPauseState == 2;
     }
 
     public void updateMusic(float delta) {
@@ -290,6 +323,13 @@ public class GameMode extends ScreenObservable implements Screen {
             case PLAY:
                 Phase phase = gameplayController.getPhase();
                 uiRender.drawUI(canvas, levelContainer, phase, gameplayController, delta);
+                canvas.begin(GameCanvas.DrawPass.SPRITE);
+                Color color = new Color(142.0f / 255.0f, 157.0f / 255.0f, 189.0f / 255.0f, 1.0f);
+                Color tintPlay = (pressPauseState == 1 ? color : Color.WHITE);
+                canvas.draw(pauseButton, tintPlay, pauseButton.getWidth() / 2, pauseButton.getHeight() / 2,
+                        centerXPause, centerYPause, 0, PAUSE_BUTTON_SIZE/pauseButton.getWidth(),
+                        PAUSE_BUTTON_SIZE/pauseButton.getHeight());
+                canvas.end();
                 break;
         }
     }
@@ -299,6 +339,8 @@ public class GameMode extends ScreenObservable implements Screen {
      */
     public void show() {
 //        setupLevel();
+        pressPauseState = 0;
+        Gdx.input.setInputProcessor(this);
     }
 
     /**
@@ -311,6 +353,10 @@ public class GameMode extends ScreenObservable implements Screen {
     public void render(float delta) {
         update(delta);
         draw(delta);
+        if (isPauseReady() && observer != null) {
+            observer.exitScreen(this, GO_PAUSE);
+        }
+
         if (inputController.didExit() && observer != null) {
             observer.exitScreen(this, GO_PAUSE);
         }
@@ -339,7 +385,8 @@ public class GameMode extends ScreenObservable implements Screen {
      * @see ApplicationListener#resize(int, int)
      */
     public void resize(int width, int height) {
-
+        centerXPause = width - (int) PAUSE_BUTTON_SIZE;
+        centerYPause = height - (int) PAUSE_BUTTON_SIZE;
     }
 
     /**
@@ -363,5 +410,78 @@ public class GameMode extends ScreenObservable implements Screen {
 
     }
 
+    @Override
+    public boolean keyDown(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return false;
+    }
+
+    /**
+     * Called when the screen was touched or a mouse button was pressed.
+     * <p>
+     *
+     * @param screenX the x-coordinate of the mouse on the screen
+     * @param screenY the y-coordinate of the mouse on the screen
+     * @param pointer the button or touch finger number
+     * @return whether to hand the event to other listeners.
+     */
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        if (pressPauseState == 2) {
+            return true;
+        }
+
+        // Flip to match graphics coordinates
+        screenY = canvas.getHeight() - screenY;
+
+        // Play button is a rectangle.
+        float distXPause = Math.abs(screenX - centerXPause);
+        float distYPause = Math.abs(screenY - centerYPause);
+        if (Math.pow(distXPause, 2) + Math.pow(distYPause, 2) < Math.pow(PAUSE_BUTTON_SIZE/2, 2)) {
+            pressPauseState = 1;
+        }
+
+        return false;
+    }
+
+    /**
+     * Called when a finger was lifted or a mouse button was released.
+     * <p>
+     *
+     * @param screenX the x-coordinate of the mouse on the screen
+     * @param screenY the y-coordinate of the mouse on the screen
+     * @param pointer the button or touch finger number
+     * @return whether to hand the event to other listeners.
+     */
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        if (pressPauseState == 1) {
+            pressPauseState = 2;
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return false;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        return false;
+    }
+
+    @Override
+    public boolean scrolled(float amountX, float amountY) {
+        return false;
+    }
 
 }

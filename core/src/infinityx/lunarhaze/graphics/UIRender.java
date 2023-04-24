@@ -47,7 +47,7 @@ public class UIRender {
     /**
      * Top stroke width
      */
-    private final static float COUNTER_WIDTH = 300f;
+    private final static float COUNTER_WIDTH = 100f;
 
     /**
      * Top stroke height
@@ -192,6 +192,16 @@ public class UIRender {
     private final Texture trees;
 
     /**
+     * Left title ornament
+     */
+    private Texture title_left;
+
+    /**
+     * Right title ornament
+     */
+    private Texture title_right;
+
+    /**
      * Whether heart indicator length has been changed
      */
     boolean changed = false;
@@ -276,6 +286,8 @@ public class UIRender {
         transition_background = directory.getEntry("transition-background", Texture.class);
         moon = directory.getEntry("moon", Texture.class);
         trees = directory.getEntry("trees", Texture.class);
+        title_left = directory.getEntry("title-left", Texture.class);
+        title_right = directory.getEntry("title-right", Texture.class);
 
         // shaders
         this.meter = directory.get("meter", ShaderProgram.class);
@@ -335,7 +347,7 @@ public class UIRender {
             } else if (phase == Phase.BATTLE) {
                 drawHealthStats(canvas, level);
                 drawPowerStats(canvas, level);
-                //drawRangeStats(canvas, level);
+//                drawRangeStats(canvas, level);
             }
             canvas.end();
 
@@ -409,27 +421,31 @@ public class UIRender {
      * Draw the level stroke and level status of the player
      */
     public void drawLevelStats(GameCanvas canvas, GameplayController.Phase phase, GameplayController gameplayController) {
-        canvas.draw(counter, Color.WHITE, canvas.getWidth() / 2 - COUNTER_WIDTH / 2, canvas.getHeight() - COUNTER_HEIGHT - TOP_MARGIN / 2, COUNTER_WIDTH, COUNTER_HEIGHT);
-        String text;
+//        canvas.draw(counter, Color.WHITE, canvas.getWidth() / 2 - COUNTER_WIDTH / 2, canvas.getHeight() - COUNTER_HEIGHT - TOP_MARGIN / 2, COUNTER_WIDTH, COUNTER_HEIGHT);
+        String text = "Time Remaining";
         Texture icon;
-        if (phase == Phase.STEALTH || phase == Phase.TRANSITION) {
-            text = "night";
-            icon = dusk_icon;
-        } else {
-            text = "full moon";
-            icon = fullmoon_icon;
-        }
-        canvas.drawText(text, UIFont_small, canvas.getWidth() / 2 - UIFont_small.getCapHeight() * text.length() / 3, canvas.getHeight() - TOP_MARGIN / 2.5f);
-        canvas.drawText("1", UIFont_large, canvas.getWidth() / 2, canvas.getHeight() - TOP_MARGIN);
+//        if (phase == Phase.STEALTH || phase == Phase.TRANSITION) {
+//            text = "night";
+//            icon = dusk_icon;
+//        } else {
+//            text = "full moon";
+//            icon = fullmoon_icon;
+//        }
+        canvas.drawText(text, UIFont_small, canvas.getWidth() / 2 - UIFont_small.getCapHeight() * text.length() / 2, canvas.getHeight() - TOP_MARGIN / 2.5f);
+//        canvas.drawText("1", UIFont_large, canvas.getWidth() / 2, canvas.getHeight() - TOP_MARGIN);
         int remaining_sec = Math.max((int) gameplayController.getRemainingTime(), 0);
         int min = remaining_sec / 60;
         int sec = remaining_sec % 60;
-        canvas.drawText(min + ":" + sec + "s", UIFont_small, canvas.getWidth() / 2 - COUNTER_WIDTH / 4, canvas.getHeight() - COUNTER_HEIGHT / 2.0f - TOP_MARGIN / 3);
-        if (icon == dusk_icon) {
-            canvas.draw(icon, Color.WHITE, 0, 0, canvas.getWidth() / 2 + COUNTER_WIDTH / 4, canvas.getHeight() - COUNTER_HEIGHT / 2.0f - dusk_icon.getHeight() / 2 - TOP_MARGIN / 3, 0, 0.6f, 0.6f);
-        } else {
-            canvas.draw(icon, Color.WHITE, 0, 0, canvas.getWidth() / 2 + COUNTER_WIDTH / 4, canvas.getHeight() - COUNTER_HEIGHT / 2.0f - dusk_icon.getHeight() / 2 - TOP_MARGIN / 3, 0, 0.3f, 0.3f);
-        }
+        canvas.drawText(((min >= 10)? min : ("0" + min)) + ":" + ((sec >= 10)? sec : ("0" + sec)), UIFont_small, canvas.getWidth() / 2 - UIFont_small.getAscent() * 7, canvas.getHeight() - COUNTER_HEIGHT / 2.0f - TOP_MARGIN / 3);
+//        if (icon == dusk_icon) {
+//            canvas.draw(icon, Color.WHITE, 0, 0, canvas.getWidth() / 2 + COUNTER_WIDTH / 4, canvas.getHeight() - COUNTER_HEIGHT / 2.0f - dusk_icon.getHeight() / 2 - TOP_MARGIN / 3, 0, 0.6f, 0.6f);
+//        } else {
+//            canvas.draw(icon, Color.WHITE, 0, 0, canvas.getWidth() / 2 + COUNTER_WIDTH / 4, canvas.getHeight() - COUNTER_HEIGHT / 2.0f - dusk_icon.getHeight() / 2 - TOP_MARGIN / 3, 0, 0.3f, 0.3f);
+//        }
+        canvas.draw(title_left, Color.WHITE, canvas.getWidth() / 2 - COUNTER_WIDTH - UIFont_small.getAscent() * 10, canvas.getHeight() - COUNTER_HEIGHT,
+                COUNTER_WIDTH, UIFont_small.getCapHeight());
+        canvas.draw(title_right, Color.WHITE, canvas.getWidth() / 2 + UIFont_small.getAscent() * 10, canvas.getHeight() - COUNTER_HEIGHT,
+                COUNTER_WIDTH, UIFont_small.getCapHeight());
     }
 
     /**
