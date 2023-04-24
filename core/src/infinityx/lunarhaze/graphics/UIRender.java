@@ -347,7 +347,7 @@ public class UIRender {
             } else if (phase == Phase.BATTLE) {
                 drawHealthStats(canvas, level);
                 drawPowerStats(canvas, level);
-                //drawRangeStats(canvas, level);
+//                drawRangeStats(canvas, level);
             }
             canvas.end();
 
