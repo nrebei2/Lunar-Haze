@@ -107,11 +107,11 @@ public class EnemyController {
      */
     public Vector2 patrolTarget;
 
-    public CombinedContext combinedContext;
-
-    public ContextSteering combinedSteering;
-
-    public PrioritySteering battleSB;
+//    public CombinedContext combinedContext;
+//
+//    public ContextSteering combinedSteering;
+//
+//    public PrioritySteering battleSB;
 
 
 
@@ -151,70 +151,71 @@ public class EnemyController {
         Array<Vector2> waypoints = new Array<>();
         waypoints.add(new Vector2());
         waypoints.add(new Vector2());
-        followPathSB = new WeightedFollowPath(enemy, new LinePath(waypoints), 0.05f, 0.5f, target, 2);
-
+        followPathSB = new FollowPath(enemy, new LinePath(waypoints), 0.05f, 0.5f);
+//        followPathSB = new WeightedFollowPath(enemy, new LinePath(waypoints), 0.05f, 0.5f, target, 2);
+//
         // Steering behaviors
         this.faceSB = new Face<>(enemy)
                 .setAlignTolerance(MathUtils.degreesToRadians * 10)
                 .setDecelerationRadius(MathUtils.degreesToRadians * 20);
-
-        this.combinedContext = new CombinedContext(enemy);
-        ContextBehavior attack = new ContextBehavior(enemy, true) {
-            @Override
-            protected ContextMap calculateRealMaps(ContextMap map) {
-                map.setZero();
-                Vector2 targetDir = target.getPosition().sub(enemy.getPosition()).nor();
-                for (int i = 0 ; i<map.getResolution(); i++){
-                    map.interestMap[i] = map.dirFromSlot(i).dot(targetDir);
-                }
-
-                return map;
-            }
-        };
-
-        ContextBehavior strafe = new ContextBehavior(enemy, true) {
-            @Override
-            protected ContextMap calculateRealMaps(ContextMap map) {
-                map.setZero();
-                Vector2 targetDir = target.getPosition().sub(enemy.getPosition()).nor();
-                for (int i = 0 ; i<map.getResolution(); i++){
-                    map.interestMap[i] = (float) Math.pow(1 - Math.max(0, map.dirFromSlot(i).dot(targetDir)), 2);
-                }
-
-                return map;
-            }
-        };
-
-        ContextBehavior seperation = new ContextBehavior(enemy, true) {
-            @Override
-            protected ContextMap calculateRealMaps(ContextMap map) {
-                map.setZero();
-                for (Enemy en : container.getEnemies()) {
-                    Vector2 dir = en.getPosition().sub(enemy.getPosition());
-                    for (int i = 0; i < map.getResolution(); i++) {
-                        map.dangerMap[i] += dir.dot(map.dirFromSlot(i));
-                    }
-                }
-                float max = Integer.MIN_VALUE;
-                for (int i = 0; i < map.getResolution(); i++){
-                    if (map.dangerMap[i] > max) {
-                        max = map.dangerMap[i];
-                    }
-                }
-                for (int i = 0; i < map.getResolution(); i++) {
-                    map.dangerMap[i] /= max;
-                }
-
-                return map;
-            }
-        };
-        this.combinedContext.add(attack);
-        this.combinedContext.add(strafe);
-        this.combinedContext.add(seperation);
-        //Resolution is set to 8 to represent the 8 directions in which enemies can move
-        this.combinedSteering = new ContextSteering(enemy, combinedContext, 8);
-
-        this.battleSB = new PrioritySteering<>(enemy).add(followPathSB).add(combinedSteering);
+//
+//        this.combinedContext = new CombinedContext(enemy);
+//        ContextBehavior attack = new ContextBehavior(enemy, true) {
+//            @Override
+//            protected ContextMap calculateRealMaps(ContextMap map) {
+//                map.setZero();
+//                Vector2 targetDir = target.getPosition().sub(enemy.getPosition()).nor();
+//                for (int i = 0 ; i<map.getResolution(); i++){
+//                    map.interestMap[i] = map.dirFromSlot(i).dot(targetDir);
+//                }
+//
+//                return map;
+//            }
+//        };
+//
+//        ContextBehavior strafe = new ContextBehavior(enemy, true) {
+//            @Override
+//            protected ContextMap calculateRealMaps(ContextMap map) {
+//                map.setZero();
+//                Vector2 targetDir = target.getPosition().sub(enemy.getPosition()).nor();
+//                for (int i = 0 ; i<map.getResolution(); i++){
+//                    map.interestMap[i] = (float) Math.pow(1 - Math.max(0, map.dirFromSlot(i).dot(targetDir)), 2);
+//                }
+//
+//                return map;
+//            }
+//        };
+//
+//        ContextBehavior seperation = new ContextBehavior(enemy, true) {
+//            @Override
+//            protected ContextMap calculateRealMaps(ContextMap map) {
+//                map.setZero();
+//                for (Enemy en : container.getEnemies()) {
+//                    Vector2 dir = en.getPosition().sub(enemy.getPosition());
+//                    for (int i = 0; i < map.getResolution(); i++) {
+//                        map.dangerMap[i] += dir.dot(map.dirFromSlot(i));
+//                    }
+//                }
+//                float max = Integer.MIN_VALUE;
+//                for (int i = 0; i < map.getResolution(); i++){
+//                    if (map.dangerMap[i] > max) {
+//                        max = map.dangerMap[i];
+//                    }
+//                }
+//                for (int i = 0; i < map.getResolution(); i++) {
+//                    map.dangerMap[i] /= max;
+//                }
+//
+//                return map;
+//            }
+//        };
+//        this.combinedContext.add(attack);
+//        this.combinedContext.add(strafe);
+//        this.combinedContext.add(seperation);
+//        //Resolution is set to 8 to represent the 8 directions in which enemies can move
+//        this.combinedSteering = new ContextSteering(enemy, combinedContext, 8);
+//
+//        this.battleSB = new PrioritySteering<>(enemy).add(followPathSB).add(combinedSteering);
     }
 
     /**
