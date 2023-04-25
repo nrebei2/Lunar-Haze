@@ -35,8 +35,8 @@ public class PlayerAttackHandler extends AttackHandler {
     private final static float MAX_COMBO_TIME = 1f;
 
     /** Dash variables */
-    private static final float DASH_SPEED = 40f;
-    private static final float DASH_TIME = 0.25f;
+    private static final float DASH_SPEED = 10f;
+    private static final float DASH_TIME = 0.15f;
     private float dashTimer;
     private Vector2 dashDirection;
     private boolean isDashing;
