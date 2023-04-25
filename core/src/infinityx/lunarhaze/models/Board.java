@@ -653,6 +653,18 @@ public class Board {
         return getTile(x, y).tileNum();
     }
 
+    /**
+     * @return true if all tiles on the board are not null
+     */
+    public boolean assertNoNullTiles() {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < width; y++) {
+                if (getTile(x, y) == null) return false;
+            }
+        }
+        return true;
+    }
+
     public ArrayList<int[]> getMoonlightTiles() {
         ArrayList<int[]> lst = new ArrayList<>();
         for (int x = 0; x < height; x++) {
