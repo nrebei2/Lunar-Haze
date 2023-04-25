@@ -48,14 +48,14 @@ public class PlayerController {
     public static final int ADD_HP_AMOUNT = 1;
 
     /**
-     * Attack power increase for each moonlight allocated during phase ALLOCATE
+     * Attack power proportion increase for each moonlight allocated during phase ALLOCATE
      */
     public static final float ADD_ATTACK_AMOUNT = 0.1f;
 
     /**
-     * Attack range distance increase for each moonlight allocated during phase ALLOCATE
+     * Attack range distance proportion increase for each moonlight allocated during phase ALLOCATE
      */
-    public static final float ADD_RANGE_AMOUNT = 0.2f;
+    public static final float ADD_RANGE_AMOUNT = 0.1f;
 
     /**
      * The player being controlled by this AIController
@@ -81,6 +81,16 @@ public class PlayerController {
      * If the player is collecting moonlight then true, false otherwise
      */
     private boolean collectingMoonlight;
+
+    /**
+     * Number of times power is allocated
+     */
+    private int numPowerPress = 0;
+
+    /**
+     * Number of times range is allocated
+     */
+    private int numRangePress = 0;
 
     /**
      * Sound for successfully collect moonlight
@@ -121,6 +131,22 @@ public class PlayerController {
 
     public boolean isAttacking() {
         return player.isAttacking();
+    }
+
+    public int getNumPowerPress (){
+        return numPowerPress;
+    }
+
+    public int getNumRangePress (){
+        return numRangePress;
+    }
+
+    public void setNumPowerPress (int n){
+        numPowerPress = n;
+    }
+
+    public void setNumRangePress (int n){
+        numRangePress = n;
     }
 
     public Sound getAttackSound() {
@@ -174,7 +200,6 @@ public class PlayerController {
         collectingMoonlight = false;
         player.addMoonlightCollected();
         collect_sound.play(0.8f);
-        //        PlayerAttackHandler.setAttackPower(player.getAttackPower());
     }
 
     /**
@@ -229,7 +254,7 @@ public class PlayerController {
      */
     public void allocateAttackPow() {
         player.reduceMoonlightCollected();
-        player.attackDamage += ADD_ATTACK_AMOUNT;
+        player.attackDamage = player.attackDamage * (1 + ADD_ATTACK_AMOUNT);
     }
 
     /**
@@ -237,7 +262,7 @@ public class PlayerController {
      */
     public void allocateAttackRange() {
         player.reduceMoonlightCollected();
-        player.setAttackRange(player.getAttackRange() + ADD_RANGE_AMOUNT);
+        player.setAttackRange(player.getAttackRange() * (1 + ADD_RANGE_AMOUNT));
     }
 
     /**

@@ -12,6 +12,7 @@ import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.controllers.GameplayController;
 import infinityx.lunarhaze.controllers.GameplayController.GameState;
 import infinityx.lunarhaze.controllers.GameplayController.Phase;
+import infinityx.lunarhaze.controllers.PlayerController;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.entity.Enemy;
 
@@ -369,8 +370,8 @@ public class UIRender {
                 drawStealthStats(canvas, level);
             } else if (phase == Phase.BATTLE) {
                 drawHealthStats(canvas, level);
-                drawPowerStats(canvas, level);
-                drawRangeStats(canvas, level);
+                drawPowerStats(canvas, level, gameplayController.getPlayerController());
+                drawRangeStats(canvas, level, gameplayController.getPlayerController());
             }
             canvas.end();
 
@@ -556,17 +557,7 @@ public class UIRender {
     /**
      * Draw attack power stats
      */
-    public void drawPowerStats(GameCanvas canvas, LevelContainer level) {
-//        canvas.end();
-//        canvas.begin(GameCanvas.DrawPass.SHAPE);
-//        canvas.drawAttackPow(canvas.getWidth() - BAR_WIDTH, canvas.getHeight() - BAR_HEIGHT * 2,
-//                BAR_WIDTH, BAR_HEIGHT, level.getPlayer().attackDamage);
-//        canvas.end();
-//
-//        canvas.begin(GameCanvas.DrawPass.SPRITE);
-//        canvas.drawText("Attack power ", UIFont_small,
-//                canvas.getWidth() - BAR_WIDTH - UIFont_small.getAscent() * ("Attack power ".length()) * 2,
-//                canvas.getHeight() - BAR_HEIGHT);
+    public void drawPowerStats(GameCanvas canvas, LevelContainer level, PlayerController pc) {
         int max_hp = MathUtils.ceil(level.getPlayer().maxHp);
         float stroke_width = max_hp * health_icon.getWidth() * 0.6f + 70;
         canvas.draw(square_stroke, Color.WHITE, stroke_width + GAP_DIST * 2,
@@ -577,8 +568,7 @@ public class UIRender {
                 stroke_width + SQUARE_STROKE_WIDTH,
                 canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f,
                 0, 0.7f, 0.7f);
-//        level.getPlayer().getAttackPower()
-        canvas.drawText("2", UIFont_small,
+        canvas.drawText(pc.getNumPowerPress() + "", UIFont_small,
                 stroke_width + SQUARE_STROKE_WIDTH + attack_pow_icon.getWidth()/2,
                 canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f + UIFont_small.getCapHeight());
     }
@@ -586,18 +576,7 @@ public class UIRender {
     /**
      * Draw attack range stats
      */
-    public void drawRangeStats(GameCanvas canvas, LevelContainer level) {
-//        canvas.begin(GameCanvas.DrawPass.SPRITE);
-//        canvas.drawText("Attack range ", UIFont_small,
-//                canvas.getWidth() - BAR_WIDTH - UIFont_small.getAscent() * ("Attack range ".length()) * 2,
-//                canvas.getHeight() - BAR_HEIGHT * 2 - GAP_DIST);
-//        canvas.end();
-//
-//        canvas.begin(GameCanvas.DrawPass.SHAPE);
-//        canvas.drawAttackRange(canvas.getWidth() - BAR_WIDTH, canvas.getHeight() - BAR_HEIGHT * 3 - GAP_DIST,
-//                BAR_WIDTH, BAR_HEIGHT, level.getPlayer().getAttackRange());
-//        canvas.end();
-//        canvas.begin(GameCanvas.DrawPass.SPRITE);
+    public void drawRangeStats(GameCanvas canvas, LevelContainer level, PlayerController pc) {
         int max_hp = MathUtils.ceil(level.getPlayer().maxHp);
         float stroke_width = max_hp * health_icon.getWidth() * 0.6f + 70;
         canvas.draw(square_stroke, Color.WHITE, stroke_width + HEALTH_STROKE_HEIGHT + 4 * GAP_DIST,
@@ -607,8 +586,7 @@ public class UIRender {
                 stroke_width + SQUARE_STROKE_WIDTH * 2 + GAP_DIST,
                 canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f,
                 0, 1.0f, 1.0f);
-//        level.getPlayer().getAttackRange()
-        canvas.drawText("3", UIFont_small,
+        canvas.drawText(pc.getNumRangePress() + "", UIFont_small,
                 stroke_width + SQUARE_STROKE_WIDTH*2 + attack_pow_icon.getWidth()/2 + GAP_DIST,
                 canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f + UIFont_small.getCapHeight());
     }
