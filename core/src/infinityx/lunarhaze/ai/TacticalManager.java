@@ -58,7 +58,7 @@ public class TacticalManager implements Telegraph {
     }
 
     public void update() {
-        sendFlankMessage();
+//        sendFlankMessage();
     }
 
     /**
@@ -133,8 +133,7 @@ public class TacticalManager implements Telegraph {
         float cos = (float) Math.cos(radians);
         float sin = (float) Math.sin(radians);
 
-        float newX = x * cos - y * sin;
-        return newX;
+        return x * cos - y * sin;
     }
 
     /**
@@ -151,9 +150,7 @@ public class TacticalManager implements Telegraph {
         float cos = (float) Math.cos(radians);
         float sin = (float) Math.sin(radians);
 
-        float newY = x * sin + y * cos;
-
-        return newY;
+        return x * sin + y * cos;
     }
 
     public static int ADD = 100;

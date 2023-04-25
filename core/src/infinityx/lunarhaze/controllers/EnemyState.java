@@ -165,7 +165,7 @@ public enum EnemyState implements State<EnemyController> {
 
             entity.targetPos.set(entity.getTarget().getPosition());
             entity.updatePath();
-            entity.getEnemy().setSteeringBehavior(entity.followPathSB);
+            entity.getEnemy().setSteeringBehavior(entity.weightedPathSB);
 
             MessageManager.getInstance().dispatchMessage(TacticalManager.ADD, entity);
             tick = 0;
@@ -183,13 +183,22 @@ public enum EnemyState implements State<EnemyController> {
                     entity.getStateMachine().changeState(INDICATOR);
                     break;
             }
-
             tick++;
-            // Update path every 10 frames
-            if (tick % 10 == 0) {
+            if (entity.targetPos.cpy().sub(entity.getEnemy().getPosition()).len() <= 2){
+                entity.getEnemy().setSteeringBehavior(entity.battleSB);
+            }else{
                 entity.targetPos.set(entity.getTarget().getPosition());
-                entity.updatePath();
+                entity.getEnemy().setSteeringBehavior(entity.followPathSB);
+                // Update path every 10 frames
+                if (tick % 10 == 0) {
+                    entity.updatePath();
+                }
             }
+//            // Update path every 10 frames
+//            if (tick % 10 == 0) {
+//                entity.targetPos.set(entity.getTarget().getPosition());
+//                entity.updatePath();
+//            }
         }
 
         @Override
@@ -200,6 +209,7 @@ public enum EnemyState implements State<EnemyController> {
 
         @Override
         public boolean onMessage(EnemyController control, Telegram telegram) {
+            System.out.println("on message");
             if (telegram.message == TacticalManager.FLANK) {
                 Vector2 flank_pos = (Vector2) telegram.extraInfo;
                 Vector2 cur_pos = control.getEnemy().getPosition();

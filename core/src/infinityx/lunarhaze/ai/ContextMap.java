@@ -46,9 +46,10 @@ public class ContextMap {
     public ContextMap(int resolution) {
         dangerMap = new float[resolution];
         interestMap = new float[resolution];
+        this.resolution = resolution;
     }
 
-    private Vector2 dirCache;
+    private Vector2 dirCache = new Vector2();
 
     /**
      * Context map slot to heading.
