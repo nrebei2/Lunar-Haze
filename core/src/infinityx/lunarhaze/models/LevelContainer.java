@@ -504,12 +504,18 @@ public class LevelContainer {
         canvas.drawLights(rayHandler);
         canvas.end();
 
-        // DEBUG
+        // ----------------------- DEBUG --------------------------
         if (player.isAttacking) {
             canvas.begin(GameCanvas.DrawPass.SHAPE, view.x, view.y);
             player.getAttackHitbox().drawHitbox(canvas);
             canvas.end();
         }
+
+        canvas.begin(GameCanvas.DrawPass.SHAPE, view.x, view.y);
+        for (Enemy e: activeEnemies) {
+            getEnemyControllers().get(e).drawGizmo(canvas);
+        }
+        canvas.end();
     }
 
     /**

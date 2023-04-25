@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.ai.TacticalManager;
 import infinityx.lunarhaze.models.GameObject;
 import infinityx.lunarhaze.models.entity.Enemy;
+import infinityx.util.AngleUtils;
 import infinityx.util.Box2dLocation;
 
 /**
@@ -22,11 +23,13 @@ public enum EnemyState implements State<EnemyController> {
         @Override
         public void update(EnemyController entity) {
             // FIXME: dont call setFilmstripPrefix every frame
+            // All states other than attack use walk/idle animations
             if (!entity.getStateMachine().isInState(ATTACK)) {
                 if (entity.getEnemy().getLinearVelocity().isZero(0.01f)) {
                     entity.getEnemy().setFilmstripPrefix("idle");
                 } else {
                     entity.getEnemy().setFilmstripPrefix("walk");
+                    // Texture update is proportional to velocity
                     entity.getEnemy().texUpdate = 1 / (entity.getEnemy().getLinearVelocity().len() * 6);
                 }
             }
@@ -59,6 +62,7 @@ public enum EnemyState implements State<EnemyController> {
             entity.getEnemy().setIndependentFacing(true);
             entity.getEnemy().setDetection(Enemy.Detection.NOTICED);
             entity.targetPos.set(target.getPosition());
+
             entity.faceSB.setTarget(target);
             entity.getEnemy().setSteeringBehavior(entity.faceSB);
         }
@@ -69,7 +73,7 @@ public enum EnemyState implements State<EnemyController> {
                 // Zero out velocity on start
                 entity.getEnemy().setLinearVelocity(Vector2.Zero);
                 entity.getEnemy().setAngularVelocity(0);
-                start = true;
+                start = false;
             }
 
             // Check if we faced target
@@ -175,7 +179,7 @@ public enum EnemyState implements State<EnemyController> {
             entity.getEnemy().setSteeringBehavior(entity.followPathSB);
 
             MessageManager.getInstance().dispatchMessage(TacticalManager.ADD, entity);
-            tick = 0;
+            entity.time = 0;
         }
 
         @Override
@@ -190,24 +194,26 @@ public enum EnemyState implements State<EnemyController> {
                     entity.getStateMachine().changeState(INDICATOR);
                     break;
             }
-            tick++;
-            //if less than 2 unit away from enem, switch to battle behavior
-            if (entity.targetPos.cpy().sub(entity.getEnemy().getPosition()).len() <= 2){
+            entity.time += Gdx.graphics.getDeltaTime();
+
+            Vector2 enemyToTarget = entity.target.getPosition().sub(entity.getEnemy().getPosition());
+            // Switch to battle behavior when close enough
+            if (enemyToTarget.len() <= 2){
+                // Always face towards target
+                entity.getEnemy().setIndependentFacing(true);
+                entity.getEnemy().setOrientation(AngleUtils.vectorToAngle(enemyToTarget));
                 entity.getEnemy().setSteeringBehavior(entity.battleSB);
-            }else{
-                //go back to chase (follow path)
+            } else {
+                // go back to chase (follow path)
+                entity.getEnemy().setIndependentFacing(false);
                 entity.targetPos.set(entity.getTarget().getPosition());
                 entity.getEnemy().setSteeringBehavior(entity.followPathSB);
-                // Update path every 10 frames
-                if (tick % 10 == 0) {
+                // Update path every 0.2 seconds
+                if (entity.time >= 0.2) {
                     entity.updatePath();
+                    entity.time = 0;
                 }
             }
-//            // Update path every 10 frames
-//            if (tick % 10 == 0) {
-//                entity.targetPos.set(entity.getTarget().getPosition());
-//                entity.updatePath();
-//            }
         }
 
         @Override
@@ -263,7 +269,6 @@ public enum EnemyState implements State<EnemyController> {
         public void enter(EnemyController entity) {
             entity.time = 0;
 
-            entity.getEnemy().setLinearVelocity(Vector2.Zero);
             // not using one since forces are a pain in the ass to deal with for something as simple as this
             entity.getEnemy().setSteeringBehavior(null);
             entity.getEnemy().setDetection(Enemy.Detection.NONE);
@@ -271,6 +276,7 @@ public enum EnemyState implements State<EnemyController> {
 
         @Override
         public void update(EnemyController entity) {
+            entity.getEnemy().setLinearVelocity(Vector2.Zero);
             switch (entity.getDetection()) {
                 case NOTICED:
                 case ALERT:

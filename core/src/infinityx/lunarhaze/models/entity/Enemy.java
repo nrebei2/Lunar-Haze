@@ -92,7 +92,7 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
         setMaxLinearSpeed(0.7f);
         setMaxAngularAcceleration(1);
         // Angular speed is only used in NOTICED when turning around
-        setMaxAngularSpeed(0.05f);
+        setMaxAngularSpeed(1f);
     }
 
     @Override
@@ -187,7 +187,7 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
     }
 
     /** Current filmstrip directions prefix */
-    private String name;
+    private String name = "idle";
 
     /**
      * Sets the filmstrip animation of the enemy. Assumes there exists filmstrips for each cardinal direction with suffixes "-b", "-f", "-l", "-r".
@@ -237,6 +237,7 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
         } else {
             newDirection = Direction.LEFT;
         }
+
         if (newDirection != direction) {
             setTexDir(newDirection);
         }

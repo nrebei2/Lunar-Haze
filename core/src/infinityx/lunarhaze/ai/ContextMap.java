@@ -58,7 +58,9 @@ public class ContextMap {
      * @return unit vector pointing towards heading.
      */
     public Vector2 dirFromSlot(int slot) {
-        return AngleUtils.angleToVector(dirCache, MathUtils.PI2 * (slot / resolution));
+        float angle = MathUtils.PI2 * ((float)slot / resolution);
+        System.out.println(angle);
+        return AngleUtils.angleToVector(dirCache, angle);
     }
 
     /**
