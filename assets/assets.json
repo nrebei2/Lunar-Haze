@@ -2,9 +2,12 @@
   "textures": {
     "background": "screens/menu-screen/menu_bg.jpg",
     "play": "screens/menu-screen/play.png",
+    "menu-logo": "screens/menu-screen/menu_logo.png",
     "level-editor": "screens/menu-screen/level_editor.png",
     "setting": "screens/menu-screen/setting.png",
     "background-setting": "screens/menu-screen/setting_bg.jpg",
+    "setting-music-on": "screens/menu-screen/music_on.png",
+    "setting-music-off": "screens/menu-screen/music_off.png",
     "about-us": "screens/menu-screen/about_us.png",
     "background-about-us": "screens/menu-screen/aboutus_bg.png",
     "back": "screens/menu-screen/back.png",
