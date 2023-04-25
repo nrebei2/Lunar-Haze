@@ -199,7 +199,7 @@ public abstract class AttackingGameObject extends GameObject {
         if (lockedOut) {
             lockoutTime -= delta;
             if (lockoutTime <= 0)
-                lockedOut = true;
+                lockedOut = false;
         }
     }
 }

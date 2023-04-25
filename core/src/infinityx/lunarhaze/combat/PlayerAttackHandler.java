@@ -35,8 +35,8 @@ public class PlayerAttackHandler extends AttackHandler {
     private final static float MAX_COMBO_TIME = 1f;
 
     /** Dash variables */
-    private static final float DASH_SPEED = 40f;
-    private static final float DASH_TIME = 0.25f;
+    private static final float DASH_SPEED = 10f;
+    private static final float DASH_TIME = 0.15f;
     private float dashTimer;
     private Vector2 dashDirection;
     private boolean isDashing;
@@ -66,7 +66,9 @@ public class PlayerAttackHandler extends AttackHandler {
     public void update(float delta, GameplayController.Phase phase) {
         if (phase == GameplayController.Phase.BATTLE) {
             super.update(delta);
-
+            if(isDashing) {
+                processDash(dashDirection);
+            }
             if (comboStep > 0) {
                 handleComboTimeout(delta);
             }
