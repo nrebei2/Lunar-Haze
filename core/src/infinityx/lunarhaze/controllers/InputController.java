@@ -160,6 +160,7 @@ public class InputController {
         return attackPressed;
     }
 
+
     /**
      * Returns true if the collect button was pressed.
      *
