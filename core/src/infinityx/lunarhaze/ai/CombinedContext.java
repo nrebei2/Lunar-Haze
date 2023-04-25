@@ -14,7 +14,7 @@ public class CombinedContext extends ContextBehavior {
     /**
      * The list of context behaviors considered.
      */
-    protected Array<ContextBehavior> behaviors = new Array();
+    protected Array<ContextBehavior> behaviors = new Array<>();
 
     private final FloatArray dangerOutput;
     private final FloatArray interestOutput;
