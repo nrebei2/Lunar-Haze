@@ -46,7 +46,10 @@ public class GDXRoot extends Game implements ScreenObserver {
      * Setting Screen
      */
     private SettingMode setting;
-
+    /**
+     * Setting Screen
+     */
+    private GameSetting setting_preference;
     /**
      * About us Screen
      */
@@ -95,7 +98,8 @@ public class GDXRoot extends Game implements ScreenObserver {
         game = new GameMode(canvas);
         menu = new MenuMode(canvas);
         selection = new LevelSelectionMode(canvas);
-        setting = new SettingMode(canvas, this);
+        setting_preference = new GameSetting();
+        setting = new SettingMode(canvas, this, setting_preference);
         aboutUs = new AboutUsMode(canvas);
         pause = new PauseMode(canvas);
         allocate = new AllocateMode(canvas, game);

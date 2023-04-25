@@ -24,32 +24,37 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
      */
     private Texture background;
     /**
+     * Logo texture for start-up
+     */
+    private Texture logo;
+    /**
+     * Play button to display when done
+     */
+    private static final float LOGO_SCALE = 0.15f;
+    /**
      * Play button to display when done
      */
     private Texture playButton;
-    private static final float BUTTON_SCALE_PLAY = 0.2f;
+
+    private static final float BUTTON_SCALE = 0.2f;
 
     /**
      * Play button to display when done
      */
     private Texture editorButton;
-    private static final float BUTTON_SCALE_EDITOR = 0.2f;
 
     /**
      * Setting button
      */
     private Texture settingButton;
-    private static final float BUTTON_SCALE_SETTING = 0.2f;
     /**
      * About Us button
      */
     private Texture aboutUsButton;
-    private static final float BUTTON_SCALE_ABOUT_US = 0.2f;
     /**
      * Exit button
      */
     private Texture exitButton;
-    private static final float BUTTON_SCALE_EXIT = 0.2f;
 
 
     /**
@@ -132,23 +137,27 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
     /**
      * Ratio of play height from bottom
      */
-    private static final float PLAY_HEIGHT_RATIO = 0.37f;
+    private static final float LOGO_HEIGHT_RATIO = 0.68f;
     /**
      * Ratio of play height from bottom
      */
-    private static final float EDITOR_HEIGHT_RATIO = 0.3f;
+    private static final float PLAY_HEIGHT_RATIO = 0.4f;
+    /**
+     * Ratio of play height from bottom
+     */
+    private static final float EDITOR_HEIGHT_RATIO = 0.33f;
     /**
      * Ratio of setting height from bottom
      */
-    private static final float SETTING_HEIGHT_RATIO = 0.23f;
+    private static final float SETTING_HEIGHT_RATIO = 0.26f;
     /**
      * Ratio of about us height from bottom
      */
-    private static final float ABOUT_US_HEIGHT_RATIO = 0.16f;
+    private static final float ABOUT_US_HEIGHT_RATIO = 0.19f;
     /**
      * Ratio of about us height from bottom
      */
-    private static final float EXIT_HEIGHT_RATIO = 0.09f;
+    private static final float EXIT_HEIGHT_RATIO = 0.12f;
 
     /**
      * Returns true if all assets are loaded and the player is ready to go.
@@ -215,6 +224,7 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
     public void gatherAssets(AssetDirectory directory) {
         background = directory.getEntry("background", Texture.class);
         background.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        logo = directory.getEntry("menu-logo", Texture.class);
         playButton = directory.getEntry("play", Texture.class);
         editorButton = directory.getEntry("level-editor", Texture.class);
         settingButton = directory.getEntry("setting", Texture.class);
@@ -247,23 +257,24 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
         canvas.begin(GameCanvas.DrawPass.SPRITE);
         Color alphaTint = Color.WHITE;
         canvas.drawOverlay(background, alphaTint, true);
-//        canvas.draw(background, 0, 0);
+        canvas.draw(logo, alphaTint, logo.getWidth() / 2, logo.getHeight() / 2,
+                centerX, canvas.getHeight() * LOGO_HEIGHT_RATIO, 0, LOGO_SCALE * scale, LOGO_SCALE * scale);
         Color color = new Color(142.0f / 255.0f, 157.0f / 255.0f, 189.0f / 255.0f, 1.0f);
         Color tintPlay = (pressPlayState == 1 ? color : Color.WHITE);
         canvas.draw(playButton, tintPlay, playButton.getWidth() / 2, playButton.getHeight() / 2,
-                centerX, centerYPlay, 0, BUTTON_SCALE_PLAY * scale, BUTTON_SCALE_PLAY * scale);
+                centerX, centerYPlay, 0, BUTTON_SCALE* scale, BUTTON_SCALE * scale);
         Color tintEditor = (pressEditorState == 1 ? color : Color.WHITE);
         canvas.draw(editorButton, tintEditor, editorButton.getWidth() / 2, editorButton.getHeight() / 2,
-                centerX, centerYEditor, 0, BUTTON_SCALE_EDITOR * scale, BUTTON_SCALE_EDITOR * scale);
+                centerX, centerYEditor, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
         Color tintSetting = (pressSettingState == 1 ? color : Color.WHITE);
         canvas.draw(settingButton, tintSetting, settingButton.getWidth() / 2, settingButton.getHeight() / 2,
-                centerX, centerYSetting, 0, BUTTON_SCALE_SETTING * scale, BUTTON_SCALE_SETTING * scale);
+                centerX, centerYSetting, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
         Color tintAboutUs = (pressAboutUsState == 1 ? color : Color.WHITE);
         canvas.draw(aboutUsButton, tintAboutUs, aboutUsButton.getWidth() / 2, aboutUsButton.getHeight() / 2,
-                centerX, centerYAboutUs, 0, BUTTON_SCALE_ABOUT_US * scale, BUTTON_SCALE_ABOUT_US * scale);
+                centerX, centerYAboutUs, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
         Color tintExit = (pressExitState == 1 ? color : Color.WHITE);
         canvas.draw(exitButton, tintExit, exitButton.getWidth() / 2, exitButton.getHeight() / 2,
-                centerX, centerYExit, 0, BUTTON_SCALE_EXIT * scale, BUTTON_SCALE_EXIT * scale);
+                centerX, centerYExit, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
         canvas.end();
     }
 
@@ -430,9 +441,9 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
 
         // TODO: Fix scaling
         // Button are rectangles with same x-coordinate and shapes.
-        float x = BUTTON_SCALE_PLAY * scale * playButton.getWidth() / 2;
+        float x = BUTTON_SCALE * scale * playButton.getWidth() / 2;
         float distX = Math.abs(screenX - centerX);
-        float y = BUTTON_SCALE_PLAY * scale * playButton.getHeight() / 2;
+        float y = BUTTON_SCALE * scale * playButton.getHeight() / 2;
 
         // Play button is a rectangle.
         float distYPlay = Math.abs(screenY - centerYPlay);
