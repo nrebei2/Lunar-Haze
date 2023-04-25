@@ -22,9 +22,9 @@
       "idle-b": "villager.idle-b"
     },
     "texture": {
-      "name": "walk-l",
-      "origin" : [1050, 320],
-      "scale": 0.1
+      "name": "walk-r",
+      "origin" : [243, 137],
+      "scale": 0.4
     },
     "colliders": {
       "body": {
@@ -38,10 +38,66 @@
     "friction": 0.0,
     "restitution": 1.0,
     "damping": 0.0,
-    "hp": 10,
+    "health": 10,
     "attack": {
       "knockback": 0.3,
-      "damage": 1.0
+      "damage": 0.5,
+      "range": 1,
+      "cooldown": 1,
+      "length": 0.5,
+      "immunity": 0.5,
+      "lockout": 0.5
+    }
+  },
+  "archer": {
+    "flashlight": {
+      "color":		[0.3, 0.0, 0.9, 0.9],
+      "distance":		   4,
+      "rays":			10,
+      "soft":			false,
+      "degrees": 30
+    },
+    "textures": {
+      "attack-l": "villager.attack-l",
+      "attack-r": "villager.attack-r",
+      "attack-f": "villager.attack-f",
+      "attack-b": "villager.attack-b",
+      "walk-l": "villager.walk-l",
+      "walk-r": "villager.walk-r",
+      "walk-f": "villager.walk-f",
+      "walk-b": "villager.walk-b",
+      "idle-l": "villager.idle-l",
+      "idle-r": "villager.idle-r",
+      "idle-f": "villager.idle-f",
+      "idle-b": "villager.idle-b"
+    },
+    "texture": {
+      "name": "walk-r",
+      "origin" : [243, 137],
+      "scale": 0.4
+    },
+    "colliders": {
+      "body": {
+        "type": "box",
+        "width": 0.5,
+        "height": 0.5
+      }
+    },
+    "bodytype": "dynamic",
+    "density": 1.0,
+    "friction": 0.0,
+    "restitution": 1.0,
+    "damping": 0.0,
+    "health": 10,
+    "attack": {
+      "knockback": 0.2,
+      "damage": 0.3,
+      "range": 2,
+      "cooldown": 1,
+      "length": 0.5,
+      "immunity": 0.5,
+      "lockout": 0.5,
+      "shootdist": 4
     }
   }
 }

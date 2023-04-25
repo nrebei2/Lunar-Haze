@@ -4,29 +4,19 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import infinityx.lunarhaze.combat.AttackHitbox;
-import infinityx.lunarhaze.combat.PlayerAttackHandler;
 import infinityx.lunarhaze.graphics.CameraShake;
 import infinityx.lunarhaze.graphics.ScreenFlash;
+import infinityx.lunarhaze.models.AttackingGameObject;
 import infinityx.lunarhaze.models.GameObject;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.entity.Enemy;
 import infinityx.lunarhaze.models.entity.Werewolf;
 
 /**
- * Controller to handle gameplay interactions.
+ * Controller to handle Box2D body interactions.
  * </summary>
  */
 public class CollisionController implements ContactListener {
-
-    /**
-     * Maximum killing power of the player
-     */
-    private final float MAX_KILL_POWER = 5.0f;
-
-    private final int ATTACK_COOLDOWN = 20;
-
-    private int cooldown = 0;
-
     public CollisionController(LevelContainer level) {
         level.getWorld().setContactListener(this);
     }
@@ -36,67 +26,107 @@ public class CollisionController implements ContactListener {
         Body body1 = contact.getFixtureA().getBody();
         Body body2 = contact.getFixtureB().getBody();
 
+        // Safe since all entities that hold a Box2D body in our game are GameObjects
         GameObject obj1 = (GameObject) body1.getUserData();
         GameObject obj2 = (GameObject) body2.getUserData();
 
-        if (obj1.getType() == GameObject.ObjectType.WEREWOLF && obj2.getType() == GameObject.ObjectType.ENEMY) {
-            Werewolf player = (Werewolf) obj1;
-            Enemy enemy = (Enemy) obj2;
-            if (cooldown == 0) {
-                resolveEnemyAttack(player, enemy, enemy.getAttackDamage(), enemy.getAttackKnockback());
-                cooldown = ATTACK_COOLDOWN;
-            }
-        } else if (obj1.getType() == GameObject.ObjectType.ENEMY && obj2.getType() == GameObject.ObjectType.WEREWOLF) {
-            Werewolf player = (Werewolf) obj2;
-            Enemy enemy = (Enemy) obj1;
-            if (cooldown == 0) {
-                resolveEnemyAttack(player, enemy, enemy.getAttackDamage(), enemy.getAttackKnockback());
-                cooldown = ATTACK_COOLDOWN;
-            }
-        } else if (obj1.getType() == GameObject.ObjectType.HITBOX && obj2.getType() == GameObject.ObjectType.ENEMY) {
-            AttackHitbox hitbox = (AttackHitbox) body1.getUserData();
-            Enemy enemy = (Enemy) body2.getUserData();
-            resolvePlayerAttack(hitbox, enemy);
-        } else if (obj1.getType() == GameObject.ObjectType.ENEMY && obj2.getType() == GameObject.ObjectType.HITBOX) {
-            AttackHitbox hitbox = (AttackHitbox) body2.getUserData();
-            Enemy enemy = (Enemy) body1.getUserData();
-            resolvePlayerAttack(hitbox, enemy);
-        }
-        if (cooldown > 0) {
-            cooldown--;
-        }
-
+        processCollision(obj1, obj2);
     }
 
-    public void resolveEnemyAttack(GameObject player, GameObject enemy, float damage, float knockback) {
-
-        Body body = player.getBody();
-        Body enemyBody = enemy.getBody();
-        Vector2 pos = body.getPosition();
-        Vector2 enemyPos = enemyBody.getPosition();
-
-        // Get direction
-        Vector2 direction = pos.sub(enemyPos).nor();
-        boolean immune = ((Werewolf) player).getImmunityState();
-        if (immune == false) {
-            ((Werewolf) player).setCanMove(false);
-            body.applyLinearImpulse(direction.scl(knockback), body.getWorldCenter(), true);
-            ((Werewolf) player).setHp((int) (((Werewolf) player).getHp() - damage));
-            CameraShake.shake(knockback * 3f, 0.3f);
-            ScreenFlash.flash(new Color(1f, 0.2f, 0.2f, 1), 0.15f, 0.05f, 0.05f, 0.15f);
+    /**
+     * Detect and resolve collisions between two game objects
+     *
+     * @param o1 First object
+     * @param o2 Second object
+     */
+    private void processCollision(GameObject o1, GameObject o2) {
+        switch (o1.getType()) {
+            case ENEMY:
+                switch (o2.getType()) {
+                    case WEREWOLF:
+                        handleCollision((Enemy) o1, (Werewolf) o2);
+                        break;
+                    case HITBOX:
+                        handleCollision(
+                                ((AttackHitbox) o2).getAttacker(),
+                                (AttackingGameObject) o1
+                        );
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case WEREWOLF:
+                switch (o2.getType()) {
+                    case ENEMY:
+                        handleCollision((Enemy) o2, (Werewolf) o1);
+                        break;
+                    case HITBOX:
+                        handleCollision(
+                                ((AttackHitbox) o2).getAttacker(),
+                                (AttackingGameObject) o1
+                        );
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case HITBOX:
+                switch (o2.getType()) {
+                    // Could do something interesting when two hitboxes connect
+                    case ENEMY:
+                    case WEREWOLF:
+                        handleCollision(
+                                ((AttackHitbox) o1).getAttacker(),
+                                (AttackingGameObject) o2
+                        );
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            default:
+                break;
         }
     }
 
-    public void resolvePlayerAttack(AttackHitbox hitbox, Enemy enemy) {
-        // Apply damage to the enemy
-        enemy.setHp(enemy.getHp() - MAX_KILL_POWER * PlayerAttackHandler.getAttackPower());
-        // Apply knockback to the enemy
-        Body enemyBody = enemy.getBody();
-        Vector2 playerPos = hitbox.getBody().getPosition();
-        Vector2 enemyPos = enemyBody.getPosition();
-        Vector2 knockbackDirection = enemyPos.sub(playerPos).nor();
-        enemyBody.applyLinearImpulse(knockbackDirection.scl(2f * PlayerAttackHandler.getAttackRange()), enemyBody.getWorldCenter(), true);
-        CameraShake.shake(3, 1);
+    /**
+     * Collision logic between two {@link AttackingGameObject}.
+     *
+     * @param attacker The entity that attacked
+     * @param attacked The entity that was attacked
+     */
+    private void handleCollision(AttackingGameObject attacker, AttackingGameObject attacked) {
+        boolean immune = attacked.isImmune();
+        if (!immune) {
+            // Immunity frames for being attacked and when attacking
+            attacker.setImmune();
+            attacked.setImmune();
+            attacked.setLockedOut();
+
+            // Knock back attacked entity
+            Vector2 direction = attacked.getPosition().sub(attacker.getPosition()).nor();
+            attacked.getBody().applyLinearImpulse(direction.scl(attacker.attackKnockback), attacked.getBody().getWorldCenter(), true);
+
+            attacked.hp -= attacker.attackDamage;
+            if (attacked.hp < 0) attacked.hp = 0;
+
+
+            CameraShake.shake(attacker.attackKnockback * 3f, 0.3f);
+            if (attacked.getType() == GameObject.ObjectType.WEREWOLF)
+                ScreenFlash.flash(new Color(1f, 0.2f, 0.2f, 1), 0.15f, 0.05f, 0.05f, 0.15f);
+        }
+    }
+
+    /**
+     * Collision logic between an enemy and the player.
+     *
+     * @param enemy  The enemy
+     * @param player The player
+     */
+    private void handleCollision(Enemy enemy, Werewolf player) {
+        // For now, dont do anything
+        // Maybe they can push each other, idk
     }
 
     @Override

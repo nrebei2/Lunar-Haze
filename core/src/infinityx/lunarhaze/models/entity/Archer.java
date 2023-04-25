@@ -1,15 +1,9 @@
 package infinityx.lunarhaze.models.entity;
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Pool;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.models.LevelContainer;
-import infinityx.lunarhaze.models.SteeringGameObject;
-import infinityx.lunarhaze.physics.ConeSource;
-
-import java.util.ArrayList;
 
 /**
  * Model class representing an enemy.
@@ -40,9 +34,9 @@ public class Archer extends Enemy implements Pool.Poolable {
 //    private Arrow arrow;
 
     /**
-     * Distance at which archer prepares to shoot
+     * Distance (number of tiles) at which archer's arrow can hit player
      */
-    private float shoot_dist;
+    private int shoot_dist;
 
     private float attackKnockback;
 
@@ -59,6 +53,34 @@ public class Archer extends Enemy implements Pool.Poolable {
     private float hp;
 
     /**
+     * Set knockback for the archer type
+     */
+    public void setAttackKnockback(float attackKnockback) {
+        this.attackKnockback = attackKnockback;
+    }
+
+    /**
+     * Set maximum hp for the archer type
+     */
+    public void setMaxHp(float maxHp) {
+        this.maxHp = maxHp;
+    }
+
+    /**
+     * Set attack damage for the archer type
+     */
+    public void setAttackDamage(int attackDamage) {
+        this.attackDamage = attackDamage;
+    }
+
+    /**
+     * Set shoot distance for the archer type
+     */
+    public void setShootDist(int shoot_dist) {
+        this.shoot_dist = shoot_dist;
+    }
+
+    /**
      * Parse and initialize specific enemy  attributes.
      *
      * @param json      Json tree holding enemy information
@@ -69,10 +91,12 @@ public class Archer extends Enemy implements Pool.Poolable {
 
         // TODO: initialize shoot_dist from JSON
         // TODO: reinitialize hp, attack damage knockback
-//        JsonValue attack = json.get("attack");
-//        setAttackKnockback(attack.getFloat("knockback"));
-//        setAttackDamage(attack.getInt("damage"));
-//        setMaxHp(json.getFloat("hp"));
+        JsonValue archerJson = json.get("archer");
+        JsonValue attack = archerJson.get("attack");
+        setMaxHp(archerJson.getFloat("hp"));
+        setAttackKnockback(attack.getFloat("knockback"));
+        setAttackDamage(attack.getInt("damage"));
+        setShootDist(attack.getInt("shootdist"));
     }
 
     /**

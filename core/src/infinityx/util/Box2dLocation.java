@@ -45,12 +45,12 @@ public class Box2dLocation implements Location<Vector2> {
 
     @Override
     public float vectorToAngle(Vector2 vector) {
-        return MathUtil.vectorToAngle(vector);
+        return AngleUtils.vectorToAngle(vector);
     }
 
     @Override
     public Vector2 angleToVector(Vector2 outVector, float angle) {
-        return MathUtil.angleToVector(outVector, angle);
+        return AngleUtils.angleToVector(outVector, angle);
     }
 
     @Override

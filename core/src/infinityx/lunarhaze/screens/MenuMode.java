@@ -11,7 +11,7 @@ import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.util.ScreenObservable;
 
 /**
- * Provides a menu screen for level select
+ * Provides a menu screen
  */
 public class MenuMode extends ScreenObservable implements Screen, InputProcessor {
     public static final int GO_EDITOR = 0;
@@ -24,26 +24,37 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
      */
     private Texture background;
     /**
+     * Logo texture for start-up
+     */
+    private Texture logo;
+    /**
+     * Play button to display when done
+     */
+    private static final float LOGO_SCALE = 0.15f;
+    /**
      * Play button to display when done
      */
     private Texture playButton;
-    private static final float BUTTON_SCALE = 0.75f;
+
+    private static final float BUTTON_SCALE = 0.2f;
+
+    /**
+     * Play button to display when done
+     */
+    private Texture editorButton;
 
     /**
      * Setting button
      */
     private Texture settingButton;
-    private static final float BUTTON_SCALE_SETTING = 0.3f;
     /**
      * About Us button
      */
     private Texture aboutUsButton;
-    private static final float BUTTON_SCALE_ABOUT_US = 0.3f;
     /**
      * Exit button
      */
     private Texture exitButton;
-    private static final float BUTTON_SCALE_EXIT = 0.3f;
 
 
     /**
@@ -61,9 +72,17 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
     private float scale;
 
     /**
+     * The x-coordinate of the center of the buttons
+     */
+    private int centerX;
+    /**
      * The y-coordinate of the center of the play button
      */
-    private int centerY;
+    private int centerYPlay;
+    /**
+     * The y-coordinate of the center of the level editor button
+     */
+    private int centerYEditor;
     /**
      * The y-coordinate of the center of the setting button
      */
@@ -77,26 +96,14 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
      */
     private int centerYExit;
     /**
-     * The x-coordinate of the center of the play button
-     */
-    private int centerX;
-    /**
-     * The x-coordinate of the center of the setting button
-     */
-    private int centerXSetting;
-    /**
-     * The x-coordinate of the center of the sbout us button
-     */
-    private int centerXAboutUs;
-    /**
-     * The x-coordinate of the center of the exit button
-     */
-    private int centerXExit;
-
-    /**
      * The current state of the play button
      */
     private int pressPlayState;
+
+    /**
+     * The current state of the level editor button
+     */
+    private int pressEditorState;
 
     /**
      * The current state of the setting button
@@ -130,32 +137,44 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
     /**
      * Ratio of play height from bottom
      */
-    private static final float PLAY_HEIGHT_RATIO = 0.15f;
+    private static final float LOGO_HEIGHT_RATIO = 0.68f;
+    /**
+     * Ratio of play height from bottom
+     */
+    private static final float PLAY_HEIGHT_RATIO = 0.4f;
+    /**
+     * Ratio of play height from bottom
+     */
+    private static final float EDITOR_HEIGHT_RATIO = 0.33f;
     /**
      * Ratio of setting height from bottom
      */
-    private static final float SETTING_HEIGHT_RATIO = 0.15f;
+    private static final float SETTING_HEIGHT_RATIO = 0.26f;
     /**
      * Ratio of about us height from bottom
      */
-    private static final float ABOUT_US_HEIGHT_RATIO = 0.15f;
+    private static final float ABOUT_US_HEIGHT_RATIO = 0.19f;
     /**
      * Ratio of about us height from bottom
      */
-    private static final float EXIT_HEIGHT_RATIO = 0.15f;
-
-    /**
-     * What level was selected by the player
-     */
-    private int levelSelected;
+    private static final float EXIT_HEIGHT_RATIO = 0.12f;
 
     /**
      * Returns true if all assets are loaded and the player is ready to go.
      *
      * @return true if the player is ready to go
      */
-    public boolean isReady() {
+    public boolean isPlayReady() {
         return pressPlayState == 2;
+    }
+
+    /**
+     * Returns true if all assets are loaded and the player is ready to go level editor.
+     *
+     * @return true if the player is ready to go level editor
+     */
+    public boolean isEditorReady() {
+        return pressEditorState == 2;
     }
 
     /**
@@ -205,18 +224,12 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
     public void gatherAssets(AssetDirectory directory) {
         background = directory.getEntry("background", Texture.class);
         background.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        logo = directory.getEntry("menu-logo", Texture.class);
         playButton = directory.getEntry("play", Texture.class);
+        editorButton = directory.getEntry("level-editor", Texture.class);
         settingButton = directory.getEntry("setting", Texture.class);
         exitButton = directory.getEntry("exit", Texture.class);
         aboutUsButton = directory.getEntry("about-us", Texture.class);
-    }
-
-    public int getLevelSelected() {
-        return levelSelected;
-    }
-
-    public void setLevelSelected(int levelSelected) {
-        this.levelSelected = levelSelected;
     }
 
     /**
@@ -244,21 +257,24 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
         canvas.begin(GameCanvas.DrawPass.SPRITE);
         Color alphaTint = Color.WHITE;
         canvas.drawOverlay(background, alphaTint, true);
-//        canvas.draw(background, 0, 0);
-        Color colorplay = new Color(142.0f / 255.0f, 157.0f / 255.0f, 189.0f / 255.0f, 1.0f);
-        Color colorother = new Color(89.0f / 255.0f, 18.0f / 255.0f, 13.0f / 255.0f, 1.0f);
-        Color tintPlay = (pressPlayState == 1 ? colorplay : Color.WHITE);
+        canvas.draw(logo, alphaTint, logo.getWidth() / 2, logo.getHeight() / 2,
+                centerX, canvas.getHeight() * LOGO_HEIGHT_RATIO, 0, LOGO_SCALE * scale, LOGO_SCALE * scale);
+        Color color = new Color(142.0f / 255.0f, 157.0f / 255.0f, 189.0f / 255.0f, 1.0f);
+        Color tintPlay = (pressPlayState == 1 ? color : Color.WHITE);
         canvas.draw(playButton, tintPlay, playButton.getWidth() / 2, playButton.getHeight() / 2,
-                centerX, centerY, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
-        Color tintSetting = (pressSettingState == 1 ? colorother : Color.WHITE);
+                centerX, centerYPlay, 0, BUTTON_SCALE* scale, BUTTON_SCALE * scale);
+        Color tintEditor = (pressEditorState == 1 ? color : Color.WHITE);
+        canvas.draw(editorButton, tintEditor, editorButton.getWidth() / 2, editorButton.getHeight() / 2,
+                centerX, centerYEditor, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
+        Color tintSetting = (pressSettingState == 1 ? color : Color.WHITE);
         canvas.draw(settingButton, tintSetting, settingButton.getWidth() / 2, settingButton.getHeight() / 2,
-                centerXSetting, centerYSetting, 0, BUTTON_SCALE_SETTING * scale, BUTTON_SCALE_SETTING * scale);
-        Color tintAboutUs = (pressAboutUsState == 1 ? colorother : Color.WHITE);
+                centerX, centerYSetting, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
+        Color tintAboutUs = (pressAboutUsState == 1 ? color : Color.WHITE);
         canvas.draw(aboutUsButton, tintAboutUs, aboutUsButton.getWidth() / 2, aboutUsButton.getHeight() / 2,
-                centerXAboutUs, centerYAboutUs, 0, BUTTON_SCALE_ABOUT_US * scale, BUTTON_SCALE_ABOUT_US * scale);
-        Color tintExit = (pressExitState == 1 ? colorother : Color.WHITE);
+                centerX, centerYAboutUs, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
+        Color tintExit = (pressExitState == 1 ? color : Color.WHITE);
         canvas.draw(exitButton, tintExit, exitButton.getWidth() / 2, exitButton.getHeight() / 2,
-                centerXExit, centerYExit, 0, BUTTON_SCALE_EXIT * scale, BUTTON_SCALE_EXIT * scale);
+                centerX, centerYExit, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
         canvas.end();
     }
 
@@ -277,19 +293,13 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
             update(delta);
             draw();
 
-            if (Gdx.input.isKeyPressed(Input.Keys.L)) {
-                observer.exitScreen(this, GO_EDITOR);
-            }
-
-            if (Gdx.input.isKeyPressed(Input.Keys.T)) {
-                setLevelSelected(0);
-                observer.exitScreen(this, GO_PLAY);
-            }
 
             // We are are ready, notify our listener
-            if (isReady() && observer != null) {
-                setLevelSelected(2);
+            if (isPlayReady() && observer != null) {
                 observer.exitScreen(this, GO_PLAY);
+            }
+            if (isEditorReady() && observer != null) {
+                observer.exitScreen(this, GO_EDITOR);
             }
             // Settings are ready, notify our listener
             if (isSettingReady() && observer != null) {
@@ -321,14 +331,14 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
         float sy = ((float) height) / STANDARD_HEIGHT;
         scale = (sx < sy ? sx : sy);
 
-        centerY = (int) (PLAY_HEIGHT_RATIO * height);
+        centerX = width / 4;
+
+        centerYPlay = (int) (PLAY_HEIGHT_RATIO * height);
+        centerYEditor = (int) (EDITOR_HEIGHT_RATIO * height);
         centerYSetting = (int) (SETTING_HEIGHT_RATIO * height);
         centerYAboutUs = (int) (ABOUT_US_HEIGHT_RATIO * height);
         centerYExit = (int) (EXIT_HEIGHT_RATIO * height);
-        centerX = width / 2;
-        centerXSetting = width / 32 * 21;
-        centerXAboutUs = width / 32 * 24;
-        centerXExit = width / 32 * 27;
+
         heightY = height;
     }
 
@@ -360,6 +370,7 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
         // Useless if called in outside animation loop
         active = true;
         pressPlayState = 0;
+        pressEditorState = 0;
         pressSettingState = 0;
         pressAboutUsState = 0;
         pressExitState = 0;
@@ -419,7 +430,8 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
      * @return whether to hand the event to other listeners.
      */
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        if (playButton == null || pressPlayState == 2 || pressSettingState == 2 || pressAboutUsState == 2) {
+        if (playButton == null || pressPlayState == 2 || pressEditorState == 2 ||
+                pressSettingState == 2 || pressAboutUsState == 2) {
             return true;
         }
 
@@ -429,27 +441,34 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
         //System.out.printf("%d, %d", screenX, screenY);
 
         // TODO: Fix scaling
-        // Play button is a circle.
-        float radiusPlay = BUTTON_SCALE * scale * playButton.getWidth() / 2.0f;
-        float distPlay = (screenX - centerX) * (screenX - centerX) + (screenY - centerY) * (screenY - centerY);
-        if (distPlay < radiusPlay * radiusPlay) {
+        // Button are rectangles with same x-coordinate and shapes.
+        float x = BUTTON_SCALE * scale * playButton.getWidth() / 2;
+        float distX = Math.abs(screenX - centerX);
+        float y = BUTTON_SCALE * scale * playButton.getHeight() / 2;
+
+        // Play button is a rectangle.
+        float distYPlay = Math.abs(screenY - centerYPlay);
+        if (distX < x && distYPlay < y) {
             pressPlayState = 1;
         }
-        // Setting button is a circle.
-        float radiusSetting = BUTTON_SCALE_SETTING * scale * settingButton.getWidth() / 2.0f;
-        float distSetting = (screenX - centerXSetting) * (screenX - centerXSetting) + (screenY - centerYSetting) * (screenY - centerYSetting);
-        if (distSetting < radiusSetting * radiusSetting) {
+        // Editor button is a rectangle.
+        float distYEditor = Math.abs(screenY - centerYEditor);
+        if (distX < x && distYEditor < y) {
+            pressEditorState = 1;
+        }
+        // Setting button is a rectangle.
+        float distYSetting = Math.abs(screenY - centerYSetting);
+        if (distX < x && distYSetting < y) {
             pressSettingState = 1;
         }
-        // About Us button is a circle.
-        float radiusAboutUs = BUTTON_SCALE_ABOUT_US * scale * aboutUsButton.getWidth() / 2.0f;
-        float distAboutUs = (screenX - centerXAboutUs) * (screenX - centerXAboutUs) + (screenY - centerYAboutUs) * (screenY - centerYAboutUs);
-        if (distAboutUs < radiusAboutUs * radiusAboutUs) {
+        // About Us button is a rectangle.
+        float distYAboutUs = Math.abs(screenY - centerYAboutUs);
+        if (distX < x && distYAboutUs < y) {
             pressAboutUsState = 1;
         }
-        float radiusExit = BUTTON_SCALE_EXIT * scale * exitButton.getWidth() / 2.0f;
-        float distExit = (screenX - centerXExit) * (screenX - centerXExit) + (screenY - centerYExit) * (screenY - centerYExit);
-        if (distExit < radiusExit * radiusExit) {
+        // Exit button is a rectangle.
+        float distYExit = Math.abs(screenY - centerYExit);
+        if (distX < x && distYExit < y) {
             pressExitState = 1;
         }
 
@@ -470,6 +489,10 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         if (pressPlayState == 1) {
             pressPlayState = 2;
+            return false;
+        }
+        if (pressEditorState == 1) {
+            pressEditorState = 2;
             return false;
         }
         if (pressSettingState == 1) {

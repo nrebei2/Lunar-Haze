@@ -4,14 +4,17 @@ import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.fsm.StateMachine;
 import com.badlogic.gdx.ai.steer.behaviors.Face;
 import com.badlogic.gdx.ai.steer.behaviors.FollowPath;
+import com.badlogic.gdx.ai.steer.behaviors.PrioritySteering;
 import com.badlogic.gdx.ai.steer.utils.Path;
 import com.badlogic.gdx.ai.steer.utils.paths.LinePath;
 import com.badlogic.gdx.ai.utils.Collision;
 import com.badlogic.gdx.ai.utils.Ray;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import infinityx.lunarhaze.ai.*;
 import infinityx.lunarhaze.models.GameObject;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.entity.Enemy;
@@ -104,12 +107,20 @@ public class EnemyController {
      */
     public Vector2 patrolTarget;
 
+//    public CombinedContext combinedContext;
+//
+//    public ContextSteering combinedSteering;
+//
+//    public PrioritySteering battleSB;
+
+
+
     /**
      * Creates an EnemyController for the enemy with the given id.
      *
      * @param enemy The enemy being controlled by this AIController
      */
-    public EnemyController(Enemy enemy) {
+    public EnemyController(final Enemy enemy) {
         patrolTarget = new Vector2();
         this.targetPos = new Vector2();
         this.enemy = enemy;
@@ -122,11 +133,7 @@ public class EnemyController {
         commRay.addIgnores(GameObject.ObjectType.HITBOX, GameObject.ObjectType.WEREWOLF);
 
 
-        // Dummy path
-        Array<Vector2> waypoints = new Array<>();
-        waypoints.add(new Vector2());
-        waypoints.add(new Vector2());
-        followPathSB = new FollowPath(enemy, new LinePath(waypoints), 0.05f, 0.5f);
+
     }
 
     /**
@@ -134,14 +141,81 @@ public class EnemyController {
      *
      * @param container holding surrounding model objects
      */
-    public void populate(LevelContainer container) {
+    public void populate(final LevelContainer container) {
         target = container.getPlayer();
         this.raycastCollision = new Box2DRaycastCollision(container.getWorld(), raycast);
         this.communicationCollision = new Box2DRaycastCollision(container.getWorld(), commRay);
         this.pathfinder = container.pathfinder;
 
+        // Dummy path
+        Array<Vector2> waypoints = new Array<>();
+        waypoints.add(new Vector2());
+        waypoints.add(new Vector2());
+        followPathSB = new FollowPath(enemy, new LinePath(waypoints), 0.05f, 0.5f);
+//        followPathSB = new WeightedFollowPath(enemy, new LinePath(waypoints), 0.05f, 0.5f, target, 2);
+//
         // Steering behaviors
-        this.faceSB = new Face<>(enemy).setAlignTolerance(MathUtils.degreesToRadians * 10);
+        this.faceSB = new Face<>(enemy)
+                .setAlignTolerance(MathUtils.degreesToRadians * 10)
+                .setDecelerationRadius(MathUtils.degreesToRadians * 20);
+//
+//        this.combinedContext = new CombinedContext(enemy);
+//        ContextBehavior attack = new ContextBehavior(enemy, true) {
+//            @Override
+//            protected ContextMap calculateRealMaps(ContextMap map) {
+//                map.setZero();
+//                Vector2 targetDir = target.getPosition().sub(enemy.getPosition()).nor();
+//                for (int i = 0 ; i<map.getResolution(); i++){
+//                    map.interestMap[i] = map.dirFromSlot(i).dot(targetDir);
+//                }
+//
+//                return map;
+//            }
+//        };
+//
+//        ContextBehavior strafe = new ContextBehavior(enemy, true) {
+//            @Override
+//            protected ContextMap calculateRealMaps(ContextMap map) {
+//                map.setZero();
+//                Vector2 targetDir = target.getPosition().sub(enemy.getPosition()).nor();
+//                for (int i = 0 ; i<map.getResolution(); i++){
+//                    map.interestMap[i] = (float) Math.pow(1 - Math.max(0, map.dirFromSlot(i).dot(targetDir)), 2);
+//                }
+//
+//                return map;
+//            }
+//        };
+//
+//        ContextBehavior seperation = new ContextBehavior(enemy, true) {
+//            @Override
+//            protected ContextMap calculateRealMaps(ContextMap map) {
+//                map.setZero();
+//                for (Enemy en : container.getEnemies()) {
+//                    Vector2 dir = en.getPosition().sub(enemy.getPosition());
+//                    for (int i = 0; i < map.getResolution(); i++) {
+//                        map.dangerMap[i] += dir.dot(map.dirFromSlot(i));
+//                    }
+//                }
+//                float max = Integer.MIN_VALUE;
+//                for (int i = 0; i < map.getResolution(); i++){
+//                    if (map.dangerMap[i] > max) {
+//                        max = map.dangerMap[i];
+//                    }
+//                }
+//                for (int i = 0; i < map.getResolution(); i++) {
+//                    map.dangerMap[i] /= max;
+//                }
+//
+//                return map;
+//            }
+//        };
+//        this.combinedContext.add(attack);
+//        this.combinedContext.add(strafe);
+//        this.combinedContext.add(seperation);
+//        //Resolution is set to 8 to represent the 8 directions in which enemies can move
+//        this.combinedSteering = new ContextSteering(enemy, combinedContext, 8);
+//
+//        this.battleSB = new PrioritySteering<>(enemy).add(followPathSB).add(combinedSteering);
     }
 
     /**
@@ -150,7 +224,7 @@ public class EnemyController {
      * @param delta time between last frame in seconds
      */
     public void update(LevelContainer container, float delta) {
-        if (enemy.getHp() <= 0) container.removeEnemy(enemy);
+        if (enemy.hp <= 0) container.removeEnemy(enemy);
 
         //if (inBattle && !stateMachine.isInState(EnemyState.ALERT)) {
         //    stateMachine.changeState(EnemyState.ALERT);
@@ -223,8 +297,10 @@ public class EnemyController {
         );
     }
 
-    /**used to find ray collsion between this enemy and another enemy*/
-    public void findCollision(Enemy target){
+    /**
+     * used to find ray collsion between this enemy and another enemy
+     */
+    public void findCollision(Enemy target) {
         communicationCollision.findCollision(commCache, new Ray<>(enemy.getPosition(), target.getPosition()));
     }
 

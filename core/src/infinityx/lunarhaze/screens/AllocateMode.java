@@ -9,13 +9,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.controllers.GameplayController;
-import infinityx.lunarhaze.combat.PlayerAttackHandler;
-import infinityx.lunarhaze.controllers.PlayerController;
-import infinityx.lunarhaze.models.entity.Werewolf;
-import infinityx.lunarhaze.controllers.GameplayController;
 import infinityx.lunarhaze.controllers.PlayerController;
 import infinityx.lunarhaze.graphics.GameCanvas;
-import infinityx.lunarhaze.models.entity.Werewolf;
 import infinityx.util.ScreenObservable;
 
 /**
@@ -321,7 +316,6 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
      * Update the status of this menu.
      */
     private void update(float delta) {
-
     }
 
     /**
@@ -383,7 +377,7 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
             Texture currButton = addAttackPowButton;
             buttonCenterY = centerY1;
             icon = attack_pow_icon;
-            stat = (int) (playerController.getPlayer().getAttackPower() / 0.1);
+            stat = (int) (playerController.getPlayer().attackDamage / 0.1);
         } else if (s == "Attack Range") {
             Texture currButton = addAttackRanButton;
             buttonCenterY = centerY2;
@@ -393,7 +387,7 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
             Texture currButton = addHpButton;
             buttonCenterY = centerY0;
             icon = heart_icon;
-            stat = playerController.getPlayer().getHp();
+            stat = (int) playerController.getPlayer().hp;
         }
 
         canvas.drawText("" + stat,
@@ -465,21 +459,19 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
             update(delta);
             draw();
 
-            if (pressStateHp == 2 && playerController.getPlayer().getHp() < Werewolf.MAX_HP) {
+            if (pressStateHp == 2) {
                 playerController.allocateHp();
                 pressStateHp = 0;
-            } else if (pressStateAttackPow == 2 && playerController.getPlayer().getAttackPower() < Werewolf.MAX_POWER) {
+            } else if (pressStateAttackPow == 2) {
                 playerController.allocateAttackPow();
                 pressStateAttackPow = 0;
-            } else if (pressStateAttackRan == 2 && playerController.getPlayer().getAttackRange() < Werewolf.MAX_RANGE) {
+            } else if (pressStateAttackRan == 2) {
                 playerController.allocateAttackRange();
                 pressStateAttackRan = 0;
             }
             if (playerController.getPlayer().getMoonlightCollected() <= 0 && observer != null) {
                 active = false;
                 playerController.setAllocateReady(true);
-                PlayerAttackHandler.setAttackPower(playerController.getPlayer().getAttackPower());
-                PlayerAttackHandler.setAttackRange(playerController.getPlayer().getAttackRange());
                 gameMode.getGameplayController().setPhase(GameplayController.Phase.BATTLE);
                 observer.exitScreen(this, GO_PLAY);
             }

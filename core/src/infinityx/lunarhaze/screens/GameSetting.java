@@ -12,7 +12,17 @@ public class GameSetting {
     private static final String SOUND_VOLUME = "sound";
     private static final String MOVE_UP = "move_up";
     private static final String SETTING_NAME = "default";
+    private Preferences preferences;
 
+    public GameSetting() {
+        preferences = Gdx.app.getPreferences(SETTING_NAME);
+        if (!preferences.contains(MUSIC_ENABLED)) {
+            setMusicEnabled(true);
+        }
+        if (!preferences.contains(SOUND_ENABLED)) {
+            setSoundEnabled(true);
+        }
+    }
 
     protected Preferences getPrefs() {
         return Gdx.app.getPreferences(SETTING_NAME);

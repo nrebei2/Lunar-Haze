@@ -65,20 +65,21 @@ public class MultiShapeObstacle extends SimpleObstacle {
 
     @Override
     public void setScale(float s) {
-        super.setScale(s);
         for (ObjectMap.Entry<String, ShapeCache> entry : geometries) {
             ShapeCache cache = entry.value;
             switch (cache.shape.getType()) {
+                // Resize by new scale / old scale
                 case Polygon:
-                    resizeBox(entry.key, s * cache.width, s * cache.height, cache.offset.scl(s));
+                    resizeBox(entry.key, s * cache.width / scale, s * cache.height / scale, cache.offset.scl(s));
                     break;
                 case Circle:
-                    resizeCircle(entry.key, s * cache.width / 2, cache.offset.scl(s));
+                    resizeCircle(entry.key, s * cache.width / (2 * scale), cache.offset.scl(s / scale));
                     break;
                 default:
                     break;
             }
         }
+        super.setScale(s);
     }
 
     /**
@@ -97,6 +98,19 @@ public class MultiShapeObstacle extends SimpleObstacle {
 
         createFixture(name, cache);
 
+    }
+
+    /**
+     * Reset the polygon vertices in the shape to match the dimension.
+     */
+    protected void resizeBox(String name, float width) {
+        if (!geometries.containsKey(name)) {
+            Gdx.app.error("MultiShapeObstacle", "Cannot resize a shape which doesnt exist", new IllegalStateException());
+            return;
+        }
+
+        ShapeCache cache = geometries.get(name);
+        resizeBox(name, width, cache.height, cache.offset, cache.angle);
     }
 
     /**

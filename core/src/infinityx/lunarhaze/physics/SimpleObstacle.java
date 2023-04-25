@@ -60,7 +60,7 @@ public abstract class SimpleObstacle extends Obstacle {
     /**
      * Sets the scale of the body. This should further scale any shapes attached to this body.
      *
-     * @param s scale on x and y-axis
+     * @param s scale on x and y-axis. A scale of 1 resets the body back to the original transform.
      */
     protected void setScale(float s) {
         scale = s;

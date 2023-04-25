@@ -19,10 +19,10 @@ import imgui.type.ImBoolean;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.controllers.LevelParser;
 import infinityx.lunarhaze.controllers.LevelSerializer;
-import infinityx.lunarhaze.models.Board;
-import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.graphics.ImGuiImplGLES2;
+import infinityx.lunarhaze.models.Board;
+import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.util.ScreenObservable;
 
 import java.util.ArrayList;
@@ -48,7 +48,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     private Board board;
 
-    /** Size of the board (e.g. 10x10 would be [10, 10]) */
+    /**
+     * Size of the board (e.g. 10x10 would be [10, 10])
+     */
     private int[] boardSize;
 
     private ImFont font;
@@ -68,20 +70,30 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     private ImGuiImplGlfw imGuiGlfw;
     private ImGuiImplGLES2 imGuiGl;
 
-    /** Boolean that represents whether our selection is moonlight or not */
+    /**
+     * Boolean that represents whether our selection is moonlight or not
+     */
     // TODO: make moonlight part of selected instead
     private boolean placingMoonlight;
 
-    /** Whether to display the File->New popup to select board size */
+    /**
+     * Whether to display the File->New popup to select board size
+     */
     private boolean showNewBoardWindow;
 
-    /** Whether to display the Enemy->Enemy X popup to select patrol path, etc */
+    /**
+     * Whether to display the Enemy->Enemy X popup to select patrol path, etc
+     */
     private boolean showEnemyControllerWindow;
 
-    /** Whether the player has been placed on the board */
+    /**
+     * Whether the player has been placed on the board
+     */
     private boolean playerPlaced;
 
-    /** List of moonlight point lights placed on level (for modifying color after placing lights) */
+    /**
+     * List of moonlight point lights placed on level (for modifying color after placing lights)
+     */
     private ArrayList<PointLight> pointLights;
 
     /**
@@ -178,27 +190,43 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     private final Vector2 mouseBoard = new Vector2();
 
-    /** Float holding ambient lighting during stealth phase */
+    /**
+     * Float holding ambient lighting during stealth phase
+     */
     private float[] stealthLighting;
 
-    /** Float holding ambient lighting during battle phase */
+    /**
+     * Float holding ambient lighting during battle phase
+     */
     private float[] battleLighting;
 
-    /** Float holding moonlight PointLight color */
+    /**
+     * Float holding moonlight PointLight color
+     */
     private float[] moonlightLighting;
 
-    /** Holds a reference to the enemies, so that the enemy menu can let you modify them */
+    /**
+     * Holds a reference to the enemies, so that the enemy menu can let you modify them
+     */
     private ArrayList<infinityx.lunarhaze.models.entity.Enemy> enemies;
 
-    /** Current enemy being changed in the Enemy->Enemy x new window */
+    /**
+     * Current enemy being changed in the Enemy->Enemy x new window
+     */
     private infinityx.lunarhaze.models.entity.Enemy currEnemyControlled;
 
-    /** Bottom left patrol corner */
+    /**
+     * Bottom left patrol corner
+     */
     private int[] patrol1;
-    /** Top right patrol corner */
+    /**
+     * Top right patrol corner
+     */
     private int[] patrol2;
 
-    /** When false, display the stealth ambient lighting, when true, display the battle ambient lighting */
+    /**
+     * When false, display the stealth ambient lighting, when true, display the battle ambient lighting
+     */
     private boolean showBattleLighting;
 
     public EditorMode(GameCanvas canvas) {
@@ -237,8 +265,10 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         selected = availableSelections.get(currentSelectionIndex);
     }
 
-    /** Places a tile of the selected type at the current mouse position on the game board
-     *  Invariant: selected is a Tile */
+    /**
+     * Places a tile of the selected type at the current mouse position on the game board
+     * Invariant: selected is a Tile
+     */
     private void placeTile() {
         // Enforce invariant
         assert selected instanceof Tile;
@@ -253,9 +283,11 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     }
 
 
-    /** Places the currently selected object (Tile, Player, SceneObject, or Enemy) at the current mouse
-     *  position on the game board, handling each object type with the appropriate method (placeTile(),
-     *  placeSceneObject(), etc.). */
+    /**
+     * Places the currently selected object (Tile, Player, SceneObject, or Enemy) at the current mouse
+     * position on the game board, handling each object type with the appropriate method (placeTile(),
+     * placeSceneObject(), etc.).
+     */
     private void placeSelection() {
         if (selected instanceof Tile) {
             board.removePreview();
@@ -271,8 +303,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         }
     }
 
-    /** Creates a new enemy of the selected type at the current mouse position on the game board,
-     *  adding it to the level's list of enemies and storing a reference to it in the currEnemyControlled variable.
+    /**
+     * Creates a new enemy of the selected type at the current mouse position on the game board,
+     * adding it to the level's list of enemies and storing a reference to it in the currEnemyControlled variable.
      */
     private void placeEnemy() {
         Enemy e = (Enemy) selected;
@@ -280,10 +313,12 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         enemies.add(currEnemyControlled);
     }
 
-    /** Places a moonlight tile at the current mouse position on the game board, and creates a new PointLight at
-     *  the tile position. Note that this PointLight is not serialized, and the LevelSerializer
-     *  searches the board to find all the tiles where board.isLit is true, and the PointLights are only created
-     *  so that they can be visualized in the LevelEditor. */
+    /**
+     * Places a moonlight tile at the current mouse position on the game board, and creates a new PointLight at
+     * the tile position. Note that this PointLight is not serialized, and the LevelSerializer
+     * searches the board to find all the tiles where board.isLit is true, and the PointLights are only created
+     * so that they can be visualized in the LevelEditor.
+     */
     private void placeMoonlightTile() {
         int x = (int) mouseBoard.x;
         int y = (int) mouseBoard.y;
@@ -299,8 +334,10 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
     }
 
-    /** Places a scene object of the selected type at the current mouse position on the game board
-     *  Invariant: selected is a SceneObject */
+    /**
+     * Places a scene object of the selected type at the current mouse position on the game board
+     * Invariant: selected is a SceneObject
+     */
     private void placeSceneObject() {
         // Enforce invariant
         assert selected instanceof SceneObject;
@@ -313,13 +350,17 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         );
     }
 
-    /** Tests the level using the Board and LevelContainer references. Switches screens to GameMode. */
+    /**
+     * Tests the level using the Board and LevelContainer references. Switches screens to GameMode.
+     */
     private void testLevel() {
         level.setBoard(board);
         observer.exitScreen(this, GO_PLAY);
     }
 
-    public LevelContainer getLevel() { return level; }
+    public LevelContainer getLevel() {
+        return level;
+    }
 
     /**
      * Called when this screen becomes the current screen for a {@link com.badlogic.gdx.Game}.
@@ -637,7 +678,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
     // IMGUI FUNCTIONS
 
-    /** Popup window for tile selection using ImGui */
+    /**
+     * Popup window for tile selection using ImGui
+     */
     private void createTileMenu() {
         ImGui.getStyle().setFramePadding(15, 15);
         ImGui.begin("Tile Selection");
@@ -659,7 +702,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         ImGui.end();
     }
 
-    /** Popup window for object selection using ImGui */
+    /**
+     * Popup window for object selection using ImGui
+     */
     private void createObjectMenu() {
         ImGui.getStyle().setFramePadding(15, 15);
         ImGui.begin("Object Selection");
@@ -681,7 +726,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         ImGui.end();
     }
 
-    /** Toolbar at top of window with File, Edit, Enemy, Objects, View */
+    /**
+     * Toolbar at top of window with File, Edit, Enemy, Objects, View
+     */
     private void createToolbar() {
         if (ImGui.beginMainMenuBar()) {
             createFileMenu();
@@ -693,7 +740,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         }
     }
 
-    /** File menu with New, Save, Load, Test and Exit */
+    /**
+     * File menu with New, Save, Load, Test and Exit
+     */
     private void createFileMenu() {
         if (ImGui.beginMenu("   File   ")) {
             if (ImGui.menuItem("New")) {
@@ -737,7 +786,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         }
     }*/
 
-    /** View menu with Toggle Stealth / Battle Lighting */
+    /**
+     * View menu with Toggle Stealth / Battle Lighting
+     */
     private void createViewMenu() {
         if (ImGui.beginMenu("View")) {
             if (ImGui.menuItem("Toggle Stealth / Battle Lighting")) {
@@ -747,7 +798,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         }
     }
 
-    /** Enemy menu with options for each enemy */
+    /**
+     * Enemy menu with options for each enemy
+     */
     private void createEnemyMenu() {
         if (ImGui.beginMenu("   Enemy   ")) {
 
@@ -763,7 +816,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         }
     }
 
-    /** Popup window for creating new board and setting board size */
+    /**
+     * Popup window for creating new board and setting board size
+     */
     private void createNewBoardWindow() {
         ImGui.begin("New Board", new ImBoolean(true));
 
@@ -787,7 +842,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         ImGui.end();
     }
 
-    /** Popup window for controlling enemy and setting patrols */
+    /**
+     * Popup window for controlling enemy and setting patrols
+     */
     private void createEnemyControllerWindow() {
         ImGui.begin("Enemy Controller", new ImBoolean(true));
         ImGui.text("Enter patrol region:");
@@ -806,7 +863,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         ImGui.end();
     }
 
-    /** Brush selection window for placing moonlight, werewolf, enemy */
+    /**
+     * Brush selection window for placing moonlight, werewolf, enemy
+     */
     private void createBrushSelection() {
         ImGui.getStyle().setFramePadding(10, 10);
         ImGui.begin("Brush Select");
@@ -831,7 +890,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         ImGui.end();
     }
 
-    /** Controller for ambient lighting json values */
+    /**
+     * Controller for ambient lighting json values
+     */
     private void createAmbientLightingMenu() {
         ImGui.begin("Lighting");
         ImGui.colorEdit4("Stealth Phase Lighting", stealthLighting);

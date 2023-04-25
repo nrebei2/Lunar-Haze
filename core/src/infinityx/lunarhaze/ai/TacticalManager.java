@@ -4,7 +4,6 @@ import com.badlogic.gdx.ai.fsm.StateMachine;
 import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
-import com.badlogic.gdx.ai.utils.Ray;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
@@ -18,21 +17,29 @@ import infinityx.lunarhaze.models.entity.Werewolf;
 
 import java.util.Random;
 
-/**This class used to send instructions to each enemy in the level. It should handle strategic decisions in the
- * battle phase including flank or evade for example*/
+/**
+ * This class used to send instructions to each enemy in the level. It should handle strategic decisions in the
+ * battle phase including flank or evade for example
+ */
 public class TacticalManager implements Telegraph {
 
-    /** The target of an enemy*/
-    private Werewolf target;
+    /**
+     * The target of an enemy
+     */
+    private final Werewolf target;
     Random rand = new Random();
 
-    /** The list of current active enemies*/
-    private Array<Enemy> activeEnemies;
+    /**
+     * The list of current active enemies
+     */
+    private final Array<Enemy> activeEnemies;
 
-    /** A map of enemies to their corresponding controllers*/
-    private ObjectMap<Enemy, EnemyController> enemyMap;
+    /**
+     * A map of enemies to their corresponding controllers
+     */
+    private final ObjectMap<Enemy, EnemyController> enemyMap;
 
-    private LevelContainer container;
+    private final LevelContainer container;
 
 
     /**
@@ -71,7 +78,7 @@ public class TacticalManager implements Telegraph {
 
                 // Calculate a flanking position relative to the target
                 /* TODO: remove new  (make own rotate Deg)*/
-                Vector2 flankingPosition = target.getPosition().cpy().add(rotateDegreeX(enemyAngle, 1,0),rotateDegreeY(enemyAngle, 1,0) );
+                Vector2 flankingPosition = target.getPosition().cpy().add(rotateDegreeX(enemyAngle, 1, 0), rotateDegreeY(enemyAngle, 1, 0));
                 if (container.pathfinder.map.getNodeAtWorld(flankingPosition.x, flankingPosition.y) == null) {
                     continue;
                 }
@@ -83,14 +90,17 @@ public class TacticalManager implements Telegraph {
             i++;
         }
     }
-    /**Alert nearby allies that target is spotted*/
+
+    /**
+     * Alert nearby allies that target is spotted
+     */
     public void alertAllies(EnemyController entity) {
         for (Enemy enemy : activeEnemies) {
             EnemyController control = enemyMap.get(enemy);
             entity.findCollision(control.getEnemy());
             // FIXME: Should only call an enemy that is visible from entity.enemy
             if (control != entity && (entity.getEnemy().getPosition()).cpy().dst(control.getEnemy().getPosition()) <= 5f
-                && entity.communicationCollision.hitObject == control.getEnemy()) {
+                    && entity.communicationCollision.hitObject == control.getEnemy()) {
                 System.out.println("alerting");
                 StateMachine<EnemyController, EnemyState> machine = control.getStateMachine();
                 machine.changeState(EnemyState.ALERT);
@@ -108,34 +118,38 @@ public class TacticalManager implements Telegraph {
         }
         return true;
     }
-    /** Rotate a vector by degree and returns the x component
-     *
+
+    /**
+     * Rotate a vector by degree and returns the x component
+     * <p>
      * Params:
      * degree - degree to rotate
      * x - x component of vector
      * y - y component of vector
-     * */
-    public float rotateDegreeX (float degree, float x, float y) {
+     */
+    public float rotateDegreeX(float degree, float x, float y) {
 
         float radians = degree * MathUtils.degreesToRadians;
-        float cos = (float)Math.cos(radians);
-        float sin = (float)Math.sin(radians);
+        float cos = (float) Math.cos(radians);
+        float sin = (float) Math.sin(radians);
 
         float newX = x * cos - y * sin;
         return newX;
     }
-    /** Rotate a vector by degree and returns the y component
-     *
+
+    /**
+     * Rotate a vector by degree and returns the y component
+     * <p>
      * Params:
      * degree - degree to rotate
      * x - x component of vector
      * y - y component of vector
-     * */
+     */
     public float rotateDegreeY(float degree, float x, float y) {
 
         float radians = degree * MathUtils.degreesToRadians;
-        float cos = (float)Math.cos(radians);
-        float sin = (float)Math.sin(radians);
+        float cos = (float) Math.cos(radians);
+        float sin = (float) Math.sin(radians);
 
         float newY = x * sin + y * cos;
 

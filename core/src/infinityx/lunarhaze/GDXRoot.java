@@ -38,12 +38,18 @@ public class GDXRoot extends Game implements ScreenObserver {
      * Menu Screen
      */
     private MenuMode menu;
-
+    /**
+     * Level Selection Screen
+     */
+    private LevelSelectionMode selection;
     /**
      * Setting Screen
      */
     private SettingMode setting;
-
+    /**
+     * Setting Screen
+     */
+    private GameSetting setting_preference;
     /**
      * About us Screen
      */
@@ -91,7 +97,9 @@ public class GDXRoot extends Game implements ScreenObserver {
         loading = new LoadingMode("assets.json", canvas, 1);
         game = new GameMode(canvas);
         menu = new MenuMode(canvas);
-        setting = new SettingMode(canvas, this);
+        selection = new LevelSelectionMode(canvas);
+        setting_preference = new GameSetting();
+        setting = new SettingMode(canvas, this, setting_preference);
         aboutUs = new AboutUsMode(canvas);
         pause = new PauseMode(canvas);
         allocate = new AllocateMode(canvas, game);
@@ -101,6 +109,7 @@ public class GDXRoot extends Game implements ScreenObserver {
         loading.setObserver(this);
         game.setObserver(this);
         menu.setObserver(this);
+        selection.setObserver(this);
         setting.setObserver(this);
         aboutUs.setObserver(this);
         pause.setObserver(this);
@@ -121,6 +130,7 @@ public class GDXRoot extends Game implements ScreenObserver {
         game.dispose();
         allocate.dispose();
         menu.dispose();
+        selection.dispose();
         setting.dispose();
         aboutUs.dispose();
         pause.dispose();
@@ -165,6 +175,7 @@ public class GDXRoot extends Game implements ScreenObserver {
             // All assets are now loaded
             directory = loading.getAssets();
             menu.gatherAssets(directory);
+            selection.gatherAssets(directory);
             setting.gatherAssets(directory);
             aboutUs.gatherAssets(directory);
             pause.gatherAssets(directory);
@@ -189,10 +200,7 @@ public class GDXRoot extends Game implements ScreenObserver {
                     setScreen(editor);
                     break;
                 case MenuMode.GO_PLAY:
-                    game.setLevel(menu.getLevelSelected());
-                    game.setupLevel();
-                    setScreen(game);
-                    //setScreen(editor);
+                    setScreen(selection);
                     break;
                 case MenuMode.GO_SETTING:
                     previousScreen = "menu";
@@ -203,6 +211,17 @@ public class GDXRoot extends Game implements ScreenObserver {
                     break;
                 case MenuMode.GO_EXIT:
                     Gdx.app.exit();
+                    break;
+            }
+        } else if (screen == selection) {
+            switch (exitCode){
+                case LevelSelectionMode.GO_Play:
+                    game.setLevel(selection.getLevelSelected());
+                    game.setupLevel();
+                    setScreen(game);
+                    break;
+                case LevelSelectionMode.GO_BACK:
+                    setScreen(menu);
                     break;
             }
         } else if (screen == setting) {
@@ -256,7 +275,7 @@ public class GDXRoot extends Game implements ScreenObserver {
                 System.out.println("Exit code switch to GO_PLAY");
                 game.setGameplayController(allocate.getGameplayController());
                 System.out.println("Current phase is " + game.getGameplayController().getPhase());
-                System.out.println("Current hp is " + game.getGameplayController().getPlayerController().getPlayer().getHp());
+                System.out.println("Current hp is " + game.getGameplayController().getPlayerController().getPlayer().hp);
                 setScreen(game);
             }
         } else if (screen == editor) {

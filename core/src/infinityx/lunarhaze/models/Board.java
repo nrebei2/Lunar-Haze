@@ -5,7 +5,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
-import infinityx.lunarhaze.screens.EditorMode;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.screens.EditorMode;
 
@@ -399,7 +398,6 @@ public class Board {
             return;
         }
         getTile(x, y).setLit(lit);
-        System.out.println("Set " + x + ", " + y + " to " + lit);
     }
 
     /**

@@ -5,13 +5,14 @@ import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.math.Vector2;
-import infinityx.util.MathUtil;
+import infinityx.util.AngleUtils;
 
 
 /**
  * Extension of GameObject implementing Steerable, allowing behaviors to work on this object.
+ * Since only enemy uses this class, we extend {@link AttackingGameObject} as well.
  */
-public abstract class SteeringGameObject extends GameObject implements Steerable<Vector2> {
+public abstract class SteeringGameObject extends AttackingGameObject implements Steerable<Vector2> {
     /**
      * tag bit
      */
@@ -252,7 +253,7 @@ public abstract class SteeringGameObject extends GameObject implements Steerable
      */
     @Override
     public float vectorToAngle(Vector2 vector) {
-        return MathUtil.vectorToAngle(vector);
+        return AngleUtils.vectorToAngle(vector);
     }
 
     /**
@@ -264,7 +265,7 @@ public abstract class SteeringGameObject extends GameObject implements Steerable
      */
     @Override
     public Vector2 angleToVector(Vector2 outVector, float angle) {
-        return MathUtil.angleToVector(outVector, angle);
+        return AngleUtils.angleToVector(outVector, angle);
     }
 
     /**

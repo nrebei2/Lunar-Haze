@@ -83,9 +83,17 @@ public class LoadingMode extends ScreenObservable implements Screen {
      */
     float stateTime;
     /**
+     * Loading Text Height Ration
+     */
+    private static final float TEXT_HEIGHT_RATIO = 0.08f;
+    /**
+     * Default height ratio for the moon
+     */
+    private static final float HEIGHT_RATIO_MOON = 0.15f;
+    /**
      * Default height ratio for the game title
      */
-    private static final float HEIGHT_RATIO_TITLE = 0.3f;
+    private static final float HEIGHT_RATIO_TITLE = 0.58f;
     /**
      * Default budget for asset loader (do nothing but load 60 fps)
      */
@@ -329,22 +337,23 @@ public class LoadingMode extends ScreenObservable implements Screen {
         TextureRegion currentFrame = moonAnimation.getKeyFrame(stateTime, true);
         canvas.draw(
                 currentFrame, alphaTint,
-                currentFrame.getRegionWidth() / 2, currentFrame.getRegionY() / 2,
-                canvas.getWidth() / 2, canvas.getHeight() / 2 - 400 * scale,
+                currentFrame.getRegionWidth() / 2, currentFrame.getRegionHeight() / 2,
+                canvas.getWidth() / 2, canvas.getHeight() * HEIGHT_RATIO_MOON,
                 0f,
-                0.2f * scale, 0.2f * scale
+                0.3f * scale, 0.3f * scale
         );
         canvas.end();
     }
 
     private void drawBackground(GameCanvas canvas) {
         canvas.drawOverlay(background, alphaTint, true);
-        canvas.draw(game_title, alphaTint, game_title.getWidth() / 2, game_title.getHeight() * HEIGHT_RATIO_TITLE, canvas.getWidth() / 2, canvas.getHeight() / 2, 0, 0.25f * scale, 0.25f * scale);
+        canvas.draw(game_title, alphaTint, game_title.getWidth() / 2, game_title.getHeight()/2,
+                canvas.getWidth() / 2, canvas.getHeight()  * HEIGHT_RATIO_TITLE, 0, 0.45f * scale, 0.45f * scale);
         canvas.draw(
                 loading_text, alphaTint,
                 loading_text.getWidth() / 2, 0,
-                canvas.getWidth() / 2, 20,
-                0, 0.3f * scale, 0.3f * scale
+                canvas.getWidth() / 2, canvas.getHeight() * TEXT_HEIGHT_RATIO,
+                0, 0.5f * scale, 0.5f * scale
         );
     }
 
@@ -364,17 +373,20 @@ public class LoadingMode extends ScreenObservable implements Screen {
         draw(delta);
     }
 
+    /**
+     * Split the sprite sheet and generate animation frames
+     */
     public void create() {
-        TextureRegion[][] moonTextures = TextureRegion.split(moonphase, moonphase.getWidth() / 29,
+        TextureRegion[][] moonTextures = TextureRegion.split(moonphase, moonphase.getWidth() / 35,
                 moonphase.getHeight() / 1);
-        TextureRegion[] moonFrames = new TextureRegion[29 * 1];
+        TextureRegion[] moonFrames = new TextureRegion[35 * 1];
         int index = 0;
         for (int i = 0; i < 1; i++) {
-            for (int j = 0; j < 29; j++) {
+            for (int j = 0; j < 35; j++) {
                 moonFrames[index++] = moonTextures[i][j];
             }
         }
-        moonAnimation = new Animation<TextureRegion>(0.2f, moonFrames);
+        moonAnimation = new Animation<TextureRegion>(0.18f, moonFrames);
         stateTime = 0f;
     }
 
@@ -392,8 +404,9 @@ public class LoadingMode extends ScreenObservable implements Screen {
         // We really only care about the y since our screen items are along a single column
         // A linear interpolation for scale results in a hard-to-read title screen for small resolutions,
         //  so I used fastSlow instead which is always above y=x.
+        float sx = ((float) width) / STANDARD_WIDTH;
         float sy = ((float) height) / STANDARD_HEIGHT;
-        scale = Interpolation.fastSlow.apply(sy);
+        scale = (sx < sy ? sx : sy);
     }
 
     /**
