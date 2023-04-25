@@ -231,6 +231,12 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
     private boolean firstRender = true;
 
     /**
+     * Number of
+     */
+    private int powerCount;
+    private int rangeCount;
+
+    /**
      * Creates a new Allocate screen
      *
      * @param canvas The game canvas to draw to
@@ -316,6 +322,24 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
      * Update the status of this menu.
      */
     private void update(float delta) {
+        if (pressStateHp == 2) {
+            playerController.allocateHp();
+            pressStateHp = 0;
+        } else if (pressStateAttackPow == 2) {
+            playerController.allocateAttackPow();
+            pressStateAttackPow = 0;
+            powerCount++;
+        } else if (pressStateAttackRan == 2) {
+            playerController.allocateAttackRange();
+            pressStateAttackRan = 0;
+            rangeCount++;
+        }
+        if (playerController.getPlayer().getMoonlightCollected() <= 0 && observer != null) {
+            active = false;
+            playerController.setAllocateReady(true);
+            gameMode.getGameplayController().setPhase(GameplayController.Phase.BATTLE);
+            observer.exitScreen(this, GO_PLAY);
+        }
     }
 
     /**
@@ -459,22 +483,7 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
             update(delta);
             draw();
 
-            if (pressStateHp == 2) {
-                playerController.allocateHp();
-                pressStateHp = 0;
-            } else if (pressStateAttackPow == 2) {
-                playerController.allocateAttackPow();
-                pressStateAttackPow = 0;
-            } else if (pressStateAttackRan == 2) {
-                playerController.allocateAttackRange();
-                pressStateAttackRan = 0;
-            }
-            if (playerController.getPlayer().getMoonlightCollected() <= 0 && observer != null) {
-                active = false;
-                playerController.setAllocateReady(true);
-                gameMode.getGameplayController().setPhase(GameplayController.Phase.BATTLE);
-                observer.exitScreen(this, GO_PLAY);
-            }
+
         }
     }
 

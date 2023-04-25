@@ -52,9 +52,9 @@ public class PlayerController {
     public static final float ADD_ATTACK_AMOUNT = 0.1f;
 
     /**
-     * Attack range percentage increase for each moonlight allocated during phase ALLOCATE
+     * Attack range distance increase for each moonlight allocated during phase ALLOCATE
      */
-    public static final float ADD_RANGE_AMOUNT = 0.1f;
+    public static final float ADD_RANGE_AMOUNT = 0.2f;
 
     /**
      * The player being controlled by this AIController

@@ -45,7 +45,10 @@
   "attack": {
     "knockback": 1,
     "damage": 1.0,
-    "range": 1,
+    "hitbox": {
+      "range": 1,
+      "width": 2
+    },
     "cooldown": 1,
     "length": 0.5,
     "immunity": 0.5,

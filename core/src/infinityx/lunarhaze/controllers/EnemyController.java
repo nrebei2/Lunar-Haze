@@ -177,6 +177,14 @@ public class EnemyController {
          * but maybe add cutoffs for NONE?
          */
 
+        // Fake range increasing for ALERT and INDICATOR
+        float stealth = target.getStealth();
+        if (enemy.getDetection() == Enemy.Detection.ALERT) {
+            stealth += 2;
+        } else if (enemy.getDetection() == Enemy.Detection.INDICATOR) {
+            stealth += 1;
+        }
+
         // TODO: right now there is no difference in logic between a return of ALERT and NOTICED
         if (inBattle) return Enemy.Detection.ALERT;
 
@@ -195,19 +203,19 @@ public class EnemyController {
         double degree = Math.abs(enemy.getOrientation() - enemy.vectorToAngle(enemyToPlayer)) * MathUtils.radiansToDegrees;
 
         if (raycast.hitObject == target) {
-            if (degree <= enemy.getFlashlight().getConeDegree() / 2 && dist <= lerp.apply(2.75f, 4.5f, target.getStealth())) {
+            if (degree <= enemy.getFlashlight().getConeDegree() / 2 && dist <= lerp.apply(2.75f, 4.5f, stealth)) {
                 return Enemy.Detection.ALERT;
             }
-            if (degree <= 50 && dist <= lerp.apply(1.75f, 3.0f, target.getStealth())) {
+            if (degree <= 50 && dist <= lerp.apply(1.75f, 3.0f, stealth)) {
                 return Enemy.Detection.ALERT;
             }
-            if (degree <= 90 && dist <= lerp.apply(1.25f, 2.25f, target.getStealth())) {
+            if (degree <= 90 && dist <= lerp.apply(1.25f, 2.25f, stealth)) {
                 return Enemy.Detection.ALERT;
             }
         }
 
         // target may be behind object, but enemy should still be able to hear
-        if (dist <= lerp.apply(1.75f, 3.5f, target.getStealth())) {
+        if (dist <= lerp.apply(1.75f, 3.5f, stealth)) {
             return Enemy.Detection.NOTICED;
         }
 
