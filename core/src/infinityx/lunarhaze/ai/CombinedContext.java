@@ -74,7 +74,6 @@ public class CombinedContext extends ContextBehavior {
             map.dangerMap[i] = dangerOutput.get(i);
         }
 
-
         return map;
     }
 

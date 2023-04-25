@@ -141,7 +141,7 @@ public class EnemyController {
         raycast.addIgnores(GameObject.ObjectType.ENEMY, GameObject.ObjectType.HITBOX);
 
         this.commRay = new RaycastInfo(enemy);
-        commRay.addIgnores(GameObject.ObjectType.HITBOX, GameObject.ObjectType.WEREWOLF);
+        commRay.addIgnores(GameObject.ObjectType.WEREWOLF);
 
     }
 
@@ -191,24 +191,26 @@ public class EnemyController {
             @Override
             protected ContextMap calculateRealMaps(ContextMap map) {
                 map.setZero();
-                for (int i =0; i<map.getResolution(); i++){
+                for (int i = 0; i<map.getResolution(); i++){
                     Vector2 dir = map.dirFromSlot(i);
                     // Ray extends two units
-                    rayCache.set(enemy.getPosition(), enemy.getPosition().add(dir.scl(2)));
+                    rayCache.set(enemy.getPosition(), dir.scl(2).add(enemy.getPosition()));
+                    //System.out.printf("Ray: (%s, %s)\n", rayCache.start, rayCache.end);
                     communicationCollision.findCollision(collisionCache, rayCache);
-                    if (raycast.hit){
+                    if (commRay.hit) {
                         map.dangerMap[i] = raycast.fraction;
                     }
                 }
+
                 return map;
             }
         };
         //this.combinedContext.add(attack);
         this.combinedContext.add(strafe);
-        //this.combinedContext.add(separation);
+        this.combinedContext.add(separation);
 
         //Resolution is set to 8 to represent the 8 directions in which enemies can move
-        this.battleSB = new ContextSteering(enemy, combinedContext, 8);
+        this.battleSB = new ContextSteering(enemy, combinedContext, 20);
     }
 
     /**
@@ -237,8 +239,8 @@ public class EnemyController {
         for (int i = 0; i < map.getResolution(); i++) {
             Vector2 dir = map.dirFromSlot(i);
             canvas.shapeRenderer.line(
-                    getEnemy().getPosition().add(dir.cpy().scl(radius)).scl(s_x, s_y),
-                    getEnemy().getPosition().add(dir.cpy().scl(radius + map.dangerMap[i])).scl(s_x, s_y)
+                    getEnemy().getPosition().cpy().add(dir.cpy().scl(radius)).scl(s_x, s_y),
+                    getEnemy().getPosition().cpy().add(dir.cpy().scl(radius + map.dangerMap[i])).scl(s_x, s_y)
             );
         }
 
