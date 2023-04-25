@@ -1,5 +1,8 @@
 package infinityx.lunarhaze.combat;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.controllers.GameplayController;
 import infinityx.lunarhaze.controllers.InputController;
 import infinityx.lunarhaze.models.entity.Werewolf;
@@ -31,6 +34,15 @@ public class PlayerAttackHandler extends AttackHandler {
      */
     private final static float MAX_COMBO_TIME = 1f;
 
+    /** Dash variables */
+    private static final float DASH_SPEED = 10f;
+    private static final float DASH_TIME = 0.15f;
+    private float dashTimer;
+    private Vector2 dashDirection;
+    private boolean isDashing;
+    private static final float DASH_COOLDOWN = 3.0f;
+    private float dashCooldownCounter;
+
     /**
      * Creates a specialized attack system for the given player
      */
@@ -39,18 +51,24 @@ public class PlayerAttackHandler extends AttackHandler {
         comboAttackCooldownCounter = 0f;
         comboStep = 0;
         comboTime = 0f;
+
+        dashDirection = new Vector2();
+        isDashing = false;
+        dashCooldownCounter = DASH_COOLDOWN;
     }
 
     //TODO: Make the attack cooldowns and attack lengths decrease with moonlight collected
 
     /**
      * See {@link #update(float)}
-     * @param phase current phase of the game 
+     * @param phase current phase of the game
      */
     public void update(float delta, GameplayController.Phase phase) {
         if (phase == GameplayController.Phase.BATTLE) {
             super.update(delta);
-
+            if(isDashing) {
+                processDash(dashDirection);
+            }
             if (comboStep > 0) {
                 handleComboTimeout(delta);
             }
@@ -61,13 +79,20 @@ public class PlayerAttackHandler extends AttackHandler {
                 if (InputController.getInstance().didAttack()) {
                     initiateAttack();
                 }
-            } else {
+            } else if (!isDashing){
                 if (comboStep == 0) {
                     player.setDrawCooldownBar(true, attackCooldownCounter / entity.attackCooldown);
                 } else {
                     // Will remove magic numbers later
                     player.setDrawCooldownBar(true, comboAttackCooldownCounter / 0.4f);
                 }
+            }
+            if (dashCooldownCounter < DASH_COOLDOWN) {
+                dashCooldownCounter += delta;
+            }
+            // Initiate dash based on input
+            if (InputController.getInstance().didRun() && !player.isAttacking() && dashCooldownCounter >= DASH_COOLDOWN) {
+                initiateDash(InputController.getInstance());
             }
         }
     }
@@ -112,5 +137,32 @@ public class PlayerAttackHandler extends AttackHandler {
         entity.getBody().applyLinearImpulse(entity.getLinearVelocity().nor(), entity.getBody().getWorldCenter(), true);
         comboAttackCooldownCounter = 0f;
         super.initiateAttack();
+    }
+
+    /**
+     * Initiates a dash
+     */
+    private void initiateDash(InputController input) {
+        if(!isDashing) {
+            isDashing = true;
+            dashDirection = new Vector2(input.getHorizontal(), input.getVertical()).nor();
+            dashTimer = 0f;
+            entity.setImmune();
+            entity.setLockedOut();
+        }
+    }
+
+    private void processDash(Vector2 direction) {
+        entity.getBody().setLinearVelocity(direction.x * DASH_SPEED, direction.y * DASH_SPEED);
+        dashTimer += Gdx.graphics.getDeltaTime();
+        if (dashTimer >= DASH_TIME) {
+            endDash();
+        }
+    }
+
+    private void endDash() {
+        dashCooldownCounter = 0f;
+        entity.getBody().setLinearVelocity(0, 0);
+        isDashing = false;
     }
 }

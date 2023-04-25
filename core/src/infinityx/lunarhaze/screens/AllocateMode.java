@@ -276,7 +276,7 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
         moon_icon = directory.getEntry("moon-icon", Texture.class);
         heart_icon = directory.getEntry("health-icon", Texture.class);
         attack_pow_icon = directory.getEntry("attack-pow-icon", Texture.class);
-        attack_ran_icon = directory.getEntry("attack-pow-icon", Texture.class);
+        attack_ran_icon = directory.getEntry("attack-ran-icon", Texture.class);
         stroke = directory.getEntry("square-stroke", Texture.class);
 
         star_empty = directory.getEntry("star-empty", Texture.class);

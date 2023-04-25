@@ -303,6 +303,10 @@ public class LevelSelectionMode extends ScreenObservable implements Screen, Inpu
      */
     private static final float ROW3_HEIGHT_RATIO = 0.26f;
     /**
+     * Ratio of the difference of numbers height from their buttons
+     */
+    private static final float NO_HEIGHT_OFFSET_RATIO = 0.075f;
+    /**
      * Ratio of back width from bottom
      */
     private static final float BACK_WIDTH_RATIO = 0.1f;
@@ -326,6 +330,11 @@ public class LevelSelectionMode extends ScreenObservable implements Screen, Inpu
      * Ratio of column5 width from bottom
      */
     private static final float COLUMN5_WIDTH_RATIO = 0.74f;
+    /**
+     * Ratio of the difference of numbers width from their buttons
+     */
+    private static final float NO_WIDTH_OFFSET_RATIO = 0.035f;
+
 
     /**
      * Scaling factor for when the student changes the resolution.
@@ -559,7 +568,7 @@ public class LevelSelectionMode extends ScreenObservable implements Screen, Inpu
     private void drawLevel(int pressState, Texture levelTexture, Texture noTexture, float centerX, float centerY) {
         Color tint = (pressState == 1 ? Color.BLACK : Color.WHITE);
         canvas.draw(levelTexture, tint, levelTexture.getWidth() / 2, levelTexture.getHeight() / 2, centerX, centerY, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
-        canvas.draw(noTexture, Color.WHITE, noTexture.getWidth() / 2, noTexture.getHeight() / 2, centerX + levelTexture.getWidth() / 3f, centerY + levelTexture.getHeight() / 2.5f, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
+        canvas.draw(noTexture, Color.WHITE, noTexture.getWidth() / 2, noTexture.getHeight() / 2, centerX + canvas.getWidth() * NO_WIDTH_OFFSET_RATIO, centerY + canvas.getHeight() * NO_HEIGHT_OFFSET_RATIO, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
     }
 
 

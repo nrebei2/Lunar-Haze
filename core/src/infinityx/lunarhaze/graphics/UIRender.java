@@ -47,7 +47,7 @@ public class UIRender {
     /**
      * Top stroke width
      */
-    private final static float COUNTER_WIDTH = 300f;
+    private final static float COUNTER_WIDTH = 100f;
 
     /**
      * Top stroke height
@@ -88,6 +88,11 @@ public class UIRender {
      * Stealth stroke (located at bottom center) height
      */
     private final static float STEALTH_STROKE_HEIGHT = 18f;
+
+    /**
+     * Width of stroke background for attack power and range
+     */
+    private final static float SQUARE_STROKE_WIDTH = 60.0f;
 
     /**
      * Height of moon center as a percentage of transition screen before rise
@@ -192,6 +197,31 @@ public class UIRender {
     private final Texture trees;
 
     /**
+     * Left title ornament
+     */
+    private Texture title_left;
+
+    /**
+     * Right title ornament
+     */
+    private Texture title_right;
+
+    /**
+     * Texture for attack power indicator
+     */
+    private Texture attack_pow_icon;
+
+    /**
+     * Texture for attack range indicator
+     */
+    private Texture attack_ran_icon;
+
+    /**
+     * Texture for square stroke
+     */
+    private Texture square_stroke;
+
+    /**
      * Whether heart indicator length has been changed
      */
     boolean changed = false;
@@ -271,11 +301,16 @@ public class UIRender {
         health_stroke = directory.getEntry("health-stroke", Texture.class);
         moonlight_stroke = directory.getEntry("moonlight-stroke", Texture.class);
         stealth_stroke = directory.getEntry("stealth-stroke", Texture.class);
+        square_stroke = directory.getEntry("square-stroke", Texture.class);
         alert = directory.getEntry("alert", Texture.class);
         noticed = directory.getEntry("noticed", Texture.class);
         transition_background = directory.getEntry("transition-background", Texture.class);
         moon = directory.getEntry("moon", Texture.class);
         trees = directory.getEntry("trees", Texture.class);
+        title_left = directory.getEntry("title-left", Texture.class);
+        title_right = directory.getEntry("title-right", Texture.class);
+        attack_pow_icon = directory.getEntry("attack-pow-icon", Texture.class);
+        attack_ran_icon = directory.getEntry("attack-ran-icon", Texture.class);
 
         // shaders
         this.meter = directory.get("meter", ShaderProgram.class);
@@ -327,7 +362,7 @@ public class UIRender {
             // Draw with view transform not considered
             canvas.begin(GameCanvas.DrawPass.SPRITE);
             // Draw top stroke at the top center of screen
-            drawLevelStats(canvas, phase, gameplayController);
+            drawLevelStats(canvas, phase, gameplayController, level);
             if (phase == Phase.STEALTH) {
                 drawHealthStats(canvas, level);
                 drawMoonlightStats(canvas, level, delta);
@@ -335,7 +370,7 @@ public class UIRender {
             } else if (phase == Phase.BATTLE) {
                 drawHealthStats(canvas, level);
                 drawPowerStats(canvas, level);
-                //drawRangeStats(canvas, level);
+                drawRangeStats(canvas, level);
             }
             canvas.end();
 
@@ -408,28 +443,28 @@ public class UIRender {
     /**
      * Draw the level stroke and level status of the player
      */
-    public void drawLevelStats(GameCanvas canvas, GameplayController.Phase phase, GameplayController gameplayController) {
-        canvas.draw(counter, Color.WHITE, canvas.getWidth() / 2 - COUNTER_WIDTH / 2, canvas.getHeight() - COUNTER_HEIGHT - TOP_MARGIN / 2, COUNTER_WIDTH, COUNTER_HEIGHT);
+    public void drawLevelStats(GameCanvas canvas, GameplayController.Phase phase,
+                               GameplayController gameplayController, LevelContainer level) {
+//        canvas.draw(counter, Color.WHITE, canvas.getWidth() / 2 - COUNTER_WIDTH / 2, canvas.getHeight() - COUNTER_HEIGHT - TOP_MARGIN / 2, COUNTER_WIDTH, COUNTER_HEIGHT);
         String text;
-        Texture icon;
+        String stat;
         if (phase == Phase.STEALTH || phase == Phase.TRANSITION) {
-            text = "night";
-            icon = dusk_icon;
+            text = "Time Remaining";
+            int remaining_sec = Math.max((int) gameplayController.getRemainingTime(), 0);
+            int min = remaining_sec / 60;
+            int sec = remaining_sec % 60;
+            stat = ((min >= 10)? min : ("0" + min)) + ":" + ((sec >= 10)? sec : ("0" + sec));
         } else {
-            text = "full moon";
-            icon = fullmoon_icon;
+            text = "Enemies Remaining";
+            int remaining = gameplayController.getRemainingEnemies();
+            stat = remaining + "";
         }
-        canvas.drawText(text, UIFont_small, canvas.getWidth() / 2 - UIFont_small.getCapHeight() * text.length() / 3, canvas.getHeight() - TOP_MARGIN / 2.5f);
-        canvas.drawText("1", UIFont_large, canvas.getWidth() / 2, canvas.getHeight() - TOP_MARGIN);
-        int remaining_sec = Math.max((int) gameplayController.getRemainingTime(), 0);
-        int min = remaining_sec / 60;
-        int sec = remaining_sec % 60;
-        canvas.drawText(min + ":" + sec + "s", UIFont_small, canvas.getWidth() / 2 - COUNTER_WIDTH / 4, canvas.getHeight() - COUNTER_HEIGHT / 2.0f - TOP_MARGIN / 3);
-        if (icon == dusk_icon) {
-            canvas.draw(icon, Color.WHITE, 0, 0, canvas.getWidth() / 2 + COUNTER_WIDTH / 4, canvas.getHeight() - COUNTER_HEIGHT / 2.0f - dusk_icon.getHeight() / 2 - TOP_MARGIN / 3, 0, 0.6f, 0.6f);
-        } else {
-            canvas.draw(icon, Color.WHITE, 0, 0, canvas.getWidth() / 2 + COUNTER_WIDTH / 4, canvas.getHeight() - COUNTER_HEIGHT / 2.0f - dusk_icon.getHeight() / 2 - TOP_MARGIN / 3, 0, 0.3f, 0.3f);
-        }
+        canvas.drawText(text, UIFont_small, canvas.getWidth() / 2 - UIFont_small.getCapHeight() * text.length() / 2, canvas.getHeight() - TOP_MARGIN / 2.5f);
+        canvas.drawText(stat, UIFont_small, canvas.getWidth() / 2 - UIFont_small.getAscent() * 7, canvas.getHeight() - COUNTER_HEIGHT / 2.0f - TOP_MARGIN / 3);
+        canvas.draw(title_left, Color.WHITE, canvas.getWidth() / 2 - COUNTER_WIDTH - UIFont_small.getAscent() * 10, canvas.getHeight() - COUNTER_HEIGHT,
+                COUNTER_WIDTH, UIFont_small.getCapHeight());
+        canvas.draw(title_right, Color.WHITE, canvas.getWidth() / 2 + UIFont_small.getAscent() * 10, canvas.getHeight() - COUNTER_HEIGHT,
+                COUNTER_WIDTH, UIFont_small.getCapHeight());
     }
 
     /**
@@ -522,33 +557,60 @@ public class UIRender {
      * Draw attack power stats
      */
     public void drawPowerStats(GameCanvas canvas, LevelContainer level) {
-        canvas.end();
-        canvas.begin(GameCanvas.DrawPass.SHAPE);
-        canvas.drawAttackPow(canvas.getWidth() - BAR_WIDTH, canvas.getHeight() - BAR_HEIGHT * 2,
-                BAR_WIDTH, BAR_HEIGHT, level.getPlayer().attackDamage);
-        canvas.end();
-
-        canvas.begin(GameCanvas.DrawPass.SPRITE);
-        canvas.drawText("Attack power ", UIFont_small,
-                canvas.getWidth() - BAR_WIDTH - UIFont_small.getAscent() * ("Attack power ".length()) * 2,
-                canvas.getHeight() - BAR_HEIGHT);
+//        canvas.end();
+//        canvas.begin(GameCanvas.DrawPass.SHAPE);
+//        canvas.drawAttackPow(canvas.getWidth() - BAR_WIDTH, canvas.getHeight() - BAR_HEIGHT * 2,
+//                BAR_WIDTH, BAR_HEIGHT, level.getPlayer().attackDamage);
+//        canvas.end();
+//
+//        canvas.begin(GameCanvas.DrawPass.SPRITE);
+//        canvas.drawText("Attack power ", UIFont_small,
+//                canvas.getWidth() - BAR_WIDTH - UIFont_small.getAscent() * ("Attack power ".length()) * 2,
+//                canvas.getHeight() - BAR_HEIGHT);
+        int max_hp = MathUtils.ceil(level.getPlayer().maxHp);
+        float stroke_width = max_hp * health_icon.getWidth() * 0.6f + 70;
+        canvas.draw(square_stroke, Color.WHITE, stroke_width + GAP_DIST * 2,
+                canvas.getHeight() - HEALTH_STROKE_HEIGHT * 2,
+                SQUARE_STROKE_WIDTH, HEALTH_STROKE_HEIGHT);
+        canvas.draw(attack_pow_icon, Color.WHITE,
+                attack_pow_icon.getWidth() / 2, attack_pow_icon.getHeight() / 2,
+                stroke_width + SQUARE_STROKE_WIDTH,
+                canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f,
+                0, 0.7f, 0.7f);
+//        level.getPlayer().getAttackPower()
+        canvas.drawText("2", UIFont_small,
+                stroke_width + SQUARE_STROKE_WIDTH + attack_pow_icon.getWidth()/2,
+                canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f + UIFont_small.getCapHeight());
     }
 
     /**
      * Draw attack range stats
      */
     public void drawRangeStats(GameCanvas canvas, LevelContainer level) {
-        canvas.begin(GameCanvas.DrawPass.SPRITE);
-        canvas.drawText("Attack range ", UIFont_small,
-                canvas.getWidth() - BAR_WIDTH - UIFont_small.getAscent() * ("Attack range ".length()) * 2,
-                canvas.getHeight() - BAR_HEIGHT * 2 - GAP_DIST);
-        canvas.end();
-
-        canvas.begin(GameCanvas.DrawPass.SHAPE);
-        //canvas.drawAttackRange(canvas.getWidth() - BAR_WIDTH, canvas.getHeight() - BAR_HEIGHT * 3 - GAP_DIST,
-        //        BAR_WIDTH, BAR_HEIGHT, level.getPlayer().getAttackRange());
-        canvas.end();
-        canvas.begin(GameCanvas.DrawPass.SPRITE);
+//        canvas.begin(GameCanvas.DrawPass.SPRITE);
+//        canvas.drawText("Attack range ", UIFont_small,
+//                canvas.getWidth() - BAR_WIDTH - UIFont_small.getAscent() * ("Attack range ".length()) * 2,
+//                canvas.getHeight() - BAR_HEIGHT * 2 - GAP_DIST);
+//        canvas.end();
+//
+//        canvas.begin(GameCanvas.DrawPass.SHAPE);
+//        canvas.drawAttackRange(canvas.getWidth() - BAR_WIDTH, canvas.getHeight() - BAR_HEIGHT * 3 - GAP_DIST,
+//                BAR_WIDTH, BAR_HEIGHT, level.getPlayer().getAttackRange());
+//        canvas.end();
+//        canvas.begin(GameCanvas.DrawPass.SPRITE);
+        int max_hp = MathUtils.ceil(level.getPlayer().maxHp);
+        float stroke_width = max_hp * health_icon.getWidth() * 0.6f + 70;
+        canvas.draw(square_stroke, Color.WHITE, stroke_width + HEALTH_STROKE_HEIGHT + 4 * GAP_DIST,
+                canvas.getHeight() - HEALTH_STROKE_HEIGHT * 2, SQUARE_STROKE_WIDTH, HEALTH_STROKE_HEIGHT);
+        canvas.draw(attack_ran_icon, Color.WHITE,
+                attack_ran_icon.getWidth() / 2, attack_ran_icon.getHeight() / 2,
+                stroke_width + SQUARE_STROKE_WIDTH * 2 + GAP_DIST,
+                canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f,
+                0, 1.0f, 1.0f);
+//        level.getPlayer().getAttackRange()
+        canvas.drawText("3", UIFont_small,
+                stroke_width + SQUARE_STROKE_WIDTH*2 + attack_pow_icon.getWidth()/2 + GAP_DIST,
+                canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f + UIFont_small.getCapHeight());
     }
 
     /**

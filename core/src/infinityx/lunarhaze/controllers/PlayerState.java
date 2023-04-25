@@ -3,7 +3,8 @@ package infinityx.lunarhaze.controllers;
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
 import infinityx.lunarhaze.models.GameObject;
-import infinityx.util.Direction;
+import infinityx.util.*;
+import infinityx.util.*;
 
 /**
  * States for the player's state machine
@@ -136,6 +137,22 @@ public enum PlayerState implements State<PlayerController> {
         @Override
         public void exit(PlayerController entity) {
             entity.getCollectSound().play();
+        }
+    },
+
+    /**
+     * The player is currently dashing
+     */
+    DASH() {
+        // TODO: Add state transitions to DASH from other states
+        @Override
+        public void enter(PlayerController entity) {
+            // TODO: Update frame logic
+        }
+
+        @Override
+        public void update(PlayerController entity) {
+            // TODO: Add state transitions to other states
         }
     };
 
