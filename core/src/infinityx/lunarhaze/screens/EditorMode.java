@@ -82,6 +82,11 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     private boolean showNewBoardWindow;
 
     /**
+     * Whether to display the error when you cannot save
+     */
+    private boolean showCannotSaveError;
+
+    /**
      * Whether to display the Enemy->Enemy X popup to select patrol path, etc
      */
     private boolean showEnemyControllerWindow;
@@ -90,6 +95,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * Whether the player has been placed on the board
      */
     private boolean playerPlaced;
+
+    private boolean showPopup;
 
     /**
      * List of moonlight point lights placed on level (for modifying color after placing lights)
@@ -206,6 +213,11 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     private float[] moonlightLighting;
 
     /**
+     * Float holding object scale
+     */
+    private float objectScale[];
+
+    /**
      * Holds a reference to the enemies, so that the enemy menu can let you modify them
      */
     private ArrayList<infinityx.lunarhaze.models.entity.Enemy> enemies;
@@ -259,6 +271,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         availableSelections.add(new SceneObject(directory.getEntry("fence2", Texture.class), "fencey"));
         availableSelections.add(new SceneObject(directory.getEntry("tree1", Texture.class), "tree"));
         availableSelections.add(new SceneObject(directory.getEntry("stone", Texture.class), "stone"));
+        availableSelections.add(new SceneObject(directory.getEntry("lamp", Texture.class), "lamp"));
+        availableSelections.add(new SceneObject(directory.getEntry("forest", Texture.class), "forest"));
 
         //availableSelections.add(new Enemy(directory.getEntry("villager", Texture.class), "villager"));
         //availableSelections.add(new Player(directory.getEntry("werewolf", Texture.class)));
@@ -309,7 +323,10 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     private void placeEnemy() {
         Enemy e = (Enemy) selected;
-        currEnemyControlled = level.addEnemy(e.type, mouseBoard.x, mouseBoard.y, null);
+        ArrayList<Vector2> emptyPatrol = new ArrayList<>();
+        emptyPatrol.add(new Vector2(0, 0));
+        emptyPatrol.add(new Vector2(0, 0));
+        currEnemyControlled = level.addEnemy(e.type, mouseBoard.x, mouseBoard.y, emptyPatrol);
         enemies.add(currEnemyControlled);
     }
 
@@ -346,7 +363,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         level.addSceneObject(
                 curr.type,
                 mouseBoard.x, mouseBoard.y,
-                1
+                curr.scale
         );
     }
 
@@ -370,11 +387,13 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         boardSize = new int[]{10, 10};
         patrol1 = new int[]{0, 0};
         patrol2 = new int[]{0, 0};
+        objectScale = new float[]{1};
         level = LevelParser.LevelParser().loadEmpty(boardSize[0], boardSize[1]);
         level.hidePlayer();
         playerPlaced = false;
         board = level.getBoard();
         showNewBoardWindow = false;
+        showCannotSaveError = false;
         showEnemyControllerWindow = false;
         showBattleLighting = false;
         enemies = new ArrayList<infinityx.lunarhaze.models.entity.Enemy>();
@@ -446,6 +465,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
         if (showNewBoardWindow) {
             createNewBoardWindow();
+        }
+        if (showCannotSaveError) {
+            cannotSaveWindow();
         }
         if (showEnemyControllerWindow) {
             createEnemyControllerWindow();
@@ -723,6 +745,17 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             }
         }
 
+        ImGui.spacing();
+
+        // Create a slider for the scale of the object
+        if (ImGui.sliderFloat("Object Scale", objectScale, 0.1f, 5.0f)) {
+            // Apply the scale to the selected object when the slider is moved
+            if (selected instanceof SceneObject) {
+                SceneObject selectedObj = (SceneObject) selected;
+                selectedObj.scale = objectScale[0];
+            }
+        }
+
         ImGui.end();
     }
 
@@ -751,13 +784,23 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             ImGui.spacing();
             ImGui.spacing();
             if (ImGui.menuItem("Save")) {
-                LevelSerializer.saveBoardToJsonFile(level, board, directory);
+                if(canSave()) {
+                    LevelSerializer.saveBoardToJsonFile(level, board, directory);
+                } else {
+                    // Cannot save!
+                    showCannotSaveError = true;
+                }
             }
             ImGui.spacing();
             ImGui.spacing();
             if (ImGui.menuItem("Test")) {
-                LevelSerializer.saveBoardToJsonFile(level, board, directory);
-                observer.exitScreen(this, GO_PLAY);
+                if(canSave()) {
+                    LevelSerializer.saveBoardToJsonFile(level, board, directory);
+                    observer.exitScreen(this, GO_PLAY);
+                } else {
+                    // Cannot save!
+                    showCannotSaveError = true;
+                }
             }
             ImGui.endMenu();
         }
@@ -842,6 +885,20 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         ImGui.end();
     }
 
+    private void cannotSaveWindow() {
+        ImGui.begin("Error", new ImBoolean(true));
+
+        ImGui.text("You cannot save.");
+        ImGui.spacing();
+        ImGui.text("Make sure no tiles are null, the player is set, and there is at least one enemy\nand moonlight tile.");
+
+        if (ImGui.button("Ok")) {
+            showCannotSaveError = false;
+        }
+
+        ImGui.end();
+    }
+
     /**
      * Popup window for controlling enemy and setting patrols
      */
@@ -902,6 +959,35 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         ImGui.colorEdit4("Moonlight Lighting", moonlightLighting);
         ImGui.spacing();
         ImGui.end();
+    }
+
+    /**
+     * Asserts everything is set up to save the board
+     * (to avoid nullpointerexception)
+     * @return true if everything is set up to save the board
+     */
+    private boolean canSave() {
+
+        // Has the player been placed?
+        if(!playerPlaced) {
+            return false;
+        }
+
+        // Is there at least one enemy?
+        if (enemies.size() == 0) {
+            return false;
+        }
+
+        // Does every enemy have a patrol?
+        for (infinityx.lunarhaze.models.entity.Enemy enemy : enemies) {
+            if (enemy.getPatrolPath() == null) {
+                return false;
+            }
+        }
+
+        // Is every tile filled?
+        return board.assertNoNullTiles();
+
     }
 
 }
