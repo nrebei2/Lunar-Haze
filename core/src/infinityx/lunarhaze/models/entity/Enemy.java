@@ -6,6 +6,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Pool;
 import infinityx.assets.AssetDirectory;
+import infinityx.lunarhaze.controllers.EnemyController;
+import infinityx.lunarhaze.models.GameObject;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.SteeringGameObject;
 import infinityx.lunarhaze.physics.ConeSource;
@@ -42,7 +44,7 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
     private Detection detection;
 
     /**
-     * How much the indicator has been filled
+     * How much the indicator has been filled, in [0, 1]
      */
     float indicatorAmount;
 
@@ -184,21 +186,60 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
         return hp / maxHp;
     }
 
+    /** Current filmstrip directions prefix */
+    private String name;
+
+    /**
+     * Sets the filmstrip animation of the enemy. Assumes there exists filmstrips for each cardinal direction with suffixes "-b", "-f", "-l", "-r".
+     * The enemy will then automatically switch to the filmstrip depending on its direction.
+     *
+     * @param name   Common prefix of filmstrip family. See {@link GameObject#setTexture(String)}.
+     */
+    public void setFilmstripPrefix(String name) {
+        if (this.name != null && this.name.equals(name)) return;
+        this.name = name;
+        setTexDir(direction);
+    }
+
+    /** Sets the texture from {@link #name} depending on direction */
+    private void setTexDir(Direction direction) {
+        switch (direction) {
+            case UP:
+                setTexture(name + "-b");
+                break;
+            case DOWN:
+                setTexture(name + "-f");
+                break;
+            case LEFT:
+                setTexture(name + "-l");
+                break;
+            case RIGHT:
+                setTexture(name + "-r");
+                break;
+        }
+    }
+
     @Override
     public void update(float delta) {
         super.update(delta);
 
         float orientation = getOrientation();
         // Set the direction given velocity
-        // We give each direction an equal amount of degrees (90)
-        if (MathUtils.isEqual(orientation, 0, MathUtils.PI / 4)) {
-            direction = Direction.RIGHT;
-        } else if (MathUtils.isEqual(orientation, MathUtils.PI / 2, MathUtils.PI / 4)) {
-            direction = Direction.UP;
-        } else if (MathUtils.isEqual(orientation, -MathUtils.PI / 2, MathUtils.PI / 4)) {
-            direction = Direction.DOWN;
+        // The up and down directions each have 120 degrees
+        // While the left and right each have 60
+        Direction newDirection;
+        if (MathUtils.isEqual(orientation, 0, MathUtils.PI / 6)) {
+            newDirection = Direction.RIGHT;
+        } else if (MathUtils.isEqual(orientation, MathUtils.PI / 2, MathUtils.PI / 3)) {
+            newDirection = Direction.UP;
+        } else if (MathUtils.isEqual(orientation, -MathUtils.PI / 2, MathUtils.PI / 3)) {
+            newDirection = Direction.DOWN;
         } else {
-            direction = Direction.LEFT;
+            newDirection = Direction.LEFT;
         }
+        if (newDirection != direction) {
+            setTexDir(newDirection);
+        }
+        direction = newDirection;
     }
 }

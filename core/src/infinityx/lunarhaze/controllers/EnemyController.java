@@ -128,7 +128,7 @@ public class EnemyController {
         this.targetPos = new Vector2();
         this.enemy = enemy;
         this.inBattle = false;
-        this.stateMachine = new DefaultStateMachine<>(this, EnemyState.INIT);
+        this.stateMachine = new DefaultStateMachine<>(this, EnemyState.INIT, EnemyState.ANY_STATE);
         this.raycast = new RaycastInfo(enemy);
         raycast.addIgnores(GameObject.ObjectType.ENEMY, GameObject.ObjectType.HITBOX);
 
@@ -227,8 +227,8 @@ public class EnemyController {
         //}
 
         // Process the FSM
-        stateMachine.update();
         enemy.update(delta);
+        stateMachine.update();
     }
 
 

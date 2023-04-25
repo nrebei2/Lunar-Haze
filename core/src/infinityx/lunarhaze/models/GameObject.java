@@ -23,6 +23,7 @@
  */
 package infinityx.lunarhaze.models;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -179,6 +180,10 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
      */
     public void setTexture(String name) {
         this.filmstrip = filmstrips.get(name);
+        if (filmstrip == null) {
+            Gdx.app.error("GameObject", "Could not find a texture with the name: " + name, new IllegalStateException());
+            return;
+        }
         filmstrip.setFrame(0);
         this.texTime = 0;
     }

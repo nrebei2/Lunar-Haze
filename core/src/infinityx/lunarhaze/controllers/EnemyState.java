@@ -18,6 +18,21 @@ import infinityx.util.Box2dLocation;
  */
 public enum EnemyState implements State<EnemyController> {
 
+    ANY_STATE() {
+        @Override
+        public void update(EnemyController entity) {
+            // FIXME: dont call setFilmstripPrefix every frame
+            if (!entity.getStateMachine().isInState(ATTACK)) {
+                if (entity.getEnemy().getLinearVelocity().isZero(0.01f)) {
+                    entity.getEnemy().setFilmstripPrefix("idle");
+                } else {
+                    entity.getEnemy().setFilmstripPrefix("walk");
+                    entity.getEnemy().texUpdate = 1 / (entity.getEnemy().getLinearVelocity().len() * 6);
+                }
+            }
+        }
+    },
+
     /**
      * Initial state, used oth. enter on patrol would not be called
      */
@@ -130,7 +145,7 @@ public enum EnemyState implements State<EnemyController> {
         @Override
         public void enter(EnemyController entity) {
             //entity.getAttackSound().play();
-            setTexture(entity, "attack");
+            entity.getEnemy().setFilmstripPrefix("attack");
             entity.getEnemy().texUpdate = 0.06f;
         }
 
@@ -292,28 +307,5 @@ public enum EnemyState implements State<EnemyController> {
     @Override
     public boolean onMessage(EnemyController control, Telegram telegram) {
         return false;
-    }
-
-    /**
-     * Sets the filmstrip animation of the enemy. Assumes there exists filmstrips for each cardinal direction with suffixes "-b", "-f", "-l", "-r".
-     *
-     * @param entity holding enemy
-     * @param name   Common prefix of filmstrip family. See {@link GameObject#setTexture(String)}.
-     */
-    protected void setTexture(EnemyController entity, String name) {
-        switch (entity.getEnemy().direction) {
-            case UP:
-                entity.getEnemy().setTexture(name + "-b");
-                break;
-            case DOWN:
-                entity.getEnemy().setTexture(name + "-f");
-                break;
-            case LEFT:
-                entity.getEnemy().setTexture(name + "-l");
-                break;
-            case RIGHT:
-                entity.getEnemy().setTexture(name + "-r");
-                break;
-        }
     }
 }
