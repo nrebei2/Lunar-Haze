@@ -1,6 +1,6 @@
 {
   "textures": {
-    "background": "screens/menu-screen/menu_bg.jpg",
+    "background": "screens/menu-screen/menu_bg.png",
     "play": "screens/menu-screen/play.png",
     "menu-logo": "screens/menu-screen/menu_logo.png",
     "level-editor": "screens/menu-screen/level_editor.png",

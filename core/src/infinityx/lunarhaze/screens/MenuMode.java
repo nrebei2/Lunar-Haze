@@ -38,6 +38,8 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
 
     private static final float BUTTON_SCALE = 0.2f;
 
+    private static final float BACKGROUND_SCALE = 0.35f;
+
     /**
      * Play button to display when done
      */
@@ -256,7 +258,7 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
     private void draw() {
         canvas.begin(GameCanvas.DrawPass.SPRITE);
         Color alphaTint = Color.WHITE;
-        canvas.drawOverlay(background, alphaTint, true);
+        canvas.draw(background,alphaTint, background.getWidth()/2, background.getHeight()/2, canvas.getWidth()/2,canvas.getHeight()/2, 0, BACKGROUND_SCALE * scale,BACKGROUND_SCALE*scale  );
         canvas.draw(logo, alphaTint, logo.getWidth() / 2, logo.getHeight() / 2,
                 centerX, canvas.getHeight() * LOGO_HEIGHT_RATIO, 0, LOGO_SCALE * scale, LOGO_SCALE * scale);
         Color color = new Color(142.0f / 255.0f, 157.0f / 255.0f, 189.0f / 255.0f, 1.0f);
