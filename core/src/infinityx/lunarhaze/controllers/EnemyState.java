@@ -184,9 +184,11 @@ public enum EnemyState implements State<EnemyController> {
                     break;
             }
             tick++;
+            //if less than 2 unit away from enem, switch to battle behavior
             if (entity.targetPos.cpy().sub(entity.getEnemy().getPosition()).len() <= 2){
                 entity.getEnemy().setSteeringBehavior(entity.battleSB);
             }else{
+                //go back to chase (follow path)
                 entity.targetPos.set(entity.getTarget().getPosition());
                 entity.getEnemy().setSteeringBehavior(entity.followPathSB);
                 // Update path every 10 frames

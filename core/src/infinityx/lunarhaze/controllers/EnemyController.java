@@ -161,14 +161,13 @@ public class EnemyController {
         waypoints.add(new Vector2());
         followPathSB = new FollowPath(enemy, new LinePath(waypoints), 0.05f, 0.5f);
 
-        weightedPathSB = new WeightedFollowPath(enemy, new LinePath(waypoints), 0.05f, 0.5f, target, 2);
-
         this.combinedContext = new CombinedContext(enemy);
         ContextBehavior attack = new ContextBehavior(enemy, true) {
             @Override
             protected ContextMap calculateRealMaps(ContextMap map) {
                 map.setZero();
                 Vector2 targetDir = target.getPosition().sub(enemy.getPosition()).nor();
+                //each interest map value is the dot of the slot dir and target dir
                 for (int i = 0 ; i<map.getResolution(); i++){
                     map.interestMap[i] = map.dirFromSlot(i).dot(targetDir);
                 }
@@ -182,6 +181,7 @@ public class EnemyController {
             protected ContextMap calculateRealMaps(ContextMap map) {
                 map.setZero();
                 Vector2 targetDir = target.getPosition().sub(enemy.getPosition()).nor();
+                //interest map prefers direction side to side motion. Higher number for direction perpendicular to dir to target.
                 for (int i = 0 ; i<map.getResolution(); i++){
                     map.interestMap[i] = (float) Math.pow(1 - Math.max(0, map.dirFromSlot(i).dot(targetDir)), 2);
                 }
@@ -194,22 +194,15 @@ public class EnemyController {
             @Override
             protected ContextMap calculateRealMaps(ContextMap map) {
                 map.setZero();
-                for (Enemy en : container.getEnemies()) {
-                    Vector2 dir = en.getPosition().sub(enemy.getPosition());
-                    for (int i = 0; i < map.getResolution(); i++) {
-                        map.dangerMap[i] += dir.dot(map.dirFromSlot(i));
+                for (int i =0; i<map.getResolution(); i++){
+                    Vector2 dir = map.dirFromSlot(i);
+                    communicationCollision.findCollision(collisionCache, new Ray<>(enemy.getPosition(), enemy.getPosition().add(dir)));
+                    if (raycast.hit){
+                        //fraction of the ray that is used to hit the object. Out of 1.
+                        map.dangerMap[i] = raycast.fraction;
                     }
-                }
-                float max = Integer.MIN_VALUE;
-                for (int i = 0; i < map.getResolution(); i++){
-                    if (map.dangerMap[i] > max) {
-                        max = map.dangerMap[i];
-                    }
-                }
-                for (int i = 0; i < map.getResolution(); i++) {
-                    map.dangerMap[i] /= max;
-                }
 
+                }
                 return map;
             }
         };
