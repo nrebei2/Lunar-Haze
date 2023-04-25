@@ -231,9 +231,13 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
     private boolean firstRender = true;
 
     /**
-     * Number of
+     * Number of times the user has allocated attack power upgrades
      */
     private int powerCount;
+
+    /**
+     * Number of times the user has allocated attack range upgrades
+     */
     private int rangeCount;
 
     /**
@@ -325,11 +329,11 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
         if (pressStateHp == 2) {
             playerController.allocateHp();
             pressStateHp = 0;
-        } else if (pressStateAttackPow == 2) {
+        } else if (pressStateAttackPow == 2 && powerCount <= 10) {
             playerController.allocateAttackPow();
             pressStateAttackPow = 0;
             powerCount++;
-        } else if (pressStateAttackRan == 2) {
+        } else if (pressStateAttackRan == 2 && rangeCount <= 10) {
             playerController.allocateAttackRange();
             pressStateAttackRan = 0;
             rangeCount++;
@@ -338,6 +342,8 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
             active = false;
             playerController.setAllocateReady(true);
             gameMode.getGameplayController().setPhase(GameplayController.Phase.BATTLE);
+            // TODO: ?
+            // playerController.player.maxHp = playerController.player.hp;
             observer.exitScreen(this, GO_PLAY);
         }
     }
@@ -401,12 +407,12 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
             Texture currButton = addAttackPowButton;
             buttonCenterY = centerY1;
             icon = attack_pow_icon;
-            stat = (int) (playerController.getPlayer().attackDamage / 0.1);
+            stat = powerCount;
         } else if (s == "Attack Range") {
             Texture currButton = addAttackRanButton;
             buttonCenterY = centerY2;
             icon = attack_ran_icon;
-            stat = (int) ((playerController.getPlayer().getAttackRange() - 1) / 0.1);
+            stat = rangeCount;
         } else {
             Texture currButton = addHpButton;
             buttonCenterY = centerY0;
@@ -483,7 +489,6 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
             update(delta);
             draw();
 
-
         }
     }
 
@@ -517,6 +522,11 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
         pressStateHp = 0;
         pressStateAttackPow = 0;
         pressStateAttackRan = 0;
+
+        // Should not set in constructor as this screen will most likely be seen multiple times in a play session
+        powerCount = 0;
+        rangeCount = 0;
+
         Gdx.input.setInputProcessor(this);
     }
 
