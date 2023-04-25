@@ -567,17 +567,19 @@ public class UIRender {
 //        canvas.drawText("Attack power ", UIFont_small,
 //                canvas.getWidth() - BAR_WIDTH - UIFont_small.getAscent() * ("Attack power ".length()) * 2,
 //                canvas.getHeight() - BAR_HEIGHT);
-        canvas.draw(square_stroke, Color.WHITE, HEALTH_STROKE_WIDTH + GAP_DIST * 2,
+        int max_hp = MathUtils.ceil(level.getPlayer().maxHp);
+        float stroke_width = max_hp * health_icon.getWidth() * 0.6f + 70;
+        canvas.draw(square_stroke, Color.WHITE, stroke_width + GAP_DIST * 2,
                 canvas.getHeight() - HEALTH_STROKE_HEIGHT * 2,
                 SQUARE_STROKE_WIDTH, HEALTH_STROKE_HEIGHT);
         canvas.draw(attack_pow_icon, Color.WHITE,
                 attack_pow_icon.getWidth() / 2, attack_pow_icon.getHeight() / 2,
-                HEALTH_STROKE_WIDTH + SQUARE_STROKE_WIDTH,
+                stroke_width + SQUARE_STROKE_WIDTH,
                 canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f,
                 0, 0.7f, 0.7f);
 //        level.getPlayer().getAttackPower()
         canvas.drawText("2", UIFont_small,
-                HEALTH_STROKE_WIDTH + SQUARE_STROKE_WIDTH + attack_pow_icon.getWidth(),
+                stroke_width + SQUARE_STROKE_WIDTH + attack_pow_icon.getWidth()/2,
                 canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f + UIFont_small.getCapHeight());
     }
 
@@ -596,16 +598,18 @@ public class UIRender {
 //                BAR_WIDTH, BAR_HEIGHT, level.getPlayer().getAttackRange());
 //        canvas.end();
 //        canvas.begin(GameCanvas.DrawPass.SPRITE);
-        canvas.draw(square_stroke, Color.WHITE, HEALTH_STROKE_WIDTH + HEALTH_STROKE_HEIGHT + 4 * GAP_DIST,
+        int max_hp = MathUtils.ceil(level.getPlayer().maxHp);
+        float stroke_width = max_hp * health_icon.getWidth() * 0.6f + 70;
+        canvas.draw(square_stroke, Color.WHITE, stroke_width + HEALTH_STROKE_HEIGHT + 4 * GAP_DIST,
                 canvas.getHeight() - HEALTH_STROKE_HEIGHT * 2, SQUARE_STROKE_WIDTH, HEALTH_STROKE_HEIGHT);
         canvas.draw(attack_ran_icon, Color.WHITE,
                 attack_ran_icon.getWidth() / 2, attack_ran_icon.getHeight() / 2,
-                HEALTH_STROKE_WIDTH + SQUARE_STROKE_WIDTH * 2 + GAP_DIST,
+                stroke_width + SQUARE_STROKE_WIDTH * 2 + GAP_DIST,
                 canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f,
                 0, 1.0f, 1.0f);
 //        level.getPlayer().getAttackRange()
         canvas.drawText("3", UIFont_small,
-                HEALTH_STROKE_WIDTH + SQUARE_STROKE_WIDTH*2 + attack_pow_icon.getWidth() + GAP_DIST,
+                stroke_width + SQUARE_STROKE_WIDTH*2 + attack_pow_icon.getWidth()/2 + GAP_DIST,
                 canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f + UIFont_small.getCapHeight());
     }
 
