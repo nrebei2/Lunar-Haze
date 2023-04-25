@@ -66,7 +66,9 @@ public class PlayerAttackHandler extends AttackHandler {
     public void update(float delta, GameplayController.Phase phase) {
         if (phase == GameplayController.Phase.BATTLE) {
             super.update(delta);
-
+            if(isDashing) {
+                processDash(dashDirection);
+            }
             if (comboStep > 0) {
                 handleComboTimeout(delta);
             }
