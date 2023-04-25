@@ -243,7 +243,8 @@ public class PauseMode extends ScreenObservable implements Screen, InputProcesso
         canvas.begin(GameCanvas.DrawPass.SPRITE);
         Color alphaTint = Color.WHITE;
         canvas.drawOverlay(pause_menu, alphaTint, true);
-        canvas.draw(pause_logo, alphaTint, pause_logo.getWidth() / 2, pause_logo.getHeight() / 2, canvas.getWidth() / 2, canvas.getHeight() * LOGO_HEIGHT_RATIO, 0, 0.2f * scale, 0.2f * scale);
+        canvas.draw(pause_logo, alphaTint, pause_logo.getWidth() / 2, pause_logo.getHeight() / 2,
+                canvas.getWidth() / 2, canvas.getHeight() * LOGO_HEIGHT_RATIO, 0, 0.2f * scale, 0.2f * scale);
         Color tintResume = (pressResumeState == 1 ? Color.BLACK : Color.WHITE);
         canvas.draw(pause_resume, tintResume, pause_resume.getWidth() / 2,
                 pause_resume.getHeight() / 2,

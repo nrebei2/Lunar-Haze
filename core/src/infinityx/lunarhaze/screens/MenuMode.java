@@ -430,7 +430,8 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
      * @return whether to hand the event to other listeners.
      */
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        if (playButton == null || pressPlayState == 2 || pressEditorState == 2 || pressSettingState == 2 || pressAboutUsState == 2) {
+        if (playButton == null || pressPlayState == 2 || pressEditorState == 2 ||
+                pressSettingState == 2 || pressAboutUsState == 2) {
             return true;
         }
 
