@@ -210,6 +210,13 @@ public class LevelContainer {
     }
 
     /**
+     * @return Remaining number of enemies.
+     */
+    public int getEnemySize() {
+        return activeEnemies.size;
+    }
+
+    /**
      * @return the total amount of collectable moonlight on the board at initialization
      */
     public float getTotalMoonlight() {
@@ -222,6 +229,7 @@ public class LevelContainer {
      */
     public Enemy addEnemy(Enemy enemy) {
         activeEnemies.add(enemy);
+        System.out.println("Enemy added");
         addDrawables(enemy);
         // Update enemy controller assigned to the new enemy
         getEnemyControllers().get(enemy).populate(this);

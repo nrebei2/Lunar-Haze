@@ -252,10 +252,23 @@ public class GameplayController {
         }
     }
 
+    /**
+     * Returns remaining time for the STEALTH phase until TRANSITION
+     */
     public float getRemainingTime() {
         return phaseTimer;
     }
 
+    /**
+     * Returns remaining enemies for BATTLE phase
+     */
+    public int getRemainingEnemies() {
+        return enemies.size;
+    }
+
+    /**
+     * Returns a reference to playerController associated with this gameplayController
+     */
     public PlayerController getPlayerController() {
         return playerController;
     }
