@@ -31,6 +31,10 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
      */
     public final static int GO_PAUSE = 1;
     /**
+     * Font used in setting mode
+     */
+    private BitmapFont font;
+    /**
      * Reference to GameCanvas created by the root
      */
     private final GameSetting setting;
@@ -64,7 +68,17 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
      * Back button to display when done
      */
     private Texture backButton;
-    private static final float BUTTON_SCALE = 0.25f;
+
+    /**
+     * Ratio of back width from bottom
+     */
+    private static final float BACK_WIDTH_RATIO = 0.1f;
+    /**
+     * Ratio of back height from bottom
+     */
+    private static final float BACK_HEIGHT_RATIO = 0.93f;
+
+    private static final float BUTTON_SCALE = 0.8f;
 
     private static final float MUSIC_SCALE = 0.1f;
     /**
@@ -118,12 +132,7 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
     /**
      * Ratio of play height from bottom
      */
-    private static final float MUSIC_HEIGHT_RATIO = 0.4f;
-    /**
-     * Ratio of play height from bottom
-     */
-    private static final float BACK_HEIGHT_RATIO = 0.9f;
-
+    private static final float MUSIC_HEIGHT_RATIO = 0.5f;
     private ImageButton musicButton;
 
     /**
@@ -163,7 +172,7 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
         canvas.begin(GameCanvas.DrawPass.SPRITE);
         Color alphaTint = Color.WHITE;
         canvas.drawOverlay(background, alphaTint, true);
-        canvas.drawTextCentered("Music Enabled", new BitmapFont(), canvas.getHeight() *0.3f);
+        canvas.drawTextCentered("Music Enabled", font, canvas.getHeight()*0.1f);
         canvas.draw(music, alphaTint, music.getWidth() / 2, music.getHeight() / 2,
                 centerX_music, centerY_music, 0, 0.1f* scale, MUSIC_SCALE * scale);
         Color color = new Color(45.0f / 255.0f, 74.0f / 255.0f, 133.0f / 255.0f, 1.0f);
@@ -179,6 +188,7 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
     private void update(float delta) {
         music = (setting.isMusicEnabled()? musicOnTexture : musicOffTexture);
         inputController.readKeyboard();
+//        System.out.println(setting.isMusicEnabled());
     }
 
     @Override
@@ -186,15 +196,9 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
         active = true;
         pressBackState = 0;
         pressMusicState = 0;
+        font = new BitmapFont();
+        font.getData().setScale(25 / font.getCapHeight());
         Gdx.input.setInputProcessor(this);
-    }
-
-    private void toggleMusic(boolean enabled) {
-        if (enabled) {
-            // Play/Resume music
-        } else {
-            // Pause music
-        }
     }
 
     @Override
@@ -209,7 +213,6 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
                 if (game.getPreviousScreen() == "menu") {
                     observer.exitScreen(this, GO_MENU);
                 }
-
             }
 
             if(isMusicReady() && observer !=null){
@@ -227,7 +230,7 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
         scale = (sx < sy ? sx : sy);
 
         centerY = (int) (BACK_HEIGHT_RATIO * height);
-        centerX = width / 16;
+        centerX = (int) (BACK_WIDTH_RATIO * width);
         centerX_music = width/2;
         centerY_music = (int) (MUSIC_HEIGHT_RATIO * height);
         heightY = height;
@@ -279,12 +282,14 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
 
         // TODO: Fix scaling
         // Play button is a circle.
-        float radiusBack = BUTTON_SCALE * scale * backButton.getWidth() / 2.0f;
-        float distBack = (screenX - centerX) * (screenX - centerX) + (screenY - centerY) * (screenY - centerY);
-        if (distBack < radiusBack * radiusBack) {
+        float x_back = BUTTON_SCALE * scale * backButton.getWidth() / 2;
+        float distX_back = Math.abs(screenX - centerX);
+        float y_back = BUTTON_SCALE * scale * backButton.getHeight() / 2;
+
+        float distYBack = Math.abs(screenY - centerY);
+        if (distX_back < x_back && distYBack < y_back) {
             pressBackState = 1;
         }
-
 
         float x = MUSIC_SCALE * scale * music.getWidth() / 2;
         float distX = Math.abs(screenX - centerX_music);
