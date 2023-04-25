@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.fsm.StateMachine;
 import com.badlogic.gdx.audio.Sound;
+import infinityx.lunarhaze.combat.AttackHandler;
 import infinityx.lunarhaze.combat.PlayerAttackHandler;
 import infinityx.lunarhaze.controllers.GameplayController.Phase;
 import infinityx.lunarhaze.models.Board;
@@ -52,9 +53,9 @@ public class PlayerController {
     public static final float ADD_ATTACK_AMOUNT = 0.1f;
 
     /**
-     * Attack range percentage increase for each moonlight allocated during phase ALLOCATE
+     * Attack range distance increase for each moonlight allocated during phase ALLOCATE
      */
-    public static final float ADD_RANGE_AMOUNT = 0.1f;
+    public static final float ADD_RANGE_AMOUNT = 0.2f;
 
     /**
      * The player being controlled by this AIController
@@ -157,11 +158,11 @@ public class PlayerController {
         InputController inputController = InputController.getInstance();
 
         // Button may be pressed, but player may not be moving!
-        player.setRunning(
+        /*player.setRunning(
                 inputController.didRun() && (
                         InputController.getInstance().getHorizontal() != 0 || InputController.getInstance().getVertical() != 0
                 )
-        );
+        );*/
         player.update(delta);
     }
 
@@ -269,4 +270,6 @@ public class PlayerController {
         // Process the FSM
         stateMachine.update();
     }
+
+    public PlayerAttackHandler getAttackHandler() { return attackHandler;    }
 }

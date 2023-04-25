@@ -5,6 +5,13 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.GDXRoot;
 import infinityx.lunarhaze.graphics.GameCanvas;
@@ -15,6 +22,7 @@ import infinityx.util.ScreenObservable;
  */
 public class SettingMode extends ScreenObservable implements Screen, InputProcessor {
     // Exit codes
+    private Stage stage;
     /**
      * User requested to go to menu
      */
@@ -23,8 +31,10 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
      * User requested to go to pause
      */
     public final static int GO_PAUSE = 1;
-
-
+    /**
+     * Reference to GameCanvas created by the root
+     */
+    private final GameSetting setting;
     /**
      * Reference to GameCanvas created by the root
      */
@@ -37,6 +47,14 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
      * Background texture for start-up
      */
     private Texture background;
+    /**
+     * Music on texture for music button
+     */
+    private Texture musicOnTexture;
+    /**
+     * Music off texture for music button
+     */
+    private Texture musicOffTexture;
     /**
      * Back button to display when done
      */
@@ -81,6 +99,8 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
      */
     private static final float BACK_HEIGHT_RATIO = 0.9f;
 
+    private ImageButton musicButton;
+
     /**
      * Returns true if all assets are loaded and the player is ready to go.
      *
@@ -91,14 +111,19 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
     }
 
 
-    public SettingMode(GameCanvas canvas, GDXRoot game) {
+    public SettingMode(GameCanvas canvas, GDXRoot game, GameSetting setting) {
         this.canvas = canvas;
         this.game = game;
+        this.setting = setting;
+        this.stage = new Stage();
+
     }
 
     public void gatherAssets(AssetDirectory directory) {
         background = directory.getEntry("background-setting", Texture.class);
         background.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        musicOnTexture = directory.getEntry("setting-music-on", Texture.class);
+        musicOffTexture = directory.getEntry("setting-music-off",Texture.class);
         backButton = directory.getEntry("back", Texture.class);
     }
 
@@ -106,6 +131,8 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
         canvas.begin(GameCanvas.DrawPass.SPRITE);
         Color alphaTint = Color.WHITE;
         canvas.drawOverlay(background, alphaTint, true);
+        canvas.drawTextCentered("Music Enabled", new BitmapFont(), canvas.getHeight() *0.3f);
+        canvas.draw(musicOnTexture, 0,0);
         Color color = new Color(45.0f / 255.0f, 74.0f / 255.0f, 133.0f / 255.0f, 1.0f);
         Color tintBack = (pressBackState == 1 ? color : Color.WHITE);
         canvas.draw(backButton, tintBack, backButton.getWidth() / 2, backButton.getHeight() / 2,
@@ -122,9 +149,35 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
 
     @Override
     public void show() {
+        Table table = new Table();
+        table.setFillParent(true);
+        table.add(musicButton).pad(10);
+        table.row();
+        stage.addActor(table);
         active = true;
         pressBackState = 0;
-        Gdx.input.setInputProcessor(this);
+        ImageButton.ImageButtonStyle musicButtonStyle = new ImageButton.ImageButtonStyle();
+        musicButtonStyle.imageUp = new TextureRegionDrawable(musicOnTexture);
+        musicButtonStyle.imageChecked = new TextureRegionDrawable(musicOffTexture);
+        musicButton = new ImageButton(musicButtonStyle);
+        musicButton = new ImageButton(musicButtonStyle);
+        musicButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                setting.setMusicEnabled(!setting.isMusicEnabled());
+                toggleMusic(setting.isMusicEnabled());
+            }
+        });
+
+        Gdx.input.setInputProcessor(stage);
+    }
+
+    private void toggleMusic(boolean enabled) {
+        if (enabled) {
+            // Play/Resume music
+        } else {
+            // Pause music
+        }
     }
 
     @Override
@@ -132,16 +185,23 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
         if (active) {
             update(delta);
             draw();
-        }
-        // We are are ready, notify our listener
-        if (isReady() && observer != null) {
-            if (game.getPreviousScreen() == "pause") {
-                observer.exitScreen(this, GO_PAUSE);
-            }
-            if (game.getPreviousScreen() == "menu") {
-                observer.exitScreen(this, GO_MENU);
-            }
 
+            if (isReady() && observer != null) {
+                if (game.getPreviousScreen() == "pause") {
+                    observer.exitScreen(this, GO_PAUSE);
+                }
+                if (game.getPreviousScreen() == "menu") {
+                    observer.exitScreen(this, GO_MENU);
+                }
+
+            }
+        stage.getBatch().begin();
+        stage.getBatch().draw(background, 0, 0);
+        stage.getBatch().end();
+
+        stage.act(delta);
+        stage.draw();
+        // We are are ready, notify our listener
         }
     }
 

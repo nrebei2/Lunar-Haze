@@ -231,6 +231,16 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
     private boolean firstRender = true;
 
     /**
+     * Number of times the user has allocated attack power upgrades
+     */
+    private int powerCount;
+
+    /**
+     * Number of times the user has allocated attack range upgrades
+     */
+    private int rangeCount;
+
+    /**
      * Creates a new Allocate screen
      *
      * @param canvas The game canvas to draw to
@@ -270,7 +280,7 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
         moon_icon = directory.getEntry("moon-icon", Texture.class);
         heart_icon = directory.getEntry("health-icon", Texture.class);
         attack_pow_icon = directory.getEntry("attack-pow-icon", Texture.class);
-        attack_ran_icon = directory.getEntry("attack-pow-icon", Texture.class);
+        attack_ran_icon = directory.getEntry("attack-ran-icon", Texture.class);
         stroke = directory.getEntry("square-stroke", Texture.class);
 
         star_empty = directory.getEntry("star-empty", Texture.class);
@@ -316,6 +326,26 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
      * Update the status of this menu.
      */
     private void update(float delta) {
+        if (pressStateHp == 2) {
+            playerController.allocateHp();
+            pressStateHp = 0;
+        } else if (pressStateAttackPow == 2 && powerCount <= 10) {
+            playerController.allocateAttackPow();
+            pressStateAttackPow = 0;
+            powerCount++;
+        } else if (pressStateAttackRan == 2 && rangeCount <= 10) {
+            playerController.allocateAttackRange();
+            pressStateAttackRan = 0;
+            rangeCount++;
+        }
+        if (playerController.getPlayer().getMoonlightCollected() <= 0 && observer != null) {
+            active = false;
+            playerController.setAllocateReady(true);
+            gameMode.getGameplayController().setPhase(GameplayController.Phase.BATTLE);
+            // TODO: ?
+            // playerController.player.maxHp = playerController.player.hp;
+            observer.exitScreen(this, GO_PLAY);
+        }
     }
 
     /**
@@ -377,12 +407,12 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
             Texture currButton = addAttackPowButton;
             buttonCenterY = centerY1;
             icon = attack_pow_icon;
-            stat = (int) (playerController.getPlayer().attackDamage / 0.1);
+            stat = powerCount;
         } else if (s == "Attack Range") {
             Texture currButton = addAttackRanButton;
             buttonCenterY = centerY2;
             icon = attack_ran_icon;
-            stat = (int) ((playerController.getPlayer().getAttackRange() - 1) / 0.1);
+            stat = rangeCount;
         } else {
             Texture currButton = addHpButton;
             buttonCenterY = centerY0;
@@ -459,22 +489,6 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
             update(delta);
             draw();
 
-            if (pressStateHp == 2) {
-                playerController.allocateHp();
-                pressStateHp = 0;
-            } else if (pressStateAttackPow == 2) {
-                playerController.allocateAttackPow();
-                pressStateAttackPow = 0;
-            } else if (pressStateAttackRan == 2) {
-                playerController.allocateAttackRange();
-                pressStateAttackRan = 0;
-            }
-            if (playerController.getPlayer().getMoonlightCollected() <= 0 && observer != null) {
-                active = false;
-                playerController.setAllocateReady(true);
-                gameMode.getGameplayController().setPhase(GameplayController.Phase.BATTLE);
-                observer.exitScreen(this, GO_PLAY);
-            }
         }
     }
 
@@ -508,6 +522,11 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
         pressStateHp = 0;
         pressStateAttackPow = 0;
         pressStateAttackRan = 0;
+
+        // Should not set in constructor as this screen will most likely be seen multiple times in a play session
+        powerCount = 0;
+        rangeCount = 0;
+
         Gdx.input.setInputProcessor(this);
     }
 

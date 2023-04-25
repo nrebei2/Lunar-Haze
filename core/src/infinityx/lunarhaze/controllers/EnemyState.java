@@ -83,9 +83,6 @@ public enum EnemyState implements State<EnemyController> {
             entity.getEnemy().setDetection(Enemy.Detection.INDICATOR);
             entity.getEnemy().setIndicatorAmount(0);
 
-            // TODO
-            entity.target.setStealth(entity.target.getStealth() + 1f);
-
             entity.updatePath();
             entity.getEnemy().setSteeringBehavior(entity.followPathSB);
         }
@@ -126,9 +123,7 @@ public enum EnemyState implements State<EnemyController> {
         }
 
         @Override
-        public void exit(EnemyController entity) {
-            entity.target.setStealth(entity.target.getStealth() - 1f);
-        }
+        public void exit(EnemyController entity) {}
     },
 
     ATTACK() {
@@ -159,9 +154,6 @@ public enum EnemyState implements State<EnemyController> {
         @Override
         public void enter(EnemyController entity) {
             entity.getEnemy().setDetection(Enemy.Detection.ALERT);
-
-            // TODO
-            entity.target.setStealth(entity.target.getStealth() + 2);
 
             entity.targetPos.set(entity.getTarget().getPosition());
             entity.updatePath();
@@ -206,7 +198,6 @@ public enum EnemyState implements State<EnemyController> {
         @Override
         public void exit(EnemyController entity) {
             MessageManager.getInstance().dispatchMessage(TacticalManager.REMOVE, entity);
-            entity.target.setStealth(entity.target.getStealth() - 2);
         }
 
         @Override

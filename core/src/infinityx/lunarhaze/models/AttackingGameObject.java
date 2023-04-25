@@ -1,5 +1,6 @@
 package infinityx.lunarhaze.models;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
@@ -79,7 +80,7 @@ public abstract class AttackingGameObject extends GameObject {
 
     /**
      * Total time duration (in seconds) for immunity frames.
-     * The entity is immune when hit or attacking.
+     * Immunity begins when hit or attacking.
      */
     protected float immunityLength;
 
@@ -100,6 +101,9 @@ public abstract class AttackingGameObject extends GameObject {
     }
 
 
+    /**
+     * Further parses specific attacking attributes.
+     */
     @Override
     public void initialize(AssetDirectory directory, JsonValue json, LevelContainer container) {
         super.initialize(directory, json, container);
@@ -113,8 +117,11 @@ public abstract class AttackingGameObject extends GameObject {
         immunityLength = attack.getFloat("immunity");
         lockout = attack.getFloat("lockout");
 
-        float attackRange = attack.getFloat("range");
-        createAttackHitbox(container.getWorld(), new Vector2(attackRange, getBoundingRadius() * 2));
+        JsonValue hitboxInfo = attack.get("hitbox");
+        float attackRange = hitboxInfo.getFloat("range");
+        // width is defaulted to the entity's body diameter
+        float attackWidth = hitboxInfo.has("width") ? hitboxInfo.getFloat("width") : getBoundingRadius() * 2;
+        createAttackHitbox(container.getWorld(), new Vector2(attackRange, attackWidth));
     }
 
     /**
@@ -199,7 +206,7 @@ public abstract class AttackingGameObject extends GameObject {
         if (lockedOut) {
             lockoutTime -= delta;
             if (lockoutTime <= 0)
-                lockedOut = true;
+                lockedOut = false;
         }
     }
 }

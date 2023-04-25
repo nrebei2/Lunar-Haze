@@ -1271,7 +1271,7 @@
 "2": {
 	"settings": {
 		"transition": 8,
-		"phaseLength": 2,
+		"phaseLength": 10,
 		"battle-ambiance": [ 0.8, 0.7, 1, 1 ],
 		"enemy-spawner": {
 			"count": 5,
@@ -2550,6 +2550,150 @@
 			}
 		],
 		"objects": []
+	}
+},
+"4": {
+	"settings": {
+		"transition": 2,
+		"phaseLength": 2,
+		"battle-ambiance": [ 1.0, 1.0, 1.0, 1.0 ],
+		"enemy-spawner": {
+			"count": 5,
+			"add-tick": [ 500, 900 ],
+			"delay": 1000
+		}
+	},
+	"ambient": {
+		"color": [ 1.0, 1.0, 1.0, 1.0 ],
+		"gamma": true,
+		"diffuse": true,
+		"blur": 5,
+		"transition": 12
+	},
+	"tiles": {
+		"type": "grass",
+		"layout": [
+			[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+			[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+			[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+			[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+			[ 1, 1, 0, 0, 0, 0, 0, 0, 0, 0 ],
+			[ 1, 0, 2, 0, 0, 0, 0, 0, 0, 0 ],
+			[ 1, 2, 2, 0, 0, 0, 0, 0, 0, 0 ],
+			[ 2, 2, 0, 0, 0, 0, 0, 0, 0, 0 ],
+			[ 2, 0, 0, 0, 3, 3, 0, 0, 0, 0 ],
+			[ 0, 0, 0, 3, 0, 0, 0, 0, 0, 0 ]
+		],
+		"moonlight": {
+			"positions": [],
+			"lighting": {
+				"color": [ 0.699999988079071, 0.699999988079071, 0.8999999761581421, 0.699999988079071 ],
+				"distance": 4,
+				"rays": 10,
+				"soft": false
+			}
+		}
+	},
+	"scene": {
+		"player": [ 0.0, 0.0 ],
+		"enemies": [],
+		"objects": [
+			{
+				"type": "house",
+				"scale": 1,
+				"position": [ 5, 5 ]
+			},
+			{
+				"type": "fencex",
+				"scale": 1,
+				"position": [ 1, 9 ]
+			},
+			{
+				"type": "fencex",
+				"scale": 1,
+				"position": [ 3, 9 ]
+			},
+			{
+				"type": "fencex",
+				"scale": 1,
+				"position": [ 5, 9 ]
+			},
+			{
+				"type": "fencex",
+				"scale": 1,
+				"position": [ 7, 9 ]
+			},
+			{
+				"type": "fencex",
+				"scale": 1,
+				"position": [ 9, 9 ]
+			},
+			{
+				"type": "fencey",
+				"scale": 1,
+				"position": [ 9, 7 ]
+			},
+			{
+				"type": "fencey",
+				"scale": 1,
+				"position": [ 9, 5 ]
+			},
+			{
+				"type": "fencey",
+				"scale": 1,
+				"position": [ 10, 4 ]
+			},
+			{
+				"type": "fencey",
+				"scale": 1,
+				"position": [ 10, 2 ]
+			},
+			{
+				"type": "fencey",
+				"scale": 1,
+				"position": [ 10, 5 ]
+			},
+			{
+				"type": "fencey",
+				"scale": 1,
+				"position": [ 10, 7 ]
+			},
+			{
+				"type": "fencey",
+				"scale": 1,
+				"position": [ 10, 8 ]
+			},
+			{
+				"type": "fencey",
+				"scale": 1,
+				"position": [ 10, 8 ]
+			},
+			{
+				"type": "fencey",
+				"scale": 1,
+				"position": [ 10, 9 ]
+			},
+			{
+				"type": "fencey",
+				"scale": 1,
+				"position": [ 10, 5 ]
+			},
+			{
+				"type": "fencey",
+				"scale": 1,
+				"position": [ 10, 6 ]
+			},
+			{
+				"type": "fencey",
+				"scale": 1,
+				"position": [ 10, 1 ]
+			},
+			{
+				"type": "tree",
+				"scale": 1,
+				"position": [ 2, 6 ]
+			}
+		]
 	}
 }
 }
