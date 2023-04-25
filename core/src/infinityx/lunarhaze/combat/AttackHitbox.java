@@ -22,7 +22,7 @@ public class AttackHitbox extends GameObject {
     private final AttackingGameObject attacker;
 
     /**
-     * @param initialSize initial width and height of hitbox
+     * @param initialSize holds initial reach and width of hitbox respectively
      * @param attacker    entity this hitbox is parented to
      */
     public AttackHitbox(Vector2 initialSize, AttackingGameObject attacker) {

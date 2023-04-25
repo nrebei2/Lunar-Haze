@@ -119,9 +119,9 @@ public abstract class AttackingGameObject extends GameObject {
 
         JsonValue hitboxInfo = attack.get("hitbox");
         float attackRange = hitboxInfo.getFloat("range");
-
-        //float attackWidth = hitboxInfo.has("")
-        createAttackHitbox(container.getWorld(), new Vector2(attackRange, getBoundingRadius() * 2));
+        // width is defaulted to the entity's body diameter
+        float attackWidth = hitboxInfo.has("width") ? hitboxInfo.getFloat("width") : getBoundingRadius() * 2;
+        createAttackHitbox(container.getWorld(), new Vector2(attackRange, attackWidth));
     }
 
     /**
