@@ -1011,7 +1011,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
         // Is every tile filled?
         return board.assertNoNullTiles();
-
     }
 
 

@@ -53,43 +53,32 @@ public enum EnemyState implements State<EnemyController> {
         /** For use in face steering */
         Box2dLocation target;
 
-        // FIXME: this solution is so ass
-        boolean start = true;
-
         @Override
         public void enter(EnemyController entity) {
             target = new Box2dLocation(entity.target);
-            entity.getEnemy().setIndependentFacing(true);
             entity.getEnemy().setDetection(Enemy.Detection.NOTICED);
             entity.targetPos.set(target.getPosition());
 
             entity.faceSB.setTarget(target);
-            entity.getEnemy().setSteeringBehavior(entity.faceSB);
+
+            // Again steering behaviors are ass
+            entity.getEnemy().setSteeringBehavior(null);
         }
 
         @Override
         public void update(EnemyController entity) {
-            if (start) {
-                // Zero out velocity on start
-                entity.getEnemy().setLinearVelocity(Vector2.Zero);
-                entity.getEnemy().setAngularVelocity(0);
-                start = false;
-            }
-
             // Check if we faced target
             Vector2 toTarget = (target.getPosition()).cpy().sub(entity.getEnemy().getPosition());
             float orientation = entity.getEnemy().vectorToAngle(toTarget);
             float rotation = ArithmeticUtils.wrapAngleAroundZero(orientation - entity.getEnemy().getOrientation());
-            float rotationSize = rotation < 0f ? -rotation : rotation;
 
+            // Mimic face sb
+            entity.getEnemy().setAngularVelocity(rotation < 0 ? -1 : 1);
+
+            float rotationSize = rotation < 0f ? -rotation : rotation;
             if (rotationSize <= entity.faceSB.getAlignTolerance()) {
                 entity.getStateMachine().changeState(INDICATOR);
             }
-        }
-
-        @Override
-        public void exit(EnemyController entity) {
-            entity.getEnemy().setIndependentFacing(false);
         }
     },
 

@@ -103,7 +103,6 @@ public class EnemyController extends AttackHandler {
      */
     public FollowPath followPathSB;
 
-
     /**
      * Current target position for pathfinding. You should almost always use {@link Vector2#set(Vector2)} to update this.
      */
@@ -285,7 +284,6 @@ public class EnemyController extends AttackHandler {
 
         // Process the FSM
         enemy.update(delta);
-        stateMachine.update();
         stateMachine.update();
         if (enemy.getDetection() == Enemy.Detection.NOTICED){
             alert_sound.play();
