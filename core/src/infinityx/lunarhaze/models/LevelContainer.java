@@ -485,6 +485,7 @@ public class LevelContainer {
         return view;
     }
 
+    /** Color used to clear the screen */
     public Color backgroundColor = new Color(0x0f4f47ff).mul(0.8f);
 
     /**

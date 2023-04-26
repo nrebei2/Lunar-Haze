@@ -25,7 +25,9 @@ import infinityx.lunarhaze.controllers.LevelSerializer;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.graphics.ImGuiImplGLES2;
 import infinityx.lunarhaze.models.Board;
+import infinityx.lunarhaze.models.GameObject;
 import infinityx.lunarhaze.models.LevelContainer;
+import infinityx.lunarhaze.models.Tile;
 import infinityx.util.FilmStrip;
 import infinityx.util.ScreenObservable;
 
@@ -106,29 +108,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     private ArrayList<PointLight> pointLights;
 
     /**
-     * ImGui initialization
-     */
-    public void setupImGui() {
-        // ImGui initialization
-        this.imGuiGlfw = new ImGuiImplGlfw();
-        this.imGuiGl = new ImGuiImplGLES2();
-
-        long windowHandle = ((Lwjgl3Graphics) Gdx.graphics).getWindow().getWindowHandle();
-        ImGui.createContext();
-        ImGuiIO io = ImGui.getIO();
-        io.setIniFilename(null);
-        // TODO: why doesn't font work?
-       // font = directory.getEntry("libre-small", BitmapFont.class);
-        //font = io.getFonts().addFontFromFileTTF(directory.getDirectory() + "shared/LibreBaskerville-Regular.ttf", 16);
-//        ImFont
-        //io.setFontDefault(font);
-        //io.getFonts().build();
-
-        imGuiGlfw.init(windowHandle, true);
-        imGuiGl.init("#version 110");
-    }
-
-    /**
      * type Selected :=
      * | Tile of Int
      * | Player
@@ -160,6 +139,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             this.num = num;
         }
 
+        /** Follows {@link infinityx.lunarhaze.models.Tile#getTileNum()} */
         public int num;
 
         @Override
@@ -260,11 +240,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     private ImFloat stealthLength;
 
     /**
-     * Holds a reference to the enemies, so that the enemy menu can let you modify them
-     */
-    private ArrayList<infinityx.lunarhaze.models.entity.Enemy> enemies;
-
-    /**
      * Current enemy being changed in the Enemy->Enemy x new window
      */
     private infinityx.lunarhaze.models.entity.Enemy currEnemyControlled;
@@ -280,6 +255,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
     /** List of possible scene object selections */
     Array<SceneObject> objectSelections;
+
+    /** The game object that is currently selected. Ignore if selected is a tile */
+    GameObject selectedObject;
 
     /**
      * When false, display the stealth ambient lighting, when true, display the battle ambient lighting
@@ -370,8 +348,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         ArrayList<Vector2> emptyPatrol = new ArrayList<>();
         emptyPatrol.add(new Vector2(0, 0));
         emptyPatrol.add(new Vector2(0, 0));
-        currEnemyControlled = level.addEnemy(e.type, mouseBoard.x, mouseBoard.y, emptyPatrol);
-        enemies.add(currEnemyControlled);
+        level.addEnemy(e.type, mouseWorld.x, mouseWorld.y, emptyPatrol);
     }
 
     /**
@@ -406,7 +383,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         SceneObject curr = (SceneObject) selected;
         level.addSceneObject(
                 curr.type,
-                mouseBoard.x, mouseBoard.y,
+                mouseWorld.x, mouseWorld.y,
                 curr.scale
         );
     }
@@ -419,34 +396,25 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         observer.exitScreen(this, GO_PLAY);
     }
 
-    public LevelContainer getLevel() {
-        return level;
-    }
-
     /**
      * Called when this screen becomes the current screen for a {@link com.badlogic.gdx.Game}.
      */
     @Override
     public void show() {
-        boardSize = new int[]{10, 10};
+        boardSize = new int[] {10, 10};
         patrol1 = new int[]{0, 0};
         patrol2 = new int[]{0, 0};
         objectScale = new float[]{1};
-        level = LevelParser.LevelParser().loadEmpty(boardSize[0], boardSize[1]);
-        level.hidePlayer();
-        playerPlaced = false;
-        board = level.getBoard();
-        showNewBoardWindow = false;
+        showNewBoardWindow = true;
         showCannotSaveError = false;
         showEnemyControllerWindow = false;
         showBattleLighting = false;
-        enemies = new ArrayList<infinityx.lunarhaze.models.entity.Enemy>();
         stealthLighting = new float[]{1, 1, 1, 1};
         battleLighting = new float[]{1, 1, 1, 1};
         moonlightLighting = new float[]{1, 1, 1, 0.2f};
         stealthLength = new ImFloat(10);
         selected = new Tile(0);
-        //selected = new Player(level.getPlayer().getTexture().getTexture());
+
         Gdx.input.setInputProcessor(this);
         RayHandler.setGammaCorrection(true);
         RayHandler.useDiffuseLight(true);
@@ -459,6 +427,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * @param delta Number of seconds since last animation frame
      */
     private void update(float delta) {
+        if (level == null) return;
+
         // Move world with arrow keys
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             level.translateView(-20, 0);
@@ -494,14 +464,22 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     private void draw(float delta) {
         canvas.clear();
+        imGuiGlfw.newFrame();
+        ImGui.newFrame();
+
+        if (showNewBoardWindow) {
+            // TODO: background maybe
+            createNewBoardWindow();
+            ImGui.render();
+            imGuiGl.renderDrawData(ImGui.getDrawData());
+            return;
+        }
+
         level.drawLevel(canvas);
 
         canvas.begin(GameCanvas.DrawPass.SHAPE, level.getView().x, level.getView().y);
         board.drawOutline(canvas);
         canvas.end();
-
-        imGuiGlfw.newFrame();
-        ImGui.newFrame();
 
         // --- ImGUI draw commands go here ---
         createTileMenu();
@@ -509,9 +487,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         createBrushSelection();
         createObjectMenu();
 
-        if (showNewBoardWindow) {
-            createNewBoardWindow();
-        }
         if (showCannotSaveError) {
             cannotSaveWindow();
         }
@@ -581,39 +556,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     }
 
     /**
-     * Called when a key was pressed
-     *
-     * @param keycode one of the constants in {@link Input.Keys}
-     * @return whether the input was processed
-     */
-    @Override
-    public boolean keyDown(int keycode) {
-        return false;
-    }
-
-    /**
-     * Called when a key was released
-     *
-     * @param keycode one of the constants in {@link Input.Keys}
-     * @return whether the input was processed
-     */
-    @Override
-    public boolean keyUp(int keycode) {
-        return false;
-    }
-
-    /**
-     * Called when a key was typed
-     *
-     * @param character The character
-     * @return whether the input was processed
-     */
-    @Override
-    public boolean keyTyped(char character) {
-        return false;
-    }
-
-    /**
      * Called when the screen was touched or a mouse button was pressed. The button parameter will be {@link Buttons#LEFT} on iOS.
      *
      * @param screenX The x coordinate, origin is in the upper left corner.
@@ -624,6 +566,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        if (level == null) return false;
         if (ImGui.getIO().getWantCaptureMouse()) return false;
         int boardX = board.worldToBoardX(mouseWorld.x);
         int boardY = board.worldToBoardY(mouseWorld.y);
@@ -644,20 +587,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     }
 
     /**
-     * Called when a finger was lifted or a mouse button was released. The button parameter will be {@link Buttons#LEFT} on iOS.
-     *
-     * @param screenX
-     * @param screenY
-     * @param pointer the pointer for the event.
-     * @param button  the button
-     * @return whether the input was processed
-     */
-    @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        return false;
-    }
-
-    /**
      * Called when a finger or the mouse was dragged.
      *
      * @param screenX
@@ -667,6 +596,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
+        if (level == null) return false;
         if (ImGui.getIO().getWantCaptureMouse()) return false;
 
         mouseWorld.set(canvas.ScreenToWorldX(Gdx.input.getX()), canvas.ScreenToWorldY(Gdx.input.getY()));
@@ -695,6 +625,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
+        if (level == null) return false;
         if (ImGui.getIO().getWantCaptureMouse()) return false;
         // Cursor world position
         mouseWorld.set(canvas.ScreenToWorldX(Gdx.input.getX()), canvas.ScreenToWorldY(Gdx.input.getY()));
@@ -729,7 +660,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         return true;
     }
 
-
     /**
      * Called when the mouse wheel was scrolled. Will not be called on iOS.
      *
@@ -739,6 +669,12 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     @Override
     public boolean scrolled(float amountX, float amountY) {
+        if (level == null) return false;
+        if (selected.getType() == Selected.Type.OBJECT) {
+            float delta = 0.02f * amountY;
+            ((SceneObject)selected).scale += delta;
+            objectScale[0] += delta;
+        }
         return false;
     }
 
@@ -795,6 +731,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             if (ImGui.imageButton(obj.texture.getTextureObjectHandle(), 100, 100 * 3 / 4)) {
                 placingMoonlight = false;
                 selected = obj;
+                objectScale[0] = 1;
+                obj.scale = 1;
             }
 
             // Position the next tile in the row
@@ -904,9 +842,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         if (ImGui.beginMenu("   Enemy   ")) {
 
             // Iterate through enemies and create options for menu
-            for (int i = 0; i < enemies.size(); i++) {
+            for (int i = 0; i < level.getEnemies().size; i++) {
                 if (ImGui.menuItem("Show Enemy " + i + " Menu")) {
-                    currEnemyControlled = enemies.get(i);
+                    currEnemyControlled = level.getEnemies().get(i);
                     showEnemyControllerWindow = true;
                 }
             }
@@ -937,7 +875,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             board = level.getBoard();
             showEnemyControllerWindow = false;
             showBattleLighting = false;
-            enemies = new ArrayList<infinityx.lunarhaze.models.entity.Enemy>();
             stealthLighting = new float[]{1, 1, 1, 1};
             battleLighting = new float[]{1, 1, 1, 1};
             moonlightLighting = new float[]{1, 1, 1, 0.2f};
@@ -1026,6 +963,29 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     }
 
     /**
+     * ImGui initialization
+     */
+    public void setupImGui() {
+        // ImGui initialization
+        this.imGuiGlfw = new ImGuiImplGlfw();
+        this.imGuiGl = new ImGuiImplGLES2();
+
+        long windowHandle = ((Lwjgl3Graphics) Gdx.graphics).getWindow().getWindowHandle();
+        ImGui.createContext();
+        ImGuiIO io = ImGui.getIO();
+        io.setIniFilename(null);
+        // TODO: why doesn't font work?
+        // font = directory.getEntry("libre-small", BitmapFont.class);
+        //font = io.getFonts().addFontFromFileTTF(directory.getDirectory() + "shared/LibreBaskerville-Regular.ttf", 16);
+//        ImFont
+        //io.setFontDefault(font);
+        //io.getFonts().build();
+
+        imGuiGlfw.init(windowHandle, true);
+        imGuiGl.init("#version 110");
+    }
+
+    /**
      * Asserts everything is set up to save the board
      * (to avoid nullpointerexception)
      * @return true if everything is set up to save the board
@@ -1038,12 +998,12 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         }
 
         // Is there at least one enemy?
-        if (enemies.size() == 0) {
+        if (level.getEnemies().size == 0) {
             return false;
         }
 
         // Does every enemy have a patrol?
-        for (infinityx.lunarhaze.models.entity.Enemy enemy : enemies) {
+        for (infinityx.lunarhaze.models.entity.Enemy enemy : level.getEnemies()) {
             if (enemy.getPatrolPath() == null) {
                 return false;
             }
@@ -1052,6 +1012,56 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         // Is every tile filled?
         return board.assertNoNullTiles();
 
+    }
+
+
+    // UNUSED
+
+    /**
+     * Called when a finger was lifted or a mouse button was released. The button parameter will be {@link Buttons#LEFT} on iOS.
+     *
+     * @param screenX
+     * @param screenY
+     * @param pointer the pointer for the event.
+     * @param button  the button
+     * @return whether the input was processed
+     */
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    /**
+     * Called when a key was pressed
+     *
+     * @param keycode one of the constants in {@link Input.Keys}
+     * @return whether the input was processed
+     */
+    @Override
+    public boolean keyDown(int keycode) {
+        return false;
+    }
+
+    /**
+     * Called when a key was released
+     *
+     * @param keycode one of the constants in {@link Input.Keys}
+     * @return whether the input was processed
+     */
+    @Override
+    public boolean keyUp(int keycode) {
+        return false;
+    }
+
+    /**
+     * Called when a key was typed
+     *
+     * @param character The character
+     * @return whether the input was processed
+     */
+    @Override
+    public boolean keyTyped(char character) {
+        return false;
     }
 
 }
