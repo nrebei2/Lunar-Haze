@@ -101,7 +101,7 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
 
         // TODO
         setMaxLinearAcceleration(0.5f);
-        setMaxLinearSpeed(0.7f);
+        setMaxLinearSpeed(1.15f);
         setMaxAngularAcceleration(1);
         // Angular speed is only used in NOTICED when turning around
         setMaxAngularSpeed(1f);
