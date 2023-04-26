@@ -12,6 +12,7 @@ import infinityx.lunarhaze.models.Board;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.entity.Enemy;
 import infinityx.lunarhaze.models.entity.Werewolf;
+import infinityx.lunarhaze.screens.GameSetting;
 
 /**
  * Controller to handle gameplay interactions.
@@ -126,14 +127,17 @@ public class GameplayController {
      */
     private Sound win_sound;
 
+    private GameSetting setting;
+
 
     /**
      * Creates a new GameplayController with no active elements.
      */
-    public GameplayController() {
+    public GameplayController(GameSetting setting) {
         player = null;
         enemies = null;
         board = null;
+        this.setting = setting;
     }
 
     public GameState getState() {
@@ -185,7 +189,7 @@ public class GameplayController {
 
         board = levelContainer.getBoard();
         player = levelContainer.getPlayer();
-        this.playerController = new PlayerController(levelContainer);
+        this.playerController = new PlayerController(levelContainer, setting);
 
         phaseTimer = levelContainer.getPhaseLength();
         ambientLightTransitionTimer = 0;
@@ -224,7 +228,9 @@ public class GameplayController {
                     battleTicks += 1;
                     if (enemies.size == 0) {
                         gameState = GameState.WIN;
-                        win_sound.play();
+                        if(setting.isSoundEnabled()) {
+                            win_sound.play();
+                        }
                     }
                     break;
                 case TRANSITION:

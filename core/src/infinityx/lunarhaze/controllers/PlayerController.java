@@ -10,6 +10,7 @@ import infinityx.lunarhaze.controllers.GameplayController.Phase;
 import infinityx.lunarhaze.models.Board;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.entity.Werewolf;
+import infinityx.lunarhaze.screens.GameSetting;
 
 
 /**
@@ -112,6 +113,8 @@ public class PlayerController {
      */
     private Boolean allocateReady;
 
+    private GameSetting setting;
+
     /**
      * Player state machine, mostly for animation purposes and setting stealth.
      */
@@ -157,12 +160,13 @@ public class PlayerController {
         return collect_sound;
     }
 
+
     /**
      * Initializes
      *
      * @param levelContainer
      */
-    public PlayerController(LevelContainer levelContainer) {
+    public PlayerController(LevelContainer levelContainer, GameSetting setting) {
         this.player = levelContainer.getPlayer();
         this.board = levelContainer.getBoard();
         this.levelContainer = levelContainer;
@@ -172,6 +176,7 @@ public class PlayerController {
         attack_sound = levelContainer.getDirectory().getEntry("whip", Sound.class);
         stateMachine = new DefaultStateMachine<>(this, PlayerState.IDLE);
         allocateReady = false;
+        this.setting = setting;
     }
 
     /**
@@ -199,7 +204,9 @@ public class PlayerController {
     public void collectMoonlight() {
         collectingMoonlight = false;
         player.addMoonlightCollected();
-        collect_sound.play(0.8f);
+        if(setting.isSoundEnabled()) {
+            collect_sound.play(0.8f);
+        }
     }
 
     /**

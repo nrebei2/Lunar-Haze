@@ -68,6 +68,8 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
     private Texture musicOffTexture;
 
     private Texture music;
+
+    private Texture sound;
     /**
      * Back button
      */
@@ -172,6 +174,10 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
      * Ratio of play height from bottom
      */
     private static final float MUSIC_HEIGHT_RATIO = 0.7f;
+    /**
+     * Ratio of play height from bottom
+     */
+    private static final float SOUND_HEIGHT_RATIO = 0.2f;
     private static final float MUSIC_BAR_HEIGHT_RATIO = 0.4f;
     private ImageButton musicButton;
 
@@ -180,6 +186,9 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
 
     private float sliderValue;
     private float starY;
+    private float centerY_sound;
+    private float centerX_sound;
+    private int pressSoundState;
 
     /**
      * Returns true if all assets are loaded and the player is ready to go.
@@ -196,6 +205,14 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
      */
     public boolean isMusicReady() {
         return pressMusicState == 2;
+    }
+    /**
+     * Returns true if all assets are loaded and the player is ready to go.
+     *
+     * @return true if the player is ready to go
+     */
+    public boolean isSoundReady() {
+        return pressSoundState == 2;
     }
 
     public int isStarReady() {
@@ -249,6 +266,11 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
                         STAR_WIDTH / star_filled.getWidth(), STAR_HEIGHT / star_filled.getHeight());
             }
         }
+        canvas.drawTextCentered("Sound Enabled", font, - canvas.getHeight() * 0.2f);
+        canvas.draw(sound, alphaTint, sound.getWidth() / 2, sound.getHeight() / 2,
+                centerX_sound, centerY_sound, 0, MUSIC_SCALE * scale, MUSIC_SCALE * scale);
+
+
         Color color = new Color(45.0f / 255.0f, 74.0f / 255.0f, 133.0f / 255.0f, 1.0f);
         Color tintBack = (pressBackState == 1 ? color : Color.WHITE);
         canvas.draw(backButton, tintBack, backButton.getWidth() / 2, backButton.getHeight() / 2,
@@ -261,6 +283,7 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
      */
     private void update(float delta) {
         music = (setting.isMusicEnabled()? musicOnTexture : musicOffTexture);
+        sound = (setting.isSoundEnabled()? musicOnTexture : musicOffTexture);
         inputController.readKeyboard();
 //        System.out.println(setting.isMusicEnabled());
     }
@@ -270,6 +293,7 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
         active = true;
         pressBackState = 0;
         pressMusicState = 0;
+        pressSoundState = 0;
         pressStarState = new int[11];
         for (int i = 1; i<=10; i++ ){
             pressStarState[i] = 0;
@@ -304,6 +328,10 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
                 setting.setMusicEnabled(!setting.isMusicEnabled());
                 pressMusicState = 0;
             }
+            if(isSoundReady() && observer !=null){
+                setting.setSoundEnabled(!setting.isSoundEnabled());
+                pressSoundState = 0;
+            }
         // We are are ready, notify our listener
         }
     }
@@ -317,7 +345,9 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
         centerY = (int) (BACK_HEIGHT_RATIO * height);
         centerX = (int) (BACK_WIDTH_RATIO * width);
         centerX_music = width/2;
+        centerX_sound = width/2;
         centerY_music = (int) (MUSIC_HEIGHT_RATIO * height);
+        centerY_sound = (int) (SOUND_HEIGHT_RATIO * height);
         heightY = height;
         starY = canvas.getHeight() * 0.45f;
     }
@@ -381,9 +411,15 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
         float y = MUSIC_SCALE * scale * music.getHeight() / 2;
 
         // Play button is a rectangle.
-        float distYPlay = Math.abs(screenY - centerY_music);
-        if (distX < x && distYPlay < y) {
+        float distYMusic = Math.abs(screenY - centerY_music);
+        if (distX < x && distYMusic < y) {
             pressMusicState = 1;
+        }
+
+        // Play button is a rectangle.
+        float distYSound = Math.abs(screenY - centerY_sound);
+        if (distX < x && distYSound < y) {
+            pressSoundState = 1;
         }
 
         float x_star = STAR_WIDTH;
@@ -414,6 +450,10 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
         }
         if (pressMusicState == 1) {
             pressMusicState = 2;
+            return false;
+        }
+        if (pressSoundState == 1) {
+            pressSoundState = 2;
             return false;
         }
         for (int i = 1; i<=10; i++ ){

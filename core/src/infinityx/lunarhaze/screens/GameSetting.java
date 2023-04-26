@@ -25,6 +25,9 @@ public class GameSetting {
         if (!preferences.contains(SOUND_ENABLED)) {
             setSoundEnabled(true);
         }
+        if (!preferences.contains(MOVE_UP)){
+            setBinding(MOVE_UP, Keys.W);
+        }
     }
 
     protected Preferences getPrefs() {
