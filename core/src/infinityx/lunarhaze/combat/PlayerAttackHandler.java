@@ -153,7 +153,7 @@ public class PlayerAttackHandler extends AttackHandler {
     }
 
     private void processDash(Vector2 direction) {
-        entity.getBody().setLinearVelocity(direction.x * DASH_SPEED, direction.y * DASH_SPEED);
+        entity.getBody().applyLinearImpulse(direction.x *0.5f , direction.y *0.5f, entity.getX(), entity.getY(), true);
         dashTimer += Gdx.graphics.getDeltaTime();
         if (dashTimer >= DASH_TIME) {
             endDash();
@@ -162,7 +162,6 @@ public class PlayerAttackHandler extends AttackHandler {
 
     private void endDash() {
         dashCooldownCounter = 0f;
-        entity.getBody().setLinearVelocity(0, 0);
         isDashing = false;
     }
 }

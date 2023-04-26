@@ -220,6 +220,9 @@ public enum EnemyState implements State<EnemyController> {
                 }
             }
             else{
+                if (enemyToTarget.len() <= 1 && entity.canStartNewAttack()){
+                    entity.getStateMachine().changeState(ATTACK);
+                }
                 // Switch to battle behavior when close enough
                 if (enemyToTarget.len() <= 2){
                     // Always face towards target
@@ -228,6 +231,7 @@ public enum EnemyState implements State<EnemyController> {
                     entity.getEnemy().setSteeringBehavior(entity.battleSB);
                 } else {
                     // go back to chase (follow path)
+
                     entity.getEnemy().setIndependentFacing(false);
                     entity.targetPos.set(entity.getTarget().getPosition());
                     entity.getEnemy().setSteeringBehavior(entity.followPathSB);
@@ -251,7 +255,6 @@ public enum EnemyState implements State<EnemyController> {
         @Override
         public boolean onMessage(EnemyController control, Telegram telegram) {
             if (telegram.message == TacticalManager.FLANK) {
-                System.out.println("flanking");
 
                 Vector2 flank_pos = (Vector2) telegram.extraInfo;
                 control.flank_pos = flank_pos;
