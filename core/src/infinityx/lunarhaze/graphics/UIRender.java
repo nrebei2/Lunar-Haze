@@ -562,7 +562,7 @@ public class UIRender {
             int remaining_sec = Math.max((int) gameplayController.getRemainingTime(), 0);
             int min = remaining_sec / 60;
             int sec = remaining_sec % 60;
-            stat = ((min >= 10)? min : ("0" + min)) + ":" + ((sec >= 10)? sec : ("0" + sec));
+            stat = ((min >= 10) ? min : ("0" + min)) + ":" + ((sec >= 10) ? sec : ("0" + sec));
         } else {
             text = "Enemies Remaining";
             int remaining = gameplayController.getRemainingEnemies();
@@ -677,7 +677,7 @@ public class UIRender {
                 canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f,
                 0, 0.7f, 0.7f);
         canvas.drawText(pc.getNumPowerPress() + "", UIFont_small,
-                stroke_width + SQUARE_STROKE_WIDTH + attack_pow_icon.getWidth()/2,
+                stroke_width + SQUARE_STROKE_WIDTH + attack_pow_icon.getWidth() / 2,
                 canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f + UIFont_small.getCapHeight());
     }
 
@@ -695,7 +695,7 @@ public class UIRender {
                 canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f,
                 0, 1.0f, 1.0f);
         canvas.drawText(pc.getNumRangePress() + "", UIFont_small,
-                stroke_width + SQUARE_STROKE_WIDTH*2 + attack_pow_icon.getWidth()/2 + GAP_DIST,
+                stroke_width + SQUARE_STROKE_WIDTH * 2 + attack_pow_icon.getWidth() / 2 + GAP_DIST,
                 canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f + UIFont_small.getCapHeight());
     }
 

@@ -70,7 +70,7 @@ public class TacticalManager implements Telegraph {
             StateMachine<EnemyController, EnemyState> enemy = control.getStateMachine();
             if (!enemy.isInState(EnemyState.ALERT)) continue;
             //change strafe rotation
-            if (rand.nextFloat() <= 0.4){
+            if (rand.nextFloat() <= 0.4) {
                 control.strafe.changeRotation();
             }
             if (rand.nextFloat() <= 0.1) {

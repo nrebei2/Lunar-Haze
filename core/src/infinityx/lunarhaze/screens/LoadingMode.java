@@ -347,8 +347,8 @@ public class LoadingMode extends ScreenObservable implements Screen {
 
     private void drawBackground(GameCanvas canvas) {
         canvas.drawOverlay(background, alphaTint, true);
-        canvas.draw(game_title, alphaTint, game_title.getWidth() / 2, game_title.getHeight()/2,
-                canvas.getWidth() / 2, canvas.getHeight()  * HEIGHT_RATIO_TITLE, 0, 0.45f * scale, 0.45f * scale);
+        canvas.draw(game_title, alphaTint, game_title.getWidth() / 2, game_title.getHeight() / 2,
+                canvas.getWidth() / 2, canvas.getHeight() * HEIGHT_RATIO_TITLE, 0, 0.45f * scale, 0.45f * scale);
         canvas.draw(
                 loading_text, alphaTint,
                 loading_text.getWidth() / 2, 0,

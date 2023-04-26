@@ -57,12 +57,6 @@
     "no15": "screens/level-selection-screen/15.png",
     "bkg_allocate": "allocateUI/bkg-allocate.png",
     "add": "allocateUI/add-button.png",
-    "grass1": "tiles/grass1.png",
-    "grass2": "tiles/grass2.png",
-    "grass3": "tiles/grass3.png",
-    "grass4": "tiles/grass4.png",
-    "grass5": "tiles/grass5.png",
-    "grass6": "tiles/grass6.png",
     "circle-bar": "screens/game-screen/circle_bar.png",
     "counter": "screens/game-screen/top-paint-stroke.png",
     "dusk-icon": "screens/game-screen/dusk.png",
@@ -98,6 +92,7 @@
     "moon": "transitionUI/moon.png",
     "transition-background": "transitionUI/transition-background.png",
     "trees": "transitionUI/trees.png",
+
     "tile": {
       "file": "images/tile-spritesheet.png",
       "sprites":	{
@@ -108,86 +103,29 @@
         }
       }
     },
-    "lamp": {
-      "file": "images/objects/Lamp_a_1.png",
-      "sprites":	{
-        "static" : {
-          "size" : 1,
-          "rows" : 1,
-          "cols" : 1
-        }
-      }
-    },
-    "tree1": {
-      "file": "images/objects/tree1.png",
-      "sprites":	{
-        "static" : {
-          "size" : 1,
-          "rows" : 1,
-          "cols" : 1
-        }
-      }
-    },
-    "house1": {
-      "file": "images/objects/house1.png",
-      "sprites":	{
-        "static" : {
-          "size" : 1,
-          "rows" : 1,
-          "cols" : 1
-        }
-      }
-    },
-    "house2": {
-      "file": "images/objects/house2.png",
-      "sprites":	{
-        "static" : {
-          "size" : 1,
-          "rows" : 1,
-          "cols" : 1
-        }
-      }
-    },
-    "fence1": {
-      "file": "images/objects/fence1.png",
-      "sprites":	{
-        "static" : {
-          "size" : 1,
-          "rows" : 1,
-          "cols" : 1
-        }
-      }
-    },
-    "fence2": {
-      "file": "images/objects/fence2.png",
-      "sprites":	{
-        "static" : {
-          "size" : 1,
-          "rows" : 1,
-          "cols" : 1
-        }
-      }
-    },
-    "forest": {
-      "file": "images/objects/forest.png",
-      "sprites":	{
-        "static" : {
-          "size" : 1,
-          "rows" : 1,
-          "cols" : 1
-        }
-      }
-    },
-    "stone": {
-      "file": "images/objects/stone1.png",
-      "sprites":	{
-        "static" : {
-          "size" : 1,
-          "rows" : 1,
-          "cols" : 1
-        }
-      }
-    },
+
+    "stone": "images/objects/stone1.png",
+    "lamp":  "images/objects/lamp.png",
+    "house1": "images/objects/House_a_1_night.png",
+    "house2": "images/objects/House_a_4_night.png",
+    "fence1":  "images/objects/Fence_a_1.png",
+    "fence2":  "images/objects/Fence_a_2.png",
+    "fence3":  "images/objects/Fence_a_3.png",
+    "fence4":  "images/objects/Fence_a_4.png",
+    "fence5":  "images/objects/Fence_a_5.png",
+    "tree0":  "images/objects/Tree_a_1.png",
+    "tree1":  "images/objects/forest.png",
+    "tree2":  "images/objects/Tree_a_4.png",
+    "tree3":  "images/objects/Tree_a_5.png",
+    "tree4":  "images/objects/Tree_b_1.png",
+    "tree5":  "images/objects/Tree_b_2.png",
+    "tree6":  "images/objects/Tree_b_3.png",
+    "tree7":  "images/objects/Tree_b_4.png",
+    "tree8":  "images/objects/Tree_b_5.png",
+    "tree9":  "images/objects/Tree_b_6.png",
+    "tree10":  "images/objects/Tree_b_7.png",
+    "tree11":  "images/objects/Tree_b_8.png",
+
     "dust": "images/dust.png",
     "werewolf": {
       "file": 	"images/player/walk_spritesheet_left.png",

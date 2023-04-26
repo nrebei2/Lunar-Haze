@@ -5,11 +5,9 @@ import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.behaviors.FollowPath;
 import com.badlogic.gdx.ai.steer.utils.Path;
 import com.badlogic.gdx.ai.utils.Location;
-import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector2;
-import infinityx.lunarhaze.models.entity.Werewolf;
 
-public class WeightedFollowPath extends FollowPath{
+public class WeightedFollowPath extends FollowPath {
     public float distToTarget;
 
     public Location<Vector2> target;
@@ -21,9 +19,9 @@ public class WeightedFollowPath extends FollowPath{
     }
 
     @Override
-    protected SteeringAcceleration calculateRealSteering (SteeringAcceleration steering) {
+    protected SteeringAcceleration calculateRealSteering(SteeringAcceleration steering) {
         SteeringAcceleration s = super.calculateRealSteering(steering);
-        if (target.getPosition().sub((Vector2) owner.getPosition()).len() <= distToTarget){
+        if (target.getPosition().sub((Vector2) owner.getPosition()).len() <= distToTarget) {
             s.setZero();
         }
 

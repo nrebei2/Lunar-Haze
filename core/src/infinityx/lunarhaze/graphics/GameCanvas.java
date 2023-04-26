@@ -171,10 +171,10 @@ public class GameCanvas {
     private Vector2 worldToScreen;
 
     /**
-     * Translation cache used for view translation
-     * TODO: I dont like this, maybe a better way to restructure
+     * The current zoom of the camera. A zoom of 1 is unchanged.
+     * A zoom >1 will zoom in, and a zoom of <1 will zoom out
      */
-    private final Vector2 viewCache;
+    private float zoom;
 
     /**
      * Sets the scaling factor for the world to screen transformation
@@ -203,18 +203,21 @@ public class GameCanvas {
     }
 
     /**
-     * Both functions represent a map from screen coordinates to world coordinates.
-     * This function also takes into account the view translation from the previous call.
+     * represent a map from screen coordinates to world coordinates.
+     *
+     * @param view world view translation
      */
-    public float ScreenToWorldX(float s_x) {
-        return (s_x - viewCache.x) / worldToScreen.x;
+    public float ScreenToWorldX(float s_x, Vector2 view) {
+        return (s_x / zoom - view.x) / (worldToScreen.x);
     }
 
     /**
-     * No need to flip y-axis
+     * No need to flip y-axis. Represent a map from screen coordinates to world coordinates.
+     *
+     * @param view world view translation
      */
-    public float ScreenToWorldY(float s_y) {
-        return ((Gdx.graphics.getHeight() - s_y) - viewCache.y) / worldToScreen.y;
+    public float ScreenToWorldY(float s_y, Vector2 view) {
+        return ((Gdx.graphics.getHeight() - s_y) / zoom - view.y) / (worldToScreen.y);
     }
 
     /**
@@ -231,6 +234,7 @@ public class GameCanvas {
         shaderRenderer = new ShaderRenderer();
 
         worldToScreen = new Vector2();
+        camera = new OrthographicCamera();
         setupCameras();
 
         spriteBatch.setProjectionMatrix(camera.combined);
@@ -241,28 +245,43 @@ public class GameCanvas {
         holder = new TextureRegion();
         local = new Affine2();
         global = new Matrix4();
-        viewCache = new Vector2();
         alphaCache = new Color(1, 1, 1, 1);
+        zoom = 1;
 
         this.layout = new GlyphLayout();
     }
 
     /**
-     * Set up the cameras on the canvas
+     * Set up the cameras used for this canvas
      */
     private void setupCameras() {
         // Set the projection matrix (for proper scaling)
-        camera = new OrthographicCamera(getWidth(), getHeight());
-        camera.setToOrtho(false);
+        camera.setToOrtho(false, (float) getWidth() / zoom, (float) getHeight() / zoom);
 
         raycamera = new OrthographicCamera(
-                getWidth() / WorldToScreenX(1),
-                getHeight() / WorldToScreenY(1)
+                getWidth() / (WorldToScreenX(1) * zoom),
+                getHeight() / (WorldToScreenY(1) * zoom)
         );
+
         // Cant do this, would mess up existing UI drawing
         // Center camera at (0, 0)
         //camera.translate(-getWidth()/2, -getHeight()/2);
-        //camera.update();
+        camera.update();
+    }
+
+    /**
+     * Updates the camera {@link #zoom}
+     *
+     * @param zoom the new camera zoom to set
+     */
+    public void setZoom(float zoom) {
+        this.zoom = zoom;
+        // TODO: should zoom out from center
+        setupCameras();
+    }
+
+    public float getZoom() {
+        return zoom;
     }
 
     /**
@@ -498,7 +517,6 @@ public class GameCanvas {
             return;
         }
         global.idt();
-        viewCache.set(tx, ty);
         global.translate(tx, ty, 0.0f);
 
         if (pass == DrawPass.LIGHT) {
@@ -602,8 +620,8 @@ public class GameCanvas {
         }
         float w, h;
         if (fill) {
-            w = getWidth();
-            h = getHeight();
+            w = getWidth() / zoom;
+            h = getHeight() / zoom;
         } else {
             w = image.getWidth();
             h = image.getHeight();

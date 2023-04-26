@@ -44,6 +44,7 @@ public abstract class AttackHandler {
 
     /**
      * Handle all attacking related logic
+     *
      * @param delta in seconds
      */
     public void update(float delta) {

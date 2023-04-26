@@ -3,7 +3,6 @@ package infinityx.lunarhaze.controllers;
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.IntArray;
 import com.badlogic.gdx.utils.JsonValue;
@@ -51,7 +50,9 @@ public class LevelParser {
     float[] wSize;
     int[] sSize;
 
-    /** Sprite sheet holding all tile textures */
+    /**
+     * Sprite sheet holding all tile textures
+     */
     private FilmStrip tileSheet;
 
     /**

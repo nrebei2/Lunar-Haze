@@ -96,7 +96,7 @@ public class GDXRoot extends Game implements ScreenObserver {
         // Initialize each screen
         loading = new LoadingMode("assets.json", canvas, 1);
         setting_preference = new GameSetting();
-        game = new GameMode(canvas,setting_preference);
+        game = new GameMode(canvas, setting_preference);
         menu = new MenuMode(canvas);
         selection = new LevelSelectionMode(canvas);
         setting = new SettingMode(canvas, this, setting_preference);
@@ -214,7 +214,7 @@ public class GDXRoot extends Game implements ScreenObserver {
                     break;
             }
         } else if (screen == selection) {
-            switch (exitCode){
+            switch (exitCode) {
                 case LevelSelectionMode.GO_Play:
                     game.setLevel(selection.getLevelSelected());
                     game.setupLevel();
