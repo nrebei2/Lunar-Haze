@@ -14,7 +14,7 @@ public class DesktopLauncher {
 		config.setTitle("Lunar Haze");
 		config.setResizable(true);
 		// For some reason getting screen tear on linux if I don't start fullscreen
-//		config.setFullscreenMode(Lwjgl3ApplicationConfiguration.getDisplayMode());
+		config.setFullscreenMode(Lwjgl3ApplicationConfiguration.getDisplayMode());
 		new Lwjgl3Application(new GDXRoot(), config);
 	}
 }

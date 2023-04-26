@@ -11,6 +11,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.JsonValue;
 import imgui.ImFont;
 import imgui.ImGui;
 import imgui.ImGuiIO;
@@ -133,30 +135,65 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * | Enemy of String
      * | Object of (String, Texture, float)
      */
-    abstract class Selected {
+    abstract static class Selected {
+        /**
+         * Enum specifying the type of the selected object.
+         */
+        public enum Type {
+            TILE, PLAYER, ENEMY, OBJECT
+        }
+
+        /**
+         * Returns the type of this object.
+         * <p>
+         * We use this instead of runtime-typing for performance reasons.
+         *
+         * @return the type of this object.
+         */
+        public abstract Type getType();
     }
 
-    private List<Selected> availableSelections;
-    private int currentSelectionIndex;
 
+    /** Holds the necessary information to place a tile */
     class Tile extends Selected {
         public Tile(int num) {
             this.num = num;
         }
 
         public int num;
+
+        @Override
+        public Type getType() {
+            return Type.TILE;
+        }
     }
 
-    class Player extends Selected { }
+    /** No information needed since container makes its own player */
+    class Player extends Selected {
+        @Override
+        public Type getType() {
+            return Type.PLAYER;
+        }
+    }
 
+
+    /** Holds the necessary information to place an enemy */
     class Enemy extends Selected {
         public Enemy(String type) {
             this.type = type;
         }
 
+        /** type of Enemy */
         public String type;
+
+        @Override
+        public Type getType() {
+           return Type.ENEMY;
+        }
     }
 
+
+    /** Holds the necessary information to place an object */
     class SceneObject extends Selected {
         public SceneObject(Texture texture, String type) {
             this.type = type;
@@ -164,9 +201,17 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             this.scale = 1;
         }
 
+        /** type of scene object */
         public String type;
+
+        /** Texture for button */
         public Texture texture;
         public float scale;
+
+        @Override
+        public Type getType() {
+            return Type.OBJECT;
+        }
     }
 
     /**
@@ -233,6 +278,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     private int[] patrol2;
 
+    /** List of possible scene object selections */
+    Array<SceneObject> objectSelections;
+
     /**
      * When false, display the stealth ambient lighting, when true, display the battle ambient lighting
      */
@@ -240,10 +288,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
     public EditorMode(GameCanvas canvas) {
         this.canvas = canvas;
-        availableSelections = new ArrayList<>();
-        currentSelectionIndex = 0;
         placingMoonlight = false;
         pointLights = new ArrayList<>();
+        objectSelections = new Array<>();
     }
 
     /**
@@ -256,18 +303,20 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     public void gatherAssets(AssetDirectory directory) {
         this.directory = directory;
+        JsonValue objects = directory.getEntry("objects", JsonValue.class);
 
-        availableSelections.add(new SceneObject(directory.getEntry("house1", Texture.class), "house"));
-        availableSelections.add(new SceneObject(directory.getEntry("fence1", Texture.class), "fencex"));
-        availableSelections.add(new SceneObject(directory.getEntry("fence2", Texture.class), "fencey"));
-        availableSelections.add(new SceneObject(directory.getEntry("tree1", Texture.class), "tree"));
-        availableSelections.add(new SceneObject(directory.getEntry("stone", Texture.class), "stone"));
-        availableSelections.add(new SceneObject(directory.getEntry("lamp", Texture.class), "lamp"));
-        availableSelections.add(new SceneObject(directory.getEntry("forest", Texture.class), "forest"));
-
-        //availableSelections.add(new Enemy(directory.getEntry("villager", Texture.class), "villager"));
-        //availableSelections.add(new Player(directory.getEntry("werewolf", Texture.class)));
-        selected = availableSelections.get(currentSelectionIndex);
+        // Add all objects in json
+        for (JsonValue object: objects) {
+            objectSelections.add(
+                    new SceneObject(
+                            directory.getEntry(
+                                    object.get("textures").getString(
+                                            object.get("texture").getString("name")
+                                    ), FilmStrip.class
+                            ).getTexture(), object.name
+                    )
+            );
+        }
     }
 
     /**
@@ -294,17 +343,21 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * placeSceneObject(), etc.).
      */
     private void placeSelection() {
-        if (selected instanceof Tile) {
-            board.removePreview();
-            placeTile();
-        } else if (selected instanceof Player) {
-            level.getPlayer().setPosition(mouseWorld);
-            playerPlaced = true;
-            System.out.println("Player placed at " + (int) mouseBoard.x + ", " + (int) mouseBoard.y);
-        } else if (selected instanceof SceneObject) {
-            placeSceneObject();
-        } else if (selected instanceof Enemy) {
-            placeEnemy();
+        switch (selected.getType()) {
+            case TILE:
+                board.removePreview();
+                placeTile();
+                break;
+            case PLAYER:
+                level.getPlayer().setPosition(mouseWorld);
+                playerPlaced = true;
+                break;
+            case OBJECT:
+                placeSceneObject();
+                break;
+            case ENEMY:
+                placeEnemy();
+                break;
         }
     }
 
@@ -535,11 +588,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     @Override
     public boolean keyDown(int keycode) {
-        if (keycode == Input.Keys.R) {
-            currentSelectionIndex = (currentSelectionIndex + 1) % availableSelections.size();
-            selected = availableSelections.get(currentSelectionIndex);
-            return true;
-        }
         return false;
     }
 
@@ -625,7 +673,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         if (selected == null) {
             return false;
         }
-        if (selected instanceof Tile) {
+        if (selected.getType() == Selected.Type.TILE) {
             int boardX = board.worldToBoardX(mouseWorld.x);
             int boardY = board.worldToBoardY(mouseWorld.y);
 
@@ -658,21 +706,26 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         int boardX = board.worldToBoardX(mouseWorld.x);
         int boardY = board.worldToBoardY(mouseWorld.y);
 
-        if (selected instanceof Tile) {
-            // snap to tile
-            if (!mouseBoard.epsilonEquals(boardX, boardY)) {
-                // mouse is on different tile now
-                mouseBoard.set(boardX, boardY);
-                board.setPreviewTile((int) mouseBoard.x, (int) mouseBoard.y, ((Tile)selected).num);
-            }
-        } else if (selected instanceof Player && !playerPlaced) {
-            if (board.inBounds(boardX, boardY)) {
-                level.getPlayer().setPosition(mouseWorld);
-                level.showPlayer();
-            } else if (!playerPlaced) {
-                level.hidePlayer();
-            }
+        switch (selected.getType()) {
+            case TILE:
+                // snap to tile
+                if (!mouseBoard.epsilonEquals(boardX, boardY)) {
+                    // mouse is on different tile now
+                    mouseBoard.set(boardX, boardY);
+                    board.setPreviewTile((int) mouseBoard.x, (int) mouseBoard.y, ((Tile)selected).num);
+                }
+                break;
+            case PLAYER:
+                if (playerPlaced) break;
+                if (board.inBounds(boardX, boardY)) {
+                    level.getPlayer().setPosition(mouseWorld);
+                    level.showPlayer();
+                } else if (!playerPlaced) {
+                    level.hidePlayer();
+                }
+                break;
         }
+
         return true;
     }
 
@@ -714,7 +767,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                         tiles.getU2(), tiles.getV2()
                     )
             ) {
-                System.out.println("ASLDJASLJDASKJDSKDJDASKD");
                 placingMoonlight = false;
                 selected = new Tile(i);
             }
@@ -739,18 +791,14 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         ImGui.getStyle().setFramePadding(15, 15);
         ImGui.begin("Object Selection");
 
-        for (int i = 0; i < availableSelections.size(); i++) {
-            if (availableSelections.get(i) instanceof SceneObject) {
-                SceneObject obj = (SceneObject) availableSelections.get(i);
-
-                if (ImGui.imageButton(obj.texture.getTextureObjectHandle(), 100, 100 * 3 / 4)) {
-                    placingMoonlight = false;
-                    selected = availableSelections.get(i);
-                }
-
-                // Position the next tile in the row
-                ImGui.sameLine();
+        for (SceneObject obj: objectSelections) {
+            if (ImGui.imageButton(obj.texture.getTextureObjectHandle(), 100, 100 * 3 / 4)) {
+                placingMoonlight = false;
+                selected = obj;
             }
+
+            // Position the next tile in the row
+            ImGui.sameLine();
         }
 
         ImGui.spacing();
@@ -758,7 +806,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         // Create a slider for the scale of the object
         if (ImGui.sliderFloat("Object Scale", objectScale, 0.1f, 5.0f)) {
             // Apply the scale to the selected object when the slider is moved
-            if (selected instanceof SceneObject) {
+            if (selected.getType() == Selected.Type.OBJECT) {
                 SceneObject selectedObj = (SceneObject) selected;
                 selectedObj.scale = objectScale[0];
             }
