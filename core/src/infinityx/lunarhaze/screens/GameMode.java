@@ -27,6 +27,10 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
      * Need an ongoing reference to the asset directory
      */
     protected AssetDirectory directory;
+    /**
+     * Reference to GameCanvas created by the root
+     */
+    private final GameSetting setting;
     // Exit codes
     /**
      * User requested to go to menu
@@ -135,8 +139,9 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
      */
     private int level;
 
-    public GameMode(GameCanvas canvas) {
+    public GameMode(GameCanvas canvas, GameSetting setting) {
         this.canvas = canvas;
+        this.setting = setting;
         // Create the controllers:
         inputController = InputController.getInstance();
         gameplayController = new GameplayController();
@@ -194,49 +199,64 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
     }
 
     public void updateMusic(float delta) {
-        switch (gameplayController.getState()) {
-            case OVER:
-            case WIN:
-            case PAUSED:
-                if (stealth_playing) {
-                    stealth_background.stop();
-                    stealth_playing = false;
-                } else if (battle_playing) {
-                    battle_background.stop();
-                    stealth_playing = false;
-                }
-                if (!lobby_playing) {
-                    lobby_background.setLooping(true);
-                    lobby_background.play();
-                    lobby_playing = true;
-                }
-                break;
-            case PLAY:
-                if (lobby_playing) {
-                    lobby_background.stop();
-                    lobby_playing = false;
-                }
-                switch (gameplayController.getPhase()) {
-                    case STEALTH:
-                    case TRANSITION:
-                    case ALLOCATE:
-                        if (!stealth_playing) {
-                            stealth_background.setLooping(true);
-                            stealth_background.play();
-                            stealth_playing = true;
-                        }
-                    case BATTLE:
+            switch (gameplayController.getState()) {
+                case OVER:
+                case WIN:
+                case PAUSED:
+                    if (stealth_playing) {
                         stealth_background.stop();
-                        if (!battle_playing) {
-                            battle_background.setLooping(true);
-                            battle_background.play();
-                            battle_playing = true;
-                        }
-                }
-                break;
-            default:
-                break;
-        }
+                        stealth_playing = false;
+                    } else if (battle_playing) {
+                        battle_background.stop();
+                        stealth_playing = false;
+                    }
+                    if (!lobby_playing) {
+                        lobby_background.setLooping(true);
+                        lobby_background.play();
+                        lobby_playing = true;
+                    }
+                    if(!setting.isMusicEnabled()){
+                        lobby_background.stop();
+                    }else{
+                        lobby_background.play();
+                    }
+                    break;
+                case PLAY:
+                    if (lobby_playing) {
+                        lobby_background.stop();
+                        lobby_playing = false;
+                    }
+                    switch (gameplayController.getPhase()) {
+                        case STEALTH:
+                        case TRANSITION:
+                        case ALLOCATE:
+                            if (!stealth_playing) {
+                                stealth_background.setLooping(true);
+                                stealth_background.play();
+                                stealth_playing = true;
+                            }
+                            if(!setting.isMusicEnabled()){
+                                stealth_background.stop();
+                            }else{
+                                stealth_background.play();
+                            }
+                        case BATTLE:
+                            stealth_background.stop();
+                            if (!battle_playing) {
+                                battle_background.setLooping(true);
+                                battle_background.play();
+                                battle_playing = true;
+                            }
+                            if(!setting.isMusicEnabled()){
+                                battle_background.stop();
+                            }else{
+                                battle_background.play();
+                            }
+                    }
+                    break;
+                default:
+                    break;
+            }
     }
 
     /**

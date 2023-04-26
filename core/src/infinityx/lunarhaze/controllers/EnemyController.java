@@ -4,18 +4,19 @@ import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.fsm.StateMachine;
 import com.badlogic.gdx.ai.steer.behaviors.Face;
 import com.badlogic.gdx.ai.steer.behaviors.FollowPath;
-import com.badlogic.gdx.ai.steer.behaviors.PrioritySteering;
 import com.badlogic.gdx.ai.steer.utils.Path;
 import com.badlogic.gdx.ai.steer.utils.paths.LinePath;
 import com.badlogic.gdx.ai.utils.Collision;
 import com.badlogic.gdx.ai.utils.Ray;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import infinityx.lunarhaze.ai.*;
+import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.models.GameObject;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.entity.Enemy;
@@ -23,6 +24,8 @@ import infinityx.lunarhaze.models.entity.Werewolf;
 import infinityx.lunarhaze.physics.Box2DRaycastCollision;
 import infinityx.lunarhaze.physics.RaycastInfo;
 import infinityx.util.astar.AStarPathFinding;
+
+import java.util.Arrays;
 
 /**
  * Controller class, handles logic for a single enemy
@@ -99,6 +102,11 @@ public class EnemyController {
     public FollowPath followPathSB;
 
     /**
+            * weighred Pathfinding behavior for battle phase
+     */
+    public WeightedFollowPath weightedPathSB;
+
+    /**
      * Current target position for pathfinding. You should almost always use {@link Vector2#set(Vector2)} to update this.
      */
     public Vector2 targetPos;
@@ -115,6 +123,11 @@ public class EnemyController {
 //    public ContextSteering combinedSteering;
 //
 //    public PrioritySteering battleSB;
+    /** Holds context behaviors for strafing,  */
+    public CombinedContext combinedContext;
+
+    /** Steering behavior from {@link #combinedContext} */
+    public ContextSteering battleSB;
 
     public Sound getAlertSound(){
         return alert_sound;
@@ -134,12 +147,15 @@ public class EnemyController {
         this.targetPos = new Vector2();
         this.enemy = enemy;
         this.inBattle = false;
-        this.stateMachine = new DefaultStateMachine<>(this, EnemyState.INIT);
+        this.stateMachine = new DefaultStateMachine<>(this, EnemyState.INIT, EnemyState.ANY_STATE);
+        this.combinedContext = new CombinedContext(enemy);
+
         this.raycast = new RaycastInfo(enemy);
         raycast.addIgnores(GameObject.ObjectType.ENEMY, GameObject.ObjectType.HITBOX);
 
         this.commRay = new RaycastInfo(enemy);
-        commRay.addIgnores(GameObject.ObjectType.HITBOX, GameObject.ObjectType.WEREWOLF);
+        commRay.addIgnores(GameObject.ObjectType.WEREWOLF);
+
     }
 
     /**
@@ -153,75 +169,102 @@ public class EnemyController {
         this.communicationCollision = new Box2DRaycastCollision(container.getWorld(), commRay);
         this.pathfinder = container.pathfinder;
 
+        // Steering behaviors
+        this.faceSB = new Face<>(enemy)
+                .setAlignTolerance(MathUtils.degreesToRadians * 10)
+                .setDecelerationRadius(MathUtils.degreesToRadians * 10);
+
         // Dummy path
         Array<Vector2> waypoints = new Array<>();
         waypoints.add(new Vector2());
         waypoints.add(new Vector2());
         followPathSB = new FollowPath(enemy, new LinePath(waypoints), 0.05f, 0.5f);
-//        followPathSB = new WeightedFollowPath(enemy, new LinePath(waypoints), 0.05f, 0.5f, target, 2);
-//
-        // Steering behaviors
-        this.faceSB = new Face<>(enemy)
-                .setAlignTolerance(MathUtils.degreesToRadians * 10)
-                .setDecelerationRadius(MathUtils.degreesToRadians * 20);
-//
-//        this.combinedContext = new CombinedContext(enemy);
-//        ContextBehavior attack = new ContextBehavior(enemy, true) {
-//            @Override
-//            protected ContextMap calculateRealMaps(ContextMap map) {
-//                map.setZero();
-//                Vector2 targetDir = target.getPosition().sub(enemy.getPosition()).nor();
-//                for (int i = 0 ; i<map.getResolution(); i++){
-//                    map.interestMap[i] = map.dirFromSlot(i).dot(targetDir);
-//                }
-//
-//                return map;
-//            }
-//        };
-//
-//        ContextBehavior strafe = new ContextBehavior(enemy, true) {
-//            @Override
-//            protected ContextMap calculateRealMaps(ContextMap map) {
-//                map.setZero();
-//                Vector2 targetDir = target.getPosition().sub(enemy.getPosition()).nor();
-//                for (int i = 0 ; i<map.getResolution(); i++){
-//                    map.interestMap[i] = (float) Math.pow(1 - Math.max(0, map.dirFromSlot(i).dot(targetDir)), 2);
-//                }
-//
-//                return map;
-//            }
-//        };
-//
-//        ContextBehavior seperation = new ContextBehavior(enemy, true) {
-//            @Override
-//            protected ContextMap calculateRealMaps(ContextMap map) {
-//                map.setZero();
-//                for (Enemy en : container.getEnemies()) {
-//                    Vector2 dir = en.getPosition().sub(enemy.getPosition());
-//                    for (int i = 0; i < map.getResolution(); i++) {
-//                        map.dangerMap[i] += dir.dot(map.dirFromSlot(i));
-//                    }
-//                }
-//                float max = Integer.MIN_VALUE;
-//                for (int i = 0; i < map.getResolution(); i++){
-//                    if (map.dangerMap[i] > max) {
-//                        max = map.dangerMap[i];
-//                    }
-//                }
-//                for (int i = 0; i < map.getResolution(); i++) {
-//                    map.dangerMap[i] /= max;
-//                }
-//
-//                return map;
-//            }
-//        };
-//        this.combinedContext.add(attack);
-//        this.combinedContext.add(strafe);
-//        this.combinedContext.add(seperation);
-//        //Resolution is set to 8 to represent the 8 directions in which enemies can move
-//        this.combinedSteering = new ContextSteering(enemy, combinedContext, 8);
-//
-//        this.battleSB = new PrioritySteering<>(enemy).add(followPathSB).add(combinedSteering);
+
+
+
+        // Prefer directions towards target
+        ContextBehavior attack = new ContextBehavior(enemy, true) {
+            @Override
+            protected ContextMap calculateRealMaps(ContextMap map) {
+                map.setZero();
+                Vector2 targetDir = target.getPosition().sub(enemy.getPosition()).nor();
+                for (int i = 0 ; i<map.getResolution(); i++){
+                    map.interestMap[i] = Math.max(0, map.dirFromSlot(i).dot(targetDir));
+                }
+
+                return map;
+            }
+        };
+
+        ContextBehavior strafe = new Strafe(enemy, target, Strafe.Rotation.COUNTERCLOCKWISE);
+
+        ContextBehavior separation = new ContextBehavior(enemy, true) {
+            Ray<Vector2> rayCache = new Ray<>(new Vector2(), new Vector2());
+
+            @Override
+            protected ContextMap calculateRealMaps(ContextMap map) {
+                map.setZero();
+                for (int i = 0; i<map.getResolution(); i++){
+                    Vector2 dir = map.dirFromSlot(i);
+                    // Ray extends two units
+                    rayCache.set(enemy.getPosition(), dir.scl(2).add(enemy.getPosition()));
+                    //System.out.printf("Ray: (%s, %s)\n", rayCache.start, rayCache.end);
+                    communicationCollision.findCollision(collisionCache, rayCache);
+                    if (commRay.hit) {
+                        map.dangerMap[i] = raycast.fraction;
+                    }
+                }
+
+                return map;
+            }
+        };
+        //this.combinedContext.add(attack);
+        this.combinedContext.add(strafe);
+        this.combinedContext.add(separation);
+
+        //Resolution is set to 8 to represent the 8 directions in which enemies can move
+        this.battleSB = new ContextSteering(enemy, combinedContext, 20);
+    }
+
+    /**
+     * Draws what the battleSB is thinking.
+     * Lots of allocations here, should only be used for debugging.
+     */
+    public void drawGizmo(GameCanvas canvas) {
+        float s_x = canvas.WorldToScreenX(1);
+        float s_y = canvas.WorldToScreenY(1);
+        float radius = 1;
+        ContextMap map = battleSB.getMap();
+
+        canvas.shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        // Draw interest map in green
+        canvas.shapeRenderer.setColor(Color.GREEN);
+        for (int i = 0; i < map.getResolution(); i++) {
+            Vector2 dir = map.dirFromSlot(i);
+            canvas.shapeRenderer.line(
+                    getEnemy().getPosition().cpy().add(dir.cpy().scl(radius)).scl(s_x, s_y),
+                    getEnemy().getPosition().cpy().add(dir.cpy().scl(radius + map.interestMap[i])).scl(s_x, s_y)
+            );
+        }
+
+        // Draw danger map in red
+        canvas.shapeRenderer.setColor(Color.RED);
+        for (int i = 0; i < map.getResolution(); i++) {
+            Vector2 dir = map.dirFromSlot(i);
+            canvas.shapeRenderer.line(
+                    getEnemy().getPosition().cpy().add(dir.cpy().scl(radius)).scl(s_x, s_y),
+                    getEnemy().getPosition().cpy().add(dir.cpy().scl(radius + map.dangerMap[i])).scl(s_x, s_y)
+            );
+        }
+
+        // Draw final vector in blue
+        canvas.shapeRenderer.setColor(Color.BLUE);
+        Vector2 dir = battleSB.getDirection();
+        canvas.shapeRenderer.line(
+                getEnemy().getPosition().cpy().add(dir.cpy().nor().scl(radius)).scl(s_x, s_y),
+                getEnemy().getPosition().cpy().add(dir.cpy().nor().scl(radius + dir.len())).scl(s_x, s_y)
+        );
+        canvas.shapeRenderer.end();
     }
 
     /**
@@ -237,11 +280,12 @@ public class EnemyController {
         //}
 
         // Process the FSM
+        enemy.update(delta);
+        stateMachine.update();
         stateMachine.update();
         if (enemy.getDetection() == Enemy.Detection.NOTICED){
             alert_sound.play();
         }
-        enemy.update(delta);
     }
 
 

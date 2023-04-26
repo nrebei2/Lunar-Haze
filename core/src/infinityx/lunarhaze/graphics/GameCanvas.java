@@ -105,7 +105,7 @@ public class GameCanvas {
     /**
      * Rendering context for drawing shapes
      */
-    private final ShapeRenderer shapeRenderer;
+    public final ShapeRenderer shapeRenderer;
 
     /**
      * Rendering context for drawing shaders

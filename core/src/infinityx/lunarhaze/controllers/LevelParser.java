@@ -12,6 +12,7 @@ import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.models.Board;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.Tile;
+import infinityx.util.FilmStrip;
 
 import java.util.ArrayList;
 
@@ -50,6 +51,9 @@ public class LevelParser {
     float[] wSize;
     int[] sSize;
 
+    /** Sprite sheet holding all tile textures */
+    private FilmStrip tileSheet;
+
     /**
      * Access to current container since it can be flushed upon re-initialization.
      */
@@ -74,6 +78,8 @@ public class LevelParser {
                 directory.getEntry("objects", JsonValue.class),
                 directory.getEntry("player", JsonValue.class)
         );
+
+        this.tileSheet = directory.getEntry("tile.sheet", FilmStrip.class);
     }
 
     /**
@@ -166,6 +172,7 @@ public class LevelParser {
         levelContainer.flush();
 
         Board board = new Board(width, height);
+        board.setTileSheet(tileSheet);
 
         board.setTileScreenDim(sSize[0], sSize[1]);
         board.setTileWorldDim(wSize[0], wSize[1]);
@@ -196,6 +203,7 @@ public class LevelParser {
         int numCols = tileData.size / numRows;
 
         Board board = new Board(numRows, numCols);
+        board.setTileSheet(tileSheet);
 
         board.setTileScreenDim(sSize[0], sSize[1]);
         board.setTileWorldDim(wSize[0], wSize[1]);
@@ -210,11 +218,8 @@ public class LevelParser {
         for (int y = 0; y < board.getHeight(); y++) {
             for (int x = 0; x < board.getWidth(); x++) {
                 int tileNum = tileData.get((board.getHeight() - y - 1) * board.getWidth() + x);
-                board.setTileTexture(x, y,
-                        directory.getEntry(texType + tileNum, Texture.class), tileNum
-                );
+                board.setTileNum(x, y, tileNum);
                 board.setTileType(x, y, tileTypeFromNum(tileNum));
-                board.setWalkable(x, y, true);
                 PointLight point = new PointLight(
                         rayHandler, rays, Color.WHITE, dist,
                         board.boardCenterToWorldX(x), board.boardCenterToWorldY(y)

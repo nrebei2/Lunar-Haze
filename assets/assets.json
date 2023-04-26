@@ -55,16 +55,6 @@
     "no15": "screens/level-selection-screen/15.png",
     "bkg_allocate": "allocateUI/bkg-allocate.png",
     "add": "allocateUI/add-button.png",
-    "theme1": {
-      "file": "images/spritesheet_tile.png",
-      "sprites":	{
-        "static" : {
-          "size" : 6,
-          "rows" : 1,
-          "cols" : 12
-        }
-      }
-    },
     "grass1": "tiles/grass1.png",
     "grass2": "tiles/grass2.png",
     "grass3": "tiles/grass3.png",
@@ -97,6 +87,16 @@
     "moon": "transitionUI/moon.png",
     "transition-background": "transitionUI/transition-background.png",
     "trees": "transitionUI/trees.png",
+    "tile": {
+      "file": "images/tile-spritesheet.png",
+      "sprites":	{
+        "sheet" : {
+          "size" : 12,
+          "rows" : 4,
+          "cols" : 3
+        }
+      }
+    },
     "lamp": {
       "file": "images/objects/Lamp_a_1.png",
       "sprites":	{
@@ -316,9 +316,9 @@
       "wrap":  	false,
       "sprites":	{
         "walk-f" : {
-          "size" : 3,
+          "size" : 4,
           "rows" : 1,
-          "cols" : 3
+          "cols" : 4
         }
       }
     },
@@ -327,9 +327,9 @@
       "wrap":  	false,
       "sprites":	{
         "walk-b" : {
-          "size" : 3,
+          "size" : 4,
           "rows" : 1,
-          "cols" : 3
+          "cols" : 4
         }
       }
     },
@@ -338,9 +338,9 @@
       "wrap":  	false,
       "sprites":	{
         "walk-l" : {
-          "size" : 5,
+          "size" : 8,
           "rows" : 1,
-          "cols" : 5
+          "cols" : 8
         }
       }
     },
@@ -349,9 +349,9 @@
       "wrap":  	false,
       "sprites":	{
         "walk-r" : {
-          "size" : 5,
+          "size" : 8,
           "rows" : 1,
-          "cols" : 5
+          "cols" : 8
         }
       }
     },
@@ -396,6 +396,50 @@
           "size" : 3,
           "rows" : 1,
           "cols" : 3
+        }
+      }
+    },
+    "villager":{
+      "file": 	"images/villager/enemy1-idle-down.png",
+      "wrap":  	false,
+      "sprites":	{
+        "idle-f" : {
+          "size" : 1,
+          "rows" : 1,
+          "cols" : 1
+        }
+      }
+    },
+    "villager":{
+      "file": 	"images/villager/enemy1-idle-up.png",
+      "wrap":  	false,
+      "sprites":	{
+        "idle-b" : {
+          "size" : 1,
+          "rows" : 1,
+          "cols" : 1
+        }
+      }
+    },
+    "villager":{
+      "file": 	"images/villager/enemy1-idle-left.png",
+      "wrap":  	false,
+      "sprites":	{
+        "idle-l" : {
+          "size" : 1,
+          "rows" : 1,
+          "cols" : 1
+        }
+      }
+    },
+    "villager":{
+      "file": 	"images/villager/enemy1-idle-right.png",
+      "wrap":  	false,
+      "sprites":	{
+        "idle-r" : {
+          "size" : 1,
+          "rows" : 1,
+          "cols" : 1
         }
       }
     }

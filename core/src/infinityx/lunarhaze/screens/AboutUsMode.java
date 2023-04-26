@@ -31,7 +31,7 @@ public class AboutUsMode extends ScreenObservable implements Screen, InputProces
      * Back button to display when done
      */
     private Texture backButton;
-    private static final float BUTTON_SCALE = 0.25f;
+    private static final float BUTTON_SCALE = 0.8f;
     /**
      * Whether or not this player mode is still active
      */
@@ -67,9 +67,13 @@ public class AboutUsMode extends ScreenObservable implements Screen, InputProces
     private static final int STANDARD_HEIGHT = 700;
 
     /**
-     * Ratio of play height from bottom
+     * Ratio of back width from bottom
      */
-    private static final float BACK_HEIGHT_RATIO = 0.9f;
+    private static final float BACK_WIDTH_RATIO = 0.1f;
+    /**
+     * Ratio of back height from bottom
+     */
+    private static final float BACK_HEIGHT_RATIO = 0.93f;
 
     /**
      * Returns true if all assets are loaded and the player is ready to go.
@@ -135,7 +139,7 @@ public class AboutUsMode extends ScreenObservable implements Screen, InputProces
         scale = (sx < sy ? sx : sy);
 
         centerY = (int) (BACK_HEIGHT_RATIO * height);
-        centerX = width / 16;
+        centerX = (int) (BACK_WIDTH_RATIO * width);
         heightY = height;
     }
 
@@ -185,9 +189,12 @@ public class AboutUsMode extends ScreenObservable implements Screen, InputProces
 
         // TODO: Fix scaling
         // Play button is a circle.
-        float radiusBack = BUTTON_SCALE * scale * backButton.getWidth() / 2.0f;
-        float distBack = (screenX - centerX) * (screenX - centerX) + (screenY - centerY) * (screenY - centerY);
-        if (distBack < radiusBack * radiusBack) {
+        float x = BUTTON_SCALE * scale * backButton.getWidth() / 2;
+        float distX = Math.abs(screenX - centerX);
+        float y = BUTTON_SCALE * scale * backButton.getHeight() / 2;
+
+        float distYBack = Math.abs(screenY - centerY);
+        if (distX < x && distYBack < y) {
             pressBackState = 1;
         }
         return false;

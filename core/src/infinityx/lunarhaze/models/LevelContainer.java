@@ -160,6 +160,11 @@ public class LevelContainer {
     private Sound alert_sound;
 
     /**
+     * Moonlight color of point lights
+     */
+    private float[] moonlightColor;
+
+    /**
      * Initialize attributes
      */
     private void initialize() {
@@ -347,6 +352,20 @@ public class LevelContainer {
     }
 
     /**
+     * Sets Moonlight color of point lights
+     */
+    public void setMoonlightColor(float[] moonlightColor) {
+        this.moonlightColor = moonlightColor;
+    }
+
+    /**
+     * @return moonlight color of point lights
+     */
+    public float[] getMoonlightColor() {
+        return moonlightColor;
+    }
+
+    /**
      * @return Ambient lighting values during stealth phase
      */
     public float[] getStealthAmbience() {
@@ -509,12 +528,18 @@ public class LevelContainer {
         canvas.drawLights(rayHandler);
         canvas.end();
 
-        // DEBUG
-        if (player.isAttacking) {
-            canvas.begin(GameCanvas.DrawPass.SHAPE, view.x, view.y);
-            player.getAttackHitbox().drawHitbox(canvas);
-            canvas.end();
-        }
+        // ----------------------- DEBUG --------------------------
+        //if (player.isAttacking) {
+        //    canvas.begin(GameCanvas.DrawPass.SHAPE, view.x, view.y);
+        //    player.getAttackHitbox().drawHitbox(canvas);
+        //    canvas.end();
+        //}
+        //
+        //canvas.begin(GameCanvas.DrawPass.SHAPE, view.x, view.y);
+        //for (Enemy e: activeEnemies) {
+        //    getEnemyControllers().get(e).drawGizmo(canvas);
+        //}
+        //canvas.end();
     }
 
     /**
@@ -551,11 +576,12 @@ public class LevelContainer {
         QueryCallback queryCallback = new QueryCallback() {
             @Override
             public boolean reportFixture(Fixture fixture) {
-                scene = (fixture.getUserData() instanceof SceneObject);
+                scene = ((GameObject)fixture.getUserData()).getType() == GameObject.ObjectType.SCENE;
                 return false; // stop finding other fixtures in the query area
             }
         };
 
+        // If a node overlaps any part of a scene objects body, mark as an obstacle
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 scene = false;

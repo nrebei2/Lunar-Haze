@@ -16,6 +16,7 @@ import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.glfw.ImGuiImplGlfw;
 import imgui.type.ImBoolean;
+import imgui.type.ImFloat;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.controllers.LevelParser;
 import infinityx.lunarhaze.controllers.LevelSerializer;
@@ -36,7 +37,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     /**
      * Reference to GameCanvas created by the root
      */
-    private final GameCanvas canvas;
+    private GameCanvas canvas;
 
     /**
      * Contains level details!
@@ -80,6 +81,11 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * Whether to display the File->New popup to select board size
      */
     private boolean showNewBoardWindow;
+
+    /**
+     * Whether to display the error when you cannot save
+     */
+    private boolean showCannotSaveError;
 
     /**
      * Whether to display the Enemy->Enemy X popup to select patrol path, etc
@@ -206,6 +212,16 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     private float[] moonlightLighting;
 
     /**
+     * Float holding object scale
+     */
+    private float objectScale[];
+
+    /**
+     * Float holding stealth phase length
+     */
+    private ImFloat stealthLength;
+
+    /**
      * Holds a reference to the enemies, so that the enemy menu can let you modify them
      */
     private ArrayList<infinityx.lunarhaze.models.entity.Enemy> enemies;
@@ -259,6 +275,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         availableSelections.add(new SceneObject(directory.getEntry("fence2", Texture.class), "fencey"));
         availableSelections.add(new SceneObject(directory.getEntry("tree1", Texture.class), "tree"));
         availableSelections.add(new SceneObject(directory.getEntry("stone", Texture.class), "stone"));
+        availableSelections.add(new SceneObject(directory.getEntry("lamp", Texture.class), "lamp"));
+        availableSelections.add(new SceneObject(directory.getEntry("forest", Texture.class), "forest"));
 
         //availableSelections.add(new Enemy(directory.getEntry("villager", Texture.class), "villager"));
         //availableSelections.add(new Player(directory.getEntry("werewolf", Texture.class)));
@@ -274,9 +292,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         assert selected instanceof Tile;
 
         Tile curr = (Tile) selected;
-        board.setTileTexture(
+        board.setTileNum(
                 (int) mouseBoard.x, (int) mouseBoard.y,
-                curr.texture, curr.num
+                curr.num
         );
         // Sets the tile type for serialization
         board.setTileType((int) mouseBoard.x, (int) mouseBoard.y, infinityx.lunarhaze.models.Tile.TileType.Road);
@@ -309,7 +327,10 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     private void placeEnemy() {
         Enemy e = (Enemy) selected;
-        currEnemyControlled = level.addEnemy(e.type, mouseBoard.x, mouseBoard.y, null);
+        ArrayList<Vector2> emptyPatrol = new ArrayList<>();
+        emptyPatrol.add(new Vector2(0, 0));
+        emptyPatrol.add(new Vector2(0, 0));
+        currEnemyControlled = level.addEnemy(e.type, mouseBoard.x, mouseBoard.y, emptyPatrol);
         enemies.add(currEnemyControlled);
     }
 
@@ -322,16 +343,16 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     private void placeMoonlightTile() {
         int x = (int) mouseBoard.x;
         int y = (int) mouseBoard.y;
+        if(!board.isLit(x, y)) {
+            // PointLight logic
+            PointLight light = new PointLight(level.getRayHandler(), 6, new Color(moonlightLighting[0], moonlightLighting[1], moonlightLighting[2], moonlightLighting[3]), 3, board.boardCenterToWorldX(x), board.boardCenterToWorldY(y));
+            light.setSoft(true);
+            board.setSpotlight(x, y, light);
+            pointLights.add(light);
 
-        // PointLight logic
-        PointLight light = new PointLight(level.getRayHandler(), 10, new Color(moonlightLighting[0], moonlightLighting[1], moonlightLighting[2], moonlightLighting[3]), 4, board.boardCenterToWorldX(x), board.boardCenterToWorldY(y));
-        light.setSoft(true);
-        board.setSpotlight(x, y, light);
-        pointLights.add(light);
-
-        // Set board tile to lit
-        board.setLit(x, y, true);
-
+            // Set board tile to lit
+            board.setLit(x, y, true);
+        }
     }
 
     /**
@@ -346,7 +367,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         level.addSceneObject(
                 curr.type,
                 mouseBoard.x, mouseBoard.y,
-                1
+                curr.scale
         );
     }
 
@@ -370,17 +391,20 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         boardSize = new int[]{10, 10};
         patrol1 = new int[]{0, 0};
         patrol2 = new int[]{0, 0};
+        objectScale = new float[]{1};
         level = LevelParser.LevelParser().loadEmpty(boardSize[0], boardSize[1]);
         level.hidePlayer();
         playerPlaced = false;
         board = level.getBoard();
         showNewBoardWindow = false;
+        showCannotSaveError = false;
         showEnemyControllerWindow = false;
         showBattleLighting = false;
         enemies = new ArrayList<infinityx.lunarhaze.models.entity.Enemy>();
         stealthLighting = new float[]{1, 1, 1, 1};
         battleLighting = new float[]{1, 1, 1, 1};
-        moonlightLighting = new float[]{1, 1, 1, 1};
+        moonlightLighting = new float[]{1, 1, 1, 0.2f};
+        stealthLength = new ImFloat(10);
         selected = new Tile(directory.getEntry("grass2", Texture.class), "land", 2);
         //selected = new Player(level.getPlayer().getTexture().getTexture());
         Gdx.input.setInputProcessor(this);
@@ -418,6 +442,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         }
         level.setBattleAmbience(battleLighting);
         level.setStealthAmbience(stealthLighting);
+        level.setMoonlightColor(moonlightLighting);
         if (showBattleLighting)
             level.getRayHandler().setAmbientLight(battleLighting[0], battleLighting[1], battleLighting[2], battleLighting[3]);
         else
@@ -446,6 +471,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
         if (showNewBoardWindow) {
             createNewBoardWindow();
+        }
+        if (showCannotSaveError) {
+            cannotSaveWindow();
         }
         if (showEnemyControllerWindow) {
             createEnemyControllerWindow();
@@ -511,7 +539,10 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     @Override
     public void dispose() {
-
+        canvas.dispose();
+        imGuiGlfw.dispose();
+        imGuiGl.dispose();
+        pointLights = null;
     }
 
     /**
@@ -723,6 +754,17 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             }
         }
 
+        ImGui.spacing();
+
+        // Create a slider for the scale of the object
+        if (ImGui.sliderFloat("Object Scale", objectScale, 0.1f, 5.0f)) {
+            // Apply the scale to the selected object when the slider is moved
+            if (selected instanceof SceneObject) {
+                SceneObject selectedObj = (SceneObject) selected;
+                selectedObj.scale = objectScale[0];
+            }
+        }
+
         ImGui.end();
     }
 
@@ -751,13 +793,23 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             ImGui.spacing();
             ImGui.spacing();
             if (ImGui.menuItem("Save")) {
-                LevelSerializer.saveBoardToJsonFile(level, board, directory);
+                if(canSave()) {
+                    LevelSerializer.saveBoardToJsonFile(level, board, directory);
+                } else {
+                    // Cannot save!
+                    showCannotSaveError = true;
+                }
             }
             ImGui.spacing();
             ImGui.spacing();
             if (ImGui.menuItem("Test")) {
-                LevelSerializer.saveBoardToJsonFile(level, board, directory);
-                observer.exitScreen(this, GO_PLAY);
+                if(canSave()) {
+                    LevelSerializer.saveBoardToJsonFile(level, board, directory);
+                    observer.exitScreen(this, GO_PLAY);
+                } else {
+                    // Cannot save!
+                    showCannotSaveError = true;
+                }
             }
             ImGui.endMenu();
         }
@@ -825,6 +877,13 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         ImGui.text("Enter board size (width and height):");
         ImGui.inputInt2("Size", boardSize);
 
+        ImGui.spacing();
+
+        ImGui.text("Enter stealth phase length:");
+        ImGui.inputFloat("Length", stealthLength);
+
+        ImGui.spacing();
+
         if (ImGui.button("Create")) {
             level = LevelParser.LevelParser().loadEmpty(boardSize[0], boardSize[1]);
             level.hidePlayer();
@@ -834,9 +893,24 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             enemies = new ArrayList<infinityx.lunarhaze.models.entity.Enemy>();
             stealthLighting = new float[]{1, 1, 1, 1};
             battleLighting = new float[]{1, 1, 1, 1};
-            moonlightLighting = new float[]{1, 1, 1, 1};
+            moonlightLighting = new float[]{1, 1, 1, 0.2f};
             playerPlaced = false;
+            level.setPhaseLength(stealthLength.floatValue());
             showNewBoardWindow = false;
+        }
+
+        ImGui.end();
+    }
+
+    private void cannotSaveWindow() {
+        ImGui.begin("Error", new ImBoolean(true));
+
+        ImGui.text("You cannot save.");
+        ImGui.spacing();
+        ImGui.text("Make sure no tiles are null, the player is set, and there is at least one enemy\nand moonlight tile.");
+
+        if (ImGui.button("Ok")) {
+            showCannotSaveError = false;
         }
 
         ImGui.end();
@@ -902,6 +976,35 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         ImGui.colorEdit4("Moonlight Lighting", moonlightLighting);
         ImGui.spacing();
         ImGui.end();
+    }
+
+    /**
+     * Asserts everything is set up to save the board
+     * (to avoid nullpointerexception)
+     * @return true if everything is set up to save the board
+     */
+    private boolean canSave() {
+
+        // Has the player been placed?
+        if(!playerPlaced) {
+            return false;
+        }
+
+        // Is there at least one enemy?
+        if (enemies.size() == 0) {
+            return false;
+        }
+
+        // Does every enemy have a patrol?
+        for (infinityx.lunarhaze.models.entity.Enemy enemy : enemies) {
+            if (enemy.getPatrolPath() == null) {
+                return false;
+            }
+        }
+
+        // Is every tile filled?
+        return board.assertNoNullTiles();
+
     }
 
 }
