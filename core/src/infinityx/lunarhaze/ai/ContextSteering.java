@@ -4,6 +4,7 @@ import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
 import com.badlogic.gdx.math.Vector2;
+import infinityx.lunarhaze.graphics.GameCanvas;
 
 import java.util.Arrays;
 
@@ -27,8 +28,6 @@ public class ContextSteering extends SteeringBehavior<Vector2> {
 
     /**
      * Creates a new {@code ContextSteering} instance using the given {@link ContextBehavior}.
-     * The constructor initializes the {@code maskedSlots} array and the cached {@link ContextMap}
-     * based on the provided resolution.
      *
      * @param owner           The {@link Steerable} object that owns this steering behavior.
      * @param contextBehavior The {@link ContextBehavior} that generates the {@link ContextMap} for this steering behavior.
@@ -41,24 +40,36 @@ public class ContextSteering extends SteeringBehavior<Vector2> {
         this.cachedContextMap = new ContextMap(resolution);
     }
 
-    @Override
-    public SteeringAcceleration<Vector2> calculateRealSteering(SteeringAcceleration<Vector2> steering) {
+    /** For debugging purposes */
+    public ContextMap getMap() {
+        return contextBehavior.calculateMaps(cachedContextMap);
+    }
+
+
+    /**
+     * Public for debugging purposes
+     * @return scaled direction of the highest interest slot
+     */
+    public Vector2 getDirection() {
         ContextMap contextMap = contextBehavior.calculateMaps(cachedContextMap);
         int resolution = contextMap.getResolution();
         float[] dangerMap = contextMap.dangerMap;
         float[] interestMap = contextMap.interestMap;
 
-        // Find the lowest danger and mask out slots with higher danger
+        // First pass to find the lowest danger
         float lowestDanger = Float.MAX_VALUE;
-        Arrays.fill(maskedSlots, false);
-
         for (int i = 0; i < resolution; i++) {
             float danger = dangerMap[i];
             if (danger < lowestDanger) {
                 lowestDanger = danger;
-                Arrays.fill(maskedSlots, false);
-                maskedSlots[i] = true;
-            } else if (danger == lowestDanger) {
+            }
+        }
+
+        // Second pass to mask out slots with higher danger
+        Arrays.fill(maskedSlots, false);
+        for (int i = 0; i < resolution; i++) {
+            float danger = dangerMap[i];
+            if (danger == lowestDanger) {
                 maskedSlots[i] = true;
             }
         }
@@ -83,8 +94,13 @@ public class ContextSteering extends SteeringBehavior<Vector2> {
         }
 
         // Move in the direction of the highest interest slot
-        Vector2 direction = contextMap.dirFromSlot(highestInterestSlot);
-        steering.linear.set(direction).scl(highestInterest);
+        return contextMap.dirFromSlot(highestInterestSlot).scl(highestInterest);
+    }
+
+    @Override
+    public SteeringAcceleration<Vector2> calculateRealSteering(SteeringAcceleration<Vector2> steering) {
+        Vector2 direction = getDirection();
+        steering.linear.set(direction);
         steering.angular = 0;
 
         return steering;

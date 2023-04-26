@@ -5,6 +5,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.FloatArray;
 
+import java.util.Arrays;
+
 /**
  * The CombinedContext behavior iterates through the behaviors,
  * comparing each slot across multiple maps and taking a maximum.
@@ -71,6 +73,7 @@ public class CombinedContext extends ContextBehavior {
         for (int i = 0; i < dangerOutput.size; i++) {
             map.dangerMap[i] = dangerOutput.get(i);
         }
+
         return map;
     }
 

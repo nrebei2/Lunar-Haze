@@ -46,9 +46,10 @@ public class ContextMap {
     public ContextMap(int resolution) {
         dangerMap = new float[resolution];
         interestMap = new float[resolution];
+        this.resolution = resolution;
     }
 
-    private Vector2 dirCache;
+    private Vector2 dirCache = new Vector2();
 
     /**
      * Context map slot to heading.
@@ -57,7 +58,8 @@ public class ContextMap {
      * @return unit vector pointing towards heading.
      */
     public Vector2 dirFromSlot(int slot) {
-        return AngleUtils.angleToVector(dirCache, MathUtils.PI2 * (slot / resolution));
+        float angle = MathUtils.PI2 * ((float)slot / resolution);
+        return AngleUtils.angleToVector(dirCache, angle);
     }
 
     /**

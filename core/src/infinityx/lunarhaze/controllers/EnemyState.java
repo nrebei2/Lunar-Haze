@@ -11,12 +11,30 @@ import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.ai.TacticalManager;
 import infinityx.lunarhaze.models.GameObject;
 import infinityx.lunarhaze.models.entity.Enemy;
+import infinityx.util.AngleUtils;
 import infinityx.util.Box2dLocation;
 
 /**
  * States for each enemy's state machine
  */
 public enum EnemyState implements State<EnemyController> {
+
+    ANY_STATE() {
+        @Override
+        public void update(EnemyController entity) {
+            // FIXME: dont call setFilmstripPrefix every frame
+            // All states other than attack use walk/idle animations
+            if (!entity.getStateMachine().isInState(ATTACK)) {
+                if (entity.getEnemy().getLinearVelocity().isZero(0.01f)) {
+                    entity.getEnemy().setFilmstripPrefix("idle");
+                } else {
+                    entity.getEnemy().setFilmstripPrefix("walk");
+                    // Texture update is proportional to velocity
+                    entity.getEnemy().texUpdate = 1 / (entity.getEnemy().getLinearVelocity().len() * 6);
+                }
+            }
+        }
+    },
 
     /**
      * Initial state, used oth. enter on patrol would not be called
@@ -44,6 +62,7 @@ public enum EnemyState implements State<EnemyController> {
             entity.getEnemy().setIndependentFacing(true);
             entity.getEnemy().setDetection(Enemy.Detection.NOTICED);
             entity.targetPos.set(target.getPosition());
+
             entity.faceSB.setTarget(target);
             entity.getEnemy().setSteeringBehavior(entity.faceSB);
         }
@@ -54,7 +73,7 @@ public enum EnemyState implements State<EnemyController> {
                 // Zero out velocity on start
                 entity.getEnemy().setLinearVelocity(Vector2.Zero);
                 entity.getEnemy().setAngularVelocity(0);
-                start = true;
+                start = false;
             }
 
             // Check if we faced target
@@ -130,7 +149,7 @@ public enum EnemyState implements State<EnemyController> {
         @Override
         public void enter(EnemyController entity) {
             //entity.getAttackSound().play();
-            setTexture(entity, "attack");
+            entity.getEnemy().setFilmstripPrefix("attack");
             entity.getEnemy().texUpdate = 0.06f;
         }
 
@@ -160,7 +179,7 @@ public enum EnemyState implements State<EnemyController> {
             entity.getEnemy().setSteeringBehavior(entity.followPathSB);
 
             MessageManager.getInstance().dispatchMessage(TacticalManager.ADD, entity);
-            tick = 0;
+            entity.time = 0;
         }
 
         @Override
@@ -175,12 +194,25 @@ public enum EnemyState implements State<EnemyController> {
                     entity.getStateMachine().changeState(INDICATOR);
                     break;
             }
+            entity.time += Gdx.graphics.getDeltaTime();
 
-            tick++;
-            // Update path every 10 frames
-            if (tick % 10 == 0) {
+            Vector2 enemyToTarget = entity.target.getPosition().sub(entity.getEnemy().getPosition());
+            // Switch to battle behavior when close enough
+            if (enemyToTarget.len() <= 2){
+                // Always face towards target
+                entity.getEnemy().setIndependentFacing(true);
+                entity.getEnemy().setOrientation(AngleUtils.vectorToAngle(enemyToTarget));
+                entity.getEnemy().setSteeringBehavior(entity.battleSB);
+            } else {
+                // go back to chase (follow path)
+                entity.getEnemy().setIndependentFacing(false);
                 entity.targetPos.set(entity.getTarget().getPosition());
-                entity.updatePath();
+                entity.getEnemy().setSteeringBehavior(entity.followPathSB);
+                // Update path every 0.2 seconds
+                if (entity.time >= 0.2) {
+                    entity.updatePath();
+                    entity.time = 0;
+                }
             }
         }
 
@@ -191,6 +223,7 @@ public enum EnemyState implements State<EnemyController> {
 
         @Override
         public boolean onMessage(EnemyController control, Telegram telegram) {
+            System.out.println("on message");
             if (telegram.message == TacticalManager.FLANK) {
                 Vector2 flank_pos = (Vector2) telegram.extraInfo;
                 Vector2 cur_pos = control.getEnemy().getPosition();
@@ -236,7 +269,6 @@ public enum EnemyState implements State<EnemyController> {
         public void enter(EnemyController entity) {
             entity.time = 0;
 
-            entity.getEnemy().setLinearVelocity(Vector2.Zero);
             // not using one since forces are a pain in the ass to deal with for something as simple as this
             entity.getEnemy().setSteeringBehavior(null);
             entity.getEnemy().setDetection(Enemy.Detection.NONE);
@@ -244,6 +276,7 @@ public enum EnemyState implements State<EnemyController> {
 
         @Override
         public void update(EnemyController entity) {
+            entity.getEnemy().setLinearVelocity(Vector2.Zero);
             switch (entity.getDetection()) {
                 case NOTICED:
                 case ALERT:
@@ -280,28 +313,5 @@ public enum EnemyState implements State<EnemyController> {
     @Override
     public boolean onMessage(EnemyController control, Telegram telegram) {
         return false;
-    }
-
-    /**
-     * Sets the filmstrip animation of the enemy. Assumes there exists filmstrips for each cardinal direction with suffixes "-b", "-f", "-l", "-r".
-     *
-     * @param entity holding enemy
-     * @param name   Common prefix of filmstrip family. See {@link GameObject#setTexture(String)}.
-     */
-    protected void setTexture(EnemyController entity, String name) {
-        switch (entity.getEnemy().direction) {
-            case UP:
-                entity.getEnemy().setTexture(name + "-b");
-                break;
-            case DOWN:
-                entity.getEnemy().setTexture(name + "-f");
-                break;
-            case LEFT:
-                entity.getEnemy().setTexture(name + "-l");
-                break;
-            case RIGHT:
-                entity.getEnemy().setTexture(name + "-r");
-                break;
-        }
     }
 }
