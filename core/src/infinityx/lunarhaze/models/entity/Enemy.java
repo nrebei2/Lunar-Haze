@@ -14,11 +14,14 @@ import infinityx.lunarhaze.physics.ConeSource;
 import infinityx.util.Direction;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Model class representing an enemy.
  */
 public class Enemy extends SteeringGameObject implements Pool.Poolable {
+
+
     public enum Detection {
         /**
          * The enemy is alerted (Exclamation point!)
@@ -78,6 +81,11 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
         return flashlight;
     }
 
+    private float strafeDistance;
+
+    private Random rand = new Random();
+
+
 
     /**
      * Initialize an enemy with dummy position, id, and patrol path
@@ -127,8 +135,13 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
         if (body == null) activatePhysics(container.getWorld());
         setFlashlight(flashLight);
         setFlashlightOn(true);
+        // set strafe distance randomly between attack range*2 and attackrange + 2
+        this.strafeDistance = rand.nextInt(3 ) + getAttackRange()*2;
+        System.out.println(strafeDistance);
+    }
 
-
+    public float getStrafeDistance() {
+        return this.strafeDistance;
     }
 
     public void setPatrolPath(ArrayList<Vector2> path) {

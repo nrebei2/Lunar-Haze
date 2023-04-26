@@ -207,7 +207,7 @@ public enum EnemyState implements State<EnemyController> {
 
             //if in stealth just walk towards target and attack if close enough
             if (!entity.isInBattle()){
-                if (enemyToTarget.len() <= 1 && entity.canStartNewAttack()){
+                if (enemyToTarget.len() <= entity.getEnemy().getAttackRange() && entity.canStartNewAttack()){
                     entity.getStateMachine().changeState(ATTACK);
                 }
                 entity.getEnemy().setIndependentFacing(false);
@@ -220,11 +220,11 @@ public enum EnemyState implements State<EnemyController> {
                 }
             }
             else{
-                if (enemyToTarget.len() <= 1 && entity.canStartNewAttack()){
+                if (enemyToTarget.len() <= entity.getEnemy().getAttackRange() && entity.canStartNewAttack()){
                     entity.getStateMachine().changeState(ATTACK);
                 }
                 // Switch to battle behavior when close enough
-                if (enemyToTarget.len() <= 2){
+                if (enemyToTarget.len() <= entity.getEnemy().getStrafeDistance()){
                     // Always face towards target
                     entity.getEnemy().setIndependentFacing(true);
                     entity.getEnemy().setOrientation(AngleUtils.vectorToAngle(enemyToTarget));
@@ -275,10 +275,10 @@ public enum EnemyState implements State<EnemyController> {
             // Switch to battle behavior when close enough
             //check if got to flank position
             Vector2 distToFlank = entity.getEnemy().getPosition().sub(entity.flank_pos);
-            if (distToFlank.len() <= 0.1f){
+            if (distToFlank.len() <= 0.2f){
                 entity.getStateMachine().changeState(ALERT);
             }
-            if (enemyToTarget.len() <= 1 && entity.canStartNewAttack()){
+            if (enemyToTarget.len() <= entity.getEnemy().getAttackRange() && entity.canStartNewAttack()){
                 entity.getStateMachine().changeState(ATTACK);
             }
         }

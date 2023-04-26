@@ -198,7 +198,7 @@ public class EnemyController extends AttackHandler {
                 for (int i = 0; i<map.getResolution(); i++){
                     Vector2 dir = map.dirFromSlot(i);
                     // Ray extends two units
-                    rayCache.set(enemy.getPosition(), dir.scl(3).add(enemy.getPosition()));
+                    rayCache.set(enemy.getPosition(), dir.scl(2).add(enemy.getPosition()));
                     //System.out.printf("Ray: (%s, %s)\n", rayCache.start, rayCache.end);
                     communicationCollision.findCollision(collisionCache, rayCache);
                     if (commRay.hit) {
