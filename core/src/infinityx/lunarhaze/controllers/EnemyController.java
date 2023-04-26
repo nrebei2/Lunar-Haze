@@ -194,15 +194,17 @@ public class EnemyController extends AttackHandler {
             @Override
             protected ContextMap calculateRealMaps(ContextMap map) {
                 map.setZero();
-                for (int i =0; i<map.getResolution(); i++){
+                for (int i = 0; i<map.getResolution(); i++){
                     Vector2 dir = map.dirFromSlot(i);
                     // Ray extends two units
                     rayCache.set(enemy.getPosition(), dir.scl(2).add(enemy.getPosition()));
+                    //System.out.printf("Ray: (%s, %s)\n", rayCache.start, rayCache.end);
                     communicationCollision.findCollision(collisionCache, rayCache);
-                    if (commRay.hit){
+                    if (commRay.hit) {
                         map.dangerMap[i] = raycast.fraction;
                     }
                 }
+
                 return map;
             }
         };
@@ -211,7 +213,7 @@ public class EnemyController extends AttackHandler {
         this.combinedContext.add(separation);
 
         //Resolution is set to 8 to represent the 8 directions in which enemies can move
-        this.battleSB = new ContextSteering(enemy, combinedContext, 16);
+        this.battleSB = new ContextSteering(enemy, combinedContext, 20);
     }
 
     /**
