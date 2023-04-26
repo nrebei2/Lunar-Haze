@@ -546,11 +546,12 @@ public class LevelContainer {
         QueryCallback queryCallback = new QueryCallback() {
             @Override
             public boolean reportFixture(Fixture fixture) {
-                scene = (fixture.getUserData() instanceof SceneObject);
+                scene = ((GameObject)fixture.getUserData()).getType() == GameObject.ObjectType.SCENE;
                 return false; // stop finding other fixtures in the query area
             }
         };
 
+        // If a node overlaps any part of a scene objects body, mark as an obstacle
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 scene = false;
