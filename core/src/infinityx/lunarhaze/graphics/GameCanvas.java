@@ -208,7 +208,9 @@ public class GameCanvas {
      * @param view world view translation
      */
     public float ScreenToWorldX(float s_x, Vector2 view) {
-        return (s_x / zoom - view.x) / (worldToScreen.x);
+        // Will have to match offset in setupCameras
+        float offset = (getWidth() - (float)getWidth() / zoom) / 2;
+        return ((s_x / zoom) + offset - view.x) / (worldToScreen.x);
     }
 
     /**
@@ -217,7 +219,9 @@ public class GameCanvas {
      * @param view world view translation
      */
     public float ScreenToWorldY(float s_y, Vector2 view) {
-        return ((Gdx.graphics.getHeight() - s_y) / zoom - view.y) / (worldToScreen.y);
+        // Will have to match offset in setupCameras
+        float offset = (getHeight() - (float)getHeight() / zoom) / 2;
+        return ((Gdx.graphics.getHeight() - s_y) / zoom + offset - view.y) / (worldToScreen.y);
     }
 
     /**
@@ -256,16 +260,21 @@ public class GameCanvas {
      */
     private void setupCameras() {
         // Set the projection matrix (for proper scaling)
-        camera.setToOrtho(false, (float) getWidth() / zoom, (float) getHeight() / zoom);
+        float width = (float) getWidth();
+        float height = (float) getHeight();
+        camera.setToOrtho(false, width / zoom, height / zoom);
+        // Center camera at (width/2, height/2)
+        camera.translate(
+                (width - width / zoom) / 2, (height - height / zoom) / 2
+        );
 
+        // Different transform for light camera sadly
+        // This one is alot easier to work with tho
         raycamera = new OrthographicCamera(
                 getWidth() / (WorldToScreenX(1) * zoom),
                 getHeight() / (WorldToScreenY(1) * zoom)
         );
 
-        // Cant do this, would mess up existing UI drawing
-        // Center camera at (0, 0)
-        //camera.translate(-getWidth()/2, -getHeight()/2);
         camera.update();
     }
 
@@ -276,7 +285,6 @@ public class GameCanvas {
      */
     public void setZoom(float zoom) {
         this.zoom = zoom;
-        // TODO: should zoom out from center
         setupCameras();
     }
 
@@ -626,8 +634,12 @@ public class GameCanvas {
             w = image.getWidth();
             h = image.getHeight();
         }
+
+        float width = (float) getWidth();
+        float height = (float) getHeight();
         spriteBatch.setColor(tint);
-        spriteBatch.draw(image, 0, 0, w, h);
+        // Should match bottom left and top right of camera
+        spriteBatch.draw(image, (width - width / zoom) / 2, (height - height / zoom) / 2, w, h);
     }
 
     /**

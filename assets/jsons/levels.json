@@ -3350,5 +3350,156 @@
 		],
 		"objects": []
 	}
+},
+"15": {
+	"settings": {
+		"transition": 2,
+		"phaseLength": 10.0,
+		"battle-ambiance": [ 1.0, 1.0, 1.0, 1.0 ],
+		"enemy-spawner": {
+			"count": 5,
+			"add-tick": [ 500, 900 ],
+			"delay": 1000
+		}
+	},
+	"ambient": {
+		"color": [ 1.0, 1.0, 1.0, 1.0 ],
+		"gamma": true,
+		"diffuse": true,
+		"blur": 5,
+		"transition": 12
+	},
+	"tiles": {
+		"type": "grass",
+		"layout": [
+			[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+			[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+			[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+			[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+			[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+			[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+			[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+			[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+			[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+			[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
+		],
+		"moonlight": {
+			"positions": [
+				[ 3, 6 ]
+			],
+			"lighting": {
+				"color": [ 1.0, 1.0, 1.0, 0.20000000298023224 ],
+				"distance": 4,
+				"rays": 10,
+				"soft": false
+			}
+		}
+	},
+	"scene": {
+		"player": [ 1.7734375, 7.864583492279053 ],
+		"enemies": [
+			{
+				"type": "villager",
+				"position": [ 1, 5 ],
+				"patrol": [
+					[ 0, 0 ],
+					[ 0, 0 ]
+				]
+			}
+		],
+		"objects": [
+			{
+				"type": "house",
+				"scale": 1,
+				"position": [ 3, 7 ]
+			},
+			{
+				"type": "house",
+				"scale": 1,
+				"position": [ 6, 4 ]
+			},
+			{
+				"type": "house",
+				"scale": 1,
+				"position": [ 6, 2 ]
+			},
+			{
+				"type": "fencey",
+				"scale": 1,
+				"position": [ 0, 9 ]
+			},
+			{
+				"type": "fencey",
+				"scale": 1,
+				"position": [ 0, 8 ]
+			},
+			{
+				"type": "fencey",
+				"scale": 1,
+				"position": [ 0, 6 ]
+			},
+			{
+				"type": "fencey",
+				"scale": 1,
+				"position": [ 0, 5 ]
+			}
+		]
+	}
+},
+"16": {
+	"settings": {
+		"transition": 2,
+		"phaseLength": 10.0,
+		"battle-ambiance": [ 0.5686274766921997, 0.5686274766921997, 0.5686274766921997, 1.0 ],
+		"enemy-spawner": {
+			"count": 5,
+			"add-tick": [ 500, 900 ],
+			"delay": 1000
+		}
+	},
+	"ambient": {
+		"color": [ 0.5686274766921997, 0.5686274766921997, 0.5686274766921997, 1.0 ],
+		"gamma": true,
+		"diffuse": true,
+		"blur": 5,
+		"transition": 12
+	},
+	"tiles": {
+		"type": "grass",
+		"layout": [
+			[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+			[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+			[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+			[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+			[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+			[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+			[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+			[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+			[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+			[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
+		],
+		"moonlight": {
+			"positions": [
+				[ 7, 5 ]
+			],
+			"lighting": {
+				"color": [ 1.0, 1.0, 1.0, 0.20000000298023224 ],
+				"distance": 4,
+				"rays": 10,
+				"soft": false
+			}
+		}
+	},
+	"scene": {
+		"player": [ 7.703125, 7.645833492279053 ],
+		"enemies": [],
+		"objects": [
+			{
+				"type": "house",
+				"scale": 1,
+				"position": [ 3, 6 ]
+			}
+		]
+	}
 }
 }

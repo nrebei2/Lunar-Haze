@@ -76,12 +76,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     private ImGuiImplGLES2 imGuiGl;
 
     /**
-     * Boolean that represents whether our selection is moonlight or not
-     */
-    // TODO: make moonlight part of selected instead
-    private boolean placingMoonlight;
-
-    /**
      * Whether to display the File->New popup to select board size
      */
     private boolean showNewBoardWindow;
@@ -123,7 +117,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
          * Enum specifying the type of the selected object.
          */
         public enum Type {
-            TILE, PLAYER, ENEMY, OBJECT
+            TILE, PLAYER, ENEMY, OBJECT, MOONLIGHT
         }
 
         /**
@@ -136,6 +130,15 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         public abstract Type getType();
     }
 
+    /**
+     * Holds the necessary information to place moonlight
+     */
+    class Moonlight extends Selected {
+        @Override
+        public Type getType() {
+           return Type.MOONLIGHT;
+        }
+    }
 
     /**
      * Holds the necessary information to place a tile
@@ -365,7 +368,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     Array<SceneObject> objectSelections;
 
     /**
-     * The game object that is currently selected. Ignore if selected is a tile
+     * The game object that is currently selected. Ignore if selected is a tile or moonlight.
      */
     GameObject selectedObject;
 
@@ -385,18 +388,17 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     private boolean changed = true;
 
     /**
-     * Stores objects that have been placed, ordered.
+     * Stores actions that have been done, ordered.
      */
     Array<Action> doneActions;
 
     /**
-     * Stores placed objects that have been undone and can be redone.
+     * Stores actions that have been undone and can be redone.
      */
     Array<Action> undoneActions;
 
     public EditorMode(GameCanvas canvas) {
         this.canvas = canvas;
-        placingMoonlight = false;
         pointLights = new ArrayList<>();
         objectSelections = new Array<>();
     }
@@ -475,6 +477,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 doneActions.add(new PlaceObject(placeEnemy()));
                 undoneActions.clear();
                 break;
+            case MOONLIGHT:
+                placeMoonlightTile();
+                break;
         }
     }
 
@@ -500,8 +505,14 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         int x = (int) mouseBoard.x;
         int y = (int) mouseBoard.y;
         if (!board.isLit(x, y)) {
+            System.out.printf("(%d, %d)\n", x, y);
             // PointLight logic
-            PointLight light = new PointLight(level.getRayHandler(), 6, new Color(moonlightLighting[0], moonlightLighting[1], moonlightLighting[2], moonlightLighting[3]), 3, board.boardCenterToWorldX(x), board.boardCenterToWorldY(y));
+            PointLight light = new PointLight(
+                    level.getRayHandler(),
+                    40,
+                    new Color(moonlightLighting[0], moonlightLighting[1], moonlightLighting[2], moonlightLighting[3]),
+                    3, board.boardCenterToWorldX(x), board.boardCenterToWorldY(y)
+            );
             light.setSoft(true);
             board.setSpotlight(x, y, light);
             pointLights.add(light);
@@ -553,6 +564,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 break;
             case PLAYER:
                 selectedObject = level.getPlayer();
+                selectedObject.setPosition(mouseWorld);
+                level.showPlayer();
             default:
                 break;
         }
@@ -838,6 +851,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         canvas.end();
 
         level.drawLevel(canvas);
+        System.out.println(level.getPlayer().isActive());
 
         ImGui.begin("Selection");
         if (ImGui.beginTabBar("blah")) {
@@ -955,11 +969,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         if (selected == null) {
             return false;
         }
-        if (!placingMoonlight) {
-            placeSelection();
-        } else {
-            placeMoonlightTile();
-        }
+
+        placeSelection();
+
         return true;
     }
 
@@ -1046,6 +1058,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     @Override
     public boolean scrolled(float amountX, float amountY) {
         if (level == null) return false;
+        if (ImGui.getIO().getWantCaptureMouse()) return false;
         if (selected.getType() == Selected.Type.OBJECT) {
             // Update the scale to the selected object
             float delta = 0.02f * amountY;
@@ -1125,7 +1138,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                             tiles.getU2(), tiles.getV2()
                     )
             ) {
-                placingMoonlight = false;
                 selected = new Tile(i);
             }
             ImGui.popID();
@@ -1152,7 +1164,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         int i = 0;
         for (SceneObject obj : objectSelections) {
             if (ImGui.imageButton(obj.texture.getTextureObjectHandle(), 100, 100 * 3 / 4)) {
-                placingMoonlight = false;
                 selected = obj;
                 objectScale[0] = 1;
                 obj.scale = 1;
@@ -1303,6 +1314,13 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
             level.hidePlayer();
             board = level.getBoard();
+
+            // Center board on screen
+            level.setViewTranslation(
+                    -canvas.WorldToScreenX(board.boardToWorldX((float)board.getWidth() / 2)) + canvas.getWidth() / 2,
+                    -canvas.WorldToScreenY(board.boardToWorldY((float)board.getHeight() / 2)) + canvas.getHeight() / 2
+            );
+
             showEnemyControllerWindow = false;
             showBattleLighting = false;
             stealthLighting = new float[]{1, 1, 1, 1};
@@ -1358,24 +1376,21 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         //ImGui.getStyle().setFramePadding(10, 10);
         //ImGui.begin("Brush Select");
         if (ImGui.button("Moonlight")) {
-            placingMoonlight = true;
             removeSelectedObject();
+            selected = new Moonlight();
         }
         ImGui.spacing();
         ImGui.spacing();
         ImGui.spacing();
         if (ImGui.button("Werewolf")) {
-            placingMoonlight = false;
             playerPlaced = false;
             selected = new Player();
             setSelectedObject();
-            level.showPlayer();
         }
         ImGui.spacing();
         ImGui.spacing();
         ImGui.spacing();
         if (ImGui.button("Enemy")) {
-            placingMoonlight = false;
             selected = new Enemy("villager");
             setSelectedObject();
         }
@@ -1430,11 +1445,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
         // Has the player been placed?
         if (!playerPlaced) {
-            return false;
-        }
-
-        // Is there at least one enemy?
-        if (level.getEnemies().size == 0) {
             return false;
         }
 

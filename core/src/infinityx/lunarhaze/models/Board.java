@@ -296,18 +296,26 @@ public class Board {
     }
 
     /**
-     * @param x The x index for the Tile cell
-     * @return the world x-position coordinates of the bottom left corner.
+     * Converts the given board x-coordinate (index) to its corresponding world x-position.
+     * Since the input is a float, it represents the actual world position instead of the
+     * bottom-left corner of the Tile cell.
+     *
+     * @param x The x index (float) for the Tile cell.
+     * @return The world x-position based on the input x index.
      */
-    public float boardToWorldX(int x) {
+    public float boardToWorldX(float x) {
         return x * tileWorldDim.x;
     }
 
     /**
-     * @param y The y index for the Tile cell
-     * @return the world y-position coordinates of the bottom left corner.
+     * Converts the given board y-coordinate (index) to its corresponding world y-position.
+     * Since the input is a float, it represents the actual world position instead of the
+     * bottom-left corner of the Tile cell.
+     *
+     * @param y The y index (float) for the Tile cell.
+     * @return The world y-position based on the input y index.
      */
-    public float boardToWorldY(int y) {
+    public float boardToWorldY(float y) {
         return y * tileWorldDim.y;
     }
 

@@ -78,7 +78,7 @@
     "colliders": {
       "body": {
         "type": "box",
-        "width": 1.8,
+        "width": 1.85,
         "height": 0.2,
         "offset": [0,0]
       }
@@ -101,7 +101,7 @@
     "colliders": {
       "body": {
         "type": "box",
-        "width": 1.8,
+        "width": 1.85,
         "height": 0.2,
         "offset": [0,0]
       }
@@ -124,7 +124,7 @@
     "colliders": {
       "body": {
         "type": "box",
-        "width": 1.8,
+        "width": 1.85,
         "height": 0.2,
         "offset": [0,0]
       }

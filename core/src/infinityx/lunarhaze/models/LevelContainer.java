@@ -127,11 +127,6 @@ public class LevelContainer {
     JsonValue playerJson;
 
     /**
-     * is the player hidden
-     */
-    private boolean hidden;
-
-    /**
      * the total amount of collectable moonlight on the board at initialization
      */
     private int totalMoonlight;
@@ -402,8 +397,6 @@ public class LevelContainer {
      * Hide player from drawing. Used for level editor.
      */
     public void hidePlayer() {
-        if (hidden) return;
-        hidden = true;
         drawables.removeValue(player, true);
         player.setActive(false);
         player.getSpotlight().setActive(false);
@@ -413,8 +406,6 @@ public class LevelContainer {
      * Show player for drawing. Used for level editor.
      */
     public void showPlayer() {
-        if (!hidden) return;
-        hidden = false;
         drawables.add(player);
         player.setActive(true);
         player.getSpotlight().setActive(true);
