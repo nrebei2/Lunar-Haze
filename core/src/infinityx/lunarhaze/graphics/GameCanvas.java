@@ -1077,13 +1077,12 @@ public class GameCanvas {
 
     public void drawPlayerAttackRange(Texture ellipse, Werewolf player, LevelContainer level) {
         float attackRange = WorldToScreenX(player.getAttackHitbox().getHitboxRange());
+        // Attack distance in one direction
         float x = WorldToScreenX(player.getPosition().x);
         float y = WorldToScreenY(player.getPosition().y);
 
-        float tile_width = level.getBoard().getTileScreenDim().x;
-        float tile_height = level.getBoard().getTileScreenDim().x;
         draw(ellipse, Color.WHITE, ellipse.getWidth()/2, ellipse.getHeight()/2, x, y, 0,
-                attackRange/ ellipse.getWidth(), attackRange / ellipse.getHeight());
+                attackRange/ ellipse.getWidth() * 2, attackRange / ellipse.getWidth() * 2);
     }
 
     /**
