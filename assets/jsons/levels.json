@@ -1268,7 +1268,7 @@
 "2": {
 	"settings": {
 		"transition": 8,
-		"phaseLength": 10,
+		"phaseLength": 50,
 		"battle-ambiance": [ 0.8, 0.7, 1, 1 ],
 		"enemy-spawner": {
 			"count": 5,
@@ -1420,7 +1420,17 @@
 			{
 				"type": "tree",
 				"scale": 1,
-				"position": [ 7, 2 ]
+				"position": [ 8, 2 ]
+			},
+			{
+				"type": "fencey",
+				"scale": 1,
+				"position": [ 7, 9 ]
+			},
+			{
+				"type": "fencey",
+				"scale": 1,
+				"position": [ 7, 8 ]
 			},
 			{
 				"type": "fencey",
