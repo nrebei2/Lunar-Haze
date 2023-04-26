@@ -63,18 +63,19 @@ public class Board {
      */
     private FilmStrip tileSheet;
 
+    /** Holds the necessary information to display a tile preview */
     public static class PreviewTile {
         // Board (x, y)
         int b_x;
         int b_y;
-        // Preview texture
-        Texture texture;
 
+        /** Follows {@link Tile#getTileNum()} */
+        int num;
 
-        public PreviewTile(int b_x, int b_y, Texture texture) {
+        public PreviewTile(int b_x, int b_y, int num) {
             this.b_x = b_x;
             this.b_y = b_y;
-            this.texture = texture;
+            this.num = num;
         }
     }
 
@@ -96,6 +97,10 @@ public class Board {
 
     public void setTileSheet(FilmStrip tileSheet) {
         this.tileSheet = tileSheet;
+    }
+
+    public FilmStrip getTileSheet() {
+        return tileSheet;
     }
 
     /**
@@ -255,14 +260,14 @@ public class Board {
      *
      * @param x       The x index for the Tile cell
      * @param y       The y index for the Tile cell
-     * @param texture The texture used for preview
+     * @param num     Tile number
      */
-    public void setPreviewTile(int x, int y, Texture texture) {
+    public void setPreviewTile(int x, int y, int num) {
         if (!inBounds(x, y)) {
             removePreview();
             return;
         }
-        this.previewTile = new PreviewTile(x, y, texture);
+        this.previewTile = new PreviewTile(x, y, num);
     }
 
     public void removePreview() {
@@ -275,13 +280,15 @@ public class Board {
      * @param canvas
      */
     private void drawPreview(GameCanvas canvas) {
-        Texture preview = this.previewTile.texture;
         int x = this.previewTile.b_x;
         int y = this.previewTile.b_y;
+
+        tileSheet.setFrame(this.previewTile.num);
+        //System.out.println(this.previewTile.num);
         canvas.draw(
-                preview, EditorMode.SELECTED_COLOR, preview.getWidth() / 2, preview.getHeight() / 2,
+                tileSheet, EditorMode.SELECTED_COLOR, tileSheet.getRegionWidth() / 2, tileSheet.getRegionHeight() / 2,
                 canvas.WorldToScreenX(boardCenterToWorldX(x)), canvas.WorldToScreenY(boardCenterToWorldY(y)), 0.0f,
-                tileScreenDim.x / preview.getWidth(), tileScreenDim.y / preview.getHeight()
+                tileScreenDim.x / tileSheet.getRegionWidth(), tileScreenDim.y / tileSheet.getRegionHeight()
         );
     }
 
