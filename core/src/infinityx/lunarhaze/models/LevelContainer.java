@@ -505,17 +505,17 @@ public class LevelContainer {
         canvas.end();
 
         // ----------------------- DEBUG --------------------------
-        if (player.isAttacking) {
-            canvas.begin(GameCanvas.DrawPass.SHAPE, view.x, view.y);
-            player.getAttackHitbox().drawHitbox(canvas);
-            canvas.end();
-        }
-
-        canvas.begin(GameCanvas.DrawPass.SHAPE, view.x, view.y);
-        for (Enemy e: activeEnemies) {
-            getEnemyControllers().get(e).drawGizmo(canvas);
-        }
-        canvas.end();
+        //if (player.isAttacking) {
+        //    canvas.begin(GameCanvas.DrawPass.SHAPE, view.x, view.y);
+        //    player.getAttackHitbox().drawHitbox(canvas);
+        //    canvas.end();
+        //}
+        //
+        //canvas.begin(GameCanvas.DrawPass.SHAPE, view.x, view.y);
+        //for (Enemy e: activeEnemies) {
+        //    getEnemyControllers().get(e).drawGizmo(canvas);
+        //}
+        //canvas.end();
     }
 
     /**
