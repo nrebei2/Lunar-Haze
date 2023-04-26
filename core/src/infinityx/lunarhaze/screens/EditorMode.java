@@ -37,7 +37,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     /**
      * Reference to GameCanvas created by the root
      */
-    private final GameCanvas canvas;
+    private GameCanvas canvas;
 
     /**
      * Contains level details!
@@ -96,8 +96,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * Whether the player has been placed on the board
      */
     private boolean playerPlaced;
-
-    private boolean showPopup;
 
     /**
      * List of moonlight point lights placed on level (for modifying color after placing lights)
@@ -345,16 +343,16 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     private void placeMoonlightTile() {
         int x = (int) mouseBoard.x;
         int y = (int) mouseBoard.y;
+        if(!board.isLit(x, y)) {
+            // PointLight logic
+            PointLight light = new PointLight(level.getRayHandler(), 6, new Color(moonlightLighting[0], moonlightLighting[1], moonlightLighting[2], moonlightLighting[3]), 3, board.boardCenterToWorldX(x), board.boardCenterToWorldY(y));
+            light.setSoft(true);
+            board.setSpotlight(x, y, light);
+            pointLights.add(light);
 
-        // PointLight logic
-        PointLight light = new PointLight(level.getRayHandler(), 10, new Color(moonlightLighting[0], moonlightLighting[1], moonlightLighting[2], moonlightLighting[3]), 4, board.boardCenterToWorldX(x), board.boardCenterToWorldY(y));
-        light.setSoft(true);
-        board.setSpotlight(x, y, light);
-        pointLights.add(light);
-
-        // Set board tile to lit
-        board.setLit(x, y, true);
-
+            // Set board tile to lit
+            board.setLit(x, y, true);
+        }
     }
 
     /**
@@ -541,7 +539,10 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     @Override
     public void dispose() {
-
+        canvas.dispose();
+        imGuiGlfw.dispose();
+        imGuiGl.dispose();
+        pointLights = null;
     }
 
     /**
