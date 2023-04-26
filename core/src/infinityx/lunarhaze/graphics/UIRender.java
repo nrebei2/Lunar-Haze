@@ -15,6 +15,7 @@ import infinityx.lunarhaze.controllers.GameplayController.Phase;
 import infinityx.lunarhaze.controllers.PlayerController;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.entity.Enemy;
+import infinityx.lunarhaze.models.entity.Werewolf;
 
 /**
  * This is a class used for drawing player and enemies' game UI state: HP, Stealth, MoonLight
@@ -223,6 +224,11 @@ public class UIRender {
     private Texture square_stroke;
 
     /**
+     * Texture for attack range representation
+     */
+    private Texture ellipse;
+
+    /**
      * Whether heart indicator length has been changed
      */
     boolean changed = false;
@@ -312,6 +318,7 @@ public class UIRender {
         title_right = directory.getEntry("title-right", Texture.class);
         attack_pow_icon = directory.getEntry("attack-pow-icon", Texture.class);
         attack_ran_icon = directory.getEntry("attack-ran-icon", Texture.class);
+        ellipse = directory.getEntry("ellipse", Texture.class);
 
         // shaders
         this.meter = directory.get("meter", ShaderProgram.class);
@@ -357,8 +364,12 @@ public class UIRender {
                 if (level.getPlayer().drawCooldownBar()) {
                     canvas.drawAttackCooldownBar(10f, 60f, 65f, level.getPlayer());
                 }
+                canvas.end();
+
+//                canvas.begin(GameCanvas.DrawPass.SPRITE, level.getView().x, level.getView().y);
+//                canvas.drawPlayerAttackRange(ellipse, level.getPlayer(), level);
+//                canvas.end();
             }
-            canvas.end();
 
             // Draw with view transform not considered
             canvas.begin(GameCanvas.DrawPass.SPRITE);
@@ -385,9 +396,10 @@ public class UIRender {
 
             if (phase == Phase.TRANSITION) {
                 drawTransitionScreen(canvas, level, delta);
-            } else if (phase == Phase.STEALTH) {
+            } else if (phase == Phase.BATTLE) {
                 moon_centerY_ratio = MOON_CENTER_LOW;
                 elapsed = 0;
+                alphaTint.a = EAS_FN.apply(1);
             }
         }
     }
@@ -395,6 +407,26 @@ public class UIRender {
     public void setFontColor(Color color) {
         UIFont_large.setColor(color);
         UIFont_small.setColor(color);
+    }
+
+    /**
+     * Draw the attack range around player
+     *
+     * @param canvas drawing canvas
+     * @param level  container holding all models
+     * @param player  player in the frame
+     */
+    public void drawPlayerAttackRange(GameCanvas canvas, Werewolf player, LevelContainer level) {
+
+        float attackRange = player.getAttackRange();
+        float x = canvas.WorldToScreenX(player.getPosition().x);
+        float y = canvas.WorldToScreenY(player.getPosition().y);
+
+        canvas.begin(GameCanvas.DrawPass.SPRITE);
+        float tile_size = level.getBoard().getTileScreenDim().x;
+        canvas.draw(ellipse, alphaTint, ellipse.getWidth()/2, ellipse.getHeight()/2, x, y, 0,
+                attackRange * tile_size / ellipse.getWidth(), attackRange * tile_size / ellipse.getHeight());
+        canvas.end();
     }
 
     /**

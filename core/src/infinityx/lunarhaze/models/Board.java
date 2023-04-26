@@ -134,6 +134,13 @@ public class Board {
     }
 
     /**
+     * @return tile height and width in screen length.
+     */
+    public Vector2 getTileScreenDim() {
+        return this.tileScreenDim;
+    }
+
+    /**
      * @return tile height and width in world length.
      */
     public Vector2 getTileWorldDim() {

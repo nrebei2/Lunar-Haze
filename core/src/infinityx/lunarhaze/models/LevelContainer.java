@@ -3,6 +3,7 @@ package infinityx.lunarhaze.models;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -156,6 +157,8 @@ public class LevelContainer {
      */
     private float[] battleAmbience;
 
+    private Sound alert_sound;
+
     /**
      * Moonlight color of point lights
      */
@@ -238,6 +241,8 @@ public class LevelContainer {
         addDrawables(enemy);
         // Update enemy controller assigned to the new enemy
         getEnemyControllers().get(enemy).populate(this);
+        alert_sound = this.getDirectory().getEntry("alerted", Sound.class);
+        getEnemyControllers().get(enemy).setAlertSound(alert_sound);
 
         return enemy;
     }

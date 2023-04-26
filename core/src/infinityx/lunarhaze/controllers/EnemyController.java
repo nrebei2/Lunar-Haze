@@ -8,6 +8,7 @@ import com.badlogic.gdx.ai.steer.utils.Path;
 import com.badlogic.gdx.ai.steer.utils.paths.LinePath;
 import com.badlogic.gdx.ai.utils.Collision;
 import com.badlogic.gdx.ai.utils.Ray;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Interpolation;
@@ -115,13 +116,26 @@ public class EnemyController {
      */
     public Vector2 patrolTarget;
 
+    private Sound alert_sound;
+
+//    public CombinedContext combinedContext;
+//
+//    public ContextSteering combinedSteering;
+//
+//    public PrioritySteering battleSB;
     /** Holds context behaviors for strafing,  */
     public CombinedContext combinedContext;
 
     /** Steering behavior from {@link #combinedContext} */
     public ContextSteering battleSB;
 
+    public Sound getAlertSound(){
+        return alert_sound;
+    }
 
+    public void setAlertSound(Sound s){
+        alert_sound = s;
+    }
 
     /**
      * Creates an EnemyController for the enemy with the given id.
@@ -268,6 +282,10 @@ public class EnemyController {
         // Process the FSM
         enemy.update(delta);
         stateMachine.update();
+        stateMachine.update();
+        if (enemy.getDetection() == Enemy.Detection.NOTICED){
+            alert_sound.play();
+        }
     }
 
 

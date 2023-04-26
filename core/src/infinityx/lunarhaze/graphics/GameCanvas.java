@@ -34,6 +34,7 @@ import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.entity.Enemy;
 import infinityx.lunarhaze.models.entity.Werewolf;
 
@@ -884,6 +885,38 @@ public class GameCanvas {
         shapeRenderer.end();
     }
 
+    public void drawPhysicsFill(PolygonShape shape, Color color, float x, float y, float angle, float sx, float sy) {
+        if (active != DrawPass.SHAPE) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin(SHAPE)", new IllegalStateException());
+            return;
+        }
+
+        local.setToScaling(sx, sy);
+        local.translate(x, y);
+        local.rotateRad(angle);
+
+        float x0, y0;
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(color);
+        Vector2 vertex = new Vector2();
+        float[] vertices = {};
+        float[] newVertices;
+        for (int ii = 0; ii < shape.getVertexCount(); ii++) {
+            shape.getVertex(ii, vertex);
+            local.applyTo(vertex);
+            x0 = vertex.x;
+            y0 = vertex.y;
+            newVertices = new float[vertices.length + 2];
+            System.arraycopy(vertices, 0, newVertices, 0, vertices.length);
+            newVertices[newVertices.length - 2] = x0;
+            newVertices[newVertices.length - 1] = y0;
+            vertices = newVertices;
+        }
+        System.out.println(vertices.length);
+        shapeRenderer.polygon(vertices);
+        shapeRenderer.end();
+    }
+
 
     /**
      * Update and render lights
@@ -1018,6 +1051,7 @@ public class GameCanvas {
         shapeRenderer.end();
     }
 
+
     public void drawAttackCooldownBar(float barWidth, float barHeight, float xOffset, Werewolf werewolf) {
         if (active != DrawPass.SHAPE) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
@@ -1039,6 +1073,17 @@ public class GameCanvas {
 
         shapeRenderer.rect(x, y, barWidth, barHeight * werewolf.getCooldownPercent());
         shapeRenderer.end();
+    }
+
+    public void drawPlayerAttackRange(Texture ellipse, Werewolf player, LevelContainer level) {
+        float attackRange = WorldToScreenX(player.getAttackHitbox().getHitboxRange());
+        float x = WorldToScreenX(player.getPosition().x);
+        float y = WorldToScreenY(player.getPosition().y);
+
+        float tile_width = level.getBoard().getTileScreenDim().x;
+        float tile_height = level.getBoard().getTileScreenDim().x;
+        draw(ellipse, Color.WHITE, ellipse.getWidth()/2, ellipse.getHeight()/2, x, y, 0,
+                attackRange/ ellipse.getWidth(), attackRange / ellipse.getHeight());
     }
 
     /**
