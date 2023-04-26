@@ -15,6 +15,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import infinityx.lunarhaze.ai.*;
+import infinityx.lunarhaze.combat.AttackHandler;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.models.GameObject;
 import infinityx.lunarhaze.models.LevelContainer;
@@ -30,11 +31,12 @@ import java.util.Arrays;
 /**
  * Controller class, handles logic for a single enemy
  */
-public class EnemyController {
+public class EnemyController extends AttackHandler {
     /**
      * Raycast cache for target detection
      */
     private final RaycastInfo raycast;
+    public Vector2 flank_pos;
 
     /**
      * Collision detector for target detection
@@ -130,6 +132,7 @@ public class EnemyController {
      * @param enemy The enemy being controlled by this AIController
      */
     public EnemyController(final Enemy enemy) {
+        super(enemy);
         patrolTarget = new Vector2();
         this.targetPos = new Vector2();
         this.enemy = enemy;
@@ -141,7 +144,7 @@ public class EnemyController {
         raycast.addIgnores(GameObject.ObjectType.ENEMY, GameObject.ObjectType.HITBOX);
 
         this.commRay = new RaycastInfo(enemy);
-        commRay.addIgnores(GameObject.ObjectType.HITBOX, GameObject.ObjectType.WEREWOLF);
+        commRay.addIgnores(GameObject.ObjectType.WEREWOLF);
 
     }
 
@@ -194,21 +197,21 @@ public class EnemyController {
                 for (int i =0; i<map.getResolution(); i++){
                     Vector2 dir = map.dirFromSlot(i);
                     // Ray extends two units
-                    rayCache.set(enemy.getPosition(), enemy.getPosition().add(dir.scl(2)));
+                    rayCache.set(enemy.getPosition(), dir.scl(2).add(enemy.getPosition()));
                     communicationCollision.findCollision(collisionCache, rayCache);
-                    if (raycast.hit){
+                    if (commRay.hit){
                         map.dangerMap[i] = raycast.fraction;
                     }
                 }
                 return map;
             }
         };
-        //this.combinedContext.add(attack);
+//        this.combinedContext.add(attack);
         this.combinedContext.add(strafe);
-        //this.combinedContext.add(separation);
+        this.combinedContext.add(separation);
 
         //Resolution is set to 8 to represent the 8 directions in which enemies can move
-        this.battleSB = new ContextSteering(enemy, combinedContext, 8);
+        this.battleSB = new ContextSteering(enemy, combinedContext, 16);
     }
 
     /**
@@ -237,8 +240,8 @@ public class EnemyController {
         for (int i = 0; i < map.getResolution(); i++) {
             Vector2 dir = map.dirFromSlot(i);
             canvas.shapeRenderer.line(
-                    getEnemy().getPosition().add(dir.cpy().scl(radius)).scl(s_x, s_y),
-                    getEnemy().getPosition().add(dir.cpy().scl(radius + map.dangerMap[i])).scl(s_x, s_y)
+                    getEnemy().getPosition().cpy().add(dir.cpy().scl(radius)).scl(s_x, s_y),
+                    getEnemy().getPosition().cpy().add(dir.cpy().scl(radius + map.dangerMap[i])).scl(s_x, s_y)
             );
         }
 
@@ -258,6 +261,7 @@ public class EnemyController {
      * @param delta time between last frame in seconds
      */
     public void update(LevelContainer container, float delta) {
+        super.update(delta);
         if (enemy.hp <= 0) container.removeEnemy(enemy);
 
         //if (inBattle && !stateMachine.isInState(EnemyState.ALERT)) {

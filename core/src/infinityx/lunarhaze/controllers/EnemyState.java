@@ -151,15 +151,20 @@ public enum EnemyState implements State<EnemyController> {
             //entity.getAttackSound().play();
             entity.getEnemy().setFilmstripPrefix("attack");
             entity.getEnemy().texUpdate = 0.06f;
+            entity.getEnemy().setIndependentFacing(true);
+            entity.initiateAttack();
         }
 
         @Override
         public void update(EnemyController entity) {
+            Vector2 enemyToTarget = entity.target.getPosition().sub(entity.getEnemy().getPosition());
+            entity.getEnemy().setOrientation(AngleUtils.vectorToAngle(enemyToTarget));
+
             // Handle state transitions
-            //if (!entity.isAttacking()) {
+            if (!entity.getEnemy().isAttacking()) {
             // Go back to whatever it was doing before. It may always be ALERT.
-            //entity.getStateMachine().revertToPreviousState();
-            //}
+                 entity.getStateMachine().changeState(ALERT);
+            }
         }
     },
 
@@ -177,8 +182,10 @@ public enum EnemyState implements State<EnemyController> {
             entity.targetPos.set(entity.getTarget().getPosition());
             entity.updatePath();
             entity.getEnemy().setSteeringBehavior(entity.followPathSB);
-
-            MessageManager.getInstance().dispatchMessage(TacticalManager.ADD, entity);
+            if (!(entity.getStateMachine().getPreviousState() == ATTACK || entity.getStateMachine().getCurrentState() == FLANK)
+                    && entity.isInBattle()) {
+                MessageManager.getInstance().dispatchMessage(TacticalManager.ADD, entity);
+            }
             entity.time = 0;
         }
 
@@ -197,14 +204,12 @@ public enum EnemyState implements State<EnemyController> {
             entity.time += Gdx.graphics.getDeltaTime();
 
             Vector2 enemyToTarget = entity.target.getPosition().sub(entity.getEnemy().getPosition());
-            // Switch to battle behavior when close enough
-            if (enemyToTarget.len() <= 2){
-                // Always face towards target
-                entity.getEnemy().setIndependentFacing(true);
-                entity.getEnemy().setOrientation(AngleUtils.vectorToAngle(enemyToTarget));
-                entity.getEnemy().setSteeringBehavior(entity.battleSB);
-            } else {
-                // go back to chase (follow path)
+
+            //if in stealth just walk towards target and attack if close enough
+            if (!entity.isInBattle()){
+                if (enemyToTarget.len() <= 1 && entity.canStartNewAttack()){
+                    entity.getStateMachine().changeState(ATTACK);
+                }
                 entity.getEnemy().setIndependentFacing(false);
                 entity.targetPos.set(entity.getTarget().getPosition());
                 entity.getEnemy().setSteeringBehavior(entity.followPathSB);
@@ -214,24 +219,65 @@ public enum EnemyState implements State<EnemyController> {
                     entity.time = 0;
                 }
             }
+            else{
+                // Switch to battle behavior when close enough
+                if (enemyToTarget.len() <= 2){
+                    // Always face towards target
+                    entity.getEnemy().setIndependentFacing(true);
+                    entity.getEnemy().setOrientation(AngleUtils.vectorToAngle(enemyToTarget));
+                    entity.getEnemy().setSteeringBehavior(entity.battleSB);
+                } else {
+                    // go back to chase (follow path)
+                    entity.getEnemy().setIndependentFacing(false);
+                    entity.targetPos.set(entity.getTarget().getPosition());
+                    entity.getEnemy().setSteeringBehavior(entity.followPathSB);
+                    // Update path every 0.2 seconds
+                    if (entity.time >= 0.2) {
+                        entity.updatePath();
+                        entity.time = 0;
+                    }
+                }
+            }
+
         }
 
         @Override
         public void exit(EnemyController entity) {
-            MessageManager.getInstance().dispatchMessage(TacticalManager.REMOVE, entity);
+            if (!entity.isInBattle()) {
+                MessageManager.getInstance().dispatchMessage(TacticalManager.REMOVE, entity);
+            }
         }
 
         @Override
         public boolean onMessage(EnemyController control, Telegram telegram) {
-            System.out.println("on message");
             if (telegram.message == TacticalManager.FLANK) {
+                System.out.println("flanking");
+
                 Vector2 flank_pos = (Vector2) telegram.extraInfo;
+                control.flank_pos = flank_pos;
                 Vector2 cur_pos = control.getEnemy().getPosition();
                 Path path = control.pathfinder.findPath(cur_pos, flank_pos);
                 control.followPathSB.setPath(path);
                 control.getEnemy().setSteeringBehavior(control.followPathSB);
+                control.getStateMachine().changeState(FLANK);
             }
             return true;
+        }
+    },
+
+    FLANK(){
+        @Override
+        public void update(EnemyController entity) {
+            Vector2 enemyToTarget = entity.target.getPosition().sub(entity.getEnemy().getPosition());
+            // Switch to battle behavior when close enough
+            //check if got to flank position
+            Vector2 distToFlank = entity.getEnemy().getPosition().sub(entity.flank_pos);
+            if (distToFlank.len() <= 0.1f){
+                entity.getStateMachine().changeState(ALERT);
+            }
+            if (enemyToTarget.len() <= 1 && entity.canStartNewAttack()){
+                entity.getStateMachine().changeState(ATTACK);
+            }
         }
     },
 

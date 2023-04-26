@@ -58,7 +58,7 @@ public class TacticalManager implements Telegraph {
     }
 
     public void update() {
-//        sendFlankMessage();
+        sendFlankMessage();
     }
 
     /**
@@ -69,7 +69,7 @@ public class TacticalManager implements Telegraph {
         for (EnemyController control : enemies) {
             StateMachine<EnemyController, EnemyState> enemy = control.getStateMachine();
             if (!enemy.isInState(EnemyState.ALERT)) continue;
-            if (rand.nextFloat() <= 0.3) {
+            if (rand.nextFloat() <= 0.1) {
                 // Calculate angle step for evenly distributing the enemies around the target
                 float angleStep = 360.0f / enemies.size;
 
@@ -83,8 +83,6 @@ public class TacticalManager implements Telegraph {
                     continue;
                 }
                 MessageManager.getInstance().dispatchMessage(null, enemy, FLANK, flankingPosition);
-            } else {
-                MessageManager.getInstance().dispatchMessage(null, enemy, ATTACK);
             }
 
             i++;
