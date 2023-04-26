@@ -181,7 +181,7 @@ public class GameplayController {
         this.gameState = GameState.PLAY;
         this.phase = Phase.STEALTH;
         this.container = levelContainer;
-        this.collisionController = new CollisionController(levelContainer);
+        this.collisionController = new CollisionController(levelContainer.getWorld());
         this.enemySpawner = new EnemySpawner(levelContainer);
         enemySpawner.initialize(jsonValue.get("settings").get("enemy-spawner"));
 
@@ -228,7 +228,7 @@ public class GameplayController {
                     battleTicks += 1;
                     if (enemies.size == 0) {
                         gameState = GameState.WIN;
-                        if(setting.isSoundEnabled()) {
+                        if (setting.isSoundEnabled()) {
                             win_sound.play();
                         }
                     }

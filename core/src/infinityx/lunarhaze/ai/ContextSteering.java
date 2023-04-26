@@ -4,7 +4,6 @@ import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
 import com.badlogic.gdx.math.Vector2;
-import infinityx.lunarhaze.graphics.GameCanvas;
 
 import java.util.Arrays;
 
@@ -40,7 +39,9 @@ public class ContextSteering extends SteeringBehavior<Vector2> {
         this.cachedContextMap = new ContextMap(resolution);
     }
 
-    /** For debugging purposes */
+    /**
+     * For debugging purposes
+     */
     public ContextMap getMap() {
         return contextBehavior.calculateMaps(cachedContextMap);
     }
@@ -48,6 +49,7 @@ public class ContextSteering extends SteeringBehavior<Vector2> {
 
     /**
      * Public for debugging purposes
+     *
      * @return scaled direction of the highest interest slot
      */
     public Vector2 getDirection() {

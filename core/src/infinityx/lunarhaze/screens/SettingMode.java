@@ -6,15 +6,8 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.GDXRoot;
 import infinityx.lunarhaze.controllers.InputController;
@@ -198,6 +191,7 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
     public boolean isReady() {
         return pressBackState == 2;
     }
+
     /**
      * Returns true if all assets are loaded and the player is ready to go.
      *
@@ -206,6 +200,7 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
     public boolean isMusicReady() {
         return pressMusicState == 2;
     }
+
     /**
      * Returns true if all assets are loaded and the player is ready to go.
      *
@@ -216,8 +211,8 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
     }
 
     public int isStarReady() {
-        for (int i = 1; i<=10; i++ ){
-            if(pressStarState[i] == 2){
+        for (int i = 1; i <= 10; i++) {
+            if (pressStarState[i] == 2) {
                 return i;
             }
         }
@@ -236,7 +231,7 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
         background = directory.getEntry("background-setting", Texture.class);
         background.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         musicOnTexture = directory.getEntry("setting-music-on", Texture.class);
-        musicOffTexture = directory.getEntry("setting-music-off",Texture.class);
+        musicOffTexture = directory.getEntry("setting-music-off", Texture.class);
         sliderBar = directory.getEntry("setting-music-volume-bar", Texture.class);
         sliderKnob = directory.getEntry("setting-music-volume-knob", Texture.class);
         backButton = directory.getEntry("back", Texture.class);
@@ -248,7 +243,7 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
         canvas.begin(GameCanvas.DrawPass.SPRITE);
         Color alphaTint = Color.WHITE;
         canvas.drawOverlay(background, alphaTint, true);
-        canvas.drawTextCentered("Music Enabled", font, canvas.getHeight()*0.3f);
+        canvas.drawTextCentered("Music Enabled", font, canvas.getHeight() * 0.3f);
         canvas.draw(music, alphaTint, music.getWidth() / 2, music.getHeight() / 2,
                 centerX_music, centerY_music, 0, MUSIC_SCALE * scale, MUSIC_SCALE * scale);
         canvas.drawTextCentered("Music Volume", font, canvas.getHeight() * 0.05f);
@@ -257,16 +252,16 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
             if (stat >= i) {
                 // Draw a filled star for the ith star
                 canvas.draw(star_filled, Color.WHITE, star_filled.getWidth() / 2, star_filled.getHeight() / 2,
-                        canvas.getWidth()/2 + (i - 6) * STAR_WIDTH, starY, 0,
+                        canvas.getWidth() / 2 + (i - 6) * STAR_WIDTH, starY, 0,
                         STAR_WIDTH / star_filled.getWidth(), STAR_HEIGHT / star_filled.getHeight());
             } else {
                 // Draw an empty heart for the ith heart
                 canvas.draw(star_empty, Color.WHITE, star_filled.getWidth() / 2, star_filled.getHeight() / 2,
-                        canvas.getWidth()/2 + (i - 6) * STAR_WIDTH, starY, 0,
+                        canvas.getWidth() / 2 + (i - 6) * STAR_WIDTH, starY, 0,
                         STAR_WIDTH / star_filled.getWidth(), STAR_HEIGHT / star_filled.getHeight());
             }
         }
-        canvas.drawTextCentered("Sound Enabled", font, - canvas.getHeight() * 0.2f);
+        canvas.drawTextCentered("Sound Enabled", font, -canvas.getHeight() * 0.2f);
         canvas.draw(sound, alphaTint, sound.getWidth() / 2, sound.getHeight() / 2,
                 centerX_sound, centerY_sound, 0, MUSIC_SCALE * scale, MUSIC_SCALE * scale);
 
@@ -282,8 +277,8 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
      * Update the status of this menu.
      */
     private void update(float delta) {
-        music = (setting.isMusicEnabled()? musicOnTexture : musicOffTexture);
-        sound = (setting.isSoundEnabled()? musicOnTexture : musicOffTexture);
+        music = (setting.isMusicEnabled() ? musicOnTexture : musicOffTexture);
+        sound = (setting.isSoundEnabled() ? musicOnTexture : musicOffTexture);
         inputController.readKeyboard();
 //        System.out.println(setting.isMusicEnabled());
     }
@@ -295,7 +290,7 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
         pressMusicState = 0;
         pressSoundState = 0;
         pressStarState = new int[11];
-        for (int i = 1; i<=10; i++ ){
+        for (int i = 1; i <= 10; i++) {
             pressStarState[i] = 0;
         }
         font = new BitmapFont();
@@ -317,22 +312,22 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
                     observer.exitScreen(this, GO_MENU);
                 }
             }
-            if(isStarReady()!=0 && observer != null){
-                setting.setMusicVolume(((float)isStarReady())/10.0f);
-                for (int i = 1; i<=10; i++ ){
+            if (isStarReady() != 0 && observer != null) {
+                setting.setMusicVolume(((float) isStarReady()) / 10.0f);
+                for (int i = 1; i <= 10; i++) {
                     pressStarState[i] = 0;
                 }
             }
 
-            if(isMusicReady() && observer !=null){
+            if (isMusicReady() && observer != null) {
                 setting.setMusicEnabled(!setting.isMusicEnabled());
                 pressMusicState = 0;
             }
-            if(isSoundReady() && observer !=null){
+            if (isSoundReady() && observer != null) {
                 setting.setSoundEnabled(!setting.isSoundEnabled());
                 pressSoundState = 0;
             }
-        // We are are ready, notify our listener
+            // We are are ready, notify our listener
         }
     }
 
@@ -344,8 +339,8 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
 
         centerY = (int) (BACK_HEIGHT_RATIO * height);
         centerX = (int) (BACK_WIDTH_RATIO * width);
-        centerX_music = width/2;
-        centerX_sound = width/2;
+        centerX_music = width / 2;
+        centerX_sound = width / 2;
         centerY_music = (int) (MUSIC_HEIGHT_RATIO * height);
         centerY_sound = (int) (SOUND_HEIGHT_RATIO * height);
         heightY = height;
@@ -426,17 +421,15 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
         float y_star = STAR_HEIGHT;
         float[] disXstar = new float[11];
         float[] disYstar = new float[11];
-        for (int i = 1; i<=10; i++ ){
-            disXstar[i] = Math.abs(screenX - (canvas.getWidth()/2 + (i - 6) * STAR_WIDTH));
+        for (int i = 1; i <= 10; i++) {
+            disXstar[i] = Math.abs(screenX - (canvas.getWidth() / 2 + (i - 6) * STAR_WIDTH));
             disYstar[i] = Math.abs(screenY - starY);
         }
-        for (int i = 1; i<=10; i++ ){
-            if(disXstar[i] < x_star && disYstar[i] < y_star){
+        for (int i = 1; i <= 10; i++) {
+            if (disXstar[i] < x_star && disYstar[i] < y_star) {
                 pressStarState[i] = 1;
             }
         }
-
-
 
 
         return false;
@@ -456,8 +449,8 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
             pressSoundState = 2;
             return false;
         }
-        for (int i = 1; i<=10; i++ ){
-            if(pressStarState[i] == 1){
+        for (int i = 1; i <= 10; i++) {
+            if (pressStarState[i] == 1) {
                 pressStarState[i] = 2;
             }
         }

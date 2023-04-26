@@ -1,7 +1,6 @@
 package infinityx.lunarhaze.models;
 
 import box2dLight.PointLight;
-import com.badlogic.gdx.graphics.Texture;
 
 /**
  * Represents a background tile in the scene
@@ -20,7 +19,9 @@ public class Tile {
      */
     private boolean collectable = false;
 
-    /** Frame index into tile sprite sheet held by Board */
+    /**
+     * Frame index into tile sprite sheet held by Board
+     */
     private int tileNum;
 
     /**
@@ -41,6 +42,9 @@ public class Tile {
         this.type = type;
     }
 
+    /**
+     * Whether the spotlight on this tile is active
+     */
     public boolean isLit() {
         if (spotLight == null) {
             return false;
@@ -48,6 +52,11 @@ public class Tile {
         return spotLight.isActive();
     }
 
+    /**
+     * Assumes {@link #spotLight} is not null to enable/disable.
+     *
+     * @param lit
+     */
     public void setLit(boolean lit) {
         spotLight.setActive(lit);
     }

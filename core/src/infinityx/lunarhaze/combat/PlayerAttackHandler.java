@@ -1,7 +1,6 @@
 package infinityx.lunarhaze.combat;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.controllers.GameplayController;
 import infinityx.lunarhaze.controllers.InputController;
@@ -34,7 +33,9 @@ public class PlayerAttackHandler extends AttackHandler {
      */
     private final static float MAX_COMBO_TIME = 1f;
 
-    /** Dash variables */
+    /**
+     * Dash variables
+     */
     private static final float DASH_SPEED = 10f;
     private static final float DASH_TIME = 0.15f;
     private float dashTimer;
@@ -61,12 +62,13 @@ public class PlayerAttackHandler extends AttackHandler {
 
     /**
      * See {@link #update(float)}
+     *
      * @param phase current phase of the game
      */
     public void update(float delta, GameplayController.Phase phase) {
         if (phase == GameplayController.Phase.BATTLE) {
             super.update(delta);
-            if(isDashing) {
+            if (isDashing) {
                 processDash(dashDirection);
             }
             if (comboStep > 0) {
@@ -79,7 +81,7 @@ public class PlayerAttackHandler extends AttackHandler {
                 if (InputController.getInstance().didAttack()) {
                     initiateAttack();
                 }
-            } else if (!isDashing){
+            } else if (!isDashing) {
                 if (comboStep == 0) {
                     player.setDrawCooldownBar(true, attackCooldownCounter / entity.attackCooldown);
                 } else {
@@ -143,7 +145,7 @@ public class PlayerAttackHandler extends AttackHandler {
      * Initiates a dash
      */
     private void initiateDash(InputController input) {
-        if(!isDashing) {
+        if (!isDashing) {
             isDashing = true;
             dashDirection = new Vector2(input.getHorizontal(), input.getVertical()).nor();
             dashTimer = 0f;
@@ -153,7 +155,7 @@ public class PlayerAttackHandler extends AttackHandler {
     }
 
     private void processDash(Vector2 direction) {
-        entity.getBody().applyLinearImpulse(direction.x *0.5f , direction.y *0.5f, entity.getX(), entity.getY(), true);
+        entity.getBody().applyLinearImpulse(direction.x * 0.5f, direction.y * 0.5f, entity.getX(), entity.getY(), true);
         dashTimer += Gdx.graphics.getDeltaTime();
         if (dashTimer >= DASH_TIME) {
             endDash();

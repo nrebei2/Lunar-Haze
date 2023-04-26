@@ -21,7 +21,7 @@ public class AttackHitbox extends GameObject {
      */
     private final AttackingGameObject attacker;
 
-    private final Color betaTint = new Color(255f/255f, 255f/255f, 255f/255f, 0.2f);
+    private final Color betaTint = new Color(255f / 255f, 255f / 255f, 255f / 255f, 0.2f);
 
     /**
      * @param initialSize holds initial reach and width of hitbox respectively

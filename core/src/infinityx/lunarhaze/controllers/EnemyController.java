@@ -26,8 +26,6 @@ import infinityx.lunarhaze.physics.Box2DRaycastCollision;
 import infinityx.lunarhaze.physics.RaycastInfo;
 import infinityx.util.astar.AStarPathFinding;
 
-import java.util.Arrays;
-
 /**
  * Controller class, handles logic for a single enemy
  */
@@ -116,26 +114,36 @@ public class EnemyController extends AttackHandler {
 
     private Sound alert_sound;
 
-    /** Holds context behaviors for strafing,  */
+    /**
+     * Holds context behaviors for strafing,
+     */
     public CombinedContext combinedContext;
 
-    /** Steering behavior from {@link #combinedContext} */
+    /**
+     * Steering behavior from {@link #combinedContext}
+     */
     public ContextSteering battleSB;
 
-    /**Steering behavior for strafing around target*/
+    /**
+     * Steering behavior for strafing around target
+     */
     public Strafe strafe;
 
-    /**Steering behavior for avoiding colliding into other enemies*/
+    /**
+     * Steering behavior for avoiding colliding into other enemies
+     */
     public ContextBehavior separation;
 
-    /**Steering behavior for attacking*/
+    /**
+     * Steering behavior for attacking
+     */
     public ContextBehavior attack;
 
-    public Sound getAlertSound(){
+    public Sound getAlertSound() {
         return alert_sound;
     }
 
-    public void setAlertSound(Sound s){
+    public void setAlertSound(Sound s) {
         alert_sound = s;
     }
 
@@ -184,14 +192,13 @@ public class EnemyController extends AttackHandler {
         followPathSB = new FollowPath(enemy, new LinePath(waypoints), 0.05f, 0.5f);
 
 
-
         // Prefer directions towards target
         attack = new ContextBehavior(enemy, true) {
             @Override
             protected ContextMap calculateRealMaps(ContextMap map) {
                 map.setZero();
                 Vector2 targetDir = target.getPosition().sub(enemy.getPosition()).nor();
-                for (int i = 0 ; i<map.getResolution(); i++){
+                for (int i = 0; i < map.getResolution(); i++) {
                     map.interestMap[i] = Math.max(0, map.dirFromSlot(i).dot(targetDir));
                 }
 
@@ -207,7 +214,7 @@ public class EnemyController extends AttackHandler {
             @Override
             protected ContextMap calculateRealMaps(ContextMap map) {
                 map.setZero();
-                for (int i = 0; i<map.getResolution(); i++){
+                for (int i = 0; i < map.getResolution(); i++) {
                     Vector2 dir = map.dirFromSlot(i);
                     // Ray extends two units
                     rayCache.set(enemy.getPosition(), dir.scl(2).add(enemy.getPosition()));
@@ -287,7 +294,7 @@ public class EnemyController extends AttackHandler {
         enemy.update(delta);
         stateMachine.update();
         stateMachine.update();
-        if (enemy.getDetection() == Enemy.Detection.NOTICED){
+        if (enemy.getDetection() == Enemy.Detection.NOTICED) {
             alert_sound.play();
         }
     }

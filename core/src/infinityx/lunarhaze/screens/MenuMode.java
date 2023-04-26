@@ -259,13 +259,13 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
         canvas.clear();
         canvas.begin(GameCanvas.DrawPass.SPRITE);
         Color alphaTint = Color.WHITE;
-        canvas.draw(background,alphaTint, background.getWidth()/2, background.getHeight()/2, canvas.getWidth()/2,canvas.getHeight()/2, 0, BACKGROUND_SCALE * scale,BACKGROUND_SCALE*scale  );
+        canvas.draw(background, alphaTint, background.getWidth() / 2, background.getHeight() / 2, canvas.getWidth() / 2, canvas.getHeight() / 2, 0, BACKGROUND_SCALE * scale, BACKGROUND_SCALE * scale);
         canvas.draw(logo, alphaTint, logo.getWidth() / 2, logo.getHeight() / 2,
                 centerX, canvas.getHeight() * LOGO_HEIGHT_RATIO, 0, LOGO_SCALE * scale, LOGO_SCALE * scale);
         Color color = new Color(142.0f / 255.0f, 157.0f / 255.0f, 189.0f / 255.0f, 1.0f);
         Color tintPlay = (pressPlayState == 1 ? color : Color.WHITE);
         canvas.draw(playButton, tintPlay, playButton.getWidth() / 2, playButton.getHeight() / 2,
-                centerX, centerYPlay, 0, BUTTON_SCALE* scale, BUTTON_SCALE * scale);
+                centerX, centerYPlay, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
         Color tintEditor = (pressEditorState == 1 ? color : Color.WHITE);
         canvas.draw(editorButton, tintEditor, editorButton.getWidth() / 2, editorButton.getHeight() / 2,
                 centerX, centerYEditor, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);

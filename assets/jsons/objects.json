@@ -1,12 +1,12 @@
 {
   "house": {
     "textures": {
-      "static": "house1.static"
+      "static": "house1"
     },
     "texture": {
       "name": "static",
-      "origin": [1072, 470],
-      "scale": 0.25
+      "origin": [324, 294],
+      "scale": 0.36
     },
     "colliders": {
       "body": {
@@ -22,19 +22,21 @@
     "restitution": 0.0,
     "damping": 0.0
   },
-  "tree": {
+  "house2": {
     "textures": {
-      "static": "tree1.static"
+      "static": "house2"
     },
     "texture": {
       "name": "static",
-      "origin": [2150, 500],
-      "scale": 0.15
+      "origin": [249, 157],
+      "scale": 0.815
     },
     "colliders": {
       "body": {
-        "type": "circle",
-        "radius": 0.4
+        "type": "box",
+        "width": 4,
+        "height": 1.8,
+        "offset": [2, 0.9]
       }
     },
     "bodytype": "static",
@@ -45,7 +47,7 @@
   },
   "stone": {
     "textures": {
-    "static": "stone.static"
+    "static": "stone"
   },
     "texture": {
       "name": "static",
@@ -64,9 +66,9 @@
     "restitution": 0.0,
     "damping": 0.0
   },
-  "fencex": {
+  "fence1": {
     "textures": {
-      "static": "fence1.static"
+      "static": "fence1"
     },
     "texture": {
       "name": "static",
@@ -76,7 +78,53 @@
     "colliders": {
       "body": {
         "type": "box",
-        "width": 2,
+        "width": 1.8,
+        "height": 0.2,
+        "offset": [0,0]
+      }
+    },
+    "bodytype": "static",
+    "density": 0.0,
+    "friction": 0.0,
+    "restitution": 0.0,
+    "damping": 0.0
+  },
+  "fencex": {
+    "textures": {
+      "static": "fence2"
+    },
+    "texture": {
+      "name": "static",
+      "origin": [512, 46],
+      "scale": 0.25
+    },
+    "colliders": {
+      "body": {
+        "type": "box",
+        "width": 1.8,
+        "height": 0.2,
+        "offset": [0,0]
+      }
+    },
+    "bodytype": "static",
+    "density": 0.0,
+    "friction": 0.0,
+    "restitution": 0.0,
+    "damping": 0.0
+  },
+  "fence3": {
+    "textures": {
+      "static": "fence3"
+    },
+    "texture": {
+      "name": "static",
+      "origin": [512, 46],
+      "scale": 0.25
+    },
+    "colliders": {
+      "body": {
+        "type": "box",
+        "width": 1.8,
         "height": 0.2,
         "offset": [0,0]
       }
@@ -89,18 +137,18 @@
   },
   "fencey": {
     "textures": {
-      "static": "fence2.static"
+      "static": "fence4"
     },
     "texture": {
       "name": "static",
-      "origin": [969, 382],
+      "origin": [60, 300],
       "scale": 0.25
     },
     "colliders": {
       "body": {
         "type": "box",
         "width": 0.2,
-        "height": 2,
+        "height": 1,
         "offset": [0,0]
       }
     },
@@ -110,20 +158,21 @@
     "restitution": 0.0,
     "damping": 0.0
   },
-
-  "forest": {
+  "fence5": {
     "textures": {
-      "static": "forest.static"
+      "static": "fence5"
     },
     "texture": {
       "name": "static",
-      "origin": [2150, 500],
-      "scale": 0.15
+      "origin": [60, 300],
+      "scale": 0.25
     },
     "colliders": {
       "body": {
-        "type": "circle",
-        "radius": 0.0
+        "type": "box",
+        "width": 0.2,
+        "height": 1,
+        "offset": [0,0]
       }
     },
     "bodytype": "static",
@@ -134,7 +183,7 @@
   },
   "lamp": {
     "textures": {
-      "static": "lamp.static"
+      "static": "lamp"
     },
     "texture": {
       "name": "static",
@@ -145,6 +194,268 @@
       "body": {
         "type": "circle",
         "radius": 0.2
+      }
+    },
+    "bodytype": "static",
+    "density": 0.0,
+    "friction": 0.0,
+    "restitution": 0.0,
+    "damping": 0.0
+  },
+  "tree": {
+    "textures": {
+      "static": "tree0"
+    },
+    "texture": {
+      "name": "static",
+      "origin": [1040, 564],
+      "scale": 0.25
+    },
+    "colliders": {
+      "body": {
+        "type": "circle",
+        "radius": 0.4
+      }
+    },
+    "bodytype": "static",
+    "density": 0.0,
+    "friction": 0.0,
+    "restitution": 0.0,
+    "damping": 0.0
+  },
+  "forest": {
+    "textures": {
+      "static": "tree1"
+    },
+    "texture": {
+      "name": "static",
+      "origin": [1040, 460],
+      "scale": 0.25
+    },
+    "colliders": {
+      "body": {
+        "type": "circle",
+        "radius": 0.3
+      }
+    },
+    "bodytype": "static",
+    "density": 0.0,
+    "friction": 0.0,
+    "restitution": 0.0,
+    "damping": 0.0
+  },
+
+  "tree2": {
+    "textures": {
+      "static": "tree2"
+    },
+    "texture": {
+      "name": "static",
+      "origin": [936, 444],
+      "scale": 0.25
+    },
+    "colliders": {
+      "body": {
+        "type": "circle",
+        "radius": 0.3
+      }
+    },
+    "bodytype": "static",
+    "density": 0.0,
+    "friction": 0.0,
+    "restitution": 0.0,
+    "damping": 0.0
+  },
+
+  "tree3": {
+    "textures": {
+      "static": "tree3"
+    },
+    "texture": {
+      "name": "static",
+      "origin": [1032, 264],
+      "scale": 0.25
+    },
+    "colliders": {
+      "body": {
+        "type": "circle",
+        "radius": 0.15
+      }
+    },
+    "bodytype": "static",
+    "density": 0.0,
+    "friction": 0.0,
+    "restitution": 0.0,
+    "damping": 0.0
+  },
+
+  "tree4": {
+    "textures": {
+      "static": "tree4"
+    },
+    "texture": {
+      "name": "static",
+      "origin": [976, 150],
+      "scale": 0.25
+    },
+    "colliders": {
+      "body": {
+        "type": "circle",
+        "radius": 0.3
+      }
+    },
+    "bodytype": "static",
+    "density": 0.0,
+    "friction": 0.0,
+    "restitution": 0.0,
+    "damping": 0.0
+  },
+
+  "tree5": {
+    "textures": {
+      "static": "tree5"
+    },
+    "texture": {
+      "name": "static",
+      "origin": [1047, 150],
+      "scale": 0.25
+    },
+    "colliders": {
+      "body": {
+        "type": "circle",
+        "radius": 0.3
+      }
+    },
+    "bodytype": "static",
+    "density": 0.0,
+    "friction": 0.0,
+    "restitution": 0.0,
+    "damping": 0.0
+  },
+
+  "tree6": {
+    "textures": {
+      "static": "tree6"
+    },
+    "texture": {
+      "name": "static",
+      "origin": [719, 400],
+      "scale": 0.25
+    },
+    "colliders": {
+      "body": {
+        "type": "circle",
+        "radius": 0.3
+      }
+    },
+    "bodytype": "static",
+    "density": 0.0,
+    "friction": 0.0,
+    "restitution": 0.0,
+    "damping": 0.0
+  },
+
+  "tree7": {
+    "textures": {
+      "static": "tree7"
+    },
+    "texture": {
+      "name": "static",
+      "origin": [183, 486],
+      "scale": 0.25
+    },
+    "colliders": {
+      "body": {
+        "type": "circle",
+        "radius": 0.3
+      }
+    },
+    "bodytype": "static",
+    "density": 0.0,
+    "friction": 0.0,
+    "restitution": 0.0,
+    "damping": 0.0
+  },
+
+  "tree8": {
+    "textures": {
+      "static": "tree8"
+    },
+    "texture": {
+      "name": "static",
+      "origin": [1875, 486],
+      "scale": 0.25
+    },
+    "colliders": {
+      "body": {
+        "type": "circle",
+        "radius": 0.3
+      }
+    },
+    "bodytype": "static",
+    "density": 0.0,
+    "friction": 0.0,
+    "restitution": 0.0,
+    "damping": 0.0
+  },
+
+  "tree9": {
+    "textures": {
+      "static": "tree9"
+    },
+    "texture": {
+      "name": "static",
+      "origin": [1059, 174],
+      "scale": 0.25
+    },
+    "colliders": {
+      "body": {
+        "type": "circle",
+        "radius": 0.3
+      }
+    },
+    "bodytype": "static",
+    "density": 0.0,
+    "friction": 0.0,
+    "restitution": 0.0,
+    "damping": 0.0
+  },
+
+  "tree10": {
+    "textures": {
+      "static": "tree10"
+    },
+    "texture": {
+      "name": "static",
+      "origin": [1059, 174],
+      "scale": 0.25
+    },
+    "colliders": {
+      "body": {
+        "type": "circle",
+        "radius": 0.3
+      }
+    },
+    "bodytype": "static",
+    "density": 0.0,
+    "friction": 0.0,
+    "restitution": 0.0,
+    "damping": 0.0
+  },
+
+  "tree11": {
+    "textures": {
+      "static": "tree11"
+    },
+    "texture": {
+      "name": "static",
+      "origin": [1539, 430],
+      "scale": 0.25
+    },
+    "colliders": {
+      "body": {
+        "type": "circle",
+        "radius": 0.3
       }
     },
     "bodytype": "static",

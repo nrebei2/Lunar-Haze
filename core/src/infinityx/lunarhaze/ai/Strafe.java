@@ -31,8 +31,8 @@ public class Strafe extends ContextBehavior {
      * Creates a {@code ContextBehavior} for the specified owner.
      * The behavior is enabled and has no explicit limiter, meaning that the owner is used instead.
      *
-     * @param owner the owner of this context behavior
-     * @param target location to strafe around
+     * @param owner    the owner of this context behavior
+     * @param target   location to strafe around
      * @param rotation direction of movement around target
      */
     public Strafe(Steerable<Vector2> owner, Location<Vector2> target, Rotation rotation) {
@@ -42,10 +42,9 @@ public class Strafe extends ContextBehavior {
     }
 
     public void changeRotation() {
-        if (this.rotation == Rotation.CLOCKWISE){
+        if (this.rotation == Rotation.CLOCKWISE) {
             rotation = Rotation.COUNTERCLOCKWISE;
-        }
-        else{
+        } else {
             rotation = Rotation.CLOCKWISE;
         }
     }
@@ -67,7 +66,7 @@ public class Strafe extends ContextBehavior {
         // Choose perpendicular vector from rotation
         targetDir.rotate90(rotation.ordinal() - 1);
 
-        for (int i = 0 ; i<map.getResolution(); i++){
+        for (int i = 0; i < map.getResolution(); i++) {
             map.interestMap[i] = Math.max(0, map.dirFromSlot(i).dot(targetDir));
         }
         return map;

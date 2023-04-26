@@ -9,7 +9,6 @@ import com.badlogic.gdx.ai.utils.ArithmeticUtils;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.ai.TacticalManager;
-import infinityx.lunarhaze.models.GameObject;
 import infinityx.lunarhaze.models.entity.Enemy;
 import infinityx.util.AngleUtils;
 import infinityx.util.Box2dLocation;
@@ -142,7 +141,8 @@ public enum EnemyState implements State<EnemyController> {
         }
 
         @Override
-        public void exit(EnemyController entity) {}
+        public void exit(EnemyController entity) {
+        }
     },
 
     ATTACK() {
@@ -162,8 +162,8 @@ public enum EnemyState implements State<EnemyController> {
 
             // Handle state transitions
             if (!entity.getEnemy().isAttacking()) {
-            // Go back to whatever it was doing before. It may always be ALERT.
-                 entity.getStateMachine().changeState(ALERT);
+                // Go back to whatever it was doing before. It may always be ALERT.
+                entity.getStateMachine().changeState(ALERT);
             }
         }
     },
@@ -206,8 +206,8 @@ public enum EnemyState implements State<EnemyController> {
             Vector2 enemyToTarget = entity.target.getPosition().sub(entity.getEnemy().getPosition());
 
             //if in stealth just walk towards target and attack if close enough
-            if (!entity.isInBattle()){
-                if (enemyToTarget.len() <= entity.getEnemy().getAttackRange() && entity.canStartNewAttack()){
+            if (!entity.isInBattle()) {
+                if (enemyToTarget.len() <= entity.getEnemy().getAttackRange() && entity.canStartNewAttack()) {
                     entity.getStateMachine().changeState(ATTACK);
                 }
                 entity.getEnemy().setIndependentFacing(false);
@@ -218,13 +218,12 @@ public enum EnemyState implements State<EnemyController> {
                     entity.updatePath();
                     entity.time = 0;
                 }
-            }
-            else{
-                if (enemyToTarget.len() <= entity.getEnemy().getAttackRange() && entity.canStartNewAttack()){
+            } else {
+                if (enemyToTarget.len() <= entity.getEnemy().getAttackRange() && entity.canStartNewAttack()) {
                     entity.getStateMachine().changeState(ATTACK);
                 }
                 // Switch to battle behavior when close enough
-                if (enemyToTarget.len() <= entity.getEnemy().getStrafeDistance()){
+                if (enemyToTarget.len() <= entity.getEnemy().getStrafeDistance()) {
                     // Always face towards target
                     entity.getEnemy().setIndependentFacing(true);
                     entity.getEnemy().setOrientation(AngleUtils.vectorToAngle(enemyToTarget));
@@ -268,17 +267,17 @@ public enum EnemyState implements State<EnemyController> {
         }
     },
 
-    FLANK(){
+    FLANK() {
         @Override
         public void update(EnemyController entity) {
             Vector2 enemyToTarget = entity.target.getPosition().sub(entity.getEnemy().getPosition());
             // Switch to battle behavior when close enough
             //check if got to flank position
             Vector2 distToFlank = entity.getEnemy().getPosition().sub(entity.flank_pos);
-            if (distToFlank.len() <= 0.2f){
+            if (distToFlank.len() <= 0.2f) {
                 entity.getStateMachine().changeState(ALERT);
             }
-            if (enemyToTarget.len() <= entity.getEnemy().getAttackRange() && entity.canStartNewAttack()){
+            if (enemyToTarget.len() <= entity.getEnemy().getAttackRange() && entity.canStartNewAttack()) {
                 entity.getStateMachine().changeState(ATTACK);
             }
         }

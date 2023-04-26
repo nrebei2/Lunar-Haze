@@ -2,9 +2,7 @@ package infinityx.lunarhaze.models;
 
 import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.ai.steer.SteeringBehavior;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
@@ -237,12 +235,14 @@ public class LevelContainer {
      */
     public Enemy addEnemy(Enemy enemy) {
         activeEnemies.add(enemy);
-        System.out.println("Enemy added");
         addDrawables(enemy);
         // Update enemy controller assigned to the new enemy
         getEnemyControllers().get(enemy).populate(this);
         alert_sound = this.getDirectory().getEntry("alerted", Sound.class);
         getEnemyControllers().get(enemy).setAlertSound(alert_sound);
+
+        enemy.setActive(true);
+        enemy.getFlashlight().setActive(true);
 
         return enemy;
     }
@@ -256,6 +256,8 @@ public class LevelContainer {
         enemies.free(enemy);
         activeEnemies.removeValue(enemy, true);
         drawables.removeValue(enemy, true);
+        enemy.setActive(false);
+        enemy.getFlashlight().setActive(false);
     }
 
     /**
@@ -400,6 +402,8 @@ public class LevelContainer {
         if (hidden) return;
         hidden = true;
         drawables.removeValue(player, true);
+        player.setActive(false);
+        player.getSpotlight().setActive(false);
     }
 
     /**
@@ -409,6 +413,8 @@ public class LevelContainer {
         if (!hidden) return;
         hidden = false;
         drawables.add(player);
+        player.setActive(true);
+        player.getSpotlight().setActive(true);
     }
 
     /**
@@ -433,8 +439,20 @@ public class LevelContainer {
     public SceneObject addSceneObject(SceneObject obj) {
         sceneObjects.add(obj);
         drawables.add(obj);
+        obj.setActive(true);
 
         return obj;
+    }
+
+    /**
+     * Removes a scene object from the level.
+     *
+     * @param object scene object to remove
+     */
+    public void removeSceneObject(SceneObject object) {
+        sceneObjects.removeValue(object, true);
+        drawables.removeValue(object, true);
+        object.setActive(false);
     }
 
     /**
@@ -485,8 +503,6 @@ public class LevelContainer {
         return view;
     }
 
-    /** Color used to clear the screen */
-    public Color backgroundColor = new Color(0x0f4f47ff).mul(0.8f);
 
     /**
      * Draws the entire scene to the canvas
@@ -495,7 +511,6 @@ public class LevelContainer {
      */
     public void drawLevel(GameCanvas canvas) {
         garbageCollect();
-        canvas.clear(backgroundColor);
 
         //Camera shake logic
         if (CameraShake.timeLeft() > 0) {
@@ -530,17 +545,17 @@ public class LevelContainer {
         canvas.end();
 
 //         ----------------------- DEBUG --------------------------
-        if (player.isAttacking) {
-            canvas.begin(GameCanvas.DrawPass.SHAPE, view.x, view.y);
-            player.getAttackHitbox().drawHitbox(canvas);
-            canvas.end();
-        }
-
-        canvas.begin(GameCanvas.DrawPass.SHAPE, view.x, view.y);
-        for (Enemy e: activeEnemies) {
-            getEnemyControllers().get(e).drawGizmo(canvas);
-        }
-        canvas.end();
+//        if (player.isAttacking) {
+//            canvas.begin(GameCanvas.DrawPass.SHAPE, view.x, view.y);
+//            player.getAttackHitbox().drawHitbox(canvas);
+//            canvas.end();
+//        }
+//
+//        canvas.begin(GameCanvas.DrawPass.SHAPE, view.x, view.y);
+//        for (Enemy e: activeEnemies) {
+//            getEnemyControllers().get(e).drawGizmo(canvas);
+//        }
+//        canvas.end();
     }
 
     /**
@@ -577,7 +592,7 @@ public class LevelContainer {
         QueryCallback queryCallback = new QueryCallback() {
             @Override
             public boolean reportFixture(Fixture fixture) {
-                scene = ((GameObject)fixture.getUserData()).getType() == GameObject.ObjectType.SCENE;
+                scene = ((GameObject) fixture.getUserData()).getType() == GameObject.ObjectType.SCENE;
                 return false; // stop finding other fixtures in the query area
             }
         };

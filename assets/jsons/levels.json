@@ -3233,5 +3233,115 @@
 		],
 		"objects": []
 	}
+},
+"13": {
+	"settings": {
+		"transition": 2,
+		"phaseLength": 10.0,
+		"battle-ambiance": [ 1.0, 1.0, 1.0, 1.0 ],
+		"enemy-spawner": {
+			"count": 5,
+			"add-tick": [ 500, 900 ],
+			"delay": 1000
+		}
+	},
+	"ambient": {
+		"color": [ 1.0, 1.0, 1.0, 1.0 ],
+		"gamma": true,
+		"diffuse": true,
+		"blur": 5,
+		"transition": 12
+	},
+	"tiles": {
+		"type": "grass",
+		"layout": [
+			[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+			[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+			[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+			[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+			[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+			[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+			[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+			[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+			[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+			[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
+		],
+		"moonlight": {
+			"positions": [
+				[ 3, 8 ],
+				[ 4, 5 ]
+			],
+			"lighting": {
+				"color": [ 1.0, 1.0, 1.0, 0.20000000298023224 ],
+				"distance": 4,
+				"rays": 10,
+				"soft": false
+			}
+		}
+	},
+	"scene": {
+		"player": [ 1.3828125, 6.625 ],
+		"enemies": [
+			{
+				"type": "villager",
+				"position": [ 3, 5 ],
+				"patrol": [
+					[ 0, 0 ],
+					[ 0, 0 ]
+				]
+			}
+		],
+		"objects": []
+	}
+},
+"14": {
+	"settings": {
+		"transition": 2,
+		"phaseLength": 10.0,
+		"battle-ambiance": [ 1.0, 1.0, 1.0, 1.0 ],
+		"enemy-spawner": {
+			"count": 5,
+			"add-tick": [ 500, 900 ],
+			"delay": 1000
+		}
+	},
+	"ambient": {
+		"color": [ 1.0, 1.0, 1.0, 1.0 ],
+		"gamma": true,
+		"diffuse": true,
+		"blur": 5,
+		"transition": 12
+	},
+	"tiles": {
+		"type": "grass",
+		"layout": [
+			[ 0 ]
+		],
+		"moonlight": {
+			"positions": [
+				[ 0, 0 ]
+			],
+			"lighting": {
+				"color": [ 1.0, 1.0, 1.0, 0.20000000298023224 ],
+				"distance": 4,
+				"rays": 10,
+				"soft": false
+			}
+		}
+	},
+	"scene": {
+		"player": [ 0.1875, 0.3333333432674408 ],
+		"enemies": [
+			{
+				"type": "villager",
+				"position": [ 0, 0 ],
+				"patrol": [
+					[ 0, 0 ],
+					[ 0, 0 ]
+				]
+			}
+		],
+		"objects": []
+	}
 }
 }
