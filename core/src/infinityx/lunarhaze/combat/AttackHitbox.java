@@ -91,9 +91,5 @@ public class AttackHitbox extends GameObject {
                 getPosition().x, getPosition().y,
                 getAngle(), canvas.WorldToScreenX(1), canvas.WorldToScreenY(1)
         );
-//        canvas.drawPhysicsFill((PolygonShape) getShapeInformation("body").shape, betaTint,
-//                getPosition().x, getPosition().y,
-//                getAngle(), canvas.WorldToScreenX(1), canvas.WorldToScreenY(1)
-//        );
     }
 }

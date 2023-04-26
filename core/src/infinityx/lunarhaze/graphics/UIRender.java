@@ -5,10 +5,12 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import infinityx.assets.AssetDirectory;
+import infinityx.lunarhaze.combat.PlayerAttackHandler;
 import infinityx.lunarhaze.controllers.GameplayController;
 import infinityx.lunarhaze.controllers.GameplayController.GameState;
 import infinityx.lunarhaze.controllers.GameplayController.Phase;
@@ -16,6 +18,8 @@ import infinityx.lunarhaze.controllers.PlayerController;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.entity.Enemy;
 import infinityx.lunarhaze.models.entity.Werewolf;
+
+import static infinityx.lunarhaze.combat.PlayerAttackHandler.DASH_COOLDOWN;
 
 /**
  * This is a class used for drawing player and enemies' game UI state: HP, Stealth, MoonLight
@@ -115,6 +119,10 @@ public class UIRender {
      * Center X of the moon as a ratio of canvas width
      */
     private final static float MOON_CENTERX_RATIO = 11.8f / 16;
+
+    private final static float ICON_SIZE = 20f;
+
+    private final Color hp_tint = new Color(135/255f, 23/255f, 47/255f, 1.0f);
 
     private float moon_centerY_ratio = MOON_CENTER_LOW;
 
@@ -229,6 +237,38 @@ public class UIRender {
     private Texture ellipse;
 
     /**
+     * Texture for dash icon
+     */
+    private Texture dash_icon;
+
+    /**
+     * Texture for dash bar
+     */
+    private Texture dash_bar;
+
+    /**
+     * Texture for dash bar filled
+     */
+    private Texture dash_bar_filled;
+
+    /**
+     * Texture for dash bar all filled
+     */
+    private Texture dash_bar_all_filled;
+
+    /**
+     * Texture for enemy hp bar
+     */
+    private Texture enemy_hp;
+
+    /**
+     * Texture for filled enemy hp bar
+     */
+    private Texture enemy_hp_filled;
+
+    private Texture enemy_hp_all_filled;
+
+    /**
      * Whether heart indicator length has been changed
      */
     boolean changed = false;
@@ -319,6 +359,13 @@ public class UIRender {
         attack_pow_icon = directory.getEntry("attack-pow-icon", Texture.class);
         attack_ran_icon = directory.getEntry("attack-ran-icon", Texture.class);
         ellipse = directory.getEntry("ellipse", Texture.class);
+        dash_bar = directory.getEntry("bar", Texture.class);
+        dash_bar_filled = directory.getEntry("bar-filled", Texture.class);
+        dash_bar_all_filled = directory.getEntry("bar-all-filled", Texture.class);
+        dash_icon = directory.getEntry("dash-icon", Texture.class);
+        enemy_hp = directory.getEntry("enemy-hp", Texture.class);
+        enemy_hp_filled = directory.getEntry("enemy-hp-filled", Texture.class);
+        enemy_hp_all_filled = directory.getEntry("enemy-hp-all-filled", Texture.class);
 
         // shaders
         this.meter = directory.get("meter", ShaderProgram.class);
@@ -353,28 +400,33 @@ public class UIRender {
                 canvas.drawCollectLightBar(BAR_WIDTH / 2, BAR_HEIGHT / 2,
                         gameplayController.getTimeOnMoonlightPercentage(), level.getPlayer());
             }
+            canvas.end();
 
 
             if (phase == Phase.BATTLE) {
                 for (Enemy enemy : level.getEnemies()) {
-                    canvas.drawEnemyHpBars(
-                            BAR_WIDTH / 4.0f, BAR_HEIGHT / 4.0f, enemy
+                    canvas.begin(GameCanvas.DrawPass.SPRITE, level.getView().x, level.getView().y);
+                    drawEnemyHpBars(
+                            canvas, BAR_WIDTH / 4.0f, BAR_HEIGHT, enemy
                     );
+                    canvas.end();
                 }
                 if (level.getPlayer().drawCooldownBar()) {
+                    canvas.begin(GameCanvas.DrawPass.SHAPE, level.getView().x, level.getView().y);
                     canvas.drawAttackCooldownBar(10f, 60f, 65f, level.getPlayer());
                 }
                 canvas.end();
 
-//                canvas.begin(GameCanvas.DrawPass.SPRITE, level.getView().x, level.getView().y);
-//                canvas.drawPlayerAttackRange(ellipse, level.getPlayer(), level);
-//                canvas.end();
+                canvas.begin(GameCanvas.DrawPass.SPRITE, level.getView().x, level.getView().y);
+                canvas.drawPlayerAttackRange(ellipse, level.getPlayer(), level);
+                canvas.end();
             }
 
             // Draw with view transform not considered
             canvas.begin(GameCanvas.DrawPass.SPRITE);
             // Draw top stroke at the top center of screen
             drawLevelStats(canvas, phase, gameplayController, level);
+            drawDashCooldown(canvas, gameplayController);
             if (phase == Phase.STEALTH) {
                 drawHealthStats(canvas, level);
                 drawMoonlightStats(canvas, level, delta);
@@ -407,6 +459,36 @@ public class UIRender {
     public void setFontColor(Color color) {
         UIFont_large.setColor(color);
         UIFont_small.setColor(color);
+    }
+
+    public void drawEnemyHpBars(GameCanvas canvas, float barWidth, float barHeight, Enemy enemy) {
+        float x = canvas.WorldToScreenX(enemy.getPosition().x);
+        float y = canvas.WorldToScreenY(enemy.getPosition().y);
+
+        // Draw the actual health bar
+        if (enemy.getHealthPercentage() == 1){
+            canvas.draw(enemy_hp_all_filled, alphaTint, x - 0.7f * barWidth, y + 2 * barWidth, barWidth, barHeight);
+        } else {
+            canvas.draw(enemy_hp, alphaTint, x - 0.7f * barWidth, y + 2 * barWidth, barWidth, barHeight);
+            canvas.draw(enemy_hp_filled, alphaTint, x - 0.7f * barWidth, y + 2 * barWidth + barHeight / 2,
+                    barWidth * enemy.getHealthPercentage(), barHeight / 2);
+        }
+    }
+
+    public void drawDashCooldown(GameCanvas canvas, GameplayController gc){
+        canvas.draw(dash_icon, alphaTint, BAR_HEIGHT*2, canvas.getHeight()/2, ICON_SIZE, ICON_SIZE);
+        PlayerAttackHandler pah = gc.getPlayerController().getAttackHandler();
+        float percentage = pah.getDashCooldownCounter() / DASH_COOLDOWN;
+        float height = ICON_SIZE/dash_bar.getWidth() * dash_bar.getHeight();
+        if (percentage > 0.98){
+            canvas.draw(dash_bar_all_filled, alphaTint, BAR_HEIGHT * 3, canvas.getHeight() / 2 - height / 2, ICON_SIZE,
+                    height + ICON_SIZE/3);
+        } else {
+            canvas.draw(dash_bar, alphaTint, BAR_HEIGHT * 3, canvas.getHeight() / 2 - height / 2, ICON_SIZE,
+                    height + ICON_SIZE/3);
+            canvas.draw(dash_bar_filled, alphaTint, BAR_HEIGHT * 3, canvas.getHeight() / 2 - height / 2, ICON_SIZE,
+                    height * percentage);
+        }
     }
 
     /**
