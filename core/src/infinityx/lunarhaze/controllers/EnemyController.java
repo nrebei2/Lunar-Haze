@@ -122,10 +122,13 @@ public class EnemyController extends AttackHandler {
     /** Steering behavior from {@link #combinedContext} */
     public ContextSteering battleSB;
 
+    /**Steering behavior for strafing around target*/
     public Strafe strafe;
 
+    /**Steering behavior for avoiding colliding into other enemies*/
     public ContextBehavior separation;
 
+    /**Steering behavior for attacking*/
     public ContextBehavior attack;
 
     public Sound getAlertSound(){
