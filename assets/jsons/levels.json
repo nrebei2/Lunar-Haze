@@ -1277,7 +1277,7 @@
 		}
 	},
 	"ambient": {
-		"color": [ 0.47, 0.35, 0.55, 0.55 ],
+		"color": [ 0.47, 0.35, 0.55, 0.75 ],
 		"gamma": true,
 		"diffuse": true,
 		"blur": 5,
