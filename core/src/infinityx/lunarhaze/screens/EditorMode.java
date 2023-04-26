@@ -16,6 +16,7 @@ import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.glfw.ImGuiImplGlfw;
 import imgui.type.ImBoolean;
+import imgui.type.ImFloat;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.controllers.LevelParser;
 import infinityx.lunarhaze.controllers.LevelSerializer;
@@ -218,6 +219,11 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     private float objectScale[];
 
     /**
+     * Float holding stealth phase length
+     */
+    private ImFloat stealthLength;
+
+    /**
      * Holds a reference to the enemies, so that the enemy menu can let you modify them
      */
     private ArrayList<infinityx.lunarhaze.models.entity.Enemy> enemies;
@@ -400,6 +406,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         stealthLighting = new float[]{1, 1, 1, 1};
         battleLighting = new float[]{1, 1, 1, 1};
         moonlightLighting = new float[]{1, 1, 1, 1};
+        stealthLength = new ImFloat(10);
         selected = new Tile(directory.getEntry("grass2", Texture.class), "land", 2);
         //selected = new Player(level.getPlayer().getTexture().getTexture());
         Gdx.input.setInputProcessor(this);
@@ -868,6 +875,13 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         ImGui.text("Enter board size (width and height):");
         ImGui.inputInt2("Size", boardSize);
 
+        ImGui.spacing();
+
+        ImGui.text("Enter stealth phase length:");
+        ImGui.inputFloat("Length", stealthLength);
+
+        ImGui.spacing();
+
         if (ImGui.button("Create")) {
             level = LevelParser.LevelParser().loadEmpty(boardSize[0], boardSize[1]);
             level.hidePlayer();
@@ -879,6 +893,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             battleLighting = new float[]{1, 1, 1, 1};
             moonlightLighting = new float[]{1, 1, 1, 1};
             playerPlaced = false;
+            level.setPhaseLength(stealthLength.floatValue());
             showNewBoardWindow = false;
         }
 
