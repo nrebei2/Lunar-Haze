@@ -40,7 +40,7 @@ public class PlayerAttackHandler extends AttackHandler {
     private float dashTimer;
     private Vector2 dashDirection;
     private boolean isDashing;
-    private static final float DASH_COOLDOWN = 3.0f;
+    public static final float DASH_COOLDOWN = 3.0f;
     private float dashCooldownCounter;
 
     /**
@@ -55,6 +55,10 @@ public class PlayerAttackHandler extends AttackHandler {
         dashDirection = new Vector2();
         isDashing = false;
         dashCooldownCounter = DASH_COOLDOWN;
+    }
+
+    public float getDashCooldownCounter(){
+        return dashCooldownCounter;
     }
 
     //TODO: Make the attack cooldowns and attack lengths decrease with moonlight collected
