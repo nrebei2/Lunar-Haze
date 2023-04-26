@@ -37,7 +37,7 @@ public abstract class AttackHandler {
     /**
      * @return whether a new attack can be started
      */
-    protected boolean canStartNewAttack() {
+    public boolean canStartNewAttack() {
         return attackCooldownCounter >= entity.attackCooldown;
     }
 
@@ -57,7 +57,7 @@ public abstract class AttackHandler {
     /**
      * Initiates an attack
      */
-    protected void initiateAttack() {
+    public void initiateAttack() {
         entity.setAttacking(true);
         entity.setImmune();
         attackCooldownCounter = 0f;

@@ -132,7 +132,7 @@ public class PlayerAttackHandler extends AttackHandler {
                 || (comboStep > 0 && comboTime <= MAX_COMBO_TIME && comboAttackCooldownCounter >= 0.4f); // Can continue a combo
     }
 
-    protected void initiateAttack() {
+    public void initiateAttack() {
         // movement component
         entity.getBody().applyLinearImpulse(entity.getLinearVelocity().nor(), entity.getBody().getWorldCenter(), true);
         comboAttackCooldownCounter = 0f;

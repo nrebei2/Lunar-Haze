@@ -145,7 +145,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
         this.setting = setting;
         // Create the controllers:
         inputController = InputController.getInstance();
-        gameplayController = new GameplayController();
+        gameplayController = new GameplayController(setting);
     }
 
     public GameplayController getGameplayController() {
@@ -205,7 +205,17 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
         battle_background.setVolume(setting.getMusicVolume());
             switch (gameplayController.getState()) {
                 case OVER:
+                    if(!setting.isMusicEnabled()){
+                        lobby_background.stop();
+                    }else{
+                        lobby_background.play();
+                    }
                 case WIN:
+                    if(!setting.isMusicEnabled()){
+                        lobby_background.stop();
+                    }else{
+                        lobby_background.play();
+                    }
                 case PAUSED:
                     if (stealth_playing) {
                         stealth_background.stop();

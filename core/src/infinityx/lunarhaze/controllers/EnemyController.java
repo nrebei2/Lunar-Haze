@@ -16,6 +16,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import infinityx.lunarhaze.ai.*;
+import infinityx.lunarhaze.combat.AttackHandler;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.models.GameObject;
 import infinityx.lunarhaze.models.LevelContainer;
@@ -30,11 +31,12 @@ import java.util.Arrays;
 /**
  * Controller class, handles logic for a single enemy
  */
-public class EnemyController {
+public class EnemyController extends AttackHandler {
     /**
      * Raycast cache for target detection
      */
     private final RaycastInfo raycast;
+    public Vector2 flank_pos;
 
     /**
      * Collision detector for target detection
@@ -101,10 +103,6 @@ public class EnemyController {
      */
     public FollowPath followPathSB;
 
-    /**
-            * weighred Pathfinding behavior for battle phase
-     */
-    public WeightedFollowPath weightedPathSB;
 
     /**
      * Current target position for pathfinding. You should almost always use {@link Vector2#set(Vector2)} to update this.
@@ -118,16 +116,20 @@ public class EnemyController {
 
     private Sound alert_sound;
 
-//    public CombinedContext combinedContext;
-//
-//    public ContextSteering combinedSteering;
-//
-//    public PrioritySteering battleSB;
     /** Holds context behaviors for strafing,  */
     public CombinedContext combinedContext;
 
     /** Steering behavior from {@link #combinedContext} */
     public ContextSteering battleSB;
+
+    /**Steering behavior for strafing around target*/
+    public Strafe strafe;
+
+    /**Steering behavior for avoiding colliding into other enemies*/
+    public ContextBehavior separation;
+
+    /**Steering behavior for attacking*/
+    public ContextBehavior attack;
 
     public Sound getAlertSound(){
         return alert_sound;
@@ -143,6 +145,7 @@ public class EnemyController {
      * @param enemy The enemy being controlled by this AIController
      */
     public EnemyController(final Enemy enemy) {
+        super(enemy);
         patrolTarget = new Vector2();
         this.targetPos = new Vector2();
         this.enemy = enemy;
@@ -183,7 +186,7 @@ public class EnemyController {
 
 
         // Prefer directions towards target
-        ContextBehavior attack = new ContextBehavior(enemy, true) {
+        attack = new ContextBehavior(enemy, true) {
             @Override
             protected ContextMap calculateRealMaps(ContextMap map) {
                 map.setZero();
@@ -196,9 +199,9 @@ public class EnemyController {
             }
         };
 
-        ContextBehavior strafe = new Strafe(enemy, target, Strafe.Rotation.COUNTERCLOCKWISE);
+        strafe = new Strafe(enemy, target, Strafe.Rotation.COUNTERCLOCKWISE);
 
-        ContextBehavior separation = new ContextBehavior(enemy, true) {
+        separation = new ContextBehavior(enemy, true) {
             Ray<Vector2> rayCache = new Ray<>(new Vector2(), new Vector2());
 
             @Override
@@ -218,7 +221,7 @@ public class EnemyController {
                 return map;
             }
         };
-        //this.combinedContext.add(attack);
+//        this.combinedContext.add(attack);
         this.combinedContext.add(strafe);
         this.combinedContext.add(separation);
 
@@ -273,6 +276,7 @@ public class EnemyController {
      * @param delta time between last frame in seconds
      */
     public void update(LevelContainer container, float delta) {
+        super.update(delta);
         if (enemy.hp <= 0) container.removeEnemy(enemy);
 
         //if (inBattle && !stateMachine.isInState(EnemyState.ALERT)) {
