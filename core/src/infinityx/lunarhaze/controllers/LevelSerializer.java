@@ -26,7 +26,7 @@ public class LevelSerializer {
 
         JsonValue settings = new JsonValue(JsonValue.ValueType.object);
         settings.addChild("transition", new JsonValue(2));
-        settings.addChild("phaseLength", new JsonValue(2));
+        settings.addChild("phaseLength", new JsonValue(level.getPhaseLength()));
 
         JsonValue battlecolor = new JsonValue(JsonValue.ValueType.array);
         float[] battleArray = level.getStealthAmbience();
@@ -89,10 +89,11 @@ public class LevelSerializer {
 
         JsonValue lighting = new JsonValue(JsonValue.ValueType.object);
         JsonValue moonlightColor = new JsonValue(JsonValue.ValueType.array);
-        moonlightColor.addChild(new JsonValue(0.7f));
-        moonlightColor.addChild(new JsonValue(0.7f));
-        moonlightColor.addChild(new JsonValue(0.9f));
-        moonlightColor.addChild(new JsonValue(0.7f));
+        float[] moonlightArray = level.getMoonlightColor();
+        moonlightColor.addChild(new JsonValue(moonlightArray[0]));
+        moonlightColor.addChild(new JsonValue(moonlightArray[1]));
+        moonlightColor.addChild(new JsonValue(moonlightArray[2]));
+        moonlightColor.addChild(new JsonValue(moonlightArray[3]));
         lighting.addChild("color", moonlightColor);
         lighting.addChild("distance", new JsonValue(4));
         lighting.addChild("rays", new JsonValue(10));

@@ -16,6 +16,7 @@ import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.glfw.ImGuiImplGlfw;
 import imgui.type.ImBoolean;
+import imgui.type.ImFloat;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.controllers.LevelParser;
 import infinityx.lunarhaze.controllers.LevelSerializer;
@@ -36,7 +37,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     /**
      * Reference to GameCanvas created by the root
      */
-    private final GameCanvas canvas;
+    private GameCanvas canvas;
 
     /**
      * Contains level details!
@@ -95,8 +96,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * Whether the player has been placed on the board
      */
     private boolean playerPlaced;
-
-    private boolean showPopup;
 
     /**
      * List of moonlight point lights placed on level (for modifying color after placing lights)
@@ -216,6 +215,11 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * Float holding object scale
      */
     private float objectScale[];
+
+    /**
+     * Float holding stealth phase length
+     */
+    private ImFloat stealthLength;
 
     /**
      * Holds a reference to the enemies, so that the enemy menu can let you modify them
@@ -339,16 +343,16 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     private void placeMoonlightTile() {
         int x = (int) mouseBoard.x;
         int y = (int) mouseBoard.y;
+        if(!board.isLit(x, y)) {
+            // PointLight logic
+            PointLight light = new PointLight(level.getRayHandler(), 6, new Color(moonlightLighting[0], moonlightLighting[1], moonlightLighting[2], moonlightLighting[3]), 3, board.boardCenterToWorldX(x), board.boardCenterToWorldY(y));
+            light.setSoft(true);
+            board.setSpotlight(x, y, light);
+            pointLights.add(light);
 
-        // PointLight logic
-        PointLight light = new PointLight(level.getRayHandler(), 10, new Color(moonlightLighting[0], moonlightLighting[1], moonlightLighting[2], moonlightLighting[3]), 4, board.boardCenterToWorldX(x), board.boardCenterToWorldY(y));
-        light.setSoft(true);
-        board.setSpotlight(x, y, light);
-        pointLights.add(light);
-
-        // Set board tile to lit
-        board.setLit(x, y, true);
-
+            // Set board tile to lit
+            board.setLit(x, y, true);
+        }
     }
 
     /**
@@ -399,7 +403,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         enemies = new ArrayList<infinityx.lunarhaze.models.entity.Enemy>();
         stealthLighting = new float[]{1, 1, 1, 1};
         battleLighting = new float[]{1, 1, 1, 1};
-        moonlightLighting = new float[]{1, 1, 1, 1};
+        moonlightLighting = new float[]{1, 1, 1, 0.2f};
+        stealthLength = new ImFloat(10);
         selected = new Tile(directory.getEntry("grass2", Texture.class), "land", 2);
         //selected = new Player(level.getPlayer().getTexture().getTexture());
         Gdx.input.setInputProcessor(this);
@@ -437,6 +442,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         }
         level.setBattleAmbience(battleLighting);
         level.setStealthAmbience(stealthLighting);
+        level.setMoonlightColor(moonlightLighting);
         if (showBattleLighting)
             level.getRayHandler().setAmbientLight(battleLighting[0], battleLighting[1], battleLighting[2], battleLighting[3]);
         else
@@ -533,7 +539,10 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     @Override
     public void dispose() {
-
+        canvas.dispose();
+        imGuiGlfw.dispose();
+        imGuiGl.dispose();
+        pointLights = null;
     }
 
     /**
@@ -868,6 +877,13 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         ImGui.text("Enter board size (width and height):");
         ImGui.inputInt2("Size", boardSize);
 
+        ImGui.spacing();
+
+        ImGui.text("Enter stealth phase length:");
+        ImGui.inputFloat("Length", stealthLength);
+
+        ImGui.spacing();
+
         if (ImGui.button("Create")) {
             level = LevelParser.LevelParser().loadEmpty(boardSize[0], boardSize[1]);
             level.hidePlayer();
@@ -877,8 +893,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             enemies = new ArrayList<infinityx.lunarhaze.models.entity.Enemy>();
             stealthLighting = new float[]{1, 1, 1, 1};
             battleLighting = new float[]{1, 1, 1, 1};
-            moonlightLighting = new float[]{1, 1, 1, 1};
+            moonlightLighting = new float[]{1, 1, 1, 0.2f};
             playerPlaced = false;
+            level.setPhaseLength(stealthLength.floatValue());
             showNewBoardWindow = false;
         }
 

@@ -157,6 +157,11 @@ public class LevelContainer {
     private float[] battleAmbience;
 
     /**
+     * Moonlight color of point lights
+     */
+    private float[] moonlightColor;
+
+    /**
      * Initialize attributes
      */
     private void initialize() {
@@ -339,6 +344,20 @@ public class LevelContainer {
      */
     public void setBattleAmbience(float[] battleAmbience) {
         this.battleAmbience = battleAmbience;
+    }
+
+    /**
+     * Sets Moonlight color of point lights
+     */
+    public void setMoonlightColor(float[] moonlightColor) {
+        this.moonlightColor = moonlightColor;
+    }
+
+    /**
+     * @return moonlight color of point lights
+     */
+    public float[] getMoonlightColor() {
+        return moonlightColor;
     }
 
     /**
