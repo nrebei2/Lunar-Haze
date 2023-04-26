@@ -26,7 +26,7 @@ public class LevelSerializer {
 
         JsonValue settings = new JsonValue(JsonValue.ValueType.object);
         settings.addChild("transition", new JsonValue(2));
-        settings.addChild("phaseLength", new JsonValue(2));
+        settings.addChild("phaseLength", new JsonValue(level.getPhaseLength()));
 
         JsonValue battlecolor = new JsonValue(JsonValue.ValueType.array);
         float[] battleArray = level.getStealthAmbience();
