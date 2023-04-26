@@ -268,6 +268,10 @@ public class UIRender {
 
     private Texture enemy_hp_all_filled;
 
+    private Texture moonlight_filled;
+
+    private Texture moonlight_all_filled;
+
     /**
      * Whether heart indicator length has been changed
      */
@@ -366,6 +370,8 @@ public class UIRender {
         enemy_hp = directory.getEntry("enemy-hp", Texture.class);
         enemy_hp_filled = directory.getEntry("enemy-hp-filled", Texture.class);
         enemy_hp_all_filled = directory.getEntry("enemy-hp-all-filled", Texture.class);
+        moonlight_filled = directory.getEntry("moonlight-filled", Texture.class);
+        moonlight_all_filled = directory.getEntry("moonlight-all-filled", Texture.class);
 
         // shaders
         this.meter = directory.get("meter", ShaderProgram.class);
@@ -394,10 +400,12 @@ public class UIRender {
             setFontColor(Color.WHITE);
 
             // Draw with view transform considered
-            canvas.begin(GameCanvas.DrawPass.SHAPE, level.getView().x, level.getView().y);
+            canvas.begin(GameCanvas.DrawPass.SPRITE, level.getView().x, level.getView().y);
 
             if (gameplayController.getCollectingMoonlight() && phase == Phase.STEALTH) {
-                canvas.drawCollectLightBar(BAR_WIDTH / 2, BAR_HEIGHT / 2,
+//                canvas.drawCollectLightBar(BAR_WIDTH / 2, BAR_HEIGHT / 2,
+//                        gameplayController.getTimeOnMoonlightPercentage(), level.getPlayer());
+                drawCollectLightBar(canvas, BAR_WIDTH / 2, BAR_HEIGHT / 2,
                         gameplayController.getTimeOnMoonlightPercentage(), level.getPlayer());
             }
             canvas.end();
@@ -459,6 +467,20 @@ public class UIRender {
     public void setFontColor(Color color) {
         UIFont_large.setColor(color);
         UIFont_small.setColor(color);
+    }
+
+    public void drawCollectLightBar(GameCanvas canvas, float width, float height, float percentage, Werewolf player) {
+        float padding = 5;
+        float x = canvas.WorldToScreenX(player.getPosition().x) - width / 2;
+        float y = canvas.WorldToScreenY(player.getPosition().y) + player.getTextureHeight() + padding;
+
+        if (percentage == 1){
+            canvas.draw(moonlight_all_filled, alphaTint, x, y, width, height);
+        } else {
+            canvas.draw(enemy_hp, alphaTint, x, y, width, height * 2);
+            canvas.draw(moonlight_filled, alphaTint, x, y + height * 1.4f,
+                    width * percentage, height * 0.7f);
+        }
     }
 
     public void drawEnemyHpBars(GameCanvas canvas, float barWidth, float barHeight, Enemy enemy) {

@@ -84,6 +84,8 @@
     "enemy-hp": "screens/game-screen/enemy-hp.png",
     "enemy-hp-filled": "screens/game-screen/enemy-hp-filled.png",
     "enemy-hp-all-filled": "screens/game-screen/enemy-hp-all-filled.png",
+    "moonlight-filled": "screens/game-screen/moonlight-filled.png",
+    "moonlight-all-filled": "screens/game-screen/moonlight-all-filled.png",
     "attack-pow-icon": "allocateUI/attack-pow-icon.png",
     "attack-ran-icon": "allocateUI/range-icon.png",
     "square-stroke": "allocateUI/square-stroke.png",
