@@ -89,10 +89,11 @@ public class LevelSerializer {
 
         JsonValue lighting = new JsonValue(JsonValue.ValueType.object);
         JsonValue moonlightColor = new JsonValue(JsonValue.ValueType.array);
-        moonlightColor.addChild(new JsonValue(0.7f));
-        moonlightColor.addChild(new JsonValue(0.7f));
-        moonlightColor.addChild(new JsonValue(0.9f));
-        moonlightColor.addChild(new JsonValue(0.7f));
+        float[] moonlightArray = level.getMoonlightColor();
+        moonlightColor.addChild(new JsonValue(moonlightArray[0]));
+        moonlightColor.addChild(new JsonValue(moonlightArray[1]));
+        moonlightColor.addChild(new JsonValue(moonlightArray[2]));
+        moonlightColor.addChild(new JsonValue(moonlightArray[3]));
         lighting.addChild("color", moonlightColor);
         lighting.addChild("distance", new JsonValue(4));
         lighting.addChild("rays", new JsonValue(10));

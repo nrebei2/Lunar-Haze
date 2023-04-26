@@ -405,7 +405,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         enemies = new ArrayList<infinityx.lunarhaze.models.entity.Enemy>();
         stealthLighting = new float[]{1, 1, 1, 1};
         battleLighting = new float[]{1, 1, 1, 1};
-        moonlightLighting = new float[]{1, 1, 1, 1};
+        moonlightLighting = new float[]{1, 1, 1, 0.2f};
         stealthLength = new ImFloat(10);
         selected = new Tile(directory.getEntry("grass2", Texture.class), "land", 2);
         //selected = new Player(level.getPlayer().getTexture().getTexture());
@@ -444,6 +444,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         }
         level.setBattleAmbience(battleLighting);
         level.setStealthAmbience(stealthLighting);
+        level.setMoonlightColor(moonlightLighting);
         if (showBattleLighting)
             level.getRayHandler().setAmbientLight(battleLighting[0], battleLighting[1], battleLighting[2], battleLighting[3]);
         else
@@ -891,7 +892,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             enemies = new ArrayList<infinityx.lunarhaze.models.entity.Enemy>();
             stealthLighting = new float[]{1, 1, 1, 1};
             battleLighting = new float[]{1, 1, 1, 1};
-            moonlightLighting = new float[]{1, 1, 1, 1};
+            moonlightLighting = new float[]{1, 1, 1, 0.2f};
             playerPlaced = false;
             level.setPhaseLength(stealthLength.floatValue());
             showNewBoardWindow = false;
