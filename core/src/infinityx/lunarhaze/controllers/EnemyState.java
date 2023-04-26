@@ -150,7 +150,7 @@ public enum EnemyState implements State<EnemyController> {
         public void enter(EnemyController entity) {
             //entity.getAttackSound().play();
             entity.getEnemy().setFilmstripPrefix("attack");
-            entity.getEnemy().texUpdate = 0.06f;
+            entity.getEnemy().texUpdate = 0.18f;
             entity.getEnemy().setIndependentFacing(true);
             entity.initiateAttack();
         }
@@ -194,7 +194,6 @@ public enum EnemyState implements State<EnemyController> {
             // Check if have arrived to target
             //float dist = entity.getEnemy().getPosition().dst(entity.arriveSB.getTarget().getPosition());
             //if (dist <= entity.arriveSB.getArrivalTolerance()) entity.getStateMachine().changeState(ATTACK);
-
             switch (entity.getDetection()) {
                 case NONE:
                     entity.targetPos.set(entity.target.getPosition());
