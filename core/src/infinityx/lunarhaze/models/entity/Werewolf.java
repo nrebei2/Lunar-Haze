@@ -27,6 +27,8 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
      **/
     public float runSpeed;
 
+    public boolean isOnMoonlight;
+
     /**
      * Number of moonlight tiles collected
      **/

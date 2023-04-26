@@ -309,9 +309,12 @@ public class EnemyController extends AttackHandler {
         // Fake range increasing for ALERT and INDICATOR
         float stealth = target.getStealth();
         if (enemy.getDetection() == Enemy.Detection.ALERT) {
-            stealth += 2;
+            stealth = 1;
         } else if (enemy.getDetection() == Enemy.Detection.INDICATOR) {
-            stealth += 1;
+            stealth = 0.5f;
+        }
+        if (getTarget().isOnMoonlight){
+            stealth = 2;
         }
 
         // TODO: right now there is no difference in logic between a return of ALERT and NOTICED
@@ -332,13 +335,13 @@ public class EnemyController extends AttackHandler {
         double degree = Math.abs(enemy.getOrientation() - enemy.vectorToAngle(enemyToPlayer)) * MathUtils.radiansToDegrees;
 
         if (raycast.hitObject == target) {
-            if (degree <= enemy.getFlashlight().getConeDegree() / 2 && dist <= lerp.apply(2.75f, 4.5f, stealth)) {
+            if (degree <= enemy.getFlashlight().getConeDegree() / 2 && dist <= lerp.apply(2.75f, 3.25f, stealth)) {
                 return Enemy.Detection.ALERT;
             }
-            if (degree <= 50 && dist <= lerp.apply(1.75f, 3.0f, stealth)) {
+            if (degree <= 50 && dist <= lerp.apply(1.75f, 2.5f, stealth)) {
                 return Enemy.Detection.ALERT;
             }
-            if (degree <= 90 && dist <= lerp.apply(1.25f, 2.25f, stealth)) {
+            if (degree <= 90 && dist <= lerp.apply(1.25f, 2f, stealth)) {
                 return Enemy.Detection.ALERT;
             }
         }

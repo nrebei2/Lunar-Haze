@@ -81,7 +81,7 @@ public class PlayerController {
     /**
      * If the player is collecting moonlight then true, false otherwise
      */
-    private boolean collectingMoonlight;
+    public boolean collectingMoonlight;
 
     /**
      * Number of times power is allocated
@@ -223,6 +223,8 @@ public class PlayerController {
         if (board.isLit(px, py)) {
             timeOnMoonlight += delta; // Increase variable by time
             collectingMoonlight = true;
+            //Fixme move collecting field moonlight to enemy
+            player.isOnMoonlight = true;
             if (board.isCollectable(px, py) && (timeOnMoonlight > MOONLIGHT_COLLECT_TIME)) {
                 collectMoonlight();
                 collectingMoonlight = false;
@@ -236,6 +238,7 @@ public class PlayerController {
         } else {
             timeOnMoonlight = 0;
             collectingMoonlight = false;
+            player.isOnMoonlight = false;
         }
     }
 
