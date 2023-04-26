@@ -8,7 +8,7 @@ import infinityx.lunarhaze.controllers.EnemyController;
 
 /**
  * Pre-allocated pool of enemy objects.
- * Unfortunately, since enemies and their controller are tightly coupled,
+ * Unfortunately, since enemies and their controller are tightly coupled (one-to-one),
  * it also handles their controllers too.
  * <p>
  * Note there is no limit on the number of enemies you can obtain, but dead enemies should be freed

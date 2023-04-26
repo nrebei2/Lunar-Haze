@@ -25,6 +25,7 @@ package infinityx.lunarhaze.models;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.utils.JsonValue;
@@ -91,6 +92,11 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
     public float texUpdate;
 
     /**
+     * The tint applied to the texture when drawing
+     */
+    private Color tint = Color.WHITE;
+
+    /**
      * Creates game object at (0, 0)
      */
     public GameObject() {
@@ -120,14 +126,32 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
      */
     public void initialize(AssetDirectory directory, JsonValue json, LevelContainer container) {
         // TODO: bother with error checking?
-        setBodyType(json.get("bodytype").asString().equals("static") ? BodyDef.BodyType.StaticBody : BodyDef.BodyType.DynamicBody);
+
+        // Box2D body info
+        String bodyType = json.get("bodytype").asString();
+        if (bodyType.equals("static")) {
+            setBodyType(BodyDef.BodyType.StaticBody);
+        } else if (bodyType.equals("dynamic")) {
+            setBodyType(BodyDef.BodyType.DynamicBody);
+        } else if (bodyType.equals("kinematic")) {
+            setBodyType(BodyDef.BodyType.KinematicBody);
+        } else {
+            setBodyType(BodyDef.BodyType.StaticBody);
+        }
         setLinearDamping(json.get("damping").asFloat());
         setDensity(json.get("density").asFloat());
         setFriction(json.get("friction").asFloat());
         setRestitution(json.get("restitution").asFloat());
         JsonValue textures = json.get("textures");
+
+        // Texture info
         for (JsonValue tex : textures) {
-            filmstrips.put(tex.name(), directory.getEntry(tex.asString(), FilmStrip.class));
+            if (directory.hasEntry(tex.asString(), FilmStrip.class)) {
+                filmstrips.put(tex.name(), directory.getEntry(tex.asString(), FilmStrip.class));
+            } else {
+                // If the texture is not a filmstrip, assume it's a single texture
+                filmstrips.put(tex.name(), new FilmStrip(directory.getEntry(tex.asString(), Texture.class), 1, 1));
+            }
         }
 
         JsonValue texInfo = json.get("texture");
@@ -137,7 +161,7 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
         textureScale = texInfo.getFloat("scale");
         texUpdate = -1;
 
-        // Add shape colliders
+        // Shape collision info
         JsonValue p_dim = json.get("colliders");
         for (JsonValue coll : p_dim) {
             String name = coll.name();
@@ -173,6 +197,10 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
     @Override
     public boolean isDestroyed() {
         return destroyed;
+    }
+
+    public void setTint(Color tint) {
+        this.tint = tint;
     }
 
     /**
@@ -252,7 +280,7 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
     }
 
     public void draw(GameCanvas canvas) {
-        canvas.draw(filmstrip, Color.WHITE, origin.x, origin.y,
+        canvas.draw(filmstrip, tint, origin.x, origin.y,
                 canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y), 0.0f,
                 textureScale * scale, textureScale * scale);
     }

@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.fsm.StateMachine;
 import com.badlogic.gdx.audio.Sound;
-import infinityx.lunarhaze.combat.AttackHandler;
 import infinityx.lunarhaze.combat.PlayerAttackHandler;
 import infinityx.lunarhaze.controllers.GameplayController.Phase;
 import infinityx.lunarhaze.models.Board;
@@ -136,19 +135,19 @@ public class PlayerController {
         return player.isAttacking();
     }
 
-    public int getNumPowerPress (){
+    public int getNumPowerPress() {
         return numPowerPress;
     }
 
-    public int getNumRangePress (){
+    public int getNumRangePress() {
         return numRangePress;
     }
 
-    public void setNumPowerPress (int n){
+    public void setNumPowerPress(int n) {
         numPowerPress = n;
     }
 
-    public void setNumRangePress (int n){
+    public void setNumRangePress(int n) {
         numRangePress = n;
     }
 
@@ -204,7 +203,7 @@ public class PlayerController {
     public void collectMoonlight() {
         collectingMoonlight = false;
         player.addMoonlightCollected();
-        if(setting.isSoundEnabled()) {
+        if (setting.isSoundEnabled()) {
             collect_sound.play(0.8f);
         }
     }
@@ -306,5 +305,7 @@ public class PlayerController {
         stateMachine.update();
     }
 
-    public PlayerAttackHandler getAttackHandler() { return attackHandler;    }
+    public PlayerAttackHandler getAttackHandler() {
+        return attackHandler;
+    }
 }

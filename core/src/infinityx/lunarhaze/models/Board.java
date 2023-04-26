@@ -3,7 +3,6 @@ package infinityx.lunarhaze.models;
 import box2dLight.PointLight;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.screens.EditorMode;
@@ -63,13 +62,17 @@ public class Board {
      */
     private FilmStrip tileSheet;
 
-    /** Holds the necessary information to display a tile preview */
+    /**
+     * Holds the necessary information to display a tile preview
+     */
     public static class PreviewTile {
         // Board (x, y)
         int b_x;
         int b_y;
 
-        /** Follows {@link Tile#getTileNum()} */
+        /**
+         * Follows {@link Tile#getTileNum()}
+         */
         int num;
 
         public PreviewTile(int b_x, int b_y, int num) {
@@ -248,8 +251,8 @@ public class Board {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 canvas.drawRecOutline(
-                        canvas.WorldToScreenX(boardToWorldX(x)), canvas.WorldToScreenY(boardToWorldY(y)),
-                        tileScreenDim.x, tileScreenDim.y, Color.RED
+                        canvas.WorldToScreenX(boardToWorldX(x)) + 1, canvas.WorldToScreenY(boardToWorldY(y)),
+                        tileScreenDim.x - 1, tileScreenDim.y - 1, Color.RED
                 );
             }
         }
@@ -258,9 +261,9 @@ public class Board {
     /**
      * Sets the preview tile. Used for the level editor.
      *
-     * @param x       The x index for the Tile cell
-     * @param y       The y index for the Tile cell
-     * @param num     Tile number
+     * @param x   The x index for the Tile cell
+     * @param y   The y index for the Tile cell
+     * @param num Tile number
      */
     public void setPreviewTile(int x, int y, int num) {
         if (!inBounds(x, y)) {
@@ -479,8 +482,8 @@ public class Board {
     /**
      * Sets the {@link Tile#getTileNum()} of a tile.
      *
-     * @param x The x index for the Tile cell
-     * @param y The y index for the Tile cell
+     * @param x   The x index for the Tile cell
+     * @param y   The y index for the Tile cell
      * @param num Tile number to set
      */
     public void setTileNum(int x, int y, int num) {
@@ -493,7 +496,7 @@ public class Board {
 
 
     /**
-     * Returns true if the given position is a valid tile
+     * Returns true if the given tile position is a valid tile
      *
      * @param x The x index for the Tile cell
      * @param y The y index for the Tile cell
@@ -504,6 +507,18 @@ public class Board {
     }
 
     /**
+     * Returns true if the given world position is in a valid tile
+     *
+     * @param x The world x position
+     * @param y The world y position
+     * @return true if the given position is in a valid tile
+     */
+    public boolean inBoundsWorld(float x, float y) {
+        return x >= 0 && y >= 0 && x < width * tileWorldDim.x && y < height * tileWorldDim.y;
+    }
+
+
+    /**
      * @return the number of tiles on this board with collectable moonlight
      */
     public int getRemainingMoonlight() {
@@ -512,12 +527,13 @@ public class Board {
 
 
     /**
-     * @return true if all tiles on the board are not null
+     * @return true if all tiles on the board are not empty
      */
-    public boolean assertNoNullTiles() {
+    public boolean assertNoEmptyTiles() {
         for (int x = 0; x < width; x++) {
-            for (int y = 0; y < width; y++) {
-                if (getTile(x, y) == null) return false;
+            for (int y = 0; y < height; y++) {
+                if (tiles[x * height + y].getType() == Tile.TileType.EMPTY)
+                    return false;
             }
         }
         return true;

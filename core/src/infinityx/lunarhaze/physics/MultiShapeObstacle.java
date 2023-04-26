@@ -59,7 +59,7 @@ public class MultiShapeObstacle extends SimpleObstacle {
      *
      * @return ShapeCache object holding some information regarding the shape
      */
-    protected ShapeCache getShapeInformation(String name) {
+    public ShapeCache getShapeInformation(String name) {
         return geometries.get(name);
     }
 
@@ -70,7 +70,7 @@ public class MultiShapeObstacle extends SimpleObstacle {
             switch (cache.shape.getType()) {
                 // Resize by new scale / old scale
                 case Polygon:
-                    resizeBox(entry.key, s * cache.width / scale, s * cache.height / scale, cache.offset.scl(s));
+                    resizeBox(entry.key, s * cache.width / scale, s * cache.height / scale, cache.offset.scl(s / scale));
                     break;
                 case Circle:
                     resizeCircle(entry.key, s * cache.width / (2 * scale), cache.offset.scl(s / scale));

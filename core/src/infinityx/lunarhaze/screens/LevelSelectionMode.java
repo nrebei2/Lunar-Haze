@@ -285,7 +285,7 @@ public class LevelSelectionMode extends ScreenObservable implements Screen, Inpu
     /**
      * Scale for back
      */
-    private static final float  BACK_SCALE = 0.8f;
+    private static final float BACK_SCALE = 0.8f;
     /**
      * Ratio of back height from bottom
      */
@@ -386,7 +386,9 @@ public class LevelSelectionMode extends ScreenObservable implements Screen, Inpu
     /**
      * @return true if the player is ready to exit to the menu
      */
-    public boolean isReady4() { return press4State == 2; }
+    public boolean isReady4() {
+        return press4State == 2;
+    }
 
     /**
      * @return true if the player is ready to quit the game
@@ -394,6 +396,7 @@ public class LevelSelectionMode extends ScreenObservable implements Screen, Inpu
     public boolean isReady5() {
         return press5State == 2;
     }
+
     /**
      * @return true if the player is ready to resume the game
      */
@@ -418,7 +421,9 @@ public class LevelSelectionMode extends ScreenObservable implements Screen, Inpu
     /**
      * @return true if the player is ready to exit to the menu
      */
-    public boolean isReady9() { return press9State == 2; }
+    public boolean isReady9() {
+        return press9State == 2;
+    }
 
     /**
      * @return true if the player is ready to quit the game
@@ -426,6 +431,7 @@ public class LevelSelectionMode extends ScreenObservable implements Screen, Inpu
     public boolean isReady10() {
         return press10State == 2;
     }
+
     /**
      * @return true if the player is ready to resume the game
      */
@@ -450,7 +456,9 @@ public class LevelSelectionMode extends ScreenObservable implements Screen, Inpu
     /**
      * @return true if the player is ready to exit to the menu
      */
-    public boolean isReady14() { return press14State == 2; }
+    public boolean isReady14() {
+        return press14State == 2;
+    }
 
     /**
      * @return true if the player is ready to quit the game
@@ -474,6 +482,7 @@ public class LevelSelectionMode extends ScreenObservable implements Screen, Inpu
     public LevelSelectionMode(GameCanvas canvas) {
         this.canvas = canvas;
     }
+
     /**
      * Gather the required assets.
      * <p>
@@ -529,6 +538,7 @@ public class LevelSelectionMode extends ScreenObservable implements Screen, Inpu
 
     private void update(float delta) {
     }
+
     /**
      * Draw the status of this player mode.
      * <p>
@@ -572,7 +582,6 @@ public class LevelSelectionMode extends ScreenObservable implements Screen, Inpu
     }
 
 
-
     @Override
     public void show() {
         active = true;
@@ -610,49 +619,64 @@ public class LevelSelectionMode extends ScreenObservable implements Screen, Inpu
             if (isReady1() && observer != null) {
                 setLevelSelected(1);
                 observer.exitScreen(this, GO_Play);
-            }if (isReady2() && observer != null) {
+            }
+            if (isReady2() && observer != null) {
                 setLevelSelected(2);
                 observer.exitScreen(this, GO_Play);
-            }if (isReady3() && observer != null) {
+            }
+            if (isReady3() && observer != null) {
                 setLevelSelected(3);
                 observer.exitScreen(this, GO_Play);
-            }if (isReady4() && observer != null) {
+            }
+            if (isReady4() && observer != null) {
                 setLevelSelected(4);
                 observer.exitScreen(this, GO_Play);
-            }if (isReady5() && observer != null) {
+            }
+            if (isReady5() && observer != null) {
                 setLevelSelected(5);
                 observer.exitScreen(this, GO_Play);
-            }if (isReady6() && observer != null) {
+            }
+            if (isReady6() && observer != null) {
                 setLevelSelected(6);
                 observer.exitScreen(this, GO_Play);
-            }if (isReady7() && observer != null) {
+            }
+            if (isReady7() && observer != null) {
                 setLevelSelected(7);
                 observer.exitScreen(this, GO_Play);
-            }if (isReady8() && observer != null) {
+            }
+            if (isReady8() && observer != null) {
                 setLevelSelected(8);
                 observer.exitScreen(this, GO_Play);
-            }if (isReady9() && observer != null) {
+            }
+            if (isReady9() && observer != null) {
                 setLevelSelected(9);
                 observer.exitScreen(this, GO_Play);
-            }if (isReady10() && observer != null) {
+            }
+            if (isReady10() && observer != null) {
                 setLevelSelected(10);
                 observer.exitScreen(this, GO_Play);
-            }if (isReady11() && observer != null) {
+            }
+            if (isReady11() && observer != null) {
                 setLevelSelected(11);
                 observer.exitScreen(this, GO_Play);
-            } if (isReady12() && observer != null) {
+            }
+            if (isReady12() && observer != null) {
                 setLevelSelected(12);
                 observer.exitScreen(this, GO_Play);
-            }if (isReady13() && observer != null) {
+            }
+            if (isReady13() && observer != null) {
                 setLevelSelected(13);
                 observer.exitScreen(this, GO_Play);
-            }if (isReady14() && observer != null) {
+            }
+            if (isReady14() && observer != null) {
                 setLevelSelected(14);
                 observer.exitScreen(this, GO_Play);
-            }if (isReady15() && observer != null) {
+            }
+            if (isReady15() && observer != null) {
                 setLevelSelected(15);
                 observer.exitScreen(this, GO_Play);
-            }if (isReadyBack() && observer != null) {
+            }
+            if (isReadyBack() && observer != null) {
                 observer.exitScreen(this, GO_BACK);
             }
         }

@@ -7,7 +7,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Pool;
 import infinityx.assets.AssetDirectory;
-import infinityx.lunarhaze.controllers.EnemyController;
 import infinityx.lunarhaze.models.GameObject;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.SteeringGameObject;
@@ -90,7 +89,6 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
     private Random rand = new Random();
 
 
-
     /**
      * Initialize an enemy with dummy position, id, and patrol path
      */
@@ -140,7 +138,7 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
         setFlashlight(flashLight);
         setFlashlightOn(true);
         // set strafe distance randomly between attack range*2 and attackrange + 2
-        this.strafeDistance = rand.nextInt(3 ) + getAttackRange()*2;
+        this.strafeDistance = rand.nextInt(3) + getAttackRange() * 2;
     }
 
     public float getStrafeDistance() {
@@ -202,14 +200,16 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
         return hp / maxHp;
     }
 
-    /** Current filmstrip directions prefix */
+    /**
+     * Current filmstrip directions prefix
+     */
     private String name = "idle";
 
     /**
      * Sets the filmstrip animation of the enemy. Assumes there exists filmstrips for each cardinal direction with suffixes "-b", "-f", "-l", "-r".
      * The enemy will then automatically switch to the filmstrip depending on its direction.
      *
-     * @param name   Common prefix of filmstrip family. See {@link GameObject#setTexture(String)}.
+     * @param name Common prefix of filmstrip family. See {@link GameObject#setTexture(String)}.
      */
     public void setFilmstripPrefix(String name) {
         if (this.name != null && this.name.equals(name)) return;
@@ -217,7 +217,9 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
         setTexDir(direction);
     }
 
-    /** Sets the texture from {@link #name} depending on direction */
+    /**
+     * Sets the texture from {@link #name} depending on direction
+     */
     private void setTexDir(Direction direction) {
         switch (direction) {
             case UP:

@@ -8,7 +8,6 @@ import infinityx.lunarhaze.graphics.CameraShake;
 import infinityx.lunarhaze.graphics.ScreenFlash;
 import infinityx.lunarhaze.models.AttackingGameObject;
 import infinityx.lunarhaze.models.GameObject;
-import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.entity.Enemy;
 import infinityx.lunarhaze.models.entity.Werewolf;
 
@@ -17,8 +16,12 @@ import infinityx.lunarhaze.models.entity.Werewolf;
  * </summary>
  */
 public class CollisionController implements ContactListener {
-    public CollisionController(LevelContainer level) {
-        level.getWorld().setContactListener(this);
+
+    /**
+     * @param world World to register this contact listener to
+     */
+    public CollisionController(World world) {
+        world.setContactListener(this);
     }
 
     @Override

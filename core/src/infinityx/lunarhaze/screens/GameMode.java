@@ -203,77 +203,77 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
         stealth_background.setVolume(setting.getMusicVolume());
         lobby_background.setVolume(setting.getMusicVolume());
         battle_background.setVolume(setting.getMusicVolume());
-            switch (gameplayController.getState()) {
-                case OVER:
-                    if(!setting.isMusicEnabled()){
-                        lobby_background.stop();
-                    }else{
-                        lobby_background.play();
-                    }
-                case WIN:
-                    if(!setting.isMusicEnabled()){
-                        lobby_background.stop();
-                    }else{
-                        lobby_background.play();
-                    }
-                case PAUSED:
-                    if (stealth_playing) {
-                        stealth_background.stop();
-                        stealth_playing = false;
-                    } else if (battle_playing) {
-                        battle_background.stop();
-                        stealth_playing = false;
-                    }
-                    if (!lobby_playing) {
-                        lobby_background.setLooping(true);
-                        lobby_background.play();
-                        lobby_playing = true;
-                    }
-                    if(!setting.isMusicEnabled()){
-                        lobby_background.stop();
-                    }else{
-                        lobby_background.setLooping(true);
-                        lobby_background.play();
-                    }
-                    break;
-                case PLAY:
-                    if (lobby_playing) {
-                        lobby_background.stop();
-                        lobby_playing = false;
-                    }
-                    switch (gameplayController.getPhase()) {
-                        case STEALTH:
-                        case TRANSITION:
-                        case ALLOCATE:
-                            if (!stealth_playing) {
-                                stealth_background.setLooping(true);
-                                stealth_background.play();
-                                stealth_playing = true;
-                            }
-                            if(!setting.isMusicEnabled()){
-                                stealth_background.stop();
-                            }else{
-                                stealth_background.setLooping(true);
-                                stealth_background.play();
-                            }
-                        case BATTLE:
+        switch (gameplayController.getState()) {
+            case OVER:
+                if (!setting.isMusicEnabled()) {
+                    lobby_background.stop();
+                } else {
+                    lobby_background.play();
+                }
+            case WIN:
+                if (!setting.isMusicEnabled()) {
+                    lobby_background.stop();
+                } else {
+                    lobby_background.play();
+                }
+            case PAUSED:
+                if (stealth_playing) {
+                    stealth_background.stop();
+                    stealth_playing = false;
+                } else if (battle_playing) {
+                    battle_background.stop();
+                    stealth_playing = false;
+                }
+                if (!lobby_playing) {
+                    lobby_background.setLooping(true);
+                    lobby_background.play();
+                    lobby_playing = true;
+                }
+                if (!setting.isMusicEnabled()) {
+                    lobby_background.stop();
+                } else {
+                    lobby_background.setLooping(true);
+                    lobby_background.play();
+                }
+                break;
+            case PLAY:
+                if (lobby_playing) {
+                    lobby_background.stop();
+                    lobby_playing = false;
+                }
+                switch (gameplayController.getPhase()) {
+                    case STEALTH:
+                    case TRANSITION:
+                    case ALLOCATE:
+                        if (!stealth_playing) {
+                            stealth_background.setLooping(true);
+                            stealth_background.play();
+                            stealth_playing = true;
+                        }
+                        if (!setting.isMusicEnabled()) {
                             stealth_background.stop();
-                            if (!battle_playing) {
-                                battle_background.setLooping(true);
-                                battle_background.play();
-                                battle_playing = true;
-                            }
-                            if(!setting.isMusicEnabled()){
-                                battle_background.stop();
-                            }else{
-                                battle_background.setLooping(true);
-                                battle_background.play();
-                            }
-                    }
-                    break;
-                default:
-                    break;
-            }
+                        } else {
+                            stealth_background.setLooping(true);
+                            stealth_background.play();
+                        }
+                    case BATTLE:
+                        stealth_background.stop();
+                        if (!battle_playing) {
+                            battle_background.setLooping(true);
+                            battle_background.play();
+                            battle_playing = true;
+                        }
+                        if (!setting.isMusicEnabled()) {
+                            battle_background.stop();
+                        } else {
+                            battle_background.setLooping(true);
+                            battle_background.play();
+                        }
+                }
+                break;
+            default:
+                break;
+        }
     }
 
     /**
@@ -334,9 +334,15 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
     }
 
     /**
+     * Color used to clear the screen
+     */
+    public Color backgroundColor = new Color(0x0f4f47ff).mul(0.8f);
+
+    /**
      * Draw the game mode.
      */
     public void draw(float delta) {
+        canvas.clear(backgroundColor);
         // Puts player at center of canvas
         levelContainer.setViewTranslation(
                 -canvas.WorldToScreenX(levelContainer.getPlayer().getPosition().x) + canvas.getWidth() / 2,
@@ -365,8 +371,8 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
                 canvas.begin(GameCanvas.DrawPass.SPRITE);
                 Color tintPlay = (pressPauseState == 1 ? color : Color.WHITE);
                 canvas.draw(pauseButton, tintPlay, pauseButton.getWidth() / 2, pauseButton.getHeight() / 2,
-                        centerXPause, centerYPause, 0, PAUSE_BUTTON_SIZE/pauseButton.getWidth(),
-                        PAUSE_BUTTON_SIZE/pauseButton.getHeight());
+                        centerXPause, centerYPause, 0, PAUSE_BUTTON_SIZE / pauseButton.getWidth(),
+                        PAUSE_BUTTON_SIZE / pauseButton.getHeight());
                 canvas.end();
                 break;
         }
@@ -489,7 +495,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
         // Play button is a rectangle.
         float distXPause = Math.abs(screenX - centerXPause);
         float distYPause = Math.abs(screenY - centerYPause);
-        if (Math.pow(distXPause, 2) + Math.pow(distYPause, 2) < Math.pow(PAUSE_BUTTON_SIZE/2, 2)) {
+        if (Math.pow(distXPause, 2) + Math.pow(distYPause, 2) < Math.pow(PAUSE_BUTTON_SIZE / 2, 2)) {
             pressPauseState = 1;
         }
 
