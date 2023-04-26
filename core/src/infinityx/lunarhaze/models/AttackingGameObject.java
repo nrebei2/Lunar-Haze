@@ -196,6 +196,7 @@ public abstract class AttackingGameObject extends GameObject {
     public void update(float delta) {
         super.update(delta);
         canMove = !isAttacking && !lockedOut;
+        attackHitbox.setHitboxRange(getAttackRange());
 
         // Update counters for immunity and lockout
         if (isImmune) {

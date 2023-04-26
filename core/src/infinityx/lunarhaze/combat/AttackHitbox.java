@@ -21,6 +21,8 @@ public class AttackHitbox extends GameObject {
      */
     private final AttackingGameObject attacker;
 
+    private final Color betaTint = new Color(255f/255f, 255f/255f, 255f/255f, 0.2f);
+
     /**
      * @param initialSize holds initial reach and width of hitbox respectively
      * @param attacker    entity this hitbox is parented to
@@ -89,5 +91,9 @@ public class AttackHitbox extends GameObject {
                 getPosition().x, getPosition().y,
                 getAngle(), canvas.WorldToScreenX(1), canvas.WorldToScreenY(1)
         );
+//        canvas.drawPhysicsFill((PolygonShape) getShapeInformation("body").shape, betaTint,
+//                getPosition().x, getPosition().y,
+//                getAngle(), canvas.WorldToScreenX(1), canvas.WorldToScreenY(1)
+//        );
     }
 }

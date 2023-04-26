@@ -1,5 +1,6 @@
 package infinityx.lunarhaze.models.entity;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -62,6 +63,11 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
     public Direction direction;
 
     /**
+     * Sound effect of enemy alerted
+     */
+    private Sound alert_sound;
+
+    /**
      * Returns the type of this object.
      * <p>
      * We use this instead of runtime-typing for performance reasons.
@@ -75,7 +81,6 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
     public ConeSource getFlashlight() {
         return flashlight;
     }
-
 
     /**
      * Initialize an enemy with dummy position, id, and patrol path

@@ -136,7 +136,7 @@ public enum PlayerState implements State<PlayerController> {
 
         @Override
         public void exit(PlayerController entity) {
-            entity.getCollectSound().play();
+//            entity.getCollectSound().play();
         }
     },
 

@@ -127,6 +127,8 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
 
     protected BitmapFont UIFont_small;
 
+    private final static Color color = new Color(142.0f / 255.0f, 157.0f / 255.0f, 189.0f / 255.0f, 1.0f);
+
     // TODO: Maybe change to enum if there are not that many levels, or string maybe?
     /**
      * Current level
@@ -324,7 +326,6 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
                 Phase phase = gameplayController.getPhase();
                 uiRender.drawUI(canvas, levelContainer, phase, gameplayController, delta);
                 canvas.begin(GameCanvas.DrawPass.SPRITE);
-                Color color = new Color(142.0f / 255.0f, 157.0f / 255.0f, 189.0f / 255.0f, 1.0f);
                 Color tintPlay = (pressPauseState == 1 ? color : Color.WHITE);
                 canvas.draw(pauseButton, tintPlay, pauseButton.getWidth() / 2, pauseButton.getHeight() / 2,
                         centerXPause, centerYPause, 0, PAUSE_BUTTON_SIZE/pauseButton.getWidth(),
@@ -377,6 +378,8 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
         gameplayController = null;
         //physicsController = null;
         canvas = null;
+        stealth_background.dispose();
+        battle_background.dispose();
     }
 
     /**

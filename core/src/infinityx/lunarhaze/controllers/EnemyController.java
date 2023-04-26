@@ -9,6 +9,7 @@ import com.badlogic.gdx.ai.steer.utils.Path;
 import com.badlogic.gdx.ai.steer.utils.paths.LinePath;
 import com.badlogic.gdx.ai.utils.Collision;
 import com.badlogic.gdx.ai.utils.Ray;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector;
@@ -107,13 +108,21 @@ public class EnemyController {
      */
     public Vector2 patrolTarget;
 
+    private Sound alert_sound;
+
 //    public CombinedContext combinedContext;
 //
 //    public ContextSteering combinedSteering;
 //
 //    public PrioritySteering battleSB;
 
+    public Sound getAlertSound(){
+        return alert_sound;
+    }
 
+    public void setAlertSound(Sound s){
+        alert_sound = s;
+    }
 
     /**
      * Creates an EnemyController for the enemy with the given id.
@@ -131,9 +140,6 @@ public class EnemyController {
 
         this.commRay = new RaycastInfo(enemy);
         commRay.addIgnores(GameObject.ObjectType.HITBOX, GameObject.ObjectType.WEREWOLF);
-
-
-
     }
 
     /**
@@ -232,6 +238,9 @@ public class EnemyController {
 
         // Process the FSM
         stateMachine.update();
+        if (enemy.getDetection() == Enemy.Detection.NOTICED){
+            alert_sound.play();
+        }
         enemy.update(delta);
     }
 
