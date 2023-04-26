@@ -24,6 +24,7 @@ import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.graphics.ImGuiImplGLES2;
 import infinityx.lunarhaze.models.Board;
 import infinityx.lunarhaze.models.LevelContainer;
+import infinityx.util.FilmStrip;
 import infinityx.util.ScreenObservable;
 
 import java.util.ArrayList;
@@ -127,39 +128,30 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
     /**
      * type Selected :=
-     * | Tile of (String, Texture)
-     * | Player of Texture
-     * | Enemy of (String, Texture)
+     * | Tile of Int
+     * | Player
+     * | Enemy of String
      * | Object of (String, Texture, float)
      */
     abstract class Selected {
-        public Texture texture;
     }
 
     private List<Selected> availableSelections;
     private int currentSelectionIndex;
 
     class Tile extends Selected {
-        public Tile(Texture texture, String type, int num) {
-            this.type = type;
-            this.texture = texture;
+        public Tile(int num) {
             this.num = num;
         }
 
-        public String type;
         public int num;
     }
 
-    class Player extends Selected {
-        public Player(Texture texture) {
-            this.texture = texture;
-        }
-    }
+    class Player extends Selected { }
 
     class Enemy extends Selected {
-        public Enemy(Texture texture, String type) {
+        public Enemy(String type) {
             this.type = type;
-            this.texture = texture;
         }
 
         public String type;
@@ -173,6 +165,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         }
 
         public String type;
+        public Texture texture;
         public float scale;
     }
 
@@ -263,12 +256,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     public void gatherAssets(AssetDirectory directory) {
         this.directory = directory;
-        availableSelections.add(new Tile(directory.getEntry("grass1", Texture.class), "land", 1));
-        availableSelections.add(new Tile(directory.getEntry("grass2", Texture.class), "land", 2));
-        availableSelections.add(new Tile(directory.getEntry("grass3", Texture.class), "land", 3));
-        availableSelections.add(new Tile(directory.getEntry("grass4", Texture.class), "land", 4));
-        availableSelections.add(new Tile(directory.getEntry("grass5", Texture.class), "land", 5));
-        availableSelections.add(new Tile(directory.getEntry("grass6", Texture.class), "land", 6));
 
         availableSelections.add(new SceneObject(directory.getEntry("house1", Texture.class), "house"));
         availableSelections.add(new SceneObject(directory.getEntry("fence1", Texture.class), "fencex"));
@@ -405,7 +392,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         battleLighting = new float[]{1, 1, 1, 1};
         moonlightLighting = new float[]{1, 1, 1, 0.2f};
         stealthLength = new ImFloat(10);
-        selected = new Tile(directory.getEntry("grass2", Texture.class), "land", 2);
+        selected = new Tile(0);
         //selected = new Player(level.getPlayer().getTexture().getTexture());
         Gdx.input.setInputProcessor(this);
         RayHandler.setGammaCorrection(true);
@@ -494,11 +481,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     public void render(float delta) {
         update(delta);
         draw(delta);
-
-        // Buttons on right for tiles, player, enemy, lights, scene objects
-        // Simple enough dont bother using scene2d
-        // Set pixel size of height of font using displayFont.getData().setScale(height / displayFont.getXHeight());
-
     }
 
     /**
@@ -681,7 +663,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             if (!mouseBoard.epsilonEquals(boardX, boardY)) {
                 // mouse is on different tile now
                 mouseBoard.set(boardX, boardY);
-                board.setPreviewTile((int) mouseBoard.x, (int) mouseBoard.y, selected.texture);
+                board.setPreviewTile((int) mouseBoard.x, (int) mouseBoard.y, ((Tile)selected).num);
             }
         } else if (selected instanceof Player && !playerPlaced) {
             if (board.inBounds(boardX, boardY)) {
@@ -716,18 +698,35 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         ImGui.getStyle().setFramePadding(15, 15);
         ImGui.begin("Tile Selection");
 
-        for (int i = 0; i < availableSelections.size(); i++) {
-            if (availableSelections.get(i) instanceof Tile) {
-                Tile tile = (Tile) availableSelections.get(i);
+        FilmStrip tiles = board.getTileSheet();
 
-                if (ImGui.imageButton(tile.texture.getTextureObjectHandle(), 100, 100 * 3 / 4)) {
-                    placingMoonlight = false;
-                    selected = availableSelections.get(i);
-                }
+        // Draw every frame in the tile sheet. Note UV's must be considered as the texture
+        //  remains unchanged
+        for (int i = 0; i < tiles.getSize(); i++) {
+            tiles.setFrame(i);
+            // to avoid ID conflicts
+            ImGui.pushID(i);
+            if (
+                    ImGui.imageButton(
+                        tiles.getTexture().getTextureObjectHandle(),
+                        100, 100 * 3 / 4,
+                        tiles.getU(), tiles.getV(),
+                        tiles.getU2(), tiles.getV2()
+                    )
+            ) {
+                System.out.println("ASLDJASLJDASKJDSKDJDASKD");
+                placingMoonlight = false;
+                selected = new Tile(i);
+            }
+            ImGui.popID();
 
-                // Position the next tile in the row
+            // Make tile menu have 6 columns
+            if ((i + 1) % 6 == 0) {
+                ImGui.newLine();
+            } else {
                 ImGui.sameLine();
             }
+
         }
 
         ImGui.end();
@@ -952,14 +951,14 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         if (ImGui.button("Werewolf")) {
             placingMoonlight = false;
             playerPlaced = false;
-            selected = new Player(directory.getEntry("player", Texture.class));
+            selected = new Player();
         }
         ImGui.spacing();
         ImGui.spacing();
         ImGui.spacing();
         if (ImGui.button("Enemy")) {
             placingMoonlight = false;
-            selected = new Enemy(directory.getEntry("villager", Texture.class), "villager");
+            selected = new Enemy("villager");
         }
         ImGui.end();
     }
