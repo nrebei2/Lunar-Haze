@@ -41,8 +41,13 @@ public class Strafe extends ContextBehavior {
         this.rotation = rotation;
     }
 
-    public void setRotation(Rotation rotation) {
-        this.rotation = rotation;
+    public void changeRotation() {
+        if (this.rotation == Rotation.CLOCKWISE){
+            rotation = Rotation.COUNTERCLOCKWISE;
+        }
+        else{
+            rotation = Rotation.CLOCKWISE;
+        }
     }
 
     /**
