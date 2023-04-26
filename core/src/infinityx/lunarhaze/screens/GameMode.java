@@ -23,6 +23,7 @@ import infinityx.util.ScreenObservable;
  * basic game loop (update-draw).
  */
 public class GameMode extends ScreenObservable implements Screen, InputProcessor {
+
     /**
      * Need an ongoing reference to the asset directory
      */
@@ -199,6 +200,9 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
     }
 
     public void updateMusic(float delta) {
+        stealth_background.setVolume(setting.getMusicVolume());
+        lobby_background.setVolume(setting.getMusicVolume());
+        battle_background.setVolume(setting.getMusicVolume());
             switch (gameplayController.getState()) {
                 case OVER:
                 case WIN:
@@ -218,6 +222,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
                     if(!setting.isMusicEnabled()){
                         lobby_background.stop();
                     }else{
+                        lobby_background.setLooping(true);
                         lobby_background.play();
                     }
                     break;
@@ -238,6 +243,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
                             if(!setting.isMusicEnabled()){
                                 stealth_background.stop();
                             }else{
+                                stealth_background.setLooping(true);
                                 stealth_background.play();
                             }
                         case BATTLE:
@@ -250,6 +256,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
                             if(!setting.isMusicEnabled()){
                                 battle_background.stop();
                             }else{
+                                battle_background.setLooping(true);
                                 battle_background.play();
                             }
                     }
@@ -375,10 +382,14 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
         update(delta);
         draw(delta);
         if (isPauseReady() && observer != null) {
+            stealth_background.pause();
+            battle_background.pause();
             observer.exitScreen(this, GO_PAUSE);
         }
 
         if (inputController.didExit() && observer != null) {
+            stealth_background.pause();
+            battle_background.pause();
             observer.exitScreen(this, GO_PAUSE);
         }
 
