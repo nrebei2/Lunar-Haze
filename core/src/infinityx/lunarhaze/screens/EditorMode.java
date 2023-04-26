@@ -288,9 +288,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         assert selected instanceof Tile;
 
         Tile curr = (Tile) selected;
-        board.setTileTexture(
+        board.setTileNum(
                 (int) mouseBoard.x, (int) mouseBoard.y,
-                curr.texture, curr.num
+                curr.num
         );
         // Sets the tile type for serialization
         board.setTileType((int) mouseBoard.x, (int) mouseBoard.y, infinityx.lunarhaze.models.Tile.TileType.Road);

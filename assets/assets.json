@@ -55,16 +55,6 @@
     "no15": "screens/level-selection-screen/15.png",
     "bkg_allocate": "allocateUI/bkg-allocate.png",
     "add": "allocateUI/add-button.png",
-    "theme1": {
-      "file": "images/spritesheet_tile.png",
-      "sprites":	{
-        "static" : {
-          "size" : 6,
-          "rows" : 1,
-          "cols" : 12
-        }
-      }
-    },
     "grass1": "tiles/grass1.png",
     "grass2": "tiles/grass2.png",
     "grass3": "tiles/grass3.png",
@@ -96,6 +86,16 @@
     "moon": "transitionUI/moon.png",
     "transition-background": "transitionUI/transition-background.png",
     "trees": "transitionUI/trees.png",
+    "tile": {
+      "file": "images/tile-spritesheet.png",
+      "sprites":	{
+        "sheet" : {
+          "size" : 12,
+          "rows" : 4,
+          "cols" : 3
+        }
+      }
+    },
     "lamp": {
       "file": "images/objects/Lamp_a_1.png",
       "sprites":	{

@@ -14,37 +14,14 @@ public class Tile {
     }
 
     private TileType type = TileType.EMPTY;
-    /**
-     * Is there a scene object on this tile?
-     */
-    private boolean walkable = false;
-    /**
-     * Is this a goal tile? (used for AI)
-     */
-    private boolean goal = false;
-    /**
-     * Has this tile been visited (used for pathfinding AI)?
-     */
-    private boolean visited = false;
-
-    /**
-     * Use for debugging
-     */
-    private boolean visible = false;
 
     /**
      * Is the moonlight collectable? Should be true only if lit is true.
      */
     private boolean collectable = false;
 
+    /** Frame index into tile sprite sheet held by Board */
     private int tileNum;
-
-    /**
-     * Texture of tile
-     * TODO: Should be a TextureRegion taken from a sprite sheet of tiles to optimize rendering.
-     * Right now, the spritebatch is unable to batch much geometry since texture changes when drawing board.
-     **/
-    private Texture TileTexture;
 
     /**
      * The moonlight pointing on this tile, possibly null
@@ -62,37 +39,6 @@ public class Tile {
 
     public void setType(TileType type) {
         this.type = type;
-    }
-
-    /**
-     * Used for collision detection (player/enemies should not be able to walk on this tile!
-     * <p>
-     * Should be set to false only when there is an object on this tile
-     *
-     * @return true if the tile can be walked over
-     */
-    public boolean isWalkable() {
-        return walkable;
-    }
-
-    public void setWalkable(boolean walkable) {
-        this.walkable = walkable;
-    }
-
-    public boolean isGoal() {
-        return goal;
-    }
-
-    public void setGoal(boolean goal) {
-        this.goal = goal;
-    }
-
-    public boolean isVisited() {
-        return visited;
-    }
-
-    public void setVisited(boolean visited) {
-        this.visited = visited;
     }
 
     public boolean isLit() {
@@ -126,38 +72,11 @@ public class Tile {
         return spotLight;
     }
 
-    /**
-     * Use for debugging
-     */
-    public void setVisible(boolean visible) {
-        this.visible = visible;
-    }
-
-    public boolean getVisible() {
-        return this.visible;
-    }
-
-    /**
-     * Returns the image texture for the tile.
-     * <p>
-     * May be null, must be set before get
-     *
-     * @return the unit image texture for the tile
-     */
-    public Texture getTileTexture() {
-        return TileTexture;
-    }
-
-    public int tileNum() {
+    public int getTileNum() {
         return tileNum;
     }
 
     public void setTileNum(int num) {
         tileNum = num;
     }
-
-    public void setTileTexture(Texture tex) {
-        this.TileTexture = tex;
-    }
-
 }
