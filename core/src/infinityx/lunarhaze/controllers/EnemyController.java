@@ -333,13 +333,13 @@ public class EnemyController extends AttackHandler {
         double degree = Math.abs(enemy.getOrientation() - enemy.vectorToAngle(enemyToPlayer)) * MathUtils.radiansToDegrees;
 
         if (raycast.hitObject == target) {
-            if (degree <= enemy.getFlashlight().getConeDegree() / 2 && dist <= lerp.apply(2.75f, 3.25f, stealth)) {
+            if (degree <= enemy.getFlashlight().getConeDegree() / 2 && dist <= lerp.apply(2.75f, 3f, stealth)) {
                 return Enemy.Detection.ALERT;
             }
-            if (degree <= 50 && dist <= lerp.apply(1.75f, 2.5f, stealth)) {
+            if (degree <= 50 && dist <= lerp.apply(1.75f, 2f, stealth)) {
                 return Enemy.Detection.ALERT;
             }
-            if (degree <= 90 && dist <= lerp.apply(1.25f, 2f, stealth)) {
+            if (degree <= 90 && dist <= lerp.apply(1.25f, 1.75f, stealth)) {
                 return Enemy.Detection.ALERT;
             }
         }
