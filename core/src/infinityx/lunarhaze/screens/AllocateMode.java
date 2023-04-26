@@ -338,7 +338,7 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
             playerController.allocateAttackRange();
             pressStateAttackRan = 0;
             rangeCount++;
-            playerController.setNumPowerPress(rangeCount);
+            playerController.setNumRangePress(rangeCount);
         }
         if (playerController.getPlayer().getMoonlightCollected() <= 0 && observer != null) {
             active = false;

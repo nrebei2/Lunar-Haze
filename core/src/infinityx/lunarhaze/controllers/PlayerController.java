@@ -156,10 +156,6 @@ public class PlayerController {
         return attack_sound;
     }
 
-    public Sound getCollectSound() {
-        return collect_sound;
-    }
-
 
     /**
      * Initializes

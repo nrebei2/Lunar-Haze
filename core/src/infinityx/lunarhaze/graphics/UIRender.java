@@ -380,14 +380,6 @@ public class UIRender {
     }
 
     /**
-     * @return Elapsed time of transition phase
-     */
-    public float getElapsed() {
-        return elapsed;
-    }
-
-
-    /**
      * Draws any needed UI on screen during gameplay
      *
      * @param canvas drawing canvas
@@ -511,26 +503,6 @@ public class UIRender {
             canvas.draw(dash_bar_filled, alphaTint, BAR_HEIGHT * 3, canvas.getHeight() / 2 - height / 2, ICON_SIZE,
                     height * percentage);
         }
-    }
-
-    /**
-     * Draw the attack range around player
-     *
-     * @param canvas drawing canvas
-     * @param level  container holding all models
-     * @param player  player in the frame
-     */
-    public void drawPlayerAttackRange(GameCanvas canvas, Werewolf player, LevelContainer level) {
-
-        float attackRange = player.getAttackRange();
-        float x = canvas.WorldToScreenX(player.getPosition().x);
-        float y = canvas.WorldToScreenY(player.getPosition().y);
-
-        canvas.begin(GameCanvas.DrawPass.SPRITE);
-        float tile_size = level.getBoard().getTileScreenDim().x;
-        canvas.draw(ellipse, alphaTint, ellipse.getWidth()/2, ellipse.getHeight()/2, x, y, 0,
-                attackRange * tile_size / ellipse.getWidth(), attackRange * tile_size / ellipse.getHeight());
-        canvas.end();
     }
 
     /**
