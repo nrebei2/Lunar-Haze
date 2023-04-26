@@ -49,7 +49,9 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
         ENEMY,
         WEREWOLF,
         SCENE,
-        HITBOX
+        HITBOX,
+        ARCHER,
+        ARROW
     }
 
     // Attributes for all game objects

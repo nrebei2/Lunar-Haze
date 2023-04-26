@@ -31,7 +31,7 @@ public class Archer extends Enemy implements Pool.Poolable {
     /**
      * Arrow the archer holds
      */
-//    private Arrow arrow;
+    private Arrow arrow;
 
     /**
      * Distance (number of tiles) at which archer's arrow can hit player
@@ -100,9 +100,21 @@ public class Archer extends Enemy implements Pool.Poolable {
     }
 
     /**
+     * Returns the type of this object.
+     * <p>
+     * We use this instead of runtime-typing for performance reasons.
+     *
+     * @return the type of this object.
+     */
+    public ObjectType getType() {
+        return ObjectType.ARCHER;
+    }
+
+    /**
      * Initialize an enemy with dummy position, id, and patrol path
      */
     public Archer() {
         super();
+        arrow = null;
     }
 }

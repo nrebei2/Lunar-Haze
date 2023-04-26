@@ -8,6 +8,8 @@
     "background-setting": "screens/menu-screen/setting_bg.jpg",
     "setting-music-on": "screens/menu-screen/music_on.png",
     "setting-music-off": "screens/menu-screen/music_off.png",
+    "setting-music-volume-bar": "screens/menu-screen/bar.png",
+    "setting-music-volume-knob": "screens/menu-screen/knob.png",
     "about-us": "screens/menu-screen/about_us.png",
     "background-about-us": "screens/menu-screen/aboutus_bg.png",
     "back": "screens/menu-screen/back.png",

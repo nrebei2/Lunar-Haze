@@ -7,9 +7,9 @@ import com.badlogic.gdx.Preferences;
 public class GameSetting {
     //TODO: NOT FINISH YET
     private static final String MUSIC_ENABLED = "music_enabled";
-    private static final String MUSIC_VOLUME = "volume";
+    private static final String MUSIC_VOLUME = "music_volume";
     private static final String SOUND_ENABLED = "sound_enabled";
-    private static final String SOUND_VOLUME = "sound";
+    private static final String SOUND_VOLUME = "sound_volume";
     private static final String MOVE_UP = "move_up";
     private static final String SETTING_NAME = "default";
     private Preferences preferences;
@@ -18,6 +18,9 @@ public class GameSetting {
         preferences = Gdx.app.getPreferences(SETTING_NAME);
         if (!preferences.contains(MUSIC_ENABLED)) {
             setMusicEnabled(true);
+        }
+        if (!preferences.contains(MUSIC_VOLUME)) {
+            setMusicVolume(1.0f);
         }
         if (!preferences.contains(SOUND_ENABLED)) {
             setSoundEnabled(true);
