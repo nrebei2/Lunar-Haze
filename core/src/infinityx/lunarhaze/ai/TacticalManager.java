@@ -69,7 +69,11 @@ public class TacticalManager implements Telegraph {
         for (EnemyController control : enemies) {
             StateMachine<EnemyController, EnemyState> enemy = control.getStateMachine();
             if (!enemy.isInState(EnemyState.ALERT)) continue;
-            if (rand.nextFloat() <= 0.1) {
+            //change strafe rotation
+            if (rand.nextFloat() <= 0.1){
+                control.strafe.changeRotation();
+            }
+            if (rand.nextFloat() <= 0.3) {
                 // Calculate angle step for evenly distributing the enemies around the target
                 float angleStep = 360.0f / enemies.size;
 
@@ -77,7 +81,6 @@ public class TacticalManager implements Telegraph {
                 float enemyAngle = angleStep * i;
 
                 // Calculate a flanking position relative to the target
-                /* TODO: remove new  (make own rotate Deg)*/
                 Vector2 flankingPosition = target.getPosition().cpy().add(rotateDegreeX(enemyAngle, 1, 0), rotateDegreeY(enemyAngle, 1, 0));
                 if (container.pathfinder.map.getNodeAtWorld(flankingPosition.x, flankingPosition.y) == null) {
                     continue;

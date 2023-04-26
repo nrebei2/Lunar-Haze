@@ -103,10 +103,6 @@ public class EnemyController extends AttackHandler {
      */
     public FollowPath followPathSB;
 
-    /**
-            * weighred Pathfinding behavior for battle phase
-     */
-    public WeightedFollowPath weightedPathSB;
 
     /**
      * Current target position for pathfinding. You should almost always use {@link Vector2#set(Vector2)} to update this.
@@ -124,6 +120,11 @@ public class EnemyController extends AttackHandler {
     /** Steering behavior from {@link #combinedContext} */
     public ContextSteering battleSB;
 
+    public Strafe strafe;
+
+    public ContextBehavior separation;
+
+    public ContextBehavior attack;
 
 
     /**
@@ -173,7 +174,7 @@ public class EnemyController extends AttackHandler {
 
 
         // Prefer directions towards target
-        ContextBehavior attack = new ContextBehavior(enemy, true) {
+        attack = new ContextBehavior(enemy, true) {
             @Override
             protected ContextMap calculateRealMaps(ContextMap map) {
                 map.setZero();
@@ -186,9 +187,9 @@ public class EnemyController extends AttackHandler {
             }
         };
 
-        ContextBehavior strafe = new Strafe(enemy, target, Strafe.Rotation.COUNTERCLOCKWISE);
+        strafe = new Strafe(enemy, target, Strafe.Rotation.COUNTERCLOCKWISE);
 
-        ContextBehavior separation = new ContextBehavior(enemy, true) {
+        separation = new ContextBehavior(enemy, true) {
             Ray<Vector2> rayCache = new Ray<>(new Vector2(), new Vector2());
 
             @Override
