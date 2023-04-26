@@ -343,17 +343,21 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * placeSceneObject(), etc.).
      */
     private void placeSelection() {
-        if (selected instanceof Tile) {
-            board.removePreview();
-            placeTile();
-        } else if (selected instanceof Player) {
-            level.getPlayer().setPosition(mouseWorld);
-            playerPlaced = true;
-            System.out.println("Player placed at " + (int) mouseBoard.x + ", " + (int) mouseBoard.y);
-        } else if (selected instanceof SceneObject) {
-            placeSceneObject();
-        } else if (selected instanceof Enemy) {
-            placeEnemy();
+        switch (selected.getType()) {
+            case TILE:
+                board.removePreview();
+                placeTile();
+                break;
+            case PLAYER:
+                level.getPlayer().setPosition(mouseWorld);
+                playerPlaced = true;
+                break;
+            case OBJECT:
+                placeSceneObject();
+                break;
+            case ENEMY:
+                placeEnemy();
+                break;
         }
     }
 
@@ -669,7 +673,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         if (selected == null) {
             return false;
         }
-        if (selected instanceof Tile) {
+        if (selected.getType() == Selected.Type.TILE) {
             int boardX = board.worldToBoardX(mouseWorld.x);
             int boardY = board.worldToBoardY(mouseWorld.y);
 
@@ -702,21 +706,26 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         int boardX = board.worldToBoardX(mouseWorld.x);
         int boardY = board.worldToBoardY(mouseWorld.y);
 
-        if (selected instanceof Tile) {
-            // snap to tile
-            if (!mouseBoard.epsilonEquals(boardX, boardY)) {
-                // mouse is on different tile now
-                mouseBoard.set(boardX, boardY);
-                board.setPreviewTile((int) mouseBoard.x, (int) mouseBoard.y, ((Tile)selected).num);
-            }
-        } else if (selected instanceof Player && !playerPlaced) {
-            if (board.inBounds(boardX, boardY)) {
-                level.getPlayer().setPosition(mouseWorld);
-                level.showPlayer();
-            } else if (!playerPlaced) {
-                level.hidePlayer();
-            }
+        switch (selected.getType()) {
+            case TILE:
+                // snap to tile
+                if (!mouseBoard.epsilonEquals(boardX, boardY)) {
+                    // mouse is on different tile now
+                    mouseBoard.set(boardX, boardY);
+                    board.setPreviewTile((int) mouseBoard.x, (int) mouseBoard.y, ((Tile)selected).num);
+                }
+                break;
+            case PLAYER:
+                if (playerPlaced) break;
+                if (board.inBounds(boardX, boardY)) {
+                    level.getPlayer().setPosition(mouseWorld);
+                    level.showPlayer();
+                } else if (!playerPlaced) {
+                    level.hidePlayer();
+                }
+                break;
         }
+
         return true;
     }
 
@@ -758,7 +767,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                         tiles.getU2(), tiles.getV2()
                     )
             ) {
-                System.out.println("ASLDJASLJDASKJDSKDJDASKD");
                 placingMoonlight = false;
                 selected = new Tile(i);
             }
@@ -798,7 +806,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         // Create a slider for the scale of the object
         if (ImGui.sliderFloat("Object Scale", objectScale, 0.1f, 5.0f)) {
             // Apply the scale to the selected object when the slider is moved
-            if (selected instanceof SceneObject) {
+            if (selected.getType() == Selected.Type.OBJECT) {
                 SceneObject selectedObj = (SceneObject) selected;
                 selectedObj.scale = objectScale[0];
             }
