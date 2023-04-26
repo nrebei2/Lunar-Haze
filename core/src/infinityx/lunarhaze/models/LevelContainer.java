@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.controllers.EnemyController;
+import infinityx.lunarhaze.controllers.InputController;
 import infinityx.lunarhaze.graphics.CameraShake;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.models.entity.Enemy;
@@ -163,6 +164,8 @@ public class LevelContainer {
      * Moonlight color of point lights
      */
     private float[] moonlightColor;
+
+    private boolean debugPressed;
 
     /**
      * Initialize attributes
@@ -529,17 +532,22 @@ public class LevelContainer {
         canvas.end();
 
 //         ----------------------- DEBUG --------------------------
-        if (player.isAttacking) {
+        if (InputController.getInstance().didDebug()){
+            debugPressed = !debugPressed;
+        }
+        if (debugPressed) {
+            if (player.isAttacking) {
+                canvas.begin(GameCanvas.DrawPass.SHAPE, view.x, view.y);
+                player.getAttackHitbox().drawHitbox(canvas);
+                canvas.end();
+            }
+
             canvas.begin(GameCanvas.DrawPass.SHAPE, view.x, view.y);
-            player.getAttackHitbox().drawHitbox(canvas);
+            for (Enemy e : activeEnemies) {
+                getEnemyControllers().get(e).drawGizmo(canvas);
+            }
             canvas.end();
         }
-
-        canvas.begin(GameCanvas.DrawPass.SHAPE, view.x, view.y);
-        for (Enemy e: activeEnemies) {
-            getEnemyControllers().get(e).drawGizmo(canvas);
-        }
-        canvas.end();
     }
 
     /**

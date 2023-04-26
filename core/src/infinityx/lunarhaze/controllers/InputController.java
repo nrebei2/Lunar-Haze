@@ -50,6 +50,10 @@ public class InputController {
      * Input key for exiting the current level;
      */
     private static final int EXIT = Input.Keys.ESCAPE;
+    /**
+     * Input key for debug option;
+     */
+    private static final int DEBUG = Input.Keys.B;
 
     /**
      * Constants from asset directory
@@ -102,6 +106,11 @@ public class InputController {
      * Whether the reset button was pressed.
      */
     private boolean exitPressed;
+
+    /**
+     * Whether the debug button was pressed.
+     */
+    private boolean debugPressed;
 
     /**
      * The singleton instance of the input controller
@@ -207,6 +216,15 @@ public class InputController {
     }
 
     /**
+     * Returns true if the debug button was pressed.
+     *
+     * @return true if the debug button was pressed.
+     */
+    public boolean didDebug() {
+        return debugPressed;
+    }
+
+    /**
      * Return the singleton instance of the input controller
      *
      * @return the singleton instance of the input controller
@@ -230,6 +248,7 @@ public class InputController {
         runPressed = Gdx.input.isKeyPressed(RUN);
         resetPressed = Gdx.input.isKeyPressed(RESET);
         exitPressed = Gdx.input.isKeyPressed(EXIT);
+        debugPressed = Gdx.input.isKeyJustPressed(DEBUG);
 
         horizontal = 0.0f;
         if (Gdx.input.isKeyPressed(RIGHT)) {
