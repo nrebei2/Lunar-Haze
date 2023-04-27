@@ -860,7 +860,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 ImGui.endTabItem();
             }
 
-            if (ImGui.beginTabItem("Object")) {
+            if (ImGui.beginTabItem("Scene")) {
                 createObjectMenu();
                 ImGui.endTabItem();
             }
@@ -886,6 +886,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         if (showEnemyControllerWindow) {
             createEnemyControllerWindow();
         }
+
+        //ImGui.showDemoWindow();
 
         ImGui.render();
         imGuiGl.renderDrawData(ImGui.getDrawData());
@@ -1203,8 +1205,58 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             createEditMenu();
             createEnemyMenu();
             createViewMenu();
+            createControlsMenu();
 
             ImGui.endMainMenuBar();
+        }
+    }
+
+    /**
+     * Menu holding window containing editor controls
+     */
+    private void createControlsMenu() {
+        if (ImGui.beginMenu("   Controls   ")) {
+
+            if (ImGui.beginTable("table", 2)) {
+
+                ImGui.tableNextColumn();
+                ImGui.textColored(1.0f, 0.0f, 0.0f, 1.0f,"Key");
+                ImGui.tableNextColumn();
+                ImGui.textColored(1.0f, 0.0f, 0.0f, 1.0f,"Action");
+
+                ImGui.tableNextColumn();
+                ImGui.text("Arrow keys");
+                ImGui.tableNextColumn();
+                ImGui.text("Move scene");
+
+                ImGui.tableNextColumn();
+                ImGui.text("-");
+                ImGui.tableNextColumn();
+                ImGui.text("Zoom out");
+
+                ImGui.tableNextColumn();
+                ImGui.text("=");
+                ImGui.tableNextColumn();
+                ImGui.text("Zoom in");
+
+                ImGui.tableNextColumn();
+                ImGui.text("C-Z");
+                ImGui.tableNextColumn();
+                ImGui.text("Undo");
+
+                ImGui.tableNextColumn();
+                ImGui.text("C-R");
+                ImGui.tableNextColumn();
+                ImGui.text("Redo");
+
+                ImGui.tableNextColumn();
+                ImGui.text("Mouse scroll");
+                ImGui.tableNextColumn();
+                ImGui.text("Scale scene selection");
+
+                ImGui.endTable();
+            }
+            ImGui.endMenu();
         }
     }
 
@@ -1262,6 +1314,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             ImGui.endMenu();
         }
     }
+
+
 
     /**
      * View menu with Toggle Stealth / Battle Lighting
