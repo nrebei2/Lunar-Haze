@@ -840,11 +840,11 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             return;
         }
 
+        level.drawLevel(canvas);
+
         canvas.begin(GameCanvas.DrawPass.SHAPE, level.getView().x, level.getView().y);
         board.drawOutline(canvas);
         canvas.end();
-
-        level.drawLevel(canvas);
 
         ImGui.begin("Selection");
         if (ImGui.beginTabBar("blah")) {

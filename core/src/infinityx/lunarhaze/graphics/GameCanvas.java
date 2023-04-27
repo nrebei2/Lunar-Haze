@@ -1212,10 +1212,6 @@ public class GameCanvas {
     }
 
     /**
-     * Start the debug drawing sequence.
-     * <p>
-     * Nothing is flushed to the graphics card until the method end() is called.
-     * =======
      * Draws a rectangle outline affected by global transform.
      *
      * @param x bottom-left screen x

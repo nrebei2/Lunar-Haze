@@ -3,6 +3,7 @@ package infinityx.lunarhaze.models;
 import box2dLight.PointLight;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.screens.EditorMode;
@@ -248,14 +249,18 @@ public class Board {
      * @param canvas
      */
     public void drawOutline(GameCanvas canvas) {
+        canvas.shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        canvas.shapeRenderer.setColor(Color.RED);
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                canvas.drawRecOutline(
-                        canvas.WorldToScreenX(boardToWorldX(x)) + 1, canvas.WorldToScreenY(boardToWorldY(y)),
-                        tileScreenDim.x - 1, tileScreenDim.y - 1, Color.RED
-                );
+                if (getTileType(x,y) == Tile.TileType.EMPTY)
+                    canvas.shapeRenderer.rect(
+                            canvas.WorldToScreenX(boardToWorldX(x)) + 1, canvas.WorldToScreenY(boardToWorldY(y)),
+                            tileScreenDim.x - 1, tileScreenDim.y - 1
+                    );
             }
         }
+        canvas.shapeRenderer.end();
     }
 
     /**
