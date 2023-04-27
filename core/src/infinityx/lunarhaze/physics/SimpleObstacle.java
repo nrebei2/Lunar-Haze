@@ -66,6 +66,10 @@ public abstract class SimpleObstacle extends Obstacle {
         scale = s;
     }
 
+    public float getScale() {
+        return scale;
+    }
+
     /**
      * Returns the body type for Box2D physics
      * <p>

@@ -1,15 +1,14 @@
 {
   "colliders": {
     "body": {
-      "type": "box",
-      "width": 0.5,
-      "height": 0.5
+      "type": "circle",
+      "radius": 0.25
     }
   },
   "spotlight": {
     "color":		[0.65, 0.6, 0.77, 0.6],
     "distance":		   1,
-    "rays":			10,
+    "rays":			20,
     "soft":			false
   },
   "lockout": 0.3,

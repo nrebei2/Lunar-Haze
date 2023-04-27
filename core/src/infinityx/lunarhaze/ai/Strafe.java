@@ -10,8 +10,6 @@ import com.badlogic.gdx.math.Vector2;
  * TODO: strafe distance
  */
 public class Strafe extends ContextBehavior {
-
-
     public enum Rotation {
         COUNTERCLOCKWISE,
         CLOCKWISE

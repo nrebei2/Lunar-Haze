@@ -95,8 +95,6 @@ public class GameCanvas {
         OPAQUE
     }
 
-    private final float GAP_DIST = 20f;
-
     /**
      * Drawing context to handle textures AND POLYGONS as sprites
      */
@@ -209,7 +207,7 @@ public class GameCanvas {
      */
     public float ScreenToWorldX(float s_x, Vector2 view) {
         // Will have to match offset in setupCameras
-        float offset = (getWidth() - (float)getWidth() / zoom) / 2;
+        float offset = (getWidth() - (float) getWidth() / zoom) / 2;
         return ((s_x / zoom) + offset - view.x) / (worldToScreen.x);
     }
 
@@ -220,7 +218,7 @@ public class GameCanvas {
      */
     public float ScreenToWorldY(float s_y, Vector2 view) {
         // Will have to match offset in setupCameras
-        float offset = (getHeight() - (float)getHeight() / zoom) / 2;
+        float offset = (getHeight() - (float) getHeight() / zoom) / 2;
         return ((Gdx.graphics.getHeight() - s_y) / zoom + offset - view.y) / (worldToScreen.y);
     }
 
@@ -279,12 +277,12 @@ public class GameCanvas {
     }
 
     /**
-     * Updates the camera {@link #zoom}
+     * Updates the camera {@link #zoom}. Will force zoom to be positive.
      *
      * @param zoom the new camera zoom to set
      */
     public void setZoom(float zoom) {
-        this.zoom = zoom;
+        this.zoom = Math.max(0.01f, zoom);
         setupCameras();
     }
 
@@ -942,7 +940,6 @@ public class GameCanvas {
             newVertices[newVertices.length - 1] = y0;
             vertices = newVertices;
         }
-        System.out.println(vertices.length);
         shapeRenderer.polygon(vertices);
         shapeRenderer.end();
     }
@@ -1111,8 +1108,8 @@ public class GameCanvas {
         float x = WorldToScreenX(player.getPosition().x);
         float y = WorldToScreenY(player.getPosition().y);
 
-        draw(ellipse, Color.WHITE, ellipse.getWidth()/2, ellipse.getHeight()/2, x, y, 0,
-                attackRange/ ellipse.getWidth() * 2, attackRange / ellipse.getWidth() * 2);
+        draw(ellipse, Color.WHITE, ellipse.getWidth() / 2, ellipse.getHeight() / 2, x, y, 0,
+                attackRange / ellipse.getWidth() * 2, attackRange / ellipse.getWidth() * 2);
     }
 
     /**

@@ -58,7 +58,7 @@ public class PlayerAttackHandler extends AttackHandler {
         dashCooldownCounter = DASH_COOLDOWN;
     }
 
-    public float getDashCooldownCounter(){
+    public float getDashCooldownCounter() {
         return dashCooldownCounter;
     }
 
@@ -100,10 +100,9 @@ public class PlayerAttackHandler extends AttackHandler {
             if (InputController.getInstance().didRun() && !player.isAttacking() && dashCooldownCounter >= DASH_COOLDOWN) {
                 initiateDash(InputController.getInstance());
             }
-        }
-        else{
+        } else {
             Werewolf player = (Werewolf) entity;
-            if(isDashing) {
+            if (isDashing) {
                 processDash(dashDirection);
             }
             if (dashCooldownCounter < DASH_COOLDOWN) {

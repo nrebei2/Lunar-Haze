@@ -352,7 +352,8 @@ public class LevelContainer {
     }
 
     /**
-     * Sets Moonlight color of point lights
+     * Sets Moonlight color of point lights. Does not actually update the lights.
+     * Currently used only for the editor.
      */
     public void setMoonlightColor(float[] moonlightColor) {
         this.moonlightColor = moonlightColor;
@@ -539,7 +540,7 @@ public class LevelContainer {
         canvas.end();
 
 //         ----------------------- DEBUG --------------------------
-        if (InputController.getInstance().didDebug()){
+        if (InputController.getInstance().didDebug()) {
             debugPressed = !debugPressed;
         }
         if (debugPressed) {

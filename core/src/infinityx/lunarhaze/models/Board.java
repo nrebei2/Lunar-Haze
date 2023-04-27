@@ -273,9 +273,20 @@ public class Board {
         this.previewTile = new PreviewTile(x, y, num);
     }
 
+    /**
+     * Remove the current preview tile from drawing
+     */
     public void removePreview() {
         previewTile = null;
     }
+
+    /**
+     * Whether the board currently has a preview tile set
+     */
+    public boolean hasPreview() {
+        return (previewTile != null);
+    }
+
 
     /**
      * Draws a preview texture at tile position (x, y). Used for the level editor.

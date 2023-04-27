@@ -7,6 +7,8 @@ import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.utils.FloatArray;
+import com.badlogic.gdx.utils.ShortArray;
 import imgui.*;
 import imgui.callback.ImPlatformFuncViewport;
 import imgui.flag.ImGuiBackendFlags;
@@ -71,6 +73,16 @@ public class ImGuiImplGLES2 {
     private Mesh mesh;
 
     /**
+     * Cache to store imgui vertex data dump
+     */
+    FloatArray vertzCache;
+
+    /**
+     * Cache to store imgui index data dump
+     */
+    ShortArray indzCache;
+
+    /**
      * Method to do an initialization of the {@link ImGuiImplGl3} state.
      * It SHOULD be called before calling of the {@link ImGuiImplGl3#renderDrawData(ImDrawData)} method.
      * <p>
@@ -110,6 +122,9 @@ public class ImGuiImplGLES2 {
      * @param glslVersion string with the version of the GLSL
      */
     public void init(final String glslVersion) {
+        this.vertzCache = new FloatArray();
+        this.indzCache = new ShortArray();
+
         readGlVersion();
         setupBackendCapabilitiesFlags();
 
@@ -125,6 +140,7 @@ public class ImGuiImplGLES2 {
             initPlatformInterface();
         }
     }
+
 
     /**
      * Method to render {@link ImDrawData} into current OpenGL context.
@@ -163,29 +179,21 @@ public class ImGuiImplGLES2 {
             // Get vertex buffer
             FloatBuffer vertBuf = drawData.getCmdListVtxBufferData(cmdListIdx).asFloatBuffer();
 
-            // In floats
-            int vtxBufferCapacity = drawData.getCmdListVtxBufferSize(cmdListIdx) * drawData.sizeOfImDrawVert() / 4;
-            float[] vertz = new float[vtxBufferCapacity];
-
-            int i = 0;
+            vertzCache.clear();
             while (vertBuf.remaining() > 0) {
-                vertz[i++] = vertBuf.get();
+                vertzCache.add(vertBuf.get());
             }
 
             // Get index buffer
             ShortBuffer indBuf = drawData.getCmdListIdxBufferData(cmdListIdx).asShortBuffer();
 
-            // In shorts
-            final int idxBufferCapacity = drawData.getCmdListIdxBufferSize(cmdListIdx) * drawData.sizeOfImDrawIdx() / 2;
-            short[] indz = new short[idxBufferCapacity];
-
-            int j = 0;
+            indzCache.clear();
             while (indBuf.remaining() > 0) {
-                indz[j++] = indBuf.get();
+                indzCache.add(indBuf.get());
             }
 
-            mesh.setVertices(vertz);
-            mesh.setIndices(indz);
+            mesh.setVertices(vertzCache.items, 0, vertzCache.size);
+            mesh.setIndices(indzCache.items, 0, indzCache.size);
 
             for (int cmdBufferIdx = 0; cmdBufferIdx < drawData.getCmdListCmdBufferSize(cmdListIdx); cmdBufferIdx++) {
                 drawData.getCmdListCmdBufferClipRect(cmdListIdx, cmdBufferIdx, clipRect);

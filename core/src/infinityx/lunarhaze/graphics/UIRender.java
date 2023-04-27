@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
@@ -122,7 +121,7 @@ public class UIRender {
 
     private final static float ICON_SIZE = 20f;
 
-    private final Color hp_tint = new Color(135/255f, 23/255f, 47/255f, 1.0f);
+    private final Color hp_tint = new Color(135 / 255f, 23 / 255f, 47 / 255f, 1.0f);
 
     private float moon_centerY_ratio = MOON_CENTER_LOW;
 
@@ -466,7 +465,7 @@ public class UIRender {
         float x = canvas.WorldToScreenX(player.getPosition().x) - width / 2;
         float y = canvas.WorldToScreenY(player.getPosition().y) + player.getTextureHeight() + padding;
 
-        if (percentage == 1){
+        if (percentage == 1) {
             canvas.draw(moonlight_all_filled, alphaTint, x, y, width, height);
         } else {
             canvas.draw(enemy_hp, alphaTint, x, y, width, height * 2);
@@ -480,7 +479,7 @@ public class UIRender {
         float y = canvas.WorldToScreenY(enemy.getPosition().y);
 
         // Draw the actual health bar
-        if (enemy.getHealthPercentage() == 1){
+        if (enemy.getHealthPercentage() == 1) {
             canvas.draw(enemy_hp_all_filled, alphaTint, x - 0.7f * barWidth, y + 2 * barWidth, barWidth, barHeight);
         } else {
             canvas.draw(enemy_hp, alphaTint, x - 0.7f * barWidth, y + 2 * barWidth, barWidth, barHeight);
@@ -489,17 +488,17 @@ public class UIRender {
         }
     }
 
-    public void drawDashCooldown(GameCanvas canvas, GameplayController gc){
-        canvas.draw(dash_icon, alphaTint, BAR_HEIGHT*2, canvas.getHeight()/2, ICON_SIZE, ICON_SIZE);
+    public void drawDashCooldown(GameCanvas canvas, GameplayController gc) {
+        canvas.draw(dash_icon, alphaTint, BAR_HEIGHT * 2, canvas.getHeight() / 2, ICON_SIZE, ICON_SIZE);
         PlayerAttackHandler pah = gc.getPlayerController().getAttackHandler();
         float percentage = pah.getDashCooldownCounter() / DASH_COOLDOWN;
-        float height = ICON_SIZE/dash_bar.getWidth() * dash_bar.getHeight();
-        if (percentage > 0.98){
+        float height = ICON_SIZE / dash_bar.getWidth() * dash_bar.getHeight();
+        if (percentage > 0.98) {
             canvas.draw(dash_bar_all_filled, alphaTint, BAR_HEIGHT * 3, canvas.getHeight() / 2 - height / 2, ICON_SIZE,
-                    height + ICON_SIZE/3);
+                    height + ICON_SIZE / 3);
         } else {
             canvas.draw(dash_bar, alphaTint, BAR_HEIGHT * 3, canvas.getHeight() / 2 - height / 2, ICON_SIZE,
-                    height + ICON_SIZE/3);
+                    height + ICON_SIZE / 3);
             canvas.draw(dash_bar_filled, alphaTint, BAR_HEIGHT * 3, canvas.getHeight() / 2 - height / 2, ICON_SIZE,
                     height * percentage);
         }

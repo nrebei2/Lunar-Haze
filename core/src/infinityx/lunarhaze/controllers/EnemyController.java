@@ -319,7 +319,7 @@ public class EnemyController extends AttackHandler {
         } else if (enemy.getDetection() == Enemy.Detection.INDICATOR) {
             stealth = 0.5f;
         }
-        if (getTarget().isOnMoonlight){
+        if (getTarget().isOnMoonlight) {
             stealth = 2;
         }
 

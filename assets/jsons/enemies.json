@@ -28,9 +28,8 @@
     },
     "colliders": {
       "body": {
-        "type": "box",
-        "width": 0.5,
-        "height": 0.5
+        "type": "circle",
+        "radius": 0.2
       }
     },
     "bodytype": "dynamic",
