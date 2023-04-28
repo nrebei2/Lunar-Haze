@@ -1017,44 +1017,6 @@ public class GameCanvas {
         shapeRenderer.end();
     }
 
-    public void drawAttackPow(float x, float y, float width, float height, float attackPow) {
-        if (active != DrawPass.SHAPE) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
-            return;
-        }
-
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(Color.WHITE);
-        shapeRenderer.rect(x, y, width, height);
-        shapeRenderer.end();
-
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        Color yellow = new Color(244.0f / 255.0f, 208.0f / 255.0f, 63.0f / 255.0f, 1.0f);
-        shapeRenderer.setColor(yellow);
-        shapeRenderer.rect(x, y, width * Math.min(attackPow, 1.0f), height);
-        shapeRenderer.end();
-    }
-
-//    public void drawAttackRange(float x, float y, float width, float height, float range) {
-//        if (active != DrawPass.SHAPE) {
-//            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
-//            return;
-//        }
-//
-//        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-//        shapeRenderer.setColor(Color.WHITE);
-//        shapeRenderer.rect(x, y, width, height);
-//        shapeRenderer.end();
-//
-//        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-//        Color blue = new Color(40.0f / 255.0f, 116.0f / 255.0f, 166.0f / 255.0f, 1.0f);
-//        shapeRenderer.setColor(blue);
-//        shapeRenderer.rect(x, y, width * (range - 1.0f) / (Werewolf - 1.0f), height);
-//        shapeRenderer.end();
-//
-////        draw(icon, Color.WHITE, x - width, y, width, height);
-//    }
-
     public void drawEnemyHpBars(float barWidth, float barHeight, Enemy enemy) {
         if (active != DrawPass.SHAPE) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
