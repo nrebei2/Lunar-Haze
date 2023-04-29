@@ -570,6 +570,9 @@ public class LevelContainer {
             }
             canvas.end();
         }
+        canvas.begin(GameCanvas.DrawPass.SHAPE, view.x, view.y);
+        player.getAttackHitbox().drawAttack(canvas);
+        canvas.end();
     }
 
     /**

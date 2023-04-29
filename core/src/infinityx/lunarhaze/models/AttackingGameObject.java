@@ -1,5 +1,6 @@
 package infinityx.lunarhaze.models;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
@@ -120,7 +121,7 @@ public abstract class AttackingGameObject extends GameObject {
         float attackRange = hitboxInfo.getFloat("range");
         // width is defaulted to the entity's body diameter
         float attackWidth = hitboxInfo.has("width") ? hitboxInfo.getFloat("width") : getBoundingRadius() * 2;
-        createAttackHitbox(container.getWorld(), new Vector2(attackRange, attackWidth));
+        createAttackHitbox(container.getWorld(), new Vector2(attackRange, attackWidth), directory);
     }
 
     /**
@@ -153,10 +154,11 @@ public abstract class AttackingGameObject extends GameObject {
      * @param world       Box2D world to store body
      * @param initialSize width and height of hitbox
      */
-    private void createAttackHitbox(World world, Vector2 initialSize) {
+    private void createAttackHitbox(World world, Vector2 initialSize, AssetDirectory directory) {
         attackHitbox = new AttackHitbox(initialSize, this);
         attackHitbox.activatePhysics(world);
         attackHitbox.setActive(false);
+        attackHitbox.setTexture("attack-f");
     }
 
     /**

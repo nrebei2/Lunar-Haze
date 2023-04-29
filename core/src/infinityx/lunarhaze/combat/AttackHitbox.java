@@ -1,6 +1,7 @@
 package infinityx.lunarhaze.combat;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
@@ -22,6 +23,8 @@ public class AttackHitbox extends GameObject {
     private final AttackingGameObject attacker;
 
     private final Color betaTint = new Color(255f / 255f, 255f / 255f, 255f / 255f, 0.2f);
+
+    private Texture attackTexture;
 
     /**
      * @param initialSize holds initial reach and width of hitbox respectively
@@ -91,5 +94,8 @@ public class AttackHitbox extends GameObject {
                 getPosition().x, getPosition().y,
                 getAngle(), canvas.WorldToScreenX(1), canvas.WorldToScreenY(1)
         );
+    }
+    public void drawAttack(GameCanvas canvas) {
+        canvas.draw(attackTexture, Color.WHITE, origin.x, origin.y, getPosition().x, getPosition().y, getAngle(), canvas.WorldToScreenX(1), canvas.WorldToScreenY(1));
     }
 }
