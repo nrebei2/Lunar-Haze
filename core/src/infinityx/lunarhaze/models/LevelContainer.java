@@ -149,6 +149,9 @@ public class LevelContainer {
      */
     private float phaseLength;
 
+    /** Settings for this level */
+    private Settings battleSettings;
+
     /**
      * Ambient lighting values during stealth phase
      */
@@ -187,10 +190,12 @@ public class LevelContainer {
 
         board = null;
         pathfinder = null;
-        this.enemySpawner = new EnemySpawner(this);
+        enemySpawner = new EnemySpawner(this);
         enemies = new EnemyPool(20);
         activeEnemies = new Array<>(10);
         sceneObjects = new Array<>(true, 5);
+
+        battleSettings = new Settings();
     }
 
     /**
@@ -213,6 +218,10 @@ public class LevelContainer {
 
     public RayHandler getRayHandler() {
         return rayHandler;
+    }
+
+    public Settings getSettings() {
+        return battleSettings;
     }
 
     /**
