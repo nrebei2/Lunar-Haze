@@ -29,7 +29,7 @@
     "texture": {
       "name": "static",
       "origin": [249, 157],
-      "scale": 0.815
+      "scale": 0.795
     },
     "colliders": {
       "body": {

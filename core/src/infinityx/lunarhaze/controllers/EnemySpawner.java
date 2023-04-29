@@ -1,13 +1,10 @@
 package infinityx.lunarhaze.controllers;
 
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.entity.Enemy;
-
-import java.util.ArrayList;
-import java.util.Arrays;
+import infinityx.util.PatrolRegion;
 
 /**
  * Basically a monster spawner. Used for the battle phase.
@@ -69,7 +66,7 @@ public class EnemySpawner {
             // TODO: enemies in battle phase should not use patrol path
             // TODO: smart placement for enemies
             Enemy newEnemy = container.addEnemy("villager", 6, 5,
-                    new ArrayList<>(Arrays.asList(new Vector2(), new Vector2()))
+                    new PatrolRegion(0, 0, 0, 0)
             );
             // This spawner is only used in battle phase
             container.getEnemyControllers().get(newEnemy).setInBattle(true);

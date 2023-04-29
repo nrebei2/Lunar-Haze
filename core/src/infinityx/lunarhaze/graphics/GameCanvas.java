@@ -201,6 +201,13 @@ public class GameCanvas {
     }
 
     /**
+     * Scaling factors for world to screen translation. Use to map lengths, for positions use {@link #WorldToScreenX(float)} and Y
+     */
+    public Vector2 getWorldToScreen() {
+        return worldToScreen;
+    }
+
+    /**
      * represent a map from screen coordinates to world coordinates.
      *
      * @param view world view translation
@@ -1226,13 +1233,6 @@ public class GameCanvas {
         shapeRenderer.setColor(color);
         shapeRenderer.rect(x, y, width, height);
         shapeRenderer.end();
-    }
-
-    /**
-     * Draws a rectangle outline at the upper right corner
-     */
-    public void drawRecOutline(float width, float height) {
-        drawRecOutline(getWidth() - width, getHeight() - height * 4, width, height, Color.WHITE);
     }
 
     /**

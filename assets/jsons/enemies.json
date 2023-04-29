@@ -22,7 +22,7 @@
       "idle-b": "villager.idle-b"
     },
     "texture": {
-      "name": "walk-r",
+      "name": "idle-r",
       "origin" : [243, 137],
       "scale": 0.4
     },
@@ -74,7 +74,7 @@
       "idle-b": "villager.idle-b"
     },
     "texture": {
-      "name": "walk-r",
+      "name": "idle-r",
       "origin" : [243, 137],
       "scale": 0.4
     },

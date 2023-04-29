@@ -87,11 +87,6 @@ public class GameplayController {
     private LightingController lightingController;
 
     /**
-     * Owns the enemy spawner, used for battle phase
-     */
-    private EnemySpawner enemySpawner;
-
-    /**
      * Owns the player controller
      */
     private PlayerController playerController;
@@ -175,15 +170,12 @@ public class GameplayController {
      * <p>
      *
      * @param levelContainer container holding model objects in level
-     * @param jsonValue      json value holding level layout
      */
-    public void start(LevelContainer levelContainer, JsonValue jsonValue) {
+    public void start(LevelContainer levelContainer) {
         this.gameState = GameState.PLAY;
         this.phase = Phase.STEALTH;
         this.container = levelContainer;
         this.collisionController = new CollisionController(levelContainer.getWorld());
-        this.enemySpawner = new EnemySpawner(levelContainer);
-        enemySpawner.initialize(jsonValue.get("settings").get("enemy-spawner"));
 
         lightingController = new LightingController(levelContainer);
 
@@ -323,7 +315,7 @@ public class GameplayController {
     public void resolveEnemies(float delta) {
         // add enemies during battle stage and in play
         if (getPhase() == Phase.BATTLE && gameState == GameState.PLAY) {
-            enemySpawner.update(battleTicks);
+            container.getEnemySpawner().update(battleTicks);
             if (battleTicks % 60 == 0) {
                 tacticalManager.update();
             }

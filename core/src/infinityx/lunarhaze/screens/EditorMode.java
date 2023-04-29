@@ -6,9 +6,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
@@ -20,6 +23,7 @@ import imgui.flag.ImGuiCond;
 import imgui.glfw.ImGuiImplGlfw;
 import imgui.type.ImBoolean;
 import imgui.type.ImFloat;
+import imgui.type.ImInt;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.controllers.LevelParser;
 import infinityx.lunarhaze.controllers.LevelSerializer;
@@ -29,10 +33,16 @@ import infinityx.lunarhaze.models.Board;
 import infinityx.lunarhaze.models.GameObject;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.util.FilmStrip;
+import infinityx.util.PatrolRegion;
 import infinityx.util.ScreenObservable;
 
 import java.util.ArrayList;
 
+import static infinityx.lunarhaze.controllers.LevelSerializer.saveLevel;
+
+/**
+ * Screen providing a level editor
+ */
 public class EditorMode extends ScreenObservable implements Screen, InputProcessor {
     /**
      * Need an ongoing reference to the asset directory
@@ -57,8 +67,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * Size of the board (e.g. 10x10 would be [10, 10])
      */
     private int[] boardSize;
-
-    private ImFont font;
 
     /**
      * User requested to go to menu
@@ -106,12 +114,10 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     private Texture background;
 
     /**
-     * type Selected :=
-     * | Tile of Int
-     * | Player
-     * | Enemy of String
-     * | Object of (String, Texture, float)
+     * Background music
      */
+    private Music music;
+
     abstract static class Selected {
         /**
          * Enum specifying the type of the selected object.
@@ -131,7 +137,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     }
 
     /**
-     * Holds the necessary information to place moonlight
+     * Holds the necessary information to place moonlight.
+     * None necessary since moonlight is placed at mouse position.
      */
     class Moonlight extends Selected {
         @Override
@@ -174,14 +181,20 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * Holds the necessary information to place an enemy
      */
     class Enemy extends Selected {
-        public Enemy(String type) {
+        public Enemy(Texture texture, String type) {
             this.type = type;
+            this.texture = texture;
         }
 
         /**
          * type of Enemy
          */
         public String type;
+
+        /**
+         * Texture for button
+         */
+        public Texture texture;
 
         @Override
         public Type getType() {
@@ -243,7 +256,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * Represents an action for placing an object.
      */
     public static class PlaceObject extends Action {
-        private GameObject gameObject;
+        public GameObject gameObject;
 
         /**
          * Constructs a PlaceObject action with the given GameObject.
@@ -251,24 +264,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
          * @param gameObject A GameObject to be placed.
          */
         public PlaceObject(GameObject gameObject) {
-            this.gameObject = gameObject;
-        }
-
-        /**
-         * Returns the associated GameObject for this action.
-         *
-         * @return The GameObject to be placed.
-         */
-        public GameObject getGameObject() {
-            return gameObject;
-        }
-
-        /**
-         * Sets the associated GameObject for this action.
-         *
-         * @param gameObject The GameObject to be placed.
-         */
-        public void setGameObject(GameObject gameObject) {
             this.gameObject = gameObject;
         }
 
@@ -354,18 +349,14 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     private infinityx.lunarhaze.models.entity.Enemy currEnemyControlled;
 
     /**
-     * Bottom left patrol corner
-     */
-    private int[] patrol1;
-    /**
-     * Top right patrol corner
-     */
-    private int[] patrol2;
-
-    /**
      * List of possible scene object selections
      */
     Array<SceneObject> objectSelections;
+
+    /**
+     * List of possible scene enemy selections
+     */
+    Array<Enemy> enemySelections;
 
     /**
      * The game object that is currently selected. Ignore if selected is a tile or moonlight.
@@ -383,6 +374,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     private boolean showBattleLighting;
 
+
     /**
      * Whether an undo or redo was pressed this frame
      */
@@ -398,10 +390,26 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     Array<Action> undoneActions;
 
+    /**
+     * Current level to save to
+     */
+    private ImInt saveLevel = new ImInt(1);
+
+    /**
+     * Whether to show the "Overwrite level" prompt
+     */
+    private boolean showOverwritePrompt = false;
+
+    /**
+     * Whether to show the save level popup
+     */
+    private boolean showSaveLevelPopup = false;
+
     public EditorMode(GameCanvas canvas) {
         this.canvas = canvas;
         pointLights = new ArrayList<>();
         objectSelections = new Array<>();
+        enemySelections = new Array<>();
     }
 
     /**
@@ -415,6 +423,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     public void gatherAssets(AssetDirectory directory) {
         this.directory = directory;
         JsonValue objects = directory.getEntry("objects", JsonValue.class);
+        JsonValue enemies = directory.getEntry("enemies", JsonValue.class);
 
         // Add all objects in json
         for (JsonValue object : objects) {
@@ -429,7 +438,29 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             );
         }
 
+        // Add all enemies in json
+        for (JsonValue enemy : enemies) {
+            enemySelections.add(
+                    new Enemy(
+                            directory.getEntry(
+                                    enemy.get("textures").getString(
+                                            enemy.get("texture").getString("name")
+                                    ), Texture.class
+                            ), enemy.name
+                    )
+            );
+        }
+
         this.background = directory.getEntry("bkg_allocate", Texture.class);
+
+        this.music = directory.getEntry("editorBackground", Music.class);
+    }
+
+    /**
+     * @param level
+     */
+    public void populate(LevelContainer level) {
+
     }
 
     /**
@@ -477,8 +508,13 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 undoneActions.clear();
                 break;
             case ENEMY:
+                infinityx.lunarhaze.models.entity.Enemy newEnemy = placeEnemy();
+
+                currEnemyControlled = newEnemy;
+                showEnemyControllerWindow = true;
+
                 // Perform action
-                doneActions.add(new PlaceObject(placeEnemy()));
+                doneActions.add(new PlaceObject(newEnemy));
                 undoneActions.clear();
                 break;
             case MOONLIGHT:
@@ -489,14 +525,17 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
     /**
      * Creates a new enemy of the selected type at the current mouse position on the game board,
-     * adding it to the level's list of enemies and storing a reference to it in the currEnemyControlled variable.
+     * adding it to the level.
      */
     private infinityx.lunarhaze.models.entity.Enemy placeEnemy() {
         Enemy e = (Enemy) selected;
-        ArrayList<Vector2> emptyPatrol = new ArrayList<>();
-        emptyPatrol.add(new Vector2(0, 0));
-        emptyPatrol.add(new Vector2(0, 0));
-        return level.addEnemy(e.type, mouseWorld.x, mouseWorld.y, emptyPatrol);
+        // Center initial region around placed enemy
+        PatrolRegion initialRegion = new PatrolRegion(
+                mouseWorld.x - 1, mouseWorld.y - 1,
+                mouseWorld.x + 1, mouseWorld.y + 1
+        );
+
+        return level.addEnemy(e.type, mouseWorld.x, mouseWorld.y, initialRegion);
     }
 
     /**
@@ -509,7 +548,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         int x = (int) mouseBoard.x;
         int y = (int) mouseBoard.y;
         if (!board.isLit(x, y)) {
-            System.out.printf("(%d, %d)\n", x, y);
             // PointLight logic
             PointLight light = new PointLight(
                     level.getRayHandler(),
@@ -555,8 +593,11 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * The current {@link #selected} will determine which object to add
      */
     private void setSelectedObject() {
+        // Board has its own logic
         if (selectedObject != null) {
             removeSelectedObject();
+        } else {
+            board.removePreview();
         }
         if (selected == null) return;
 
@@ -582,6 +623,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * Reset and stop drawing the selected object
      */
     private void removeSelectedObject() {
+        board.removePreview();
+
         if (selectedObject == null) return;
         switch (selectedObject.getType()) {
             case ENEMY:
@@ -658,30 +701,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     private void testLevel() {
         observer.exitScreen(this, GO_PLAY);
-    }
-
-    /**
-     * Called when this screen becomes the current screen for a {@link com.badlogic.gdx.Game}.
-     */
-    @Override
-    public void show() {
-        boardSize = new int[]{10, 10};
-        patrol1 = new int[]{0, 0};
-        patrol2 = new int[]{0, 0};
-        objectScale = new float[]{1};
-        showNewBoardWindow = true;
-        showCannotSaveError = false;
-        showEnemyControllerWindow = false;
-        showBattleLighting = false;
-        stealthLength = new ImFloat(10);
-        selected = new Tile(0);
-
-        Gdx.input.setInputProcessor(this);
-        RayHandler.setGammaCorrection(true);
-        RayHandler.useDiffuseLight(true);
-
-        doneActions = new Array<>();
-        undoneActions = new Array<>();
     }
 
     /**
@@ -763,10 +782,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * @param delta Number of seconds since last animation frame
      */
     private void update(float delta) {
-        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
-            observer.exitScreen(this, GO_MENU);
-        }
-
         if (level == null) return;
         level.getWorld().step(delta, 6, 2);
         overlapped = false;
@@ -798,7 +813,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         if (Gdx.input.isKeyPressed(Input.Keys.MINUS)) {
             canvas.setZoom(canvas.getZoom() - 0.01f);
         }
+        changed = true;
 
+        if (ImGui.getIO().getWantCaptureMouse()) return;
         // Move world with arrow keys
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             level.translateView(-20, 0);
@@ -813,14 +830,12 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             level.translateView(0, 20);
         }
 
-        changed = true;
     }
 
     /**
      * Draw the status of this editor mode.
      */
     private void draw(float delta) {
-        canvas.clear();
         imGuiGlfw.newFrame();
         ImGui.newFrame();
 
@@ -830,8 +845,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
         if (showNewBoardWindow) {
             // Center create window
-            ImGui.setNextWindowPos(ImGui.getMainViewport().getCenterX() - 175, ImGui.getMainViewport().getCenterY() - 75);
-            ImGui.setNextWindowSize(350, 150);
+            ImGui.setNextWindowPos(ImGui.getMainViewport().getCenterX() - 250, ImGui.getMainViewport().getCenterY() - 95);
+            ImGui.setNextWindowSize(500, 190);
 
             createNewBoardWindow();
             ImGui.render();
@@ -847,7 +862,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         canvas.end();
 
         ImGui.begin("Selection");
-        if (ImGui.beginTabBar("blah")) {
+        if (ImGui.beginTabBar("bruh")) {
             if (ImGui.beginTabItem("Tile")) {
                 createTileMenu();
                 ImGui.endTabItem();
@@ -868,8 +883,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         ImGui.end();
 
         // Position window right below Selection
-        ImGui.setNextWindowPos(ImGui.getWindowPosX(), ImGui.getWindowPosY() + 270, ImGuiCond.FirstUseEver);
-        ImGui.setNextWindowSize(800, 120, ImGuiCond.FirstUseEver);
+        ImGui.setNextWindowPos(ImGui.getWindowPosX(), ImGui.getWindowPosY() + 300, ImGuiCond.FirstUseEver);
+        ImGui.setNextWindowSize(800, 175, ImGuiCond.FirstUseEver);
         createAmbientLightingMenu();
 
         createToolbar();
@@ -878,6 +893,18 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         }
         if (showEnemyControllerWindow) {
             createEnemyControllerWindow();
+            canvas.begin(GameCanvas.DrawPass.SHAPE, level.getView().x, level.getView().y);
+            PatrolRegion curRegion = currEnemyControlled.getPatrolPath();
+
+            // Draw the patrol region in pink
+            canvas.drawRecOutline(
+                    canvas.WorldToScreenX(curRegion.getBottomLeft()[0]),
+                    canvas.WorldToScreenY(curRegion.getBottomLeft()[1]),
+                    canvas.getWorldToScreen().x * curRegion.getWidth(),
+                    canvas.getWorldToScreen().y * curRegion.getHeight(),
+                    Color.PINK
+            );
+            canvas.end();
         }
 
         //ImGui.showDemoWindow();
@@ -898,11 +925,62 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     }
 
     /**
+     * Called when this screen becomes the current screen for a {@link com.badlogic.gdx.Game}.
+     */
+    @Override
+    public void show() {
+        boardSize = new int[]{10, 10};
+        objectScale = new float[]{1};
+        showNewBoardWindow = (level == null);
+        showCannotSaveError = false;
+        showEnemyControllerWindow = false;
+        showBattleLighting = false;
+        showSaveLevelPopup = false;
+        showOverwritePrompt = false;
+        stealthLength = new ImFloat(10);
+        selected = new Tile(0);
+
+        Gdx.input.setInputProcessor(this);
+        RayHandler.setGammaCorrection(true);
+        RayHandler.useDiffuseLight(true);
+
+        doneActions = new Array<>();
+        undoneActions = new Array<>();
+
+        music.play();
+    }
+
+    /**
+     * Set the level explicitly.
+     *
+     * @param level level to set
+     */
+    public void setLevel(LevelContainer level) {
+        this.level = level;
+        board = level.getBoard();
+
+        // Center board on screen
+        level.setViewTranslation(
+                -canvas.WorldToScreenX(board.boardToWorldX((float) board.getWidth() / 2)) + canvas.getWidth() / 2,
+                -canvas.WorldToScreenY(board.boardToWorldY((float) board.getHeight() / 2)) + canvas.getHeight() / 2
+        );
+
+        stealthLighting = level.getStealthAmbience();
+        battleLighting = level.getBattleAmbience();
+        moonlightLighting = level.getMoonlightColor();
+
+        playerPlaced = true;
+        showNewBoardWindow = false;
+    }
+
+    /**
      * Called when this screen is no longer the current screen for a {@link Game}.
      */
     @Override
     public void hide() {
+        // Reset zoom
         canvas.setZoom(1);
+        music.stop();
     }
 
     /**
@@ -998,7 +1076,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 // snap to tile
                 int boardX = board.worldToBoardX(mouseWorld.x);
                 int boardY = board.worldToBoardY(mouseWorld.y);
-                System.out.printf("(x, y): (%d, %d)\n", boardX, boardY);
 
                 if (!board.inBoundsWorld(mouseWorld.x, mouseWorld.y)) {
                     board.removePreview();
@@ -1052,14 +1129,19 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     @Override
     public boolean keyDown(int keycode) {
+        if (level == null) return false;
+        if (ImGui.getIO().getWantCaptureMouse()) return false;
         if (keycode == Input.Keys.ESCAPE) {
             selected = null;
             removeSelectedObject();
+            board.removePreview();
         }
 
         if (!changed) {
             return true;
         }
+
+        // C-Z
         if (keycode == Input.Keys.Z) {
             if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
                 undo();
@@ -1073,6 +1155,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             }
         }
 
+        // C-R
         if (keycode == Input.Keys.R) {
             if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
                 redo();
@@ -1086,8 +1169,25 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             }
         }
 
+        // C-S
+        if (keycode == Input.Keys.S) {
+            if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
+                showSaveLevelPopup = true;
+                changed = false;
+            }
+        }
+        if (keycode == Input.Keys.CONTROL_LEFT) {
+            if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+                showSaveLevelPopup = true;
+                changed = false;
+            }
+        }
 
-        return false;
+        if (keycode == Input.Keys.Q) {
+            observer.exitScreen(this, GO_MENU);
+        }
+
+        return true;
     }
 
     // IMGUI FUNCTIONS
@@ -1112,6 +1212,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                             tiles.getU2(), tiles.getV2()
                     )
             ) {
+                removeSelectedObject();
                 selected = new Tile(i);
             }
             ImGui.popID();
@@ -1130,22 +1231,34 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * Popup window for object selection using ImGui
      */
     private void createObjectMenu() {
-        int i = 0;
+        float windowWidth = ImGui.getWindowWidth();
+        float rowWidth = 0;
+
         for (SceneObject obj : objectSelections) {
-            if (ImGui.imageButton(obj.texture.getTextureObjectHandle(), 100, 100 * 3 / 4)) {
+            // Scale if window height scales
+            int height = Math.max(100, (int) ImGui.getWindowHeight() / 4);
+            int width = height * obj.texture.getWidth() / obj.texture.getHeight();
+            float totalButtonWidth = width + 20;
+
+            // Check if the button fits within the remaining space on the current row
+            // If it doesnt, put it on a new line
+            if (rowWidth + totalButtonWidth > windowWidth) {
+                ImGui.newLine();
+                rowWidth = 0;
+            }
+
+            if (rowWidth > 0) {
+                ImGui.sameLine();
+            }
+
+            if (ImGui.imageButton(obj.texture.getTextureObjectHandle(), width, height)) {
                 selected = obj;
                 objectScale[0] = 1;
                 obj.scale = 1;
                 setSelectedObject();
             }
 
-            // Make object menu have 6 columns
-            if ((i + 1) % 6 == 0) {
-                ImGui.newLine();
-            } else {
-                ImGui.sameLine();
-            }
-            i++;
+            rowWidth += totalButtonWidth;
         }
 
         ImGui.spacing();
@@ -1172,8 +1285,12 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             createViewMenu();
             createControlsMenu();
 
+
             ImGui.endMainMenuBar();
         }
+
+        drawSaveLevelPopup();
+        drawOverwritePromptPopup();
     }
 
     /**
@@ -1215,15 +1332,90 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 ImGui.text("Redo");
 
                 ImGui.tableNextColumn();
+                ImGui.text("C-S");
+                ImGui.tableNextColumn();
+                ImGui.text("Save");
+
+                ImGui.tableNextColumn();
                 ImGui.text("Mouse scroll");
                 ImGui.tableNextColumn();
                 ImGui.text("Scale scene selection");
+
+                ImGui.tableNextColumn();
+                ImGui.text("Escape");
+                ImGui.tableNextColumn();
+                ImGui.text("Remove selection");
+
+                ImGui.tableNextColumn();
+                ImGui.text("Q");
+                ImGui.tableNextColumn();
+                ImGui.text("Quit");
 
                 ImGui.endTable();
             }
             ImGui.endMenu();
         }
     }
+
+    /**
+     * Draws the "Save Level" popup, which prompts the user to input a level number (1-15).
+     * When the "Save" button is clicked, it attempts to save the level using the saveBoardToJsonFile function.
+     * If the save is unsuccessful, the "Overwrite Prompt" popup is shown.
+     */
+    private void drawSaveLevelPopup() {
+        if (showSaveLevelPopup) {
+            ImGui.openPopup("Save Level");
+        }
+        if (ImGui.beginPopup("Save Level")) {
+            ImGui.text("Enter the level to save to (1-15):");
+            if (ImGui.inputInt("Level", saveLevel)) {
+                saveLevel.set(MathUtils.clamp(saveLevel.get(), 1, 15));
+            }
+
+            if (ImGui.button("Save")) {
+                boolean success = saveLevel(level, directory, saveLevel.get(), false);
+                if (!success) {
+                    showOverwritePrompt = true;
+                }
+                showSaveLevelPopup = false;
+                ImGui.closeCurrentPopup();
+            }
+            ImGui.sameLine();
+            if (ImGui.button("Cancel")) {
+                showSaveLevelPopup = false;
+                ImGui.closeCurrentPopup();
+            }
+
+            ImGui.endPopup();
+        }
+    }
+
+    /**
+     * Draws the "Overwrite Prompt" popup, which is shown when a level already exists and the user tries to save over it.
+     * The user can choose to overwrite the existing level or cancel the operation.
+     */
+    private void drawOverwritePromptPopup() {
+        if (showOverwritePrompt) {
+            ImGui.openPopup("Overwrite Level?");
+        }
+
+        if (ImGui.beginPopup("Overwrite Level?")) {
+            ImGui.text("Level already exists! Overwrite?");
+            if (ImGui.button("Yes")) {
+                saveLevel(level, directory, saveLevel.get(), true);
+                showOverwritePrompt = false;
+                ImGui.closeCurrentPopup();
+            }
+            ImGui.sameLine();
+            if (ImGui.button("No")) {
+                showOverwritePrompt = false;
+                ImGui.closeCurrentPopup();
+            }
+
+            ImGui.endPopup();
+        }
+    }
+
 
     /**
      * File menu with New, Save, Load, Test and Exit
@@ -1235,9 +1427,12 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             }
             ImGui.spacing();
             ImGui.spacing();
+
             if (ImGui.menuItem("Save")) {
                 if (canSave()) {
-                    LevelSerializer.saveBoardToJsonFile(level, directory);
+                    // Cant just open popup due to this issue
+                    // https://github.com/ocornut/imgui/issues/331
+                    showSaveLevelPopup = true;
                 } else {
                     // Cannot save!
                     showCannotSaveError = true;
@@ -1247,12 +1442,19 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             ImGui.spacing();
             if (ImGui.menuItem("Test")) {
                 if (canSave()) {
-                    LevelSerializer.saveBoardToJsonFile(level, directory);
+                    LevelSerializer.saveLevel(level, directory, 0, true);
                     observer.exitScreen(this, GO_PLAY);
                 } else {
                     // Cannot save!
                     showCannotSaveError = true;
                 }
+            }
+
+            ImGui.spacing();
+            ImGui.spacing();
+
+            if (ImGui.menuItem("Quit")) {
+               observer.exitScreen(this, GO_MENU);
             }
             ImGui.endMenu();
         }
@@ -1285,7 +1487,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * View menu with Toggle Stealth / Battle Lighting
      */
     private void createViewMenu() {
-        if (ImGui.beginMenu("View")) {
+        if (ImGui.beginMenu("   View   ")) {
             if (ImGui.menuItem("Toggle Stealth / Battle Lighting")) {
                 showBattleLighting = !showBattleLighting;
 
@@ -1307,8 +1509,10 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
             // Iterate through enemies and create options for menu
             for (int i = 0; i < level.getEnemies().size; i++) {
+                infinityx.lunarhaze.models.entity.Enemy enemy = level.getEnemies().get(i);
+                if (enemy == selectedObject) continue;
                 if (ImGui.menuItem("Show Enemy " + i + " Menu")) {
-                    currEnemyControlled = level.getEnemies().get(i);
+                    currEnemyControlled = enemy;
                     showEnemyControllerWindow = true;
                 }
             }
@@ -1345,10 +1549,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                     -canvas.WorldToScreenY(board.boardToWorldY((float) board.getHeight() / 2)) + canvas.getHeight() / 2
             );
 
-            showEnemyControllerWindow = false;
-            showBattleLighting = false;
-
-            stealthLighting = new float[]{1, 1, 1, 1};
+            stealthLighting = new float[]{0.7f, 0.7f, 0.7f, 1};
             level.getRayHandler().setAmbientLight(stealthLighting[0], stealthLighting[1], stealthLighting[2], stealthLighting[3]);
 
             battleLighting = new float[]{1, 1, 1, 1};
@@ -1384,18 +1585,39 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * Popup window for controlling enemy and setting patrols
      */
     private void createEnemyControllerWindow() {
+        ImGui.setNextWindowSize(600, 160, ImGuiCond.FirstUseEver);
         ImGui.begin("Enemy Controller", new ImBoolean(true));
         ImGui.text("Enter patrol region:");
-        ImGui.inputInt2("Bottom Left Position", patrol1);
-        ImGui.inputInt2("Top Right Position", patrol2);
-        ArrayList<Vector2> patrolPath = new ArrayList<>();
-        patrolPath.add(new Vector2(patrol1[0], patrol1[1]));
-        patrolPath.add(new Vector2(patrol2[0], patrol2[1]));
 
-        if (ImGui.button("Set Patrol Region")) {
-            currEnemyControlled.setPatrolPath(patrolPath);
-            patrol1 = new int[]{0, 0};
-            patrol2 = new int[]{0, 0};
+        PatrolRegion curRegion = currEnemyControlled.getPatrolPath();
+
+        // Force non-negative patrol width and height
+        if (ImGui.sliderFloat2(
+                "Bottom Left Position",
+                curRegion.getBottomLeft(),
+                0, Math.max(board.getWorldWidth(), board.getWorldHeight())
+        )) {
+            if (curRegion.getWidth() < 0) {
+                curRegion.getBottomLeft()[0] = curRegion.getTopRight()[0];
+            }
+            if (curRegion.getHeight() < 0) {
+                curRegion.getBottomLeft()[1] = curRegion.getTopRight()[1];
+            }
+        }
+        if (ImGui.sliderFloat2(
+                "Top Right Position",
+                curRegion.getTopRight(),
+                0, Math.max(board.getWorldWidth(), board.getWorldHeight())
+        )) {
+            if (curRegion.getWidth() < 0) {
+                curRegion.getTopRight()[0] = curRegion.getBottomLeft()[0];
+            }
+            if (curRegion.getHeight() < 0) {
+                curRegion.getTopRight()[1] = curRegion.getBottomLeft()[1];
+            }
+        }
+
+        if (ImGui.button("Close")) {
             showEnemyControllerWindow = false;
         }
         ImGui.end();
@@ -1409,20 +1631,40 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             removeSelectedObject();
             selected = new Moonlight();
         }
-        ImGui.spacing();
-        ImGui.spacing();
-        ImGui.spacing();
-        if (ImGui.button("Werewolf")) {
+
+        ImGui.sameLine();
+
+        FilmStrip playerTex = level.getPlayer().getTexture();
+        if (ImGui.imageButton(
+                playerTex.getTexture().getTextureObjectHandle(),
+                100, 100 * playerTex.getRegionHeight() / playerTex.getRegionWidth()
+        )) {
             playerPlaced = false;
             selected = new Player();
             setSelectedObject();
         }
-        ImGui.spacing();
-        ImGui.spacing();
-        ImGui.spacing();
-        if (ImGui.button("Enemy")) {
-            selected = new Enemy("villager");
-            setSelectedObject();
+
+        if (ImGui.isItemHovered()) {
+            ImGui.beginTooltip();
+            ImGui.text("Werewolf");
+            ImGui.endTooltip();
+        }
+
+        for (Enemy enemy : enemySelections) {
+            ImGui.sameLine();
+            if (ImGui.imageButton(
+                    enemy.texture.getTextureObjectHandle(),
+                    100, 100 * enemy.texture.getHeight() / enemy.texture.getWidth()
+            )) {
+                selected = enemy;
+                setSelectedObject();
+            }
+
+            if (ImGui.isItemHovered()) {
+                ImGui.beginTooltip();
+                ImGui.text(enemy.type.substring(0, 1).toUpperCase() + enemy.type.substring(1));
+                ImGui.endTooltip();
+            }
         }
     }
 
@@ -1454,24 +1696,27 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     }
 
     /**
-     * ImGui initialization
+     * ImGui initialization. Call after {@link #gatherAssets(AssetDirectory)}.
      */
     public void setupImGui() {
         // ImGui initialization
         this.imGuiGlfw = new ImGuiImplGlfw();
         this.imGuiGl = new ImGuiImplGLES2();
 
-
         long windowHandle = ((Lwjgl3Graphics) Gdx.graphics).getWindow().getWindowHandle();
         ImGui.createContext();
+
         ImGuiIO io = ImGui.getIO();
         io.setIniFilename(null);
-        // TODO: why doesn't font work?
-        // font = directory.getEntry("libre-small", BitmapFont.class);
-        //font = io.getFonts().addFontFromFileTTF(directory.getDirectory() + "shared/LibreBaskerville-Regular.ttf", 16);
-//        ImFont
-        //io.setFontDefault(font);
-        //io.getFonts().build();
+
+        // Load the TTF font file from the assets folder
+        FileHandle fontFileHandle = Gdx.files.internal("assets/shared/LibreBaskerville-Regular.ttf");
+        byte[] fontData = fontFileHandle.readBytes();
+
+        // Set up the font for ImGui
+        ImFont imFont = io.getFonts().addFontFromMemoryTTF(fontData, 20);
+        io.setFontDefault(imFont);
+        io.getFonts().build();
 
         imGuiGlfw.init(windowHandle, true);
         imGuiGl.init("#version 110");

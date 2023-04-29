@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 
 /**
- * Class represents a 2D grid of tiles.
+ * Class represents a 2D grid of tiles. The bottom left of the board defines (0, 0) in the world.
  * Wrapper around tile data
  * TODO: make this extend TiledMap? Useful if we will need layers later on. Tile can then extend StaticTiledMapTile.
  * Ref: https://libgdx.com/wiki/graphics/2d/tile-maps
@@ -152,6 +152,21 @@ public class Board {
     }
 
     /**
+     * @return the width of the board in world length.
+     */
+    public float getWorldWidth() {
+        return width * tileWorldDim.x;
+    }
+
+    /**
+     * @return the height of the board in world length.
+     */
+    public float getWorldHeight() {
+        return height * tileWorldDim.y;
+    }
+
+
+    /**
      * Returns the number of tiles horizontally across the board.
      *
      * @return the number of tiles horizontally across the board.
@@ -168,6 +183,7 @@ public class Board {
     public int getHeight() {
         return height;
     }
+
 
     // Drawing information
 
@@ -253,7 +269,7 @@ public class Board {
         canvas.shapeRenderer.setColor(Color.RED);
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                if (getTileType(x,y) == Tile.TileType.EMPTY)
+                if (getTileType(x, y) == Tile.TileType.EMPTY)
                     canvas.shapeRenderer.rect(
                             canvas.WorldToScreenX(boardToWorldX(x)) + 1, canvas.WorldToScreenY(boardToWorldY(y)),
                             tileScreenDim.x - 1, tileScreenDim.y - 1

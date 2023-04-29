@@ -3,7 +3,6 @@ package infinityx.lunarhaze.models.entity;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Pool;
 import infinityx.assets.AssetDirectory;
@@ -12,8 +11,8 @@ import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.SteeringGameObject;
 import infinityx.lunarhaze.physics.ConeSource;
 import infinityx.util.Direction;
+import infinityx.util.PatrolRegion;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -50,9 +49,9 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
     float indicatorAmount;
 
     /**
-     * rectangular region represented by [[b_lx, b_ly], [t_rx, t_ry]]
+     * Patrol region for this enemy
      */
-    private ArrayList<Vector2> patrolPath;
+    private PatrolRegion patrolPath;
 
     /**
      * The light source on this enemy representing the flashlight
@@ -94,7 +93,6 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
      */
     public Enemy() {
         super(false);
-        this.patrolPath = new ArrayList<>();
         detection = Detection.NONE;
 
         // TODO
@@ -145,11 +143,11 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
         return this.strafeDistance;
     }
 
-    public void setPatrolPath(ArrayList<Vector2> path) {
-        this.patrolPath = path;
+    public void setPatrolPath(PatrolRegion patrolPath) {
+        this.patrolPath = patrolPath;
     }
 
-    public ArrayList<Vector2> getPatrolPath() {
+    public PatrolRegion getPatrolPath() {
         return patrolPath;
     }
 
@@ -167,14 +165,6 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
 
     public float getIndicatorAmount() {
         return indicatorAmount;
-    }
-
-    public Vector2 getBottomLeftOfRegion() {
-        return this.patrolPath.get(0);
-    }
-
-    public Vector2 getTopRightOfRegion() {
-        return this.patrolPath.get(1);
     }
 
     /**

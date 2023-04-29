@@ -1,5 +1,7 @@
 package infinityx.util.astar;
 
+import com.badlogic.gdx.math.MathUtils;
+
 /**
  * Grid (tiled) map
  */
@@ -79,12 +81,10 @@ public class AStarMap {
     /**
      * @param x World x
      * @param y World y
-     * @return Node in which (x, y) is inside. Null if out of bounds.
+     * @return Node in which (x, y) is inside. Clamps to edge if out of bounds.
      */
     public Node getNodeAtWorld(float x, float y) {
-        if (worldToGridX(x) < 0 || worldToGridX(x) >= width) return null;
-        if (worldToGridY(y) < 0 || worldToGridY(y) >= height) return null;
-        return map[worldToGridX(x)][worldToGridY(y)];
+        return map[MathUtils.clamp(worldToGridX(x), 0, width - 1)][MathUtils.clamp(worldToGridY(y), 0, height - 1)];
     }
 
     @Override

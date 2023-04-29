@@ -1,0 +1,127 @@
+{
+"1": {
+	"settings": {
+		"transition": 2,
+		"phaseLength": 10.0,
+		"enemy-spawner": {
+			"count": 5,
+			"add-tick": [ 500, 900 ],
+			"delay": 1000
+		}
+	},
+	"ambient": {
+		"stealth-color": [ 1.0, 1.0, 1.0, 1.0 ],
+		"battle-color": [ 1.0, 1.0, 1.0, 1.0 ],
+		"gamma": true,
+		"diffuse": true,
+		"blur": 5
+	},
+	"tiles": {
+		"layout": [
+			[ 0, 0 ],
+			[ 0, 0 ]
+		],
+		"moonlight": {
+			"positions": [
+				[ 1, 1 ]
+			],
+			"lighting": {
+				"color": [ 1.0, 1.0, 1.0, 0.20000000298023224 ],
+				"distance": 2.5,
+				"rays": 40,
+				"soft": true
+			}
+		}
+	},
+	"scene": {
+		"player": [ 0.546875, 0.53125 ],
+		"enemies": [
+			{
+				"type": "villager",
+				"position": [ 0.5234375, 1.3229166269302368 ],
+				"patrol": [ -0.4765625, 0.3229166269302368, -0.4765625, 0.3229166269302368 ]
+			}
+		],
+		"objects": []
+	}
+},
+"2": {
+	"settings": {
+		"transition": 2,
+		"phaseLength": 10.0,
+		"enemy-spawner": {
+			"count": 5,
+			"add-tick": [ 500, 900 ],
+			"delay": 1000
+		}
+	},
+	"ambient": {
+		"stealth-color": [ 1.0, 1.0, 1.0, 1.0 ],
+		"battle-color": [ 1.0, 1.0, 1.0, 1.0 ],
+		"gamma": true,
+		"diffuse": true,
+		"blur": 5
+	},
+	"tiles": {
+		"layout": [
+			[ 0 ]
+		],
+		"moonlight": {
+			"positions": [
+				[ 0, 0 ]
+			],
+			"lighting": {
+				"color": [ 1.0, 1.0, 1.0, 0.20000000298023224 ],
+				"distance": 2.5,
+				"rays": 40,
+				"soft": true
+			}
+		}
+	},
+	"scene": {
+		"player": [ 0.40625, 0.8125 ],
+		"enemies": [],
+		"objects": []
+	}
+},
+"3": {
+	"settings": {
+		"transition": 2,
+		"phaseLength": 10.0,
+		"enemy-spawner": {
+			"count": 5,
+			"add-tick": [ 500, 900 ],
+			"delay": 1000
+		}
+	},
+	"ambient": {
+		"stealth-color": [ 1.0, 1.0, 1.0, 1.0 ],
+		"battle-color": [ 1.0, 1.0, 1.0, 1.0 ],
+		"gamma": true,
+		"diffuse": true,
+		"blur": 5
+	},
+	"tiles": {
+		"layout": [
+			[ 0, 0 ],
+			[ 0, 0 ]
+		],
+		"moonlight": {
+			"positions": [
+				[ 1, 0 ]
+			],
+			"lighting": {
+				"color": [ 1.0, 1.0, 1.0, 0.20000000298023224 ],
+				"distance": 2.5,
+				"rays": 40,
+				"soft": true
+			}
+		}
+	},
+	"scene": {
+		"player": [ 0.640625, 1.2291666269302368 ],
+		"enemies": [],
+		"objects": []
+	}
+}
+}

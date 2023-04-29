@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.controllers.EnemyController;
+import infinityx.lunarhaze.controllers.EnemySpawner;
 import infinityx.lunarhaze.controllers.InputController;
 import infinityx.lunarhaze.graphics.CameraShake;
 import infinityx.lunarhaze.graphics.GameCanvas;
@@ -20,10 +21,10 @@ import infinityx.lunarhaze.models.entity.EnemyPool;
 import infinityx.lunarhaze.models.entity.SceneObject;
 import infinityx.lunarhaze.models.entity.Werewolf;
 import infinityx.util.Drawable;
+import infinityx.util.PatrolRegion;
 import infinityx.util.astar.AStarMap;
 import infinityx.util.astar.AStarPathFinding;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 
 /**
@@ -67,6 +68,13 @@ public class LevelContainer {
      * The Box2D World
      */
     private World world;
+
+
+    /**
+     * Owns the enemy spawner, used for battle phase
+     */
+    private EnemySpawner enemySpawner;
+
     /**
      * Memory pool for efficient storage of Enemies
      */
@@ -179,6 +187,7 @@ public class LevelContainer {
 
         board = null;
         pathfinder = null;
+        this.enemySpawner = new EnemySpawner(this);
         enemies = new EnemyPool(20);
         activeEnemies = new Array<>(10);
         sceneObjects = new Array<>(true, 5);
@@ -267,7 +276,7 @@ public class LevelContainer {
      * @param patrol patrol path for this enemy
      * @return Enemy added
      */
-    public Enemy addEnemy(String type, float x, float y, ArrayList<Vector2> patrol) {
+    public Enemy addEnemy(String type, float x, float y, PatrolRegion patrol) {
         Enemy enemy = enemies.obtain();
         enemy.initialize(directory, enemiesJson.get(type), this);
 
@@ -410,6 +419,11 @@ public class LevelContainer {
         drawables.add(player);
         player.setActive(true);
         player.getSpotlight().setActive(true);
+    }
+
+
+    public EnemySpawner getEnemySpawner() {
+        return enemySpawner;
     }
 
     /**

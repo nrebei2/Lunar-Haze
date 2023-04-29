@@ -1,5 +1,8 @@
 package infinityx.lunarhaze.controllers;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.JsonWriter;
 import infinityx.assets.AssetDirectory;
@@ -8,31 +11,14 @@ import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.entity.Enemy;
 import infinityx.lunarhaze.models.entity.SceneObject;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-
-
-import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.JsonWriter;
-import infinityx.assets.AssetDirectory;
-import infinityx.lunarhaze.models.Board;
-import infinityx.lunarhaze.models.LevelContainer;
-import infinityx.lunarhaze.models.entity.Enemy;
-import infinityx.lunarhaze.models.entity.SceneObject;
-
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 
 /**
  * This class is responsible for serializing a {@link LevelContainer} into a JSON format.
- * The resulting JSON object represents a level's configuration, including settings,
- * ambient effects, tiles, and scene elements such as player positions, enemies, and scene objects.
+ * The resulting JSON object represents a level's configuration, including information for settings,
+ * ambient lighting, board, and scene elements including the player, enemies, and scene objects.
  * The serialized level can be saved to a file and used later for loading and rendering the level within the game.
- *
+ * <p>
  * The reverse of {@link LevelParser}.
  */
 public class LevelSerializer {
@@ -46,19 +32,11 @@ public class LevelSerializer {
      * Converts the given level to a JSON object.
      */
     private static JsonValue levelToJson(LevelContainer level) {
-        // Create a JSON object to store the current level
         JsonValue currLevel = new JsonValue(JsonValue.ValueType.object);
 
-        // Add settings to the current level
         currLevel.addChild("settings", createSettings(level));
-
-        // Add ambient settings to the current level
         currLevel.addChild("ambient", createAmbient(level));
-
-        // Add tiles to the current level
         currLevel.addChild("tiles", createBoard(level));
-
-        // Add scene to the current level
         currLevel.addChild("scene", createScene(level));
 
         return currLevel;
@@ -66,16 +44,16 @@ public class LevelSerializer {
 
     /**
      * Creates a JSON object with settings for the given level.
-     *
+     * <p>
      * JSON structure:
      * {
-     *   "transition": int,
-     *   "phaseLength": int,
-     *   "enemy-spawner": {
-     *     "count": int,
-     *     "add-tick": [int, int],
-     *     "delay": int
-     *   }
+     * "transition": int,
+     * "phaseLength": int,
+     * "enemy-spawner": {
+     * "count": int,
+     * "add-tick": [int, int],
+     * "delay": int
+     * }
      * }
      */
     private static JsonValue createSettings(LevelContainer level) {
@@ -98,14 +76,14 @@ public class LevelSerializer {
 
     /**
      * Creates a JSON object with ambient settings from the given level.
-     *
+     * <p>
      * JSON structure:
      * {
-     *   "stealth-color": [float, float, float, float],
-     *   "battle-color": [float, float, float, float],
-     *   "gamma": boolean,
-     *   "diffuse": boolean,
-     *   "blur": int
+     * "stealth-color": [float, float, float, float],
+     * "battle-color": [float, float, float, float],
+     * "gamma": boolean,
+     * "diffuse": boolean,
+     * "blur": int
      * }
      */
     private static JsonValue createAmbient(LevelContainer level) {
@@ -135,25 +113,25 @@ public class LevelSerializer {
 
     /**
      * Creates a JSON object with board settings from the given level.
-     *
+     * <p>
      * JSON structure:
      * {
-     *   "layout": [
-     *     [int, int, ...],
-     *     ...
-     *   ],
-     *   "moonlight": {
-     *     "positions": [
-     *       [int, int],
-     *       ...
-     *     ],
-     *     "lighting": {
-     *       "color": [float, float, float, float],
-     *       "distance": float,
-     *       "rays": int,
-     *       "soft": boolean
-     *     }
-     *   }
+     * "layout": [
+     * [int, int, ...],
+     * ...
+     * ],
+     * "moonlight": {
+     * "positions": [
+     * [int, int],
+     * ...
+     * ],
+     * "lighting": {
+     * "color": [float, float, float, float],
+     * "distance": float,
+     * "rays": int,
+     * "soft": boolean
+     * }
+     * }
      * }
      */
     private static JsonValue createBoard(LevelContainer level) {
@@ -202,29 +180,29 @@ public class LevelSerializer {
 
     /**
      * Creates a JSON object with scene settings from the given level.
-     *
+     * <p>
      * JSON structure:
      * {
-     *   "player": [float, float],
-     *   "enemies": [
-     *     {
-     *       "type": string,
-     *       "position": [int, int],
-     *       "patrol": [
-     *         [int, int],
-     *         [int, int]
-     *       ]
-     *     },
-     *     ...
-     *   ],
-     *   "objects": [
-     *     {
-     *       "type": string,
-     *       "scale": int,
-     *       "position": [int, int]
-     *     },
-     *     ...
-     *   ]
+     * "player": [float, float],
+     * "enemies": [
+     * {
+     * "type": string,
+     * "position": [int, int],
+     * "patrol": [
+     * [int, int],
+     * [int, int]
+     * ]
+     * },
+     * ...
+     * ],
+     * "objects": [
+     * {
+     * "type": string,
+     * "scale": int,
+     * "position": [int, int]
+     * },
+     * ...
+     * ]
      * }
      */
     private static JsonValue createScene(LevelContainer level) {
@@ -248,19 +226,13 @@ public class LevelSerializer {
             currEnemy.addChild("position", pos);
 
             JsonValue patrol = new JsonValue(JsonValue.ValueType.array);
-
-            if (e.getPatrolPath() != null && e.getPatrolPath().size() > 0) {
-                // Bottom left
-                JsonValue pos1 = new JsonValue(JsonValue.ValueType.array);
-                pos1.addChild(new JsonValue(e.getPatrolPath().get(0).x));
-                pos1.addChild(new JsonValue(e.getPatrolPath().get(0).y));
-                patrol.addChild(pos1);
-
-                // Top right
-                JsonValue pos2 = new JsonValue(JsonValue.ValueType.array);
-                pos2.addChild(new JsonValue(e.getPatrolPath().get(1).x));
-                pos2.addChild(new JsonValue(e.getPatrolPath().get(1).y));
-                patrol.addChild(pos2);
+            // Bottom left
+            for (float patrolPos : e.getPatrolPath().getBottomLeft()) {
+                patrol.addChild(new JsonValue(patrolPos));
+            }
+            // Top right
+            for (float patrolPos : e.getPatrolPath().getBottomLeft()) {
+                patrol.addChild(new JsonValue(patrolPos));
             }
 
             currEnemy.addChild("patrol", patrol);
@@ -288,32 +260,79 @@ public class LevelSerializer {
         return scene;
     }
 
-
     /**
-     * Serializes the level to a JSON file and appends to levels.json.
+     * Serializes the given level to a JSON file and saves it to the specified level index in levels.json.
+     * If the level index already exists and force is set to true, the existing level will be overwritten.
+     * If force is set to false and the level index already exists, the function will return false and not save the level.
      *
-     * @param level the level to serialize
+     * @param levelContainer the level to serialize
+     * @param directory      the asset directory containing the levels.json file
+     * @param level          the level index to save the serialized level to
+     * @param force          if true, overwrite an existing level at the specified index; if false, do not save if a level exists at the index
+     * @return true if the level was successfully saved, false otherwise
      */
-    public static void saveBoardToJsonFile(LevelContainer level, AssetDirectory directory) {
+    public static boolean saveLevel(LevelContainer levelContainer, AssetDirectory directory, int level, boolean force) {
         JsonValue levels = directory.getEntry("levels", JsonValue.class);
-        if (levels == null) {
-            levels = new JsonValue(JsonValue.ValueType.object);
-        }
-        // The size of the levels is the new index to put the created level, as levels starts at 0
-        mostRecentlyCreatedLevel = levels.size;
 
+        mostRecentlyCreatedLevel = level;
+        String levelIndexStr = Integer.toString(level);
+        if (levels.hasChild(levelIndexStr)) {
+            if (!force) {
+                return false;
+            }
+        }
         // Merge new level with existing levels
-        JsonValue newLevel = levelToJson(level);
-        levels.addChild(Integer.toString(mostRecentlyCreatedLevel), newLevel);
+        JsonValue newLevel = levelToJson(levelContainer);
+        JsonValue updatedLevels = new JsonValue(JsonValue.ValueType.object);
+        boolean levelInserted = false;
 
-        // Write to assets/jsons
-        // TODO: will this work with the jar?
-        String fileName = "assets/jsons/levels.json";
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
-            writer.write(levels.prettyPrint(JsonWriter.OutputType.json, 10));
-        } catch (IOException e) {
-            e.printStackTrace();
+        // Cache children to avoid mutation issues during iteration
+        Array<JsonValue> cachedChildren = new Array<>(levels.size);
+        for (JsonValue child : levels) {
+            cachedChildren.add(child);
         }
+
+        // Add levels in sorted order
+        for (JsonValue child : cachedChildren) {
+            int keyComparison = levelIndexStr.compareTo(child.name);
+
+            if (keyComparison == 0) {
+                // If key already exists, overwrite the value
+                // Safe since at this point we are forcing
+                updatedLevels.addChild(child.name, newLevel);
+                levelInserted = true;
+                continue;
+            } else if (keyComparison < 0 && !levelInserted) {
+                // Insert the new level before the current child
+                updatedLevels.addChild(levelIndexStr, newLevel);
+                levelInserted = true;
+            }
+
+            updatedLevels.addChild(child.name, child);
+            // Clear the next reference to avoid circular references
+            child.next = null;
+        }
+
+        // If the new key is the largest, add it at the end
+        if (!levelInserted) {
+            updatedLevels.addChild(levelIndexStr, newLevel);
+        }
+
+        // Mutate the actual asset entry itself
+        // I do this so the levelFormat in GameMode updates too
+        levels.child = updatedLevels.child;
+        levels.size = updatedLevels.size;
+
+        // Write back to levels.json
+        String levelFilePath = directory.getFileName("levels", JsonValue.class);
+        FileHandle outputFile = Gdx.files.local("assets/" + levelFilePath);
+        try {
+            outputFile.writeString(levels.prettyPrint(JsonWriter.OutputType.json, 10), false);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
     /**

@@ -301,6 +301,24 @@ public class AssetDirectory extends AssetManager {
      * @return the asset associated with the given directory key
      */
     public <T> T getEntry(String key, Class<T> type) {
+        String filename = getFileName(key, type);
+        if (filename == null) {
+            return null;
+        }
+        return get(filename, type);
+    }
+
+    /**
+     * Returns the file name of the asset associated with the given directory key
+     * <p>
+     * The method {@link #loadAssets} must have been called for this method to
+     * return a value.
+     *
+     * @param key  the asset directory key
+     * @param type the asset type
+     * @return the file name associated with the given directory key
+     */
+    public <T> String getFileName(String key, Class<T> type) {
         ObjectMap<String, String> keys = contents.keymap.get(type, null);
         if (keys == null) {
             return null;
@@ -309,7 +327,7 @@ public class AssetDirectory extends AssetManager {
         if (filename == null) {
             return null;
         }
-        return get(filename, type);
+        return filename;
     }
 
     /**
