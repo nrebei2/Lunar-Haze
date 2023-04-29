@@ -296,7 +296,6 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
             update(delta);
             draw();
 
-
             // We are are ready, notify our listener
             if (isPlayReady() && observer != null) {
                 observer.exitScreen(this, GO_PLAY);
