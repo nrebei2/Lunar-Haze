@@ -395,8 +395,6 @@ public class UIRender {
             canvas.begin(GameCanvas.DrawPass.SPRITE, level.getView().x, level.getView().y);
 
             if (gameplayController.getCollectingMoonlight() && phase == Phase.STEALTH) {
-//                canvas.drawCollectLightBar(BAR_WIDTH / 2, BAR_HEIGHT / 2,
-//                        gameplayController.getTimeOnMoonlightPercentage(), level.getPlayer());
                 drawCollectLightBar(canvas, BAR_WIDTH / 2, BAR_HEIGHT / 2,
                         gameplayController.getTimeOnMoonlightPercentage(), level.getPlayer());
             }
