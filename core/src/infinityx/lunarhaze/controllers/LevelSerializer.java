@@ -231,7 +231,7 @@ public class LevelSerializer {
                 patrol.addChild(new JsonValue(patrolPos));
             }
             // Top right
-            for (float patrolPos : e.getPatrolPath().getBottomLeft()) {
+            for (float patrolPos : e.getPatrolPath().getTopRight()) {
                 patrol.addChild(new JsonValue(patrolPos));
             }
 
