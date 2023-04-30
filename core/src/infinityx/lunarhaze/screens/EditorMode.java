@@ -11,6 +11,7 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -461,13 +462,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     }
 
     /**
-     * @param level
-     */
-    public void populate(LevelContainer level) {
-
-    }
-
-    /**
      * Places a tile of the selected type at the current mouse position on the game board
      * Invariant: selected is a Tile
      */
@@ -891,8 +885,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         ImGui.setNextWindowSize(800, 175, ImGuiCond.FirstUseEver);
         createAmbientLightingMenu();
 
-        drawSettingsWindow();
-
         createToolbar();
         if (showCannotSaveError) {
             cannotSaveWindow();
@@ -1137,6 +1129,10 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     @Override
     public boolean keyDown(int keycode) {
+        if (keycode == Input.Keys.Q) {
+            observer.exitScreen(this, GO_MENU);
+        }
+
         if (level == null) return false;
         if (ImGui.getIO().getWantCaptureMouse()) return false;
         if (keycode == Input.Keys.ESCAPE) {
@@ -1189,10 +1185,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 showSaveLevelPopup = true;
                 changed = false;
             }
-        }
-
-        if (keycode == Input.Keys.Q) {
-            observer.exitScreen(this, GO_MENU);
         }
 
         return true;
@@ -1291,6 +1283,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             createEditMenu();
             createEnemyMenu();
             createViewMenu();
+            createSettingsMenu();
             createControlsMenu();
 
 
@@ -1299,6 +1292,13 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
         drawSaveLevelPopup();
         drawOverwritePromptPopup();
+    }
+
+    private void createSettingsMenu() {
+        if (ImGui.beginMenu("   Settings   ")) {
+            drawSettingsWindow();
+            ImGui.endMenu();
+        }
     }
 
     /**
@@ -1604,111 +1604,171 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * Allows the user to modify enemy spawn settings, such as phase length, enemy count, spawn rate, and delay.
      */
     private void drawSettingsWindow() {
-        ImGui.setNextWindowSize(600, 500, ImGuiCond.FirstUseEver);
-        if (ImGui.begin("Settings Editor")) {
-            // Draw spawn location controls
-            ImGui.text("Spawn Locations:");
-            for (int i = 0; i < level.getSettings().getSpawnLocations().size; i++) {
-                Vector2 spawnLocation = level.getSettings().getSpawnLocations().get(i);
+        ImGui.text("Spawn Locations:");
 
-                ImGui.pushID(i);
+        if (ImGui.isItemHovered()) {
+            ImGui.beginTooltip();
+            ImGui.text("These are the locations that the enemies spawn in during the battle phase");
+            ImGui.endTooltip();
+        }
 
-                // Close the node if needed
-                if (nodeToClose == i) {
-                    ImGui.setNextItemOpen(false, ImGuiCond.Always);
-                    nodeToClose = -1;
-                }
-                if (ImGui.treeNode("Location " + (i + 1))) {
-                    if (currentNode == i) {
-                        // 2D window widget for position editing
-                        ImGui.text("Position Editor:");
-                        ImGui.spacing();
-                        ImGui.beginChild("Position Editor (Click and drag to move location)", 300, 300, true);
+        for (int i = 0; i < level.getSettings().getSpawnLocations().size; i++) {
+            Vector2 spawnLocation = level.getSettings().getSpawnLocations().get(i);
 
-                        // Invisible button for input handling
-                        float height = 300;
-                        float width = board.getWidth() / board.getHeight() * height;
-                        ImGui.invisibleButton("##positionButton", width, height);
+            ImGui.pushID(i);
 
-                        float worldToWindowX = width / board.getWorldWidth();
-                        float worldToWindowY = height / board.getWorldHeight();
+            // Close the node if needed
+            if (nodeToClose == i) {
+                ImGui.setNextItemOpen(false, ImGuiCond.Always);
+                nodeToClose = -1;
+            }
+            if (ImGui.treeNode("Location " + (i + 1))) {
+                if (currentNode == i) {
 
-                        // Draw spawn location outline
-                        // Translate spawn world position to mouse coordinates
-                        ImGui.getWindowDrawList().addRect(
-                                ImGui.getItemRectMinX() + spawnLocation.x * worldToWindowX - 20,
-                                 ImGui.getItemRectMinY() + height - spawnLocation.y * worldToWindowY - 10,
-                                ImGui.getItemRectMinX() + spawnLocation.x * worldToWindowX + 20,
-                                ImGui.getItemRectMinY() + height - spawnLocation.y * worldToWindowY + 10,
-                                ImGui.getColorU32(1, 1, 1, 1));
+                    // Draw spawn location outline on board
+                    canvas.begin(GameCanvas.DrawPass.SHAPE, level.getView().x, level.getView().y);
+                    canvas.shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+                    canvas.shapeRenderer.setColor(Color.WHITE);
+                    canvas.shapeRenderer.rect(
+                            canvas.WorldToScreenX(spawnLocation.x) - 30, canvas.WorldToScreenY(spawnLocation.y) - 15,
+                            60, 30
+                    );
+                    canvas.shapeRenderer.end();
+                    canvas.end();
 
-                        if (ImGui.isItemHovered() && ImGui.isMouseDown(ImGuiMouseButton.Left)) {
-                            // Translate mouse position to world coordinates
-                            ImVec2 mousePos = ImGui.getMousePos();
-                            mousePos.x -= ImGui.getItemRectMinX();
-                            mousePos.y = ImGui.getItemRectMaxY() - mousePos.y;
-                            mousePos.times(1 / worldToWindowX, 1 / worldToWindowY);
+                    // 2D window widget for position editing
+                    ImGui.text("Position Editor:");
+                    ImGui.spacing();
 
-                            spawnLocation.x = mousePos.x;
-                            spawnLocation.y = mousePos.y;
-                        }
-                        ImGui.endChild();
+                    ImGui.beginChild("Position Editor (Click and drag to move location)", 300, 300, false);
 
-                        ImGui.pushItemWidth(120);
-                        ImGui.text("Edit Position Manually:");
-                        float[] positionX = {spawnLocation.x};
-                        if (ImGui.dragFloat("##positionX", positionX, 0.05f, 0, board.getWorldWidth(), "X: %.01f")) {
-                            spawnLocation.x = positionX[0];
-                        }
+                    // Invisible button for input handling
+                    float height = 300;
+                    float width = board.getWidth() / board.getHeight() * height;
+                    ImGui.invisibleButton("##positionButton", width, height);
 
-                        ImGui.sameLine();
-                        float[] positionY = {spawnLocation.y};
-                        if (ImGui.dragFloat("##positionY", positionY, 0.05f, 0, board.getWorldHeight(), "Y: %.01f")) {
-                            spawnLocation.y = positionY[0];
-                        }
-                        ImGui.popItemWidth();
+                    float worldToWindowX = width / board.getWorldWidth();
+                    float worldToWindowY = height / board.getWorldHeight();
 
-                        if (ImGui.button("Remove Location")) {
-                            level.getSettings().removeSpawnLocation(i);
-                            if (selectedSpawnLocationIndex >= level.getSettings().getSpawnLocations().size) {
-                                selectedSpawnLocationIndex--;
-                            }
-                        }
-                    } else {
-                        nodeToClose = currentNode;
-                        currentNode = i;
+                    // Draw spawn location outline
+                    // Translate spawn world position to mouse coordinates
+                    ImGui.getWindowDrawList().addRect(
+                            ImGui.getItemRectMinX() + spawnLocation.x * worldToWindowX - 20,
+                             ImGui.getItemRectMinY() + height - spawnLocation.y * worldToWindowY - 10,
+                            ImGui.getItemRectMinX() + spawnLocation.x * worldToWindowX + 20,
+                            ImGui.getItemRectMinY() + height - spawnLocation.y * worldToWindowY + 10,
+                            ImGui.getColorU32(1, 1, 1, 1));
+
+                    if (ImGui.isItemHovered() && ImGui.isMouseDown(ImGuiMouseButton.Left)) {
+                        // Translate mouse position to world coordinates
+                        ImVec2 mousePos = ImGui.getMousePos();
+                        mousePos.x -= ImGui.getItemRectMinX();
+                        mousePos.y = ImGui.getItemRectMaxY() - mousePos.y;
+                        mousePos.times(1 / worldToWindowX, 1 / worldToWindowY);
+
+                        spawnLocation.x = mousePos.x;
+                        spawnLocation.y = mousePos.y;
+                    }
+                    ImGui.endChild();
+
+                    // Draw border around the editor window
+                    ImVec2 childWindowPos = new ImVec2();
+                    ImGui.getItemRectMin(childWindowPos);
+                    ImDrawList drawList = ImGui.getWindowDrawList();
+                    ImVec2 contentRegionAvail = new ImVec2();
+                    ImGui.getContentRegionAvail(contentRegionAvail);
+                    drawList.addRect(
+                            childWindowPos.x - 5,
+                            childWindowPos.y - 5,
+                            childWindowPos.x + 305,
+                            childWindowPos.y + 305,
+                            ImGui.getColorU32(1, 0.514f, 0.376f, 1),
+                            0, ImDrawFlags.None, 10
+                    );
+
+                    ImGui.pushItemWidth(120);
+                    ImGui.text("Edit Position Manually:");
+                    float[] positionX = {spawnLocation.x};
+                    if (ImGui.dragFloat("##positionX", positionX, 0.05f, 0, board.getWorldWidth(), "X: %.01f")) {
+                        spawnLocation.x = positionX[0];
                     }
 
-                    ImGui.treePop();
+                    ImGui.sameLine();
+                    float[] positionY = {spawnLocation.y};
+                    if (ImGui.dragFloat("##positionY", positionY, 0.05f, 0, board.getWorldHeight(), "Y: %.01f")) {
+                        spawnLocation.y = positionY[0];
+                    }
+                    ImGui.popItemWidth();
+
+                    if (ImGui.button("Remove Location")) {
+                        level.getSettings().removeSpawnLocation(i);
+                        if (selectedSpawnLocationIndex >= level.getSettings().getSpawnLocations().size) {
+                            selectedSpawnLocationIndex--;
+                        }
+                    }
+                } else {
+                    nodeToClose = currentNode;
+                    currentNode = i;
                 }
-                ImGui.popID();
+
+                ImGui.treePop();
             }
+            ImGui.popID();
+        }
 
-            if (ImGui.button("Add Location")) {
-                level.getSettings().addSpawnLocation(0, 0);
-            }
+        if (ImGui.button("Add Location")) {
+            level.getSettings().addSpawnLocation(0, 0);
+        }
 
-            ImGui.spacing();
+        ImGui.spacing();
 
-            ImGui.text("Phase Length (seconds):");
-            ImGui.dragInt("##phaseLength", level.getSettings().phaseLength.getData(), 1, 0, 400);
+        ImGui.text("Length of Stealth Phase (seconds):");
+        if (ImGui.inputInt("##phaseLength", level.getSettings().phaseLength)) {
+            level.getSettings().phaseLength.set(Math.max(0, level.getSettings().phaseLength.get()));
+        }
 
-            ImGui.text("Enemy Count:");
-            ImGui.inputInt("##enemyCount", level.getSettings().enemyCount);
+        ImGui.text("Enemy Count:");
 
-            ImGui.text("Spawn Rate:");
-            ImGui.inputFloat("Min##spawnRateMin", level.getSettings().spawnRateMin);
-            ImGui.inputFloat("Max##spawnRateMax", level.getSettings().spawnRateMax);
+        if (ImGui.isItemHovered()) {
+            ImGui.beginTooltip();
+            ImGui.text("The total number of new enemies that spawn during the battle phase");
+            ImGui.endTooltip();
+        }
 
-            ImGui.text("Delay:");
-            ImGui.inputFloat("##delay", level.getSettings().delay);
+        if (ImGui.inputInt("##enemyCount", level.getSettings().enemyCount)) {
+            level.getSettings().enemyCount.set(Math.max(0, level.getSettings().enemyCount.get()));
+        }
 
-            ImGui.end();
+        ImGui.text("Spawn Rate (seconds):");
+
+        if (ImGui.isItemHovered()) {
+            ImGui.beginTooltip();
+            ImGui.text("The spawner will spawn an enemy, then waits for Min to Max seconds before spawning a new one.");
+            ImGui.endTooltip();
+        }
+
+        ImGui.dragFloat("Min##spawnRateMin", level.getSettings().spawnRateMin.getData(), 0.01f, 0, 100);
+        ImGui.dragFloat("Max##spawnRateMax", level.getSettings().spawnRateMax.getData(), 0.01f, 0, 100);
+
+        level.getSettings().spawnRateMin.set(
+                Math.min(
+                        level.getSettings().spawnRateMin.get(),
+                        level.getSettings().spawnRateMax.get()
+                )
+        );
+
+        ImGui.text("Delay (seconds):");
+
+        if (ImGui.isItemHovered()) {
+            ImGui.beginTooltip();
+            ImGui.text("The number of seconds after the battle phase begins to start spawning the enemies");
+            ImGui.endTooltip();
+        }
+
+        if (ImGui.inputInt("##Delay", level.getSettings().delay)) {
+            level.getSettings().delay.set(Math.max(0, level.getSettings().delay.get()));
         }
     }
-
-
-
 
 
     /**
@@ -1821,6 +1881,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 light.setColor(new Color(moonlightLighting[0], moonlightLighting[1], moonlightLighting[2], moonlightLighting[3]));
             }
         }
+
         ImGui.spacing();
 
         ImGui.end();
@@ -1841,7 +1902,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         io.setIniFilename(null);
 
         // Set up the font
-        FileHandle fontFileHandle = Gdx.files.internal("assets/shared/LibreBaskerville-Regular.ttf");
+        FileHandle fontFileHandle = Gdx.files.internal("shared/LibreBaskerville-Regular.ttf");
         byte[] fontData = fontFileHandle.readBytes();
         ImFont imFont = io.getFonts().addFontFromMemoryTTF(fontData, 20);
         io.setFontDefault(imFont);
