@@ -14,7 +14,7 @@ public class Settings {
     public ImInt enemyCount = new ImInt(0);
     public ImFloat spawnRateMin = new ImFloat(0);
     public ImFloat spawnRateMax = new ImFloat(0);
-    public ImFloat delay = new ImFloat(0);
+    public ImInt delay = new ImInt(0);
 
     /** List of locations enemies can spawn during battle phase */
     private Array<Vector2> spawnLocations = new Array<>();
