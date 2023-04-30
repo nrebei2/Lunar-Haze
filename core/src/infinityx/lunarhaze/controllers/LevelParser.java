@@ -198,7 +198,7 @@ public class LevelParser {
 
         int numCols = tileData.size / numRows;
 
-        Board board = new Board(numRows, numCols);
+        Board board = new Board(numCols, numRows);
         board.setTileSheet(tileSheet);
 
         board.setTileScreenDim(sSize[0], sSize[1]);

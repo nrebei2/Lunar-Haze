@@ -2,14 +2,12 @@
 "0": {
 	"settings": {
 		"transition": 4,
-		"phaseLength": 23,
+		"phaseLength": 0,
 		"enemy-spawner": {
-			"count": 4,
-			"add-tick": [ 0.0, 4.820000171661377 ],
-			"delay": 2.0,
-			"spawn-locations": [
-				[ 2.2899999618530273, 1.25 ]
-			]
+			"count": 0,
+			"add-tick": [ 0.0, 0.0 ],
+			"delay": 0.0,
+			"spawn-locations": []
 		}
 	},
 	"ambient": {
@@ -21,13 +19,14 @@
 	},
 	"tiles": {
 		"layout": [
-			[ 0, 0, 0 ],
-			[ 0, 0, 0 ],
-			[ 0, 0, 0 ]
+			[ 0, 7, 0 ],
+			[ 0, 0, 8 ],
+			[ 9, 0, 0 ],
+			[ 0, 11, 0 ]
 		],
 		"moonlight": {
 			"positions": [
-				[ 2, 1 ]
+				[ 2, 0 ]
 			],
 			"lighting": {
 				"color": [ 1.0, 1.0, 1.0, 0.20000000298023224 ],
@@ -38,7 +37,7 @@
 		}
 	},
 	"scene": {
-		"player": [ 0.6796875, 1.75 ],
+		"player": [ 0.3828125, 3.6666667461395264 ],
 		"enemies": [],
 		"objects": []
 	}

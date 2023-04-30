@@ -150,7 +150,7 @@ public class LevelSerializer {
         Board board = level.getBoard();
 
         JsonValue layout = new JsonValue(JsonValue.ValueType.array);
-        for (int y = 0; y < board.getHeight(); y++) {
+        for (int y = board.getHeight() - 1; y >= 0; y--) {
             JsonValue row = new JsonValue(JsonValue.ValueType.array);
             for (int x = 0; x < board.getWidth(); x++) {
                 row.addChild(new JsonValue(board.getTileNum(x, y)));
