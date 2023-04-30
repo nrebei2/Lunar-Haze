@@ -227,6 +227,10 @@
         }
       }
     },
+    "werewolf.attacked-l": "images/player/left_attacked.png",
+    "werewolf.attacked-r": "images/player/right_attacked.png",
+    "werewolf.attacked-f": "images/player/front_attacked.png",
+    "werewolf.attacked-b": "images/player/back_attacked.png",
     "werewolf.idle-r": "images/player/right_still.png",
     "werewolf.idle-l": "images/player/left_still.png",
     "werewolf.idle-b": "images/player/back_still.png",

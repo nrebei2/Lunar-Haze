@@ -48,6 +48,21 @@ public abstract class AttackingGameObject extends GameObject {
     protected boolean isAttacking;
 
     /**
+     * Whether the entity is currently attacked
+     */
+    protected boolean isAttacked;
+
+    /**
+     * Total time duration (in seconds) for attacked frames.
+     */
+    protected float isAttackedLength;
+
+    /**
+     * Current time duration for attacked frames
+     */
+    protected float attackedTime;
+
+    /**
      * Hitbox parented to the entity. Only active when {@link #isAttacking}
      */
     protected AttackHitbox attackHitbox;
@@ -97,6 +112,7 @@ public abstract class AttackingGameObject extends GameObject {
         canMove = true;
         isImmune = false;
         lockedOut = false;
+        isAttacked = false;
     }
 
 
@@ -114,6 +130,7 @@ public abstract class AttackingGameObject extends GameObject {
         attackCooldown = attack.getFloat("cooldown");
         attackLength = attack.getFloat("length");
         immunityLength = attack.getFloat("immunity");
+        isAttackedLength = attack.getFloat("lockout");
         lockout = attack.getFloat("lockout");
 
         JsonValue hitboxInfo = attack.get("hitbox");
@@ -134,6 +151,7 @@ public abstract class AttackingGameObject extends GameObject {
     public boolean isImmune() {
         return isImmune;
     }
+
 
     /**
      * Begin lock out for this entity. Should be called when attacked.
@@ -187,6 +205,18 @@ public abstract class AttackingGameObject extends GameObject {
         return isAttacking;
     }
 
+    /**
+     * Begin attacked frames for this entity.
+     */
+    public void setAttacked() {
+        isAttacked = true;
+        attackedTime = isAttackedLength;
+    }
+
+    public boolean isAttacked() {
+        return isAttacked;
+    }
+
     public AttackHitbox getAttackHitbox() {
         return attackHitbox;
     }
@@ -200,8 +230,16 @@ public abstract class AttackingGameObject extends GameObject {
         // Update counters for immunity and lockout
         if (isImmune) {
             immunityTime -= delta;
-            if (immunityTime <= 0)
+            if (immunityTime <= 0) {
                 isImmune = false;
+            }
+        }
+
+        if(isAttacked){
+            attackedTime -= delta;
+            if(attackedTime <= 0){
+                isAttacked = false;
+            }
         }
         if (lockedOut) {
             lockoutTime -= delta;
