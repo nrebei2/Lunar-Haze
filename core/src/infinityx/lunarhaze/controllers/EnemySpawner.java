@@ -1,8 +1,11 @@
 package infinityx.lunarhaze.controllers;
 
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.lunarhaze.models.LevelContainer;
+import infinityx.lunarhaze.models.Settings;
 import infinityx.lunarhaze.models.entity.Enemy;
 import infinityx.util.PatrolRegion;
 
@@ -19,18 +22,25 @@ public class EnemySpawner {
     /**
      * Minimum and Maximum time (in ticks) to spawn a new enemy
      */
-    private int addMin;
-    private int addMax;
+    private float addMin, addMax;
 
     /**
-     * Tick number for when we add a new enemy in battle mode
+     * Time for when we add a new enemy in battle mode
      */
-    private int enemyAddTick;
+    private float enemyAddTime;
 
     /**
      * Maximum number of enemies this spawner can spawn
      */
     private int count;
+
+    /**
+     * Total time in seconds this spawner has been alive
+     */
+    private float time;
+
+    /** List of locations enemies this spawner can spawn at */
+    private Array<Vector2> spawnLocations;
 
     /**
      * @param levelContainer providing API to add enemies
@@ -44,35 +54,34 @@ public class EnemySpawner {
      *
      * @param settings json tree holding spawner info
      */
-    public void initialize(JsonValue settings) {
-        int[] addInfo = settings.get("add-tick").asIntArray();
-        this.addMin = addInfo[0];
-        this.addMax = addInfo[1];
-        this.count = settings.getInt("count");
+    public void initialize(Settings settings) {
+        this.addMin = settings.getSpawnRateMin();
+        this.addMax = settings.getSpawnRateMax();
+        this.count = settings.getEnemyCount();
+        this.time = 0;
 
-        // delay (in ticks) to begin spawning
-        int delay = settings.getInt("delay");
-        enemyAddTick = delay;
+        float delay = settings.getDelay();
+        enemyAddTime = delay;
+
+        this.spawnLocations = settings.getSpawnLocations();
     }
 
     /**
      * Add enemy to level when applicable.
      *
-     * @param tick notion of number of ticks elapsed
      */
-    public void update(int tick) {
+    public void update(float delta) {
         if (count <= 0) return;
-        if (tick % enemyAddTick == 0) {
-            // TODO: enemies in battle phase should not use patrol path
-            // TODO: smart placement for enemies
-            Enemy newEnemy = container.addEnemy("villager", 6, 5,
-                    new PatrolRegion(0, 0, 0, 0)
-            );
+        time += delta;
+        if (time >= enemyAddTime) {
+            Vector2 position = spawnLocations.random();
+            Enemy newEnemy = container.addEnemy("villager", position.x, position.y);
             // This spawner is only used in battle phase
             container.getEnemyControllers().get(newEnemy).setInBattle(true);
             container.getEnemyControllers().get(newEnemy).getStateMachine().changeState(EnemyState.ALERT);
-            enemyAddTick = MathUtils.random(addMin, addMax);
-            this.count--;
+            enemyAddTime = MathUtils.random(addMin, addMax);
+            time = 0;
+            count -= 1;
         }
     }
 }

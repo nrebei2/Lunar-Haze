@@ -183,7 +183,7 @@ public class GameplayController {
         player = levelContainer.getPlayer();
         this.playerController = new PlayerController(levelContainer, setting);
 
-        phaseTimer = levelContainer.getPhaseLength();
+        phaseTimer = levelContainer.getSettings().getPhaseLength();
         ambientLightTransitionTimer = 0;
 
         enemies = levelContainer.getEnemies();
@@ -277,7 +277,7 @@ public class GameplayController {
      */
     public void switchPhase(float delta) {
         updateAmbientLight(delta);
-        if (ambientLightTransitionTimer >= container.getPhaseTransitionTime()) {
+        if (ambientLightTransitionTimer >= container.getSettings().getTransition()) {
             phase = Phase.ALLOCATE;
             for (int i = 0; i < enemies.size; i++) {
                 controls.get(enemies.get(i)).setInBattle(true);
@@ -291,9 +291,9 @@ public class GameplayController {
      * @param delta delta time
      */
     private void updateAmbientLight(float delta) {
-        if (ambientLightTransitionTimer < container.getPhaseTransitionTime()) {
+        if (ambientLightTransitionTimer < container.getSettings().getTransition()) {
             ambientLightTransitionTimer += delta;
-            float progress = Math.min(ambientLightTransitionTimer / container.getPhaseTransitionTime(), 1);
+            float progress = Math.min(ambientLightTransitionTimer / container.getSettings().getTransition(), 1);
 
             float[] startColor = container.getStealthAmbience();
             float[] endColor = container.getBattleAmbience();
@@ -316,7 +316,7 @@ public class GameplayController {
     public void resolveEnemies(float delta) {
         // add enemies during battle stage and in play
         if (getPhase() == Phase.BATTLE && gameState == GameState.PLAY) {
-            container.getEnemySpawner().update(battleTicks);
+            container.getEnemySpawner().update(delta);
             if (battleTicks % 60 == 0) {
                 tacticalManager.update();
             }

@@ -140,11 +140,6 @@ public class LevelContainer {
     private int totalMoonlight;
 
     /**
-     * the time it takes to transition from stealth to battle
-     */
-    private float phaseTransitionTime;
-
-    /**
      * the length of a stealth cycle
      */
     private float phaseLength;
@@ -279,6 +274,27 @@ public class LevelContainer {
     }
 
     /**
+     * Adds an enemy to the level with no patrol region.
+     *
+     * @param type   type of Enemy to append to enemy list (e.g. villager)
+     * @param x      world x-position
+     * @param y      world y-position
+     * @return Enemy added
+     */
+    public Enemy addEnemy(String type, float x, float y) {
+        Enemy enemy = enemies.obtain();
+        enemy.initialize(directory, enemiesJson.get(type), this);
+
+        enemy.setPatrolPath(new PatrolRegion(0, 0, 0, 0));
+        enemy.setPosition(x, y);
+
+        enemy.setName(type);
+
+        return addEnemy(enemy);
+    }
+
+
+    /**
      * Adds an enemy to the level
      *
      * @param type   type of Enemy to append to enemy list (e.g. villager)
@@ -327,34 +343,6 @@ public class LevelContainer {
      */
     public Werewolf getPlayer() {
         return player;
-    }
-
-    /**
-     * @return the time it takes to transition from stealth to battle
-     */
-    public float getPhaseTransitionTime() {
-        return phaseTransitionTime;
-    }
-
-    /**
-     * Sets the time it takes to transition from stealth to battle
-     */
-    public void setPhaseTransitionTime(float phaseTransitionTime) {
-        this.phaseTransitionTime = phaseTransitionTime;
-    }
-
-    /**
-     * @return the length of a stealth cycle
-     */
-    public float getPhaseLength() {
-        return phaseLength;
-    }
-
-    /**
-     * Sets the length of a stealth cycle
-     */
-    public void setPhaseLength(float phaseLength) {
-        this.phaseLength = phaseLength;
     }
 
     /**

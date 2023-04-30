@@ -2,6 +2,7 @@ package infinityx.lunarhaze.controllers;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.JsonWriter;
@@ -51,24 +52,34 @@ public class LevelSerializer {
      * "phaseLength": int,
      * "enemy-spawner": {
      * "count": int,
-     * "add-tick": [int, int],
-     * "delay": int
+     * "add-tick": [float, float],
+     * "delay": int,
+     * "spawn-locations": [[int, int], ...]
      * }
      * }
      */
     private static JsonValue createSettings(LevelContainer level) {
-        // TODO: remove hardcoded stuff, should be set in editor
         JsonValue settings = new JsonValue(JsonValue.ValueType.object);
-        settings.addChild("transition", new JsonValue(2));
-        settings.addChild("phaseLength", new JsonValue(level.getPhaseLength()));
+        settings.addChild("transition", new JsonValue(4));
+        settings.addChild("phaseLength", new JsonValue(level.getSettings().getPhaseLength()));
 
         JsonValue enemySpawner = new JsonValue(JsonValue.ValueType.object);
-        enemySpawner.addChild("count", new JsonValue(5));
+        enemySpawner.addChild("count", new JsonValue(level.getSettings().getEnemyCount()));
         JsonValue addTick = new JsonValue(JsonValue.ValueType.array);
-        addTick.addChild(new JsonValue(500));
-        addTick.addChild(new JsonValue(900));
+        addTick.addChild(new JsonValue(level.getSettings().getSpawnRateMin()));
+        addTick.addChild(new JsonValue(level.getSettings().getSpawnRateMax()));
         enemySpawner.addChild("add-tick", addTick);
-        enemySpawner.addChild("delay", new JsonValue(1000));
+        enemySpawner.addChild("delay", new JsonValue(level.getSettings().getDelay()));
+
+        JsonValue spawnLocations = new JsonValue(JsonValue.ValueType.array);
+        for (Vector2 loc: level.getSettings().getSpawnLocations()) {
+            JsonValue location = new JsonValue(JsonValue.ValueType.array);
+            location.addChild(new JsonValue(loc.x));
+            location.addChild(new JsonValue(loc.y));
+            spawnLocations.addChild(location);
+        }
+
+        enemySpawner.addChild("spawn-locations", spawnLocations);
 
         settings.addChild("enemy-spawner", enemySpawner);
         return settings;

@@ -515,9 +515,9 @@ public class UIRender {
     public void drawTransitionScreen(GameCanvas canvas, LevelContainer level, float delta) {
         elapsed = elapsed + delta;
 
-        float fade_time = FADE_TIME_PROP * level.getPhaseTransitionTime();
-        if (level.getPhaseTransitionTime() - elapsed <= fade_time) {
-            float outProg = Math.min(1f, elapsed - (level.getPhaseTransitionTime() - fade_time) / fade_time);
+        float fade_time = FADE_TIME_PROP * level.getSettings().getTransition();
+        if (level.getSettings().getTransition() - elapsed <= fade_time) {
+            float outProg = Math.min(1f, elapsed - (level.getSettings().getTransition() - fade_time) / fade_time);
             alphaTint.a = EAS_FN.apply(1 - outProg);
         }
 
@@ -531,7 +531,7 @@ public class UIRender {
         float moon_size = canvas.getHeight() * MOON_SIZE_RATIO;
         float moon_centerX = canvas.getWidth() * MOON_CENTERX_RATIO;
 
-        float transition_sec = level.getPhaseTransitionTime() * 2 / 3;
+        float transition_sec = level.getSettings().getTransition() * 2 / 3;
         float total_num_updates = transition_sec / delta;
         float rise_amount = moon_rise_dist / total_num_updates;
         moon_centerY_ratio = moon_centerY_ratio + rise_amount / canvas.getHeight();

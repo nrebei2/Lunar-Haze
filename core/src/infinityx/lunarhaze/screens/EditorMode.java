@@ -339,11 +339,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     private float objectScale[];
 
     /**
-     * Float holding stealth phase length
-     */
-    private ImFloat stealthLength;
-
-    /**
      * Current enemy being changed in the Enemy->Enemy x new window
      */
     private infinityx.lunarhaze.models.entity.Enemy currEnemyControlled;
@@ -844,7 +839,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         if (showNewBoardWindow) {
             // Center create window
             ImGui.setNextWindowPos(ImGui.getMainViewport().getCenterX() - 250, ImGui.getMainViewport().getCenterY() - 95);
-            ImGui.setNextWindowSize(500, 190);
+            ImGui.setNextWindowSize(420, 150);
 
             createNewBoardWindow();
             ImGui.render();
@@ -935,7 +930,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         showBattleLighting = false;
         showSaveLevelPopup = false;
         showOverwritePrompt = false;
-        stealthLength = new ImFloat(10);
         selected = new Tile(0);
         selectedSpawnLocationIndex = -1;
 
@@ -1542,11 +1536,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
         ImGui.spacing();
 
-        ImGui.text("Enter stealth phase length:");
-        ImGui.inputFloat("Length", stealthLength);
-
-        ImGui.spacing();
-
         if (ImGui.button("Create")) {
             level = LevelParser.LevelParser().loadEmpty(boardSize[0], boardSize[1]);
 
@@ -1570,7 +1559,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             level.setMoonlightColor(moonlightLighting);
 
             playerPlaced = false;
-            level.setPhaseLength(stealthLength.floatValue());
             showNewBoardWindow = false;
         }
 

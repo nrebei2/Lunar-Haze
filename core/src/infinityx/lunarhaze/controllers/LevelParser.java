@@ -267,11 +267,27 @@ public class LevelParser {
      * @param settings the JSON tree defining the settings
      */
     private void parseSettings(JsonValue settings) {
-        float transitionTime = settings.getFloat("transition");
-        float phaseLength = settings.getFloat("phaseLength");
-        levelContainer.setPhaseLength(phaseLength);
-        levelContainer.setPhaseTransitionTime(transitionTime);
-        levelContainer.getEnemySpawner().initialize(settings.get("enemy-spawner"));
+        int transitionTime = settings.getInt("transition");
+        int phaseLength = settings.getInt("phaseLength");
+        levelContainer.getSettings().setPhaseLength(phaseLength);
+        levelContainer.getSettings().setTransition(transitionTime);
+
+        JsonValue enemySpawnerSettings = settings.get("enemy-spawner");
+
+        float[] addInfo = enemySpawnerSettings.get("add-tick").asFloatArray();
+        levelContainer.getSettings().setSpawnRateMin(addInfo[0]);
+        levelContainer.getSettings().setSpawnRateMax(addInfo[1]);
+        levelContainer.getSettings().setEnemyCount(enemySpawnerSettings.getInt("count"));
+        levelContainer.getSettings().setDelay(enemySpawnerSettings.getInt("delay"));
+
+        for (JsonValue spawnPos : enemySpawnerSettings.get("spawn-locations")) {
+            int x = spawnPos.getInt(0);
+            int y = spawnPos.getInt(1);
+
+            levelContainer.getSettings().addSpawnLocation(x, y);
+        }
+
+        levelContainer.getEnemySpawner().initialize(levelContainer.getSettings());
     }
 
     /**
