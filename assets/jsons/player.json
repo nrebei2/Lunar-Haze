@@ -11,7 +11,7 @@
     "rays":			20,
     "soft":			false
   },
-  "lockout": 0.3,
+  "lockout": 0.5,
   "bodytype": "dynamic",
   "density": 1.0,
   "friction": 0.0,
@@ -46,7 +46,7 @@
   },
   "health": 5,
   "attack": {
-    "knockback": 1,
+    "knockback": 2,
     "damage": 1.0,
     "cooldown": 1,
     "length": 0.5,

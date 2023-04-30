@@ -725,7 +725,7 @@
 "1": {
 	"settings": {
 		"transition": 2,
-		"phaseLength": 70.0,
+		"phaseLength": 3.0,
 		"enemy-spawner": {
 			"count": 1,
 			"add-tick": [ 500, 900 ],
