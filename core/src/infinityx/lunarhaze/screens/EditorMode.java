@@ -86,7 +86,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     /**
      * Whether to display the File->New popup to select board size
      */
-    private boolean showNewBoardWindow;
+    private ImBoolean showNewBoardWindow;
 
     /**
      * Whether to display the error when you cannot save
@@ -836,7 +836,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         canvas.drawOverlay(background, Color.WHITE, true);
         canvas.end();
 
-        if (showNewBoardWindow) {
+        if (showNewBoardWindow.get()) {
             // Center create window
             ImGui.setNextWindowPos(ImGui.getMainViewport().getCenterX() - 250, ImGui.getMainViewport().getCenterY() - 95);
             ImGui.setNextWindowSize(420, 150);
@@ -924,7 +924,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     public void show() {
         boardSize = new int[]{10, 10};
         objectScale = new float[]{1};
-        showNewBoardWindow = (level == null);
+        showNewBoardWindow = new ImBoolean(level == null);
         showCannotSaveError = false;
         showEnemyControllerWindow.set(false);
         showBattleLighting = false;
@@ -964,7 +964,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         moonlightLighting = level.getMoonlightColor();
 
         playerPlaced = true;
-        showNewBoardWindow = false;
+        showNewBoardWindow.set(false);
     }
 
     /**
@@ -1426,7 +1426,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     private void createFileMenu() {
         if (ImGui.beginMenu("   File   ")) {
             if (ImGui.menuItem("New")) {
-                showNewBoardWindow = true;
+                showNewBoardWindow.set(true);
             }
             ImGui.spacing();
             ImGui.spacing();
@@ -1529,7 +1529,13 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * Popup window for creating new board and setting board size
      */
     private void createNewBoardWindow() {
-        ImGui.begin("New Board", new ImBoolean(true));
+        ImGui.begin("New Board", showNewBoardWindow);
+
+        if (!showNewBoardWindow.get()) {
+            // Must've pressed X
+            if (level == null)
+                observer.exitScreen(this, GO_MENU);
+        }
 
         ImGui.text("Enter board size (width and height):");
         ImGui.inputInt2("Size", boardSize);
@@ -1559,7 +1565,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             level.setMoonlightColor(moonlightLighting);
 
             playerPlaced = false;
-            showNewBoardWindow = false;
+
+            showNewBoardWindow.set(false);
         }
 
         ImGui.end();

@@ -2,7 +2,7 @@
 "0": {
 	"settings": {
 		"transition": 4,
-		"phaseLength": 0,
+		"phaseLength": 35,
 		"enemy-spawner": {
 			"count": 0,
 			"add-tick": [ 0.0, 0.0 ],
@@ -19,14 +19,13 @@
 	},
 	"tiles": {
 		"layout": [
-			[ 0, 7, 0 ],
-			[ 0, 0, 8 ],
-			[ 9, 0, 0 ],
-			[ 0, 11, 0 ]
+			[ 0, 0 ],
+			[ 0, 0 ],
+			[ 0, 0 ]
 		],
 		"moonlight": {
 			"positions": [
-				[ 2, 0 ]
+				[ 1, 0 ]
 			],
 			"lighting": {
 				"color": [ 1.0, 1.0, 1.0, 0.20000000298023224 ],
@@ -37,7 +36,7 @@
 		}
 	},
 	"scene": {
-		"player": [ 0.3828125, 3.6666667461395264 ],
+		"player": [ 0.265625, 2.8229167461395264 ],
 		"enemies": [],
 		"objects": []
 	}
