@@ -1632,7 +1632,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
                     // Invisible button for input handling
                     float height = 300;
-                    float width = board.getWidth() / board.getHeight() * height;
+                    float width = (float)board.getWidth() / board.getHeight() * height;
                     ImGui.invisibleButton("##positionButton", width, height);
 
                     float worldToWindowX = width / board.getWorldWidth();
