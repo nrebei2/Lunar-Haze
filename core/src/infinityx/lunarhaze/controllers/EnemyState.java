@@ -29,7 +29,8 @@ public enum EnemyState implements State<EnemyController> {
                 } else {
                     entity.getEnemy().setFilmstripPrefix("walk");
                     // Texture update is proportional to velocity
-                    entity.getEnemy().texUpdate = 1 / (entity.getEnemy().getLinearVelocity().len() * 6);
+//                    entity.getEnemy().texUpdate = 1 / (entity.getEnemy().getLinearVelocity().len() * 5);
+                    entity.getEnemy().texUpdate = 0.26f;
                 }
             }
         }

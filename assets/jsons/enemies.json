@@ -54,7 +54,7 @@
         "texture": {
           "name": "hitbox",
           "origin": [280, 440],
-          "scale": 0.5
+          "scale": 0.25
         }
       }
     }

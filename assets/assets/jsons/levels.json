@@ -2592,7 +2592,7 @@
 		]
 	}
 },
-"4":{
+"4": {
 	"settings": {
 		"transition": 2,
 		"phaseLength": 120.0,
@@ -2603,31 +2603,31 @@
 		}
 	},
 	"ambient": {
-		"stealth-color": [ 0.4, 0.45, 0.6, 0.6 ],
+		"stealth-color": [ 0.40486061573028564, 0.35936954617500305, 0.5019454956054688, 0.6000000238418579 ],
 		"battle-color": [ 1.0, 1.0, 1.0, 1.0 ],
 		"gamma": true,
 		"diffuse": true,
 		"blur": 5
 	},
 	"tiles": {
-		"type": "grass",
 		"layout": [
-			[ 2, 4, 4, 2, 3, 2, 3, 1, 1, 1, 1, 1, 1, 2, 1, 2, 2 ],
-			[ 1, 4, 4, 1, 1, 2, 3, 1, 3, 1, 1, 2, 1, 2, 1, 2, 2 ],
-			[ 1, 4, 4, 4, 4, 4, 4, 4, 4, 4, 2, 1, 1, 1, 1, 2, 2 ],
-			[ 2, 4, 4, 4, 4, 4, 4, 4, 1, 1, 4, 2, 3, 1, 1, 2, 2 ],
-			[ 1, 1, 3, 1, 3, 2, 1, 3, 2, 1, 2, 2, 1, 1, 1, 2, 2 ],
-			[ 1, 3, 1, 2, 1, 2, 1, 6, 6, 3, 1, 1, 1, 1, 3, 2, 2 ],
-			[ 1, 1, 1, 3, 4, 4, 4, 6, 6, 4, 1, 2, 1, 2, 2, 2, 2 ],
-			[ 1, 2, 2, 1, 1, 2, 2, 6, 6, 1, 1, 1, 2, 1, 1, 2, 2 ],
-			[ 3, 4, 4, 3, 3, 4, 4, 6, 6, 3, 2, 1, 2, 1, 1, 2, 2 ],
-			[ 1, 1, 1, 1, 1, 1, 1, 6, 6, 1, 1, 1, 1, 1, 1, 2, 2 ],
-			[ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 2, 2 ],
-			[ 1, 1, 1, 1, 1, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2 ],
-			[ 1, 1, 1, 1, 1, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2 ],
-			[ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 2, 2 ],
-			[ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 ],
-			[ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 ]
+			[ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 ],
+			[ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 ],
+			[ 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 2, 2, 2, 2 ],
+			[ 1, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1 ],
+			[ 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1 ],
+			[ 1, 1, 1, 1, 2, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1 ],
+			[ 6, 6, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1 ],
+			[ 6, 3, 2, 1, 2, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1 ],
+			[ 1, 1, 1, 2, 1, 1, 2, 2, 3, 4, 4, 3, 3, 4, 4, 6 ],
+			[ 1, 2, 1, 2, 2, 2, 2, 1, 2, 2, 1, 1, 2, 2, 6, 6 ],
+			[ 1, 1, 1, 3, 2, 2, 1, 1, 1, 3, 4, 4, 4, 6, 6, 4 ],
+			[ 1, 1, 1, 2, 2, 1, 3, 1, 2, 1, 2, 1, 6, 6, 3, 1 ],
+			[ 1, 1, 2, 2, 1, 1, 3, 1, 3, 2, 1, 3, 2, 1, 2, 2 ],
+			[ 1, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4, 1, 1, 4, 2, 3 ],
+			[ 2, 2, 1, 4, 4, 4, 4, 4, 4, 4, 4, 4, 2, 1, 1, 1 ],
+			[ 2, 1, 4, 4, 1, 1, 2, 3, 1, 3, 1, 1, 2, 1, 2, 1 ],
+			[ 2, 4, 4, 2, 3, 2, 3, 1, 1, 1, 1, 1, 1, 2, 1, 2 ]
 		],
 		"moonlight": {
 			"positions": [
@@ -2635,357 +2635,344 @@
 				[ 8, 6 ],
 				[ 8, 7 ],
 				[ 13, 11 ],
-				[ 3, 16 ],
 				[ 14, 1 ]
 			],
 			"lighting": {
-				"color": [ 0.7, 0.7, 0.9, 0.7 ],
-				"distance": 4,
-				"rays": 50,
+				"color": [ 0.699999988079071, 0.699999988079071, 0.8999999761581421, 0.699999988079071 ],
+				"distance": 2.5,
+				"rays": 40,
 				"soft": true
 			}
 		}
 	},
 	"scene": {
-		"player": [ 14, 16 ],
+		"player": [ 14.0, 16.0 ],
 		"enemies": [
 			{
 				"type": "villager",
 				"position": [ 8.0, 3.0 ],
-				"patrol": [
-					 8.0, 1.0 ,
-					 10.0, 5.0 ]
-
+				"patrol": [ 8.0, 1.0, 10.0, 5.0 ]
 			},
 			{
 				"type": "villager",
-				"position": [ 12, 9 ],
-				"patrol": [
-					 11, 8 ,
-					 14, 10
-				]
+				"position": [ 12.0, 9.0 ],
+				"patrol": [ 11.0, 8.0, 14.0, 10.0 ]
 			},
 			{
 				"type": "villager",
 				"position": [ 2.0, 7.0 ],
-				"patrol": [
-					 2.0, 7.0 ,
-					 5.0, 10.0
-				]
+				"patrol": [ 2.0, 7.0, 5.0, 10.0 ]
 			},
 			{
 				"type": "villager",
 				"position": [ 7.0, 12.0 ],
-				"patrol": [
-					 7.0, 12.0 ,
-					 8.0, 15.0
-				]
+				"patrol": [ 7.0, 12.0, 8.0, 15.0 ]
 			}
 		],
 		"objects": [
 			{
 				"type": "lamp",
-				"scale": 1,
+				"scale": 1.0,
 				"position": [ 13.5, 12.5 ]
 			},
 			{
 				"type": "lamp",
-				"scale": 1.2,
+				"scale": 1.2000000476837158,
 				"position": [ 13.5, 2.5 ]
 			},
 			{
 				"type": "lamp",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 0.5, 6.5 ]
 			},
 			{
 				"type": "house",
-				"scale": 0.7,
+				"scale": 0.699999988079071,
 				"position": [ 3.0, 1.0 ]
 			},
 			{
 				"type": "house",
-				"scale": 0.7,
+				"scale": 0.699999988079071,
 				"position": [ 3.0, 12.0 ]
 			},
 			{
 				"type": "house",
-				"scale": 0.7,
+				"scale": 0.699999988079071,
 				"position": [ 8.0, 10.0 ]
 			},
 			{
 				"type": "house",
-				"scale": 0.7,
+				"scale": 0.699999988079071,
 				"position": [ 11.0, 4.0 ]
 			},
 			{
 				"type": "fencex",
-				"scale": 1,
+				"scale": 1.0,
 				"position": [ 8.0, 8.0 ]
 			},
 			{
 				"type": "fencex",
-				"scale": 1,
+				"scale": 1.0,
 				"position": [ 9.0, 8.0 ]
 			},
 			{
 				"type": "tree",
-				"scale": 1,
+				"scale": 1.0,
 				"position": [ 1.0, 15.0 ]
 			},
 			{
 				"type": "tree",
-				"scale": 1,
+				"scale": 1.0,
 				"position": [ 11.0, 14.0 ]
 			},
 			{
 				"type": "tree",
-				"scale": 1,
+				"scale": 1.0,
 				"position": [ 13.0, 7.0 ]
 			},
 			{
 				"type": "tree",
-				"scale": 1,
+				"scale": 1.0,
 				"position": [ 8.0, 2.0 ]
 			},
 			{
 				"type": "fencey",
-				"scale": 1,
+				"scale": 1.0,
 				"position": [ 7.0, 9.0 ]
 			},
 			{
 				"type": "fencey",
-				"scale": 1,
+				"scale": 1.0,
 				"position": [ 7.0, 8.0 ]
 			},
 			{
 				"type": "fencey",
-				"scale": 1,
+				"scale": 1.0,
 				"position": [ 7.0, 7.0 ]
 			},
 			{
 				"type": "fencey",
-				"scale": 1,
+				"scale": 1.0,
 				"position": [ 7.0, 6.0 ]
 			},
 			{
 				"type": "fencey",
-				"scale": 1,
+				"scale": 1.0,
 				"position": [ 7.0, 5.0 ]
 			},
 			{
 				"type": "fencex",
-				"scale": 1,
+				"scale": 1.0,
 				"position": [ 1.0, 0.0 ]
 			},
 			{
 				"type": "fencex",
-				"scale": 1,
+				"scale": 1.0,
 				"position": [ 3.0, 0.0 ]
 			},
 			{
 				"type": "fencex",
-				"scale": 1,
+				"scale": 1.0,
 				"position": [ 5.0, 0.0 ]
 			},
 			{
 				"type": "fencex",
-				"scale": 1,
+				"scale": 1.0,
 				"position": [ 7.0, 0.0 ]
 			},
 			{
 				"type": "fencex",
-				"scale": 1,
+				"scale": 1.0,
 				"position": [ 9.0, 0.0 ]
 			},
 			{
 				"type": "fencex",
-				"scale": 1,
+				"scale": 1.0,
 				"position": [ 11.0, 0.0 ]
 			},
 			{
 				"type": "fencex",
-				"scale": 1,
+				"scale": 1.0,
 				"position": [ 13.0, 0.0 ]
 			},
 			{
 				"type": "fencex",
-				"scale": 1,
+				"scale": 1.0,
 				"position": [ 15.0, 0.0 ]
 			},
 			{
 				"type": "fencex",
-				"scale": 1,
+				"scale": 1.0,
 				"position": [ 1.0, 17.0 ]
 			},
 			{
 				"type": "fencex",
-				"scale": 1,
+				"scale": 1.0,
 				"position": [ 3.0, 17.0 ]
 			},
 			{
 				"type": "fencex",
-				"scale": 1,
+				"scale": 1.0,
 				"position": [ 5.0, 17.0 ]
 			},
 			{
 				"type": "fencex",
-				"scale": 1,
+				"scale": 1.0,
 				"position": [ 7.0, 17.0 ]
 			},
 			{
 				"type": "fencex",
-				"scale": 1,
+				"scale": 1.0,
 				"position": [ 9.0, 17.0 ]
 			},
 			{
 				"type": "fencex",
-				"scale": 1,
+				"scale": 1.0,
 				"position": [ 11.0, 17.0 ]
 			},
 			{
 				"type": "fencex",
-				"scale": 1,
+				"scale": 1.0,
 				"position": [ 13.0, 17.0 ]
 			},
 			{
 				"type": "fencex",
-				"scale": 1,
+				"scale": 1.0,
 				"position": [ 15.0, 17.0 ]
 			},
 			{
 				"type": "fencey",
-				"scale": 1,
+				"scale": 1.0,
 				"position": [ 0.0, 1.0 ]
 			},
 			{
 				"type": "fencey",
-				"scale": 1,
+				"scale": 1.0,
 				"position": [ 0.0, 3.0 ]
 			},
 			{
 				"type": "fencey",
-				"scale": 1,
+				"scale": 1.0,
 				"position": [ 0.0, 5.0 ]
 			},
 			{
 				"type": "fencey",
-				"scale": 1,
+				"scale": 1.0,
 				"position": [ 0.0, 7.0 ]
 			},
 			{
 				"type": "fencey",
-				"scale": 1,
+				"scale": 1.0,
 				"position": [ 0.0, 9.0 ]
 			},
 			{
 				"type": "fencey",
-				"scale": 1,
+				"scale": 1.0,
 				"position": [ 0.0, 11.0 ]
 			},
 			{
 				"type": "fencey",
-				"scale": 1,
+				"scale": 1.0,
 				"position": [ 0.0, 13.0 ]
 			},
 			{
 				"type": "fencey",
-				"scale": 1,
+				"scale": 1.0,
 				"position": [ 0.0, 15.0 ]
 			},
 			{
 				"type": "fencey",
-				"scale": 1,
+				"scale": 1.0,
 				"position": [ 0.0, 17.0 ]
 			},
 			{
 				"type": "fencey",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 16.0, 1.0 ]
 			},
 			{
 				"type": "fencey",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 16.0, 2.0 ]
 			},
 			{
 				"type": "fencey",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 16.0, 3.0 ]
 			},
 			{
 				"type": "fencey",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 16.0, 4.0 ]
 			},
 			{
 				"type": "fencey",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 16.0, 5.0 ]
 			},
 			{
 				"type": "fencey",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 16.0, 6.0 ]
 			},
 			{
 				"type": "fencey",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 16.0, 7.0 ]
 			},
 			{
 				"type": "fencey",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 16.0, 8.0 ]
 			},
 			{
 				"type": "fencey",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 16.0, 9.0 ]
 			},
 			{
 				"type": "fencey",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 16.0, 10.0 ]
 			},
 			{
 				"type": "fencey",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 16.0, 11.0 ]
 			},
 			{
 				"type": "fencey",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 16.0, 12.0 ]
 			},
 			{
 				"type": "fencey",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 16.0, 13.0 ]
 			},
 			{
 				"type": "fencey",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 16.0, 14.0 ]
 			},
 			{
 				"type": "fencey",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 16.0, 15.0 ]
 			},
 			{
 				"type": "fencey",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 16.0, 16.0 ]
 			},
 			{
 				"type": "fencey",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 16.0, 17.0 ]
 			},
 			{
 				"type": "fencey",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 16.0, 18.0 ]
 			},
 			{
@@ -3000,12 +2987,12 @@
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 0.0, 2.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.4,
+				"scale": 1.399999976158142,
 				"position": [ 0.0, 3.0 ]
 			},
 			{
@@ -3025,42 +3012,42 @@
 			},
 			{
 				"type": "forest",
-				"scale": 1.4,
+				"scale": 1.399999976158142,
 				"position": [ 0.0, 7.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 0.0, 8.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 2.1,
+				"scale": 2.0999999046325684,
 				"position": [ 0.0, 9.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 0.0, 10.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 2.1,
+				"scale": 2.0999999046325684,
 				"position": [ 0.0, 11.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 0.0, 12.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 0.0, 13.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 2.1,
+				"scale": 2.0999999046325684,
 				"position": [ 0.0, 14.0 ]
 			},
 			{
@@ -3070,252 +3057,252 @@
 			},
 			{
 				"type": "forest",
-				"scale": 2.1,
+				"scale": 2.0999999046325684,
 				"position": [ 0.0, 16.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 0.0, 17.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 0.0, 18.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ -1.0, 0.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ -1.0, 1.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ -1.0, 2.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ -1.0, 3.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ -1.0, 5.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ -1.0, 6.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ -1.0, 7.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ -1.0, 8.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ -1.0, 9.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ -1.0, 10.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ -1.0, 11.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ -1.0, 12.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ -1.0, 13.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ -1.0, 14.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ -1.0, 16.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ -1.0, 18.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ -2.0, 1.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ -2.0, 2.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ -2.0, 3.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ -2.0, 5.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ -2.0, 6.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ -2.0, 7.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ -2.0, 8.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ -2.0, 10.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ -2.0, 12.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ -2.0, 13.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ -2.0, 14.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ -2.0, 15.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ -2.0, 16.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ -2.0, 17.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ -2.0, 18.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ -3.0, 0.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ -3.0, 1.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 2.1,
+				"scale": 2.0999999046325684,
 				"position": [ -3.0, 3.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ -3.0, 4.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.8,
+				"scale": 1.7999999523162842,
 				"position": [ -3.0, 6.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ -3.0, 7.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ -3.0, 8.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 2.1,
+				"scale": 2.0999999046325684,
 				"position": [ -3.0, 9.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ -3.0, 10.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.9,
+				"scale": 1.899999976158142,
 				"position": [ -3.0, 12.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ -3.0, 13.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ -3.0, 14.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 2.4,
+				"scale": 2.4000000953674316,
 				"position": [ -3.0, 15.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ -3.0, 17.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 2.1,
+				"scale": 2.0999999046325684,
 				"position": [ -3.0, 18.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 0.9,
+				"scale": 0.8999999761581421,
 				"position": [ 18.0, 0.0 ]
 			},
 			{
@@ -3335,7 +3322,7 @@
 			},
 			{
 				"type": "forest",
-				"scale": 0.8,
+				"scale": 0.800000011920929,
 				"position": [ 18.0, 4.0 ]
 			},
 			{
@@ -3345,42 +3332,42 @@
 			},
 			{
 				"type": "forest",
-				"scale": 0.9,
+				"scale": 0.8999999761581421,
 				"position": [ 18.0, 7.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 18.0, 8.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 18.0, 9.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 18.0, 10.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 18.0, 11.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 0.9,
+				"scale": 0.8999999761581421,
 				"position": [ 18.0, 12.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 0.8,
+				"scale": 0.800000011920929,
 				"position": [ 18.0, 13.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 18.0, 14.0 ]
 			},
 			{
@@ -3390,7 +3377,7 @@
 			},
 			{
 				"type": "forest",
-				"scale": 1.2,
+				"scale": 1.2000000476837158,
 				"position": [ 18.0, 16.0 ]
 			},
 			{
@@ -3400,267 +3387,267 @@
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 19.0, 0.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 19.0, 1.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 19.0, 2.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 19.0, 3.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
-				"position": [ 19.0, 4.0]
+				"scale": 1.100000023841858,
+				"position": [ 19.0, 4.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 19.0, 5.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
-				"position": [ 19.0, 6.0]
+				"scale": 1.100000023841858,
+				"position": [ 19.0, 6.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 19.0, 8.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 19.0, 9.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 19.0, 10.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 19.0, 11.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 19.0, 12.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 19.0, 13.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 19.0, 15.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 19.0, 16.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 19.0, 17.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 19.0, 18.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 20.0, 0.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 20.0, 1.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 20.0, 2.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 20.0, 3.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 20.0, 4.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 20.0, 5.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 20.0, 7.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 20.0, 8.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 20.0, 9.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 20.0, 10.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 20.0, 11.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 20.0, 12.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 20.0, 13.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 20.0, 14.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 20.0, 15.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 20.0, 17.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 20.0, 18.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 20.0, 0.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 21.0, 1.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 21.0, 2.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 21.0, 4.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 21.0, 5.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.8,
+				"scale": 1.7999999523162842,
 				"position": [ 21.0, 6.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 3.1,
+				"scale": 3.0999999046325684,
 				"position": [ 21.0, 7.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 21.0, 13.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 21.0, 14.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 2.4,
+				"scale": 2.4000000953674316,
 				"position": [ 21.0, 15.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 21.0, 16.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 21.0, 17.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 22.0, 1.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 22.0, 3.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.9,
+				"scale": 1.899999976158142,
 				"position": [ 22.0, 5.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 1.1,
+				"scale": 1.100000023841858,
 				"position": [ 22.0, 7.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 3.4,
+				"scale": 3.4000000953674316,
 				"position": [ 22.0, 11.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 2.1,
+				"scale": 2.0999999046325684,
 				"position": [ 22.0, 17.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 3.1,
+				"scale": 3.0999999046325684,
 				"position": [ -2.0, -6.0 ]
 			},
 			{
@@ -3720,37 +3707,37 @@
 			},
 			{
 				"type": "forest",
-				"scale": 2.3,
+				"scale": 2.299999952316284,
 				"position": [ 0.0, 18.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 2.7,
+				"scale": 2.700000047683716,
 				"position": [ 1.0, 18.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 2.1,
+				"scale": 2.0999999046325684,
 				"position": [ 5.0, 18.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 2.9,
+				"scale": 2.9000000953674316,
 				"position": [ 3.0, 18.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 2.6,
+				"scale": 2.5999999046325684,
 				"position": [ 7.0, 18.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 2.4,
+				"scale": 2.4000000953674316,
 				"position": [ 9.0, 18.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 2.6,
+				"scale": 2.5999999046325684,
 				"position": [ 11.0, 18.0 ]
 			},
 			{
@@ -3760,37 +3747,37 @@
 			},
 			{
 				"type": "forest",
-				"scale": 3.2,
+				"scale": 3.200000047683716,
 				"position": [ 15.0, 18.5 ]
 			},
 			{
 				"type": "forest",
-				"scale": 2.7,
+				"scale": 2.700000047683716,
 				"position": [ 17.0, 18.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 2.4,
+				"scale": 2.4000000953674316,
 				"position": [ 19.0, 18.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 2.8,
+				"scale": 2.799999952316284,
 				"position": [ 0.0, 21.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 2.6,
+				"scale": 2.5999999046325684,
 				"position": [ 1.0, 21.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 2.9,
+				"scale": 2.9000000953674316,
 				"position": [ 5.0, 21.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 2.3,
+				"scale": 2.299999952316284,
 				"position": [ 3.0, 21.0 ]
 			},
 			{
@@ -3800,32 +3787,32 @@
 			},
 			{
 				"type": "forest",
-				"scale": 2.8,
+				"scale": 2.799999952316284,
 				"position": [ 9.0, 21.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 2.7,
+				"scale": 2.700000047683716,
 				"position": [ 11.0, 21.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 2.9,
+				"scale": 2.9000000953674316,
 				"position": [ 13.0, 21.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 3.1,
+				"scale": 3.0999999046325684,
 				"position": [ 15.0, 21.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 2.8,
+				"scale": 2.799999952316284,
 				"position": [ 17.0, 21.0 ]
 			},
 			{
 				"type": "forest",
-				"scale": 2.6,
+				"scale": 2.5999999046325684,
 				"position": [ 19.0, 21.0 ]
 			}
 		]

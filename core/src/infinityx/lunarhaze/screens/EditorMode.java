@@ -1841,7 +1841,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         io.setIniFilename(null);
 
         // Set up the font
-        FileHandle fontFileHandle = Gdx.files.internal("assets/shared/LibreBaskerville-Regular.ttf");
+        FileHandle fontFileHandle = Gdx.files.internal("shared/LibreBaskerville-Regular.ttf");
         byte[] fontData = fontFileHandle.readBytes();
         ImFont imFont = io.getFonts().addFontFromMemoryTTF(fontData, 20);
         io.setFontDefault(imFont);

@@ -61,7 +61,7 @@ public enum PlayerState implements State<PlayerController> {
             direction = entity.player.direction;
             entity.player.setStealth(entity.WALK_STEALTH);
             setTexture(entity, "walk");
-            entity.player.texUpdate = 0.1f;
+            entity.player.texUpdate = 0.12f;
         }
 
         @Override
