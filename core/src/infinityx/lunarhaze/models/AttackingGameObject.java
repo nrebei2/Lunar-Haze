@@ -1,5 +1,6 @@
 package infinityx.lunarhaze.models;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
@@ -137,7 +138,13 @@ public abstract class AttackingGameObject extends GameObject {
         float attackRange = hitboxInfo.getFloat("range");
         // width is defaulted to the entity's body diameter
         float attackWidth = hitboxInfo.has("width") ? hitboxInfo.getFloat("width") : getBoundingRadius() * 2;
-        createAttackHitbox(container.getWorld(), new Vector2(attackRange, attackWidth));
+
+        // Create the hitbox
+        attackHitbox = new AttackHitbox(new Vector2(attackRange, attackWidth), this);
+        attackHitbox.initialize(directory, hitboxInfo, container);
+        attackHitbox.activatePhysics(container.getWorld());
+        attackHitbox.setActive(false);
+        attackHitbox.texUpdate = 0.16f;
     }
 
     /**
@@ -166,18 +173,6 @@ public abstract class AttackingGameObject extends GameObject {
     }
 
     /**
-     * Creates a new rectangle hitbox that is parented to this entity
-     *
-     * @param world       Box2D world to store body
-     * @param initialSize width and height of hitbox
-     */
-    private void createAttackHitbox(World world, Vector2 initialSize) {
-        attackHitbox = new AttackHitbox(initialSize, this);
-        attackHitbox.activatePhysics(world);
-        attackHitbox.setActive(false);
-    }
-
-    /**
      * @return reach of attack hitbox in world length
      */
     public float getAttackRange() {
@@ -199,6 +194,7 @@ public abstract class AttackingGameObject extends GameObject {
     public void setAttacking(boolean value) {
         isAttacking = value;
         attackHitbox.setActive(value);
+        attackHitbox.getTexture().setFrame(0);
     }
 
     public boolean isAttacking() {
@@ -225,7 +221,6 @@ public abstract class AttackingGameObject extends GameObject {
     public void update(float delta) {
         super.update(delta);
         canMove = !isAttacking && !lockedOut;
-        attackHitbox.setHitboxRange(getAttackRange());
 
         // Update counters for immunity and lockout
         if (isImmune) {
