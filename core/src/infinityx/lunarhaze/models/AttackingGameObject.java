@@ -127,7 +127,7 @@ public abstract class AttackingGameObject extends GameObject {
         attackHitbox.initialize(directory, hitboxInfo, container);
         attackHitbox.activatePhysics(container.getWorld());
         attackHitbox.setActive(false);
-        attackHitbox.texUpdate = 0.f;
+        attackHitbox.texUpdate = 0.16f;
     }
 
     /**
