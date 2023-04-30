@@ -47,7 +47,15 @@
       "lockout": 0.5,
       "hitbox": {
         "range": 1,
-        "width": 1
+        "width": 1,
+        "textures": {
+          "hitbox": "werewolf.attack-effect"
+        },
+        "texture": {
+          "name": "hitbox",
+          "origin": [280, 440],
+          "scale": 0.5
+        }
       }
     }
   },
