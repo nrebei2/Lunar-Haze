@@ -913,7 +913,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             canvas.end();
         }
 
-        ImGui.showDemoWindow();
+        //ImGui.showDemoWindow();
 
         ImGui.render();
         imGuiGl.renderDrawData(ImGui.getDrawData());
@@ -1410,6 +1410,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         if (ImGui.beginPopup("Overwrite Level?")) {
             ImGui.text("Level already exists! Overwrite?");
             if (ImGui.button("Yes")) {
+                removeSelectedObject();
                 saveLevel(level, directory, saveLevel.get(), true);
                 showOverwritePrompt = false;
                 ImGui.closeCurrentPopup();
@@ -1450,6 +1451,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             ImGui.spacing();
             if (ImGui.menuItem("Test")) {
                 if (canSave()) {
+                    removeSelectedObject();
                     LevelSerializer.saveLevel(level, directory, 0, true);
                     observer.exitScreen(this, GO_PLAY);
                 } else {

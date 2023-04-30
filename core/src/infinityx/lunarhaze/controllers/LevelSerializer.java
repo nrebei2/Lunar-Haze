@@ -294,15 +294,15 @@ public class LevelSerializer {
 
         // Add levels in sorted order
         for (JsonValue child : cachedChildren) {
-            int keyComparison = levelIndexStr.compareTo(child.name);
+            int curLevel = Integer.valueOf(child.name);
 
-            if (keyComparison == 0) {
+            if (level == curLevel) {
                 // If key already exists, overwrite the value
                 // Safe since at this point we are forcing
                 updatedLevels.addChild(child.name, newLevel);
                 levelInserted = true;
                 continue;
-            } else if (keyComparison < 0 && !levelInserted) {
+            } else if (level < curLevel && !levelInserted) {
                 // Insert the new level before the current child
                 updatedLevels.addChild(levelIndexStr, newLevel);
                 levelInserted = true;
