@@ -100,6 +100,7 @@ public class CollisionController implements ContactListener {
      * @param attacked The entity that was attacked
      */
     private void handleCollision(AttackingGameObject attacker, AttackingGameObject attacked) {
+        if (attacker == attacked) return;
         boolean immune = attacked.isImmune();
         if (!immune) {
             // Immunity frames for being attacked and when attacking
@@ -113,7 +114,6 @@ public class CollisionController implements ContactListener {
 
             attacked.hp -= attacker.attackDamage;
             if (attacked.hp < 0) attacked.hp = 0;
-
 
             CameraShake.shake(attacker.attackKnockback * 3f, 0.3f);
             if (attacked.getType() == GameObject.ObjectType.WEREWOLF)
