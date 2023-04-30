@@ -243,6 +243,8 @@ public class LevelContainer {
     public Enemy addEnemy(Enemy enemy) {
         activeEnemies.add(enemy);
         addDrawables(enemy);
+        addDrawables(enemy.getAttackHitbox());
+
         // Update enemy controller assigned to the new enemy
         getEnemyControllers().get(enemy).populate(this);
         alert_sound = this.getDirectory().getEntry("alerted", Sound.class);
@@ -396,6 +398,7 @@ public class LevelContainer {
      */
     public void setPlayer(Werewolf player) {
         drawables.add(player);
+        drawables.add(player.getAttackHitbox());
         this.player = player;
     }
 
@@ -569,10 +572,12 @@ public class LevelContainer {
                 getEnemyControllers().get(e).drawGizmo(canvas);
             }
             canvas.end();
+
+            canvas.begin(GameCanvas.DrawPass.SPRITE, view.x, view.y);
+            player.getAttackHitbox().draw(canvas);
+            canvas.end();
         }
-        canvas.begin(GameCanvas.DrawPass.SHAPE, view.x, view.y);
-        player.getAttackHitbox().drawAttack(canvas);
-        canvas.end();
+
     }
 
     /**

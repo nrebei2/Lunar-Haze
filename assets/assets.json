@@ -233,6 +233,18 @@
     "werewolf.idle-f": "images/player/front_still.png",
 
     "werewolf": {
+      "file": 	"images/player/werewolf-attack.png",
+      "wrap":  	false,
+      "sprites":	{
+        "attack-effect" : {
+          "size" : 3,
+          "rows" : 1,
+          "cols" : 3
+        }
+      }
+    },
+
+    "werewolf": {
       "file": 	"images/player/walk_spritesheet_left.png",
       "wrap":  	false,
       "sprites":	{

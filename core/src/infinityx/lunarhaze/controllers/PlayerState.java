@@ -179,19 +179,15 @@ public enum PlayerState implements State<PlayerController> {
         switch (entity.player.direction) {
             case UP:
                 entity.player.setTexture(name + "-b");
-                entity.player.getAttackHitbox().setTexture("attack-b");
                 break;
             case DOWN:
                 entity.player.setTexture(name + "-f");
-                entity.player.getAttackHitbox().setTexture("attack-f");
                 break;
             case LEFT:
                 entity.player.setTexture(name + "-l");
-                entity.player.getAttackHitbox().setTexture("attack-l");
                 break;
             case RIGHT:
                 entity.player.setTexture(name + "-r");
-                entity.player.getAttackHitbox().setTexture("attack-r");
                 break;
         }
     }

@@ -121,7 +121,13 @@ public abstract class AttackingGameObject extends GameObject {
         float attackRange = hitboxInfo.getFloat("range");
         // width is defaulted to the entity's body diameter
         float attackWidth = hitboxInfo.has("width") ? hitboxInfo.getFloat("width") : getBoundingRadius() * 2;
-        createAttackHitbox(container.getWorld(), new Vector2(attackRange, attackWidth), directory);
+
+        // Create the hitbox
+        attackHitbox = new AttackHitbox(new Vector2(attackRange, attackWidth), this);
+        attackHitbox.initialize(directory, hitboxInfo, container);
+        attackHitbox.activatePhysics(container.getWorld());
+        attackHitbox.setActive(false);
+        attackHitbox.texUpdate = 0.f;
     }
 
     /**
@@ -149,19 +155,6 @@ public abstract class AttackingGameObject extends GameObject {
     }
 
     /**
-     * Creates a new rectangle hitbox that is parented to this entity
-     *
-     * @param world       Box2D world to store body
-     * @param initialSize width and height of hitbox
-     */
-    private void createAttackHitbox(World world, Vector2 initialSize, AssetDirectory directory) {
-        attackHitbox = new AttackHitbox(initialSize, this);
-        attackHitbox.activatePhysics(world);
-        attackHitbox.setActive(false);
-        attackHitbox.setTexture("attack-f");
-    }
-
-    /**
      * @return reach of attack hitbox in world length
      */
     public float getAttackRange() {
@@ -183,6 +176,7 @@ public abstract class AttackingGameObject extends GameObject {
     public void setAttacking(boolean value) {
         isAttacking = value;
         attackHitbox.setActive(value);
+        attackHitbox.getTexture().setFrame(0);
     }
 
     public boolean isAttacking() {
@@ -197,7 +191,6 @@ public abstract class AttackingGameObject extends GameObject {
     public void update(float delta) {
         super.update(delta);
         canMove = !isAttacking && !lockedOut;
-        attackHitbox.setHitboxRange(getAttackRange());
 
         // Update counters for immunity and lockout
         if (isImmune) {
