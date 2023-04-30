@@ -238,7 +238,8 @@ public class GameplayController {
             if (player.hp <= 0) gameState = GameState.OVER;
         }
         // Enemies should still update even when game is outside play
-        resolveEnemies(delta);
+        if (!(phase == Phase.TRANSITION || phase == Phase.ALLOCATE)) {resolveEnemies(delta);}
+
 
         // TODO: for convenience, remove later
         if (Gdx.input.isKeyPressed(Input.Keys.PERIOD)) {
