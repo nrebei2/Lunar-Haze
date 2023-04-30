@@ -117,6 +117,7 @@ public class CollisionController implements ContactListener {
 
             CameraShake.shake(attacker.attackKnockback * 3f, 0.3f);
             if (attacked.getType() == GameObject.ObjectType.WEREWOLF)
+                attacked.setAttacked();
                 ScreenFlash.flash(new Color(1f, 0.2f, 0.2f, 1), 0.15f, 0.05f, 0.05f, 0.15f);
         }
     }

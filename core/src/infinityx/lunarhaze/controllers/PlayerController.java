@@ -135,6 +135,10 @@ public class PlayerController {
         return player.isAttacking();
     }
 
+    public boolean isAttacked() {
+        return player.isAttacked();
+    }
+
     public int getNumPowerPress() {
         return numPowerPress;
     }
