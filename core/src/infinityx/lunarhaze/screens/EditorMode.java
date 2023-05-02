@@ -18,10 +18,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import imgui.*;
-import imgui.flag.ImDrawFlags;
-import imgui.flag.ImGuiCol;
-import imgui.flag.ImGuiCond;
-import imgui.flag.ImGuiMouseButton;
+import imgui.flag.*;
 import imgui.glfw.ImGuiImplGlfw;
 import imgui.type.ImBoolean;
 import imgui.type.ImInt;
@@ -126,7 +123,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
          * Enum specifying the type of the selected object.
          */
         public enum Type {
-            TILE, PLAYER, ENEMY, OBJECT, MOONLIGHT
+            TILE, PLAYER, ENEMY, OBJECT, EXIST_ENEMY, EXIST_OBJECT, MOONLIGHT
         }
 
         /**
@@ -199,6 +196,24 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         }
     }
 
+    /**
+     * The user has selected an existing enemy in the scene
+     */
+    class ExistingEnemy extends Selected {
+        public ExistingEnemy(Enemy enemy) {
+            this.enemy = enemy;
+        }
+
+        /**
+         * wrapped enemy
+         */
+        public Enemy enemy;
+
+        @Override
+        public Type getType() {
+            return Type.EXIST_ENEMY;
+        }
+    }
 
     /**
      * Holds the necessary information to place an object
@@ -216,6 +231,25 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         @Override
         public Type getType() {
             return Type.OBJECT;
+        }
+    }
+
+    /**
+     * The user has selected an existing object in the scene
+     */
+    class ExistingObject extends Selected {
+        public ExistingObject(SceneObject object) {
+            this.object = object;
+        }
+
+        /**
+         * Wrapped object
+         */
+        public SceneObject object;
+
+        @Override
+        public Type getType() {
+            return Type.EXIST_OBJECT;
         }
     }
 
@@ -652,6 +686,12 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     private void removeSelection() {
         if (selected == null) return;
         switch (selected.getType()) {
+            case EXIST_ENEMY:
+                ((ExistingEnemy) selected).enemy.setTint(Color.WHITE);
+                break;
+            case EXIST_OBJECT:
+                ((ExistingObject) selected).object.setTint(Color.WHITE);
+                break;
             case ENEMY:
                 level.removeEnemy(((EnemySelection) selected).enemy);
                 break;
@@ -845,18 +885,17 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         @Override
         public boolean reportFixture(Fixture fixture) {
             GameObject hit = (GameObject) fixture.getBody().getUserData();
-            if (hit.getType() == GameObject.ObjectType.WEREWOLF)
-                return false;
 
             switch (hit.getType()) {
                 case ENEMY:
-                    selected = new EnemySelection((Enemy) hit);
+                    selected = new ExistingEnemy((Enemy) hit);
                     break;
                 case WEREWOLF:
                     selected = new Player();
+                    playerPlaced = false;
                     break;
                 case SCENE:
-                    selected = new ObjectSelection((SceneObject) hit);
+                    selected = new ExistingObject((SceneObject) hit);
             }
 
             hit.setTint(SELECTED_COLOR);
@@ -870,6 +909,10 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     private GameObject getSelectedObject() {
         if (selected == null) return null;
         switch (selected.getType()) {
+            case EXIST_OBJECT:
+                return ((ExistingObject) selected).object;
+            case EXIST_ENEMY:
+                return ((ExistingEnemy) selected).enemy;
             case ENEMY:
                 return ((EnemySelection) selected).enemy;
             case OBJECT:
@@ -1162,15 +1205,26 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         if (selected == null) {
             return false;
         }
-        if (selected.getType() == Selected.Type.TILE) {
-            int boardX = board.worldToBoardX(mouseWorld.x);
-            int boardY = board.worldToBoardY(mouseWorld.y);
 
-            if (!mouseBoard.epsilonEquals(boardX, boardY) || !board.hasPreview()) {
-                // mouse is on different tile now
-                mouseBoard.set(boardX, boardY);
-                placeTile();
-            }
+        switch (selected.getType()) {
+            case EXIST_OBJECT:
+                ((ExistingObject) selected).object.setPosition(mouseWorld.x, mouseWorld.y);
+                break;
+            case EXIST_ENEMY:
+                ((ExistingEnemy) selected).enemy.setPosition(mouseWorld.x, mouseWorld.y);
+                break;
+            case TILE:
+                int boardX = board.worldToBoardX(mouseWorld.x);
+                int boardY = board.worldToBoardY(mouseWorld.y);
+
+                if (!mouseBoard.epsilonEquals(boardX, boardY) || !board.hasPreview()) {
+                    // mouse is on different tile now
+                    mouseBoard.set(boardX, boardY);
+                    placeTile();
+                }
+                break;
+            default:
+                break;
         }
         return true;
     }
@@ -1235,12 +1289,18 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     @Override
     public boolean scrolled(float amountX, float amountY) {
         if (level == null) return false;
-        if (ImGui.getIO().getWantCaptureMouse()) return false;
+        if (ImGui.getIO().getWantCaptureMouse() || selected == null) return false;
         if (selected.getType() == Selected.Type.OBJECT) {
             // Update the scale to the selected object
             float delta = 0.02f * amountY;
             objectScale[0] += delta;
             ((ObjectSelection) selected).object.setScale(objectScale[0]);
+        }
+        if (selected.getType() == Selected.Type.EXIST_OBJECT) {
+            // Update the scale to the selected object
+            float delta = 0.02f * amountY;
+            objectScale[0] += delta;
+            ((ExistingObject) selected).object.setScale(objectScale[0]);
         }
         return false;
     }
@@ -1328,10 +1388,14 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         float windowWidth = 300;
         // Set the window position and size
         ImGui.setNextWindowPos(ImGui.getIO().getDisplaySizeX() - windowWidth - 50, 50, ImGuiCond.FirstUseEver);
-        ImGui.setNextWindowSize(windowWidth, 500, ImGuiCond.FirstUseEver);
+        ImGui.setNextWindowSize(windowWidth, 550, ImGuiCond.FirstUseEver);
 
         if (ImGui.begin("Scene")) {
             GameObject selectedObject = getSelectedObject();
+
+            if (selectedObject != null && selectedObject.getType() == GameObject.ObjectType.ENEMY)
+                ImGui.setNextItemOpen(true);
+
             // Enemies dropdown
             if (ImGui.collapsingHeader("Enemies")) {
                 int i = 0;
@@ -1340,15 +1404,17 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
                     if (enemy == selectedObject) {
                         ImGui.setNextItemOpen(true, ImGuiCond.Always);
+                        ImGui.pushStyleColor(ImGuiCol.Text, 0.2f, 0.6f, 1.0f, 1.0f);
                     }
                     if (ImGui.treeNode("Enemy " + (i + 1))) {
                         if (enemy == selectedObject) {
                             ImGui.setScrollHereY();
-                        }
-                        if (ImGui.isItemHovered()) {
-                            enemy.setTint(SELECTED_COLOR);
                         } else {
-                            enemy.setTint(Color.WHITE);
+                            if (ImGui.isItemHovered()) {
+                                enemy.setTint(SELECTED_COLOR);
+                            } else {
+                                enemy.setTint(Color.WHITE);
+                            }
                         }
                         // Position
                         float[] posX = new float[]{enemy.getX()};
@@ -1378,10 +1444,17 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                         }
                     }
 
+                    if (enemy == selectedObject) {
+                        ImGui.popStyleColor();
+                    }
+
                     ImGui.popID();
                     i++;
                 }
             }
+
+            if (selectedObject != null && selectedObject.getType() == GameObject.ObjectType.SCENE)
+                ImGui.setNextItemOpen(true);
 
             // Objects dropdown
             if (ImGui.collapsingHeader("Objects")) {
@@ -1390,15 +1463,18 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                     ImGui.pushID(i);
                     if (object == selectedObject) {
                         ImGui.setNextItemOpen(true, ImGuiCond.Always);
+                        ImGui.pushStyleColor(ImGuiCol.Text, 0.2f, 0.6f, 1.0f, 1.0f);
                     }
                     if (ImGui.treeNode("Object " + (i + 1) + "   ")) {
                         if (object == selectedObject) {
                             ImGui.setScrollHereY();
-                        }
-                        if (ImGui.isItemHovered()) {
-                            object.setTint(SELECTED_COLOR);
                         } else {
-                            object.setTint(Color.WHITE);
+                            // Selected object should always be tinted with SELECTED_COLOR
+                            if (ImGui.isItemHovered()) {
+                                object.setTint(SELECTED_COLOR);
+                            } else {
+                                object.setTint(Color.WHITE);
+                            }
                         }
                         // Position
                         float[] posX = new float[]{object.getX()};
@@ -1426,6 +1502,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                         } else {
                             object.setTint(Color.WHITE);
                         }
+                    }
+                    if (object == selectedObject) {
+                        ImGui.popStyleColor();
                     }
 
                     ImGui.sameLine();
@@ -1610,7 +1689,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 ImGui.tableNextColumn();
                 ImGui.text("Escape");
                 ImGui.tableNextColumn();
-                ImGui.text("Remove selection");
+                ImGui.text("Stop selecting item");
 
                 ImGui.tableNextColumn();
                 ImGui.text("Q");
