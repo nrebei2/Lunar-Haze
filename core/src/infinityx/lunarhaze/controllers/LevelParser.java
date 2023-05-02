@@ -11,6 +11,7 @@ import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.models.Board;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.Tile;
+import infinityx.lunarhaze.models.entity.Enemy;
 import infinityx.util.FilmStrip;
 import infinityx.util.PatrolRegion;
 
@@ -143,12 +144,15 @@ public class LevelParser {
 
             float[] patrolInfo = enemyInfo.get("patrol").asFloatArray();
 
-            levelContainer.addEnemy(
+            Enemy newEnemy = levelContainer.addEnemy(
                     enemyInfo.getString("type"),
                     enemyPos.getFloat(0),
                     enemyPos.getFloat(1),
                     new PatrolRegion(patrolInfo[0], patrolInfo[1], patrolInfo[2], patrolInfo[3])
             );
+
+            if (enemyInfo.has("scale"))
+                newEnemy.setScale(enemyInfo.getFloat("scale"));
 
             curId++;
         }

@@ -107,6 +107,9 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
     public void reset() {
         hp = maxHp;
         detection = Detection.NONE;
+        tint.set(Color.WHITE);
+        setScale(1);
+        loop = true;
     }
 
     /**

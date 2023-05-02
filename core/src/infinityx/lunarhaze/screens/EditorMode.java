@@ -36,8 +36,6 @@ import infinityx.util.FilmStrip;
 import infinityx.util.PatrolRegion;
 import infinityx.util.ScreenObservable;
 
-import java.util.ArrayList;
-
 import static infinityx.lunarhaze.controllers.LevelSerializer.saveLevel;
 
 /**
@@ -106,7 +104,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     /**
      * List of moonlight point lights placed on level (for modifying color after placing lights)
      */
-    private ArrayList<PointLight> pointLights;
+    private Array<PointLight> pointLights;
 
     /**
      * Background texture for the editor
@@ -495,7 +493,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
     public EditorMode(GameCanvas canvas) {
         this.canvas = canvas;
-        pointLights = new ArrayList<>();
+        pointLights = new Array<>();
         objectSelections = new Array<>();
         enemySelections = new Array<>();
     }
@@ -624,7 +622,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 mouseWorld.x + 1, mouseWorld.y + 1
         );
 
-        return level.addEnemy(enemySelection.enemy.getName(), mouseWorld.x, mouseWorld.y, initialRegion);
+        Enemy newEnemy = level.addEnemy(enemySelection.enemy.getName(), mouseWorld.x, mouseWorld.y, initialRegion);
+        newEnemy.setScale(enemySelection.enemy.getScale());
+        return newEnemy;
     }
 
     /**
@@ -1430,9 +1430,13 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
                         // Remove button
                         if (ImGui.button("Remove")) {
-                            level.removeEnemy(enemy);
-                            doneActions.add(new RemoveObject(enemy));
-                            undoneActions.clear();
+                            if (enemy == selectedObject) {
+                                removeSelection();
+                            } else {
+                                level.removeEnemy(enemy);
+                                doneActions.add(new RemoveObject(enemy));
+                                undoneActions.clear();
+                            }
                         }
 
                         ImGui.treePop();
@@ -1490,9 +1494,13 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
                         // Remove button
                         if (ImGui.button("Remove")) {
-                            level.removeSceneObject(object);
-                            doneActions.add(new RemoveObject(object));
-                            undoneActions.clear();
+                            if (object == selectedObject) {
+                                removeSelection();
+                            } else {
+                                level.removeSceneObject(object);
+                                doneActions.add(new RemoveObject(object));
+                                undoneActions.clear();
+                            }
                         }
 
                         ImGui.treePop();
@@ -1605,7 +1613,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         // Create a slider for the scale of the object
         if (ImGui.sliderFloat("Object Scale", objectScale, 0.1f, 5.0f)) {
             // Apply the scale to the selected object when the slider is moved
-            if (selected.getType() == Selected.Type.OBJECT) {
+            if (selected != null && selected.getType() == Selected.Type.OBJECT) {
                 SceneObject selectedObj = ((ObjectSelection) selected).object;
                 selectedObj.setScale(objectScale[0]);
             }
@@ -1857,7 +1865,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             // Iterate through enemies and create options for menu
             for (int i = 0; i < level.getEnemies().size; i++) {
                 infinityx.lunarhaze.models.entity.Enemy enemy = level.getEnemies().get(i);
-                if (selected.getType() == Selected.Type.ENEMY) {
+                if (selected != null && selected.getType() == Selected.Type.ENEMY) {
                     if (enemy == ((EnemySelection) selected).enemy) continue;
                 }
                 if (ImGui.menuItem("Show Enemy " + i + " Menu")) {
@@ -2201,6 +2209,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                         mouseWorld.x, mouseWorld.y,
                         new PatrolRegion(0, 0, 0, 0)
                 );
+                removeSelection();
                 selected = new EnemySelection(newEnemy);
 
                 newEnemy.setTint(SELECTED_COLOR);
