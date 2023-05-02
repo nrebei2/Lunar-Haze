@@ -48,7 +48,7 @@ public class UIRender {
     /**
      * Distance between bars
      */
-    private final float GAP_DIST = 20f;
+    private final float GAP_DIST = 25f;
 
     /**
      * Top stroke width
@@ -73,7 +73,7 @@ public class UIRender {
     /**
      * Health stroke (located at top left corner) height
      */
-    private final static float HEALTH_STROKE_HEIGHT = 45f;
+    private final static float HEALTH_STROKE_HEIGHT = 50f;
 
     /**
      * Moonlight stroke (located at bottom left corner) width
@@ -98,7 +98,7 @@ public class UIRender {
     /**
      * Width of stroke background for attack power and range
      */
-    private final static float SQUARE_STROKE_WIDTH = 60.0f;
+    private final static float SQUARE_STROKE_WIDTH = 75.0f;
 
     /**
      * Height of moon center as a percentage of transition screen before rise
@@ -564,9 +564,9 @@ public class UIRender {
         } else {
             text = "Enemies Remaining";
             int remaining = gameplayController.getRemainingEnemies();
-            stat = remaining + "";
+            stat = "   " + remaining;
         }
-        canvas.drawText(text, UIFont_small, canvas.getWidth() / 2 - UIFont_small.getAscent() * text.length() * 2, canvas.getHeight() - HEALTH_STROKE_HEIGHT * 0.7f);
+        canvas.drawText(text, UIFont_small, canvas.getWidth() / 2 - UIFont_small.getAscent() * text.length() * 1.8f, canvas.getHeight() - HEALTH_STROKE_HEIGHT * 0.7f);
         canvas.drawText(stat, UIFont_small,
                 canvas.getWidth() / 2 - UIFont_small.getAscent() * 7,
                 canvas.getHeight() - HEALTH_STROKE_HEIGHT * 2 + UIFont_small.getCapHeight() * 2.5f);
@@ -700,7 +700,7 @@ public class UIRender {
         canvas.draw(attack_ran_icon, Color.WHITE,
                 attack_ran_icon.getWidth() / 2, attack_ran_icon.getHeight() / 2,
                 stroke_width + SQUARE_STROKE_WIDTH * 2 + GAP_DIST,
-                canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f,
+                canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.5f,
                 0, 1.0f, 1.0f);
         canvas.drawText(pc.getNumRangePress() + "", UIFont_small,
                 stroke_width + SQUARE_STROKE_WIDTH * 2 + attack_pow_icon.getWidth() / 2 + GAP_DIST,
