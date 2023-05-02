@@ -165,7 +165,7 @@ public class TacticalManager implements Telegraph {
      * helper method for determining if an enemy is behind the player (greater than 90 degrees)
      */
     public boolean isBehind(Enemy enemy, Werewolf target) {
-        Vector2 target_to_enemy = enemy.getPosition().sub(target.getPosition());
+        Vector2 target_to_enemy = enemy.getPosition().sub(target.getPosition()).nor();
         double dot = target_to_enemy.x * Math.cos(target.getOrientation()) + target_to_enemy.y * Math.sin(target.getOrientation());
 
         return dot < 0;

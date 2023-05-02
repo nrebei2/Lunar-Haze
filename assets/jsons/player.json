@@ -18,7 +18,7 @@
   "restitution": 0.0,
   "damping": 6.0,
   "speed": {
-    "walk": 1.6,
+    "walk": 1.8,
     "run": 2
   },
   "textures": {
