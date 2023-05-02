@@ -197,7 +197,6 @@ public class Board {
     }
 
 
-
     /**
      * Returns the board cell index for a world y-position.
      *
@@ -566,7 +565,7 @@ public class Board {
      * @param t_x The x tile index
      */
     public boolean inBoundsTileX(int t_x, float w_x) {
-        return w_x >= tileWorldDim.x * t_x && w_x <= (tileWorldDim.x + 1) * t_x;
+        return w_x >= tileWorldDim.x * t_x && w_x <= tileWorldDim.x * (t_x + 1);
     }
 
     /**
@@ -576,7 +575,7 @@ public class Board {
      * @param t_y The y tile index
      */
     public boolean inBoundsTileY(int t_y, float w_y) {
-        return w_y >= tileWorldDim.y * t_y && w_y <= (tileWorldDim.y + 1) * t_y;
+        return w_y >= tileWorldDim.y * t_y && w_y <= tileWorldDim.y * (t_y + 1);
     }
 
 

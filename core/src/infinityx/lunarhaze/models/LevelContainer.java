@@ -144,7 +144,9 @@ public class LevelContainer {
      */
     private float phaseLength;
 
-    /** Settings for this level */
+    /**
+     * Settings for this level
+     */
     private Settings battleSettings;
 
     /**
@@ -276,9 +278,9 @@ public class LevelContainer {
     /**
      * Adds an enemy to the level with no patrol region.
      *
-     * @param type   type of Enemy to append to enemy list (e.g. villager)
-     * @param x      world x-position
-     * @param y      world y-position
+     * @param type type of Enemy to append to enemy list (e.g. villager)
+     * @param x    world x-position
+     * @param y    world y-position
      * @return Enemy added
      */
     public Enemy addEnemy(String type, float x, float y) {
@@ -539,6 +541,9 @@ public class LevelContainer {
         for (Drawable d : drawables) {
             d.draw(canvas);
         }
+
+        // The scene objects rendered before the player (behind) should not become transparent
+        canvas.playerCoords.set(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
 
         // Flush information to the graphic buffer.
         canvas.end();

@@ -5,7 +5,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
 import infinityx.lunarhaze.ai.TacticalManager;
 import infinityx.lunarhaze.models.Board;
@@ -238,7 +237,9 @@ public class GameplayController {
             if (player.hp <= 0) gameState = GameState.OVER;
         }
         // Enemies should still update even when game is outside play
-        if (!(phase == Phase.TRANSITION || phase == Phase.ALLOCATE)) {resolveEnemies(delta);}
+        if (!(phase == Phase.TRANSITION || phase == Phase.ALLOCATE)) {
+            resolveEnemies(delta);
+        }
 
 
         // TODO: for convenience, remove later

@@ -72,7 +72,7 @@ public class LevelSerializer {
         enemySpawner.addChild("delay", new JsonValue(level.getSettings().getDelay()));
 
         JsonValue spawnLocations = new JsonValue(JsonValue.ValueType.array);
-        for (Vector2 loc: level.getSettings().getSpawnLocations()) {
+        for (Vector2 loc : level.getSettings().getSpawnLocations()) {
             JsonValue location = new JsonValue(JsonValue.ValueType.array);
             location.addChild(new JsonValue(loc.x));
             location.addChild(new JsonValue(loc.y));

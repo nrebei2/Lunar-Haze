@@ -18,11 +18,12 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import imgui.*;
-import imgui.flag.*;
+import imgui.flag.ImDrawFlags;
+import imgui.flag.ImGuiCol;
+import imgui.flag.ImGuiCond;
+import imgui.flag.ImGuiMouseButton;
 import imgui.glfw.ImGuiImplGlfw;
-import imgui.internal.ImGuiWindow;
 import imgui.type.ImBoolean;
-import imgui.type.ImFloat;
 import imgui.type.ImInt;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.controllers.LevelParser;
@@ -86,7 +87,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     /**
      * Whether to display the File->New popup to select board size
      */
-    private ImBoolean showNewBoardWindow;
+    private ImBoolean showNewBoardWindow = new ImBoolean();
 
     /**
      * Whether to display the error when you cannot save
@@ -239,7 +240,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
          */
         public enum Type {
             MOONLIGHT,
-            OBJECT
+            ADD_OBJECT,
+            REMOVE_OBJECT
         }
 
         /**
@@ -269,7 +271,28 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
         @Override
         public Type getType() {
-            return Type.OBJECT;
+            return Type.ADD_OBJECT;
+        }
+    }
+
+    /**
+     * Represents an action for removing an object.
+     */
+    public static class RemoveObject extends Action {
+        public GameObject gameObject;
+
+        /**
+         * Constructs a RemoveObject action with the given GameObject.
+         *
+         * @param gameObject A GameObject that was removed.
+         */
+        public RemoveObject(GameObject gameObject) {
+            this.gameObject = gameObject;
+        }
+
+        @Override
+        public Type getType() {
+            return Type.REMOVE_OBJECT;
         }
     }
 
@@ -307,6 +330,11 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * Tint for textures before placement
      */
     public static final Color SELECTED_COLOR = new Color(0.5f, 0.5f, 0.5f, 0.9f);
+
+    /**
+     * Tint for textures for overlapping
+     */
+    public static final Color OVERLAPPED_COLOR = Color.RED.cpy().mul(1, 1, 1, 0.8f);
 
     /**
      * Holds world coordinates of cursor
@@ -363,6 +391,11 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * Whether the selected object is currently overlapping an existing object
      */
     boolean overlapped;
+
+    /**
+     * Whether the selected scene object is currently overlapping a player or enemy
+     */
+    boolean sceneOverlap;
 
     /**
      * When false, display the stealth ambient lighting, when true, display the battle ambient lighting
@@ -472,6 +505,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 (int) mouseBoard.x, (int) mouseBoard.y,
                 curr.num
         );
+
         // Sets the tile type for serialization
         board.setTileType((int) mouseBoard.x, (int) mouseBoard.y, infinityx.lunarhaze.models.Tile.TileType.Road);
     }
@@ -483,7 +517,14 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * placeSceneObject(), etc.).
      */
     private void placeSelection() {
-        if (overlapped) return;
+        if (selected.getType() == Selected.Type.OBJECT) {
+            // Allow the user to place scene objects over each other
+            // But not on enemies or players
+            if (sceneOverlap)
+                return;
+        } else if (overlapped)
+            return;
+
         switch (selected.getType()) {
             case TILE:
                 board.removePreview();
@@ -540,26 +581,34 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     private void placeMoonlightTile() {
         int x = (int) mouseBoard.x;
         int y = (int) mouseBoard.y;
-        if (!board.isLit(x, y)) {
-            // PointLight logic
-            PointLight light = new PointLight(
-                    level.getRayHandler(),
-                    40,
-                    new Color(moonlightLighting[0], moonlightLighting[1], moonlightLighting[2], moonlightLighting[3]),
-                    2.5f, board.boardCenterToWorldX(x), board.boardCenterToWorldY(y)
-            );
 
-            light.setSoft(true);
-            board.setSpotlight(x, y, light);
-            pointLights.add(light);
-
-            // Set board tile to lit
-            board.setLit(x, y, true);
+        if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
+            if (!board.isLit(x, y)) return;
+            board.setLit(x, y, false);
             // So moonlightTiles in board can update
-            board.setCollectable(x, y, true);
-            // Perform action
-            doneActions.add(new PlaceMoonlight(x, y));
-            undoneActions.clear();
+            board.setCollectable(x, y, false);
+        } else {
+            if (!board.isLit(x, y)) {
+                // PointLight logic
+                PointLight light = new PointLight(
+                        level.getRayHandler(),
+                        40,
+                        new Color(moonlightLighting[0], moonlightLighting[1], moonlightLighting[2], moonlightLighting[3]),
+                        2.5f, board.boardCenterToWorldX(x), board.boardCenterToWorldY(y)
+                );
+
+                light.setSoft(true);
+                board.setSpotlight(x, y, light);
+                pointLights.add(light);
+
+                // Set board tile to lit
+                board.setLit(x, y, true);
+                // So moonlightTiles in board can update
+                board.setCollectable(x, y, true);
+                // Perform action
+                doneActions.add(new PlaceMoonlight(x, y));
+                undoneActions.clear();
+            }
         }
     }
 
@@ -647,7 +696,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                     PlaceMoonlight act = (PlaceMoonlight) lastAction;
                     board.setLit(act.x, act.y, false);
                     break;
-                case OBJECT:
+                case ADD_OBJECT:
                     GameObject obj = ((PlaceObject) lastAction).gameObject;
                     switch (obj.getType()) {
                         case ENEMY:
@@ -657,6 +706,18 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                             level.removeSceneObject((infinityx.lunarhaze.models.entity.SceneObject) obj);
                             break;
                     }
+                    break;
+                case REMOVE_OBJECT:
+                    GameObject removedObj = ((RemoveObject) lastAction).gameObject;
+                    switch (removedObj.getType()) {
+                        case ENEMY:
+                            level.addEnemy((infinityx.lunarhaze.models.entity.Enemy) removedObj);
+                            break;
+                        case SCENE:
+                            level.addSceneObject((infinityx.lunarhaze.models.entity.SceneObject) removedObj);
+                            break;
+                    }
+                    break;
             }
             undoneActions.add(lastAction);
         }
@@ -673,7 +734,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                     PlaceMoonlight act = (PlaceMoonlight) lastUndoneAction;
                     board.setLit(act.x, act.y, true);
                     break;
-                case OBJECT:
+                case ADD_OBJECT:
                     GameObject obj = ((PlaceObject) lastUndoneAction).gameObject;
                     switch (obj.getType()) {
                         case ENEMY:
@@ -683,17 +744,21 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                             level.addSceneObject((infinityx.lunarhaze.models.entity.SceneObject) obj);
                             break;
                     }
+                    break;
+                case REMOVE_OBJECT:
+                    GameObject removedObj = ((RemoveObject) lastUndoneAction).gameObject;
+                    switch (removedObj.getType()) {
+                        case ENEMY:
+                            level.removeEnemy((infinityx.lunarhaze.models.entity.Enemy) removedObj);
+                            break;
+                        case SCENE:
+                            level.removeSceneObject((infinityx.lunarhaze.models.entity.SceneObject) removedObj);
+                            break;
+                    }
+                    break;
             }
             doneActions.add(lastUndoneAction);
         }
-    }
-
-
-    /**
-     * Tests the level using the Board and LevelContainer references. Switches screens to GameMode.
-     */
-    private void testLevel() {
-        observer.exitScreen(this, GO_PLAY);
     }
 
     /**
@@ -769,6 +834,24 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     };
 
     /**
+     * Callback for scene used to determine {@link #overlapped} and {@link #sceneOverlap}
+     */
+    QueryCallback sceneCallback = new QueryCallback() {
+        @Override
+        public boolean reportFixture(Fixture fixture) {
+            if (fixture.getBody().getUserData() == selectedObject) return true;
+            GameObject hit = (GameObject) fixture.getBody().getUserData();
+            if (hit.getType() == GameObject.ObjectType.ENEMY || hit.getType() == GameObject.ObjectType.WEREWOLF) {
+                sceneOverlap = true;
+                overlapped = true;
+                return false;
+            }
+            overlapped = true;
+            return true;
+        }
+    };
+
+    /**
      * Update the status of this editor mode.
      * <p>
      *
@@ -778,14 +861,17 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         if (level == null) return;
         level.getWorld().step(delta, 6, 2);
         overlapped = false;
+        sceneOverlap = false;
 
         // Determine if selected object is overlapping
         // I was forced to do this instead of contact listener since the scene objects are static
         if (selectedObject != null) {
             getAABB(selectedObject.getShapeInformation("body").fixture, lowerCache, upperCache);
-            level.getWorld().QueryAABB(queryCallback, lowerCache.x, lowerCache.y, upperCache.x, upperCache.y);
+            if (selectedObject.getType() == GameObject.ObjectType.SCENE) {
+                level.getWorld().QueryAABB(sceneCallback, lowerCache.x, lowerCache.y, upperCache.x, upperCache.y);
+            } else {
+                level.getWorld().QueryAABB(queryCallback, lowerCache.x, lowerCache.y, upperCache.x, upperCache.y);
 
-            if (selectedObject.getType() == GameObject.ObjectType.WEREWOLF || selectedObject.getType() == GameObject.ObjectType.ENEMY) {
                 // Don't place werewolf or enemy outside board
                 if (!board.inBoundsWorld(selectedObject.getX(), selectedObject.getY())) {
                     overlapped = true;
@@ -793,12 +879,14 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             }
             // Change tint of object depending on overlapping
             if (overlapped) {
-                selectedObject.setTint(Color.RED);
+                selectedObject.setTint(OVERLAPPED_COLOR);
             } else {
                 selectedObject.setTint(SELECTED_COLOR);
             }
         }
+        changed = true;
 
+        if (ImGui.getIO().getWantCaptureKeyboard()) return;
         // Zoom in and out with arrow keys
         if (Gdx.input.isKeyPressed(Input.Keys.EQUALS)) {
             canvas.setZoom(canvas.getZoom() + 0.01f);
@@ -806,9 +894,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         if (Gdx.input.isKeyPressed(Input.Keys.MINUS)) {
             canvas.setZoom(canvas.getZoom() - 0.01f);
         }
-        changed = true;
 
-        if (ImGui.getIO().getWantCaptureMouse()) return;
         // Move world with arrow keys
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             level.translateView(-20, 0);
@@ -875,6 +961,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         }
         ImGui.end();
 
+        createSceneMenu();
+
         // Position window right below Selection
         ImGui.setNextWindowPos(ImGui.getWindowPosX(), ImGui.getWindowPosY() + 300, ImGuiCond.FirstUseEver);
         ImGui.setNextWindowSize(800, 175, ImGuiCond.FirstUseEver);
@@ -924,7 +1012,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     public void show() {
         boardSize = new int[]{10, 10};
         objectScale = new float[]{1};
-        showNewBoardWindow = new ImBoolean(level == null);
+        showNewBoardWindow.set(level == null);
         showCannotSaveError = false;
         showEnemyControllerWindow.set(false);
         showBattleLighting = false;
@@ -1187,6 +1275,132 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     // IMGUI FUNCTIONS
 
     /**
+     * Creates the ImGui "Scene" menu containing dropdowns for enemies and objects in the level.
+     *
+     * The enemies dropdown lists all enemies, allowing the user to modify their position, scale,
+     * and remove them from the level. The objects dropdown lists all scene objects, providing options
+     * to modify their position, scale, visibility, and remove them from the level.
+     *
+     * This function also handles the hover effect on enemies and objects, changing their tint color
+     * when hovered over in the ImGui menu.
+     */
+    private void createSceneMenu() {
+        float windowWidth = 300;
+        // Set the window position and size
+        ImGui.setNextWindowPos(ImGui.getIO().getDisplaySizeX() - windowWidth - 50, 50, ImGuiCond.FirstUseEver);
+        ImGui.setNextWindowSize(windowWidth, 500, ImGuiCond.FirstUseEver);
+
+        if (ImGui.begin("Scene")) {
+            // Enemies dropdown
+            if (ImGui.collapsingHeader("Enemies")) {
+                int i = 0;
+                for (infinityx.lunarhaze.models.entity.Enemy enemy : level.getEnemies()) {
+                    if (enemy == selectedObject) continue;
+                    ImGui.pushID(i);
+
+                    if (ImGui.treeNode("Enemy " + (i + 1))) {
+                        if (ImGui.isItemHovered()) {
+                            enemy.setTint(SELECTED_COLOR);
+                        } else {
+                            enemy.setTint(Color.WHITE);
+                        }
+                        // Position
+                        float[] posX = new float[]{enemy.getX()};
+                        float[] posY = new float[]{enemy.getY()};
+                        ImGui.dragFloat("X", posX, 0.05f, 0, board.getWorldWidth());
+                        ImGui.dragFloat("Y", posY, 0.05f, 0, board.getWorldHeight());
+                        enemy.setPosition(posX[0], posY[0]);
+
+                        // Scale
+                        float[] scale = new float[]{enemy.getScale()};
+                        ImGui.dragFloat("Scale", scale, 0.01f);
+                        enemy.setScale(scale[0]);
+
+                        // Remove button
+                        if (ImGui.button("Remove")) {
+                            level.removeEnemy(enemy);
+                            doneActions.add(new RemoveObject(enemy));
+                            undoneActions.clear();
+                        }
+
+                        ImGui.treePop();
+                    } else {
+                        if (ImGui.isItemHovered()) {
+                            enemy.setTint(SELECTED_COLOR);
+                        } else {
+                            enemy.setTint(Color.WHITE);
+                        }
+                    }
+
+                    ImGui.popID();
+                    i++;
+                }
+            }
+
+            // Objects dropdown
+            if (ImGui.collapsingHeader("Objects")) {
+                int i = 0;
+                for (infinityx.lunarhaze.models.entity.SceneObject object : level.getSceneObjects()) {
+                    if (object == selectedObject) continue;
+                    ImGui.pushID(i);
+
+                    if (ImGui.treeNode("Object " + (i + 1) + "   ")) {
+                        if (ImGui.isItemHovered()) {
+                            object.setTint(SELECTED_COLOR);
+                        } else {
+                            object.setTint(Color.WHITE);
+                        }
+                        // Position
+                        float[] posX = new float[]{object.getX()};
+                        float[] posY = new float[]{object.getY()};
+                        ImGui.dragFloat("X", posX, 0.05f);
+                        ImGui.dragFloat("Y", posY, 0.05f);
+                        object.setPosition(posX[0], posY[0]);
+
+                        // Scale
+                        float[] scale = new float[]{object.getScale()};
+                        ImGui.dragFloat("Scale", scale, 0.01f);
+                        object.setScale(scale[0]);
+
+                        // Remove button
+                        if (ImGui.button("Remove")) {
+                            level.removeSceneObject(object);
+                            doneActions.add(new RemoveObject(object));
+                            undoneActions.clear();
+                        }
+
+                        ImGui.treePop();
+                    } else {
+                        if (ImGui.isItemHovered()) {
+                            object.setTint(SELECTED_COLOR);
+                        } else {
+                            object.setTint(Color.WHITE);
+                        }
+                    }
+
+                    ImGui.sameLine();
+
+                    // Visibility
+                    ImBoolean visible = new ImBoolean(!object.isDestroyed());
+                    if (ImGui.checkbox("Visible", visible)) {
+                        if (!visible.get())
+                            object.setDestroyed(true);
+                        else {
+                            level.addDrawables(object);
+                            object.setDestroyed(false);
+                        }
+                    }
+
+                    ImGui.popID();
+                    i++;
+                }
+            }
+
+            ImGui.end();
+        }
+    }
+
+    /**
      * Popup window for tile selection using ImGui
      */
     private void createTileMenu() {
@@ -1269,7 +1483,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     }
 
     /**
-     * Toolbar at top of window with File, Edit, Enemy, Objects, View
+     * Toolbar at top of window with File, Edit, Enemy, View, Settings, and Controls menu
      */
     private void createToolbar() {
         if (ImGui.beginMainMenuBar()) {
@@ -1279,7 +1493,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             createViewMenu();
             createSettingsMenu();
             createControlsMenu();
-
 
             ImGui.endMainMenuBar();
         }
@@ -1421,7 +1634,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
 
     /**
-     * File menu with New, Save, Load, Test and Exit
+     * File menu with New, Save, Test and Quit items
      */
     private void createFileMenu() {
         if (ImGui.beginMenu("   File   ")) {
@@ -1458,7 +1671,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             ImGui.spacing();
 
             if (ImGui.menuItem("Quit")) {
-               observer.exitScreen(this, GO_MENU);
+                observer.exitScreen(this, GO_MENU);
             }
             ImGui.endMenu();
         }
@@ -1586,11 +1799,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         ImGui.end();
     }
 
-    /** Cache for spawn location button */
-    ImFloat x = new ImFloat();
-    ImFloat y = new ImFloat();
-
-
     // Used in drawSettings to keep one tree node open at a time
     private int nodeToClose, currentNode = -1;
 
@@ -1635,11 +1843,11 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                     ImGui.text("Position Editor:");
                     ImGui.spacing();
 
-                    ImGui.beginChild("Position Editor (Click and drag to move location)", 300, 300, false);
 
-                    // Invisible button for input handling
                     float height = 300;
-                    float width = (float)board.getWidth() / board.getHeight() * height;
+                    float width = (float) board.getWidth() / board.getHeight() * height;
+                    ImGui.beginChild("Position Editor (Click and drag to move location)", width, height, false);
+                    // Invisible button for input handling
                     ImGui.invisibleButton("##positionButton", width, height);
 
                     float worldToWindowX = width / board.getWorldWidth();
@@ -1649,7 +1857,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                     // Translate spawn world position to mouse coordinates
                     ImGui.getWindowDrawList().addRect(
                             ImGui.getItemRectMinX() + spawnLocation.x * worldToWindowX - 20,
-                             ImGui.getItemRectMinY() + height - spawnLocation.y * worldToWindowY - 10,
+                            ImGui.getItemRectMinY() + height - spawnLocation.y * worldToWindowY - 10,
                             ImGui.getItemRectMinX() + spawnLocation.x * worldToWindowX + 20,
                             ImGui.getItemRectMinY() + height - spawnLocation.y * worldToWindowY + 10,
                             ImGui.getColorU32(1, 1, 1, 1));
@@ -1675,11 +1883,13 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                     drawList.addRect(
                             childWindowPos.x - 5,
                             childWindowPos.y - 5,
-                            childWindowPos.x + 305,
-                            childWindowPos.y + 305,
+                            childWindowPos.x + width + 5,
+                            childWindowPos.y + height + 5,
                             ImGui.getColorU32(1, 0.514f, 0.376f, 1),
                             0, ImDrawFlags.None, 10
                     );
+
+                    ImGui.spacing();
 
                     ImGui.pushItemWidth(120);
                     ImGui.text("Edit Position Manually:");
@@ -1726,7 +1936,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
         if (ImGui.isItemHovered()) {
             ImGui.beginTooltip();
-            ImGui.text("The total number of new enemies that spawn during the battle phase");
+            ImGui.text("The total number of new enemies that will spawn during the battle phase");
             ImGui.endTooltip();
         }
 
@@ -1738,7 +1948,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
         if (ImGui.isItemHovered()) {
             ImGui.beginTooltip();
-            ImGui.text("The spawner will spawn an enemy, then waits for Min to Max seconds before spawning a new one.");
+            ImGui.text("The spawner will spawn an enemy, then waits for a random time between Min to Max seconds before spawning a new one");
             ImGui.endTooltip();
         }
 
@@ -1816,6 +2026,12 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         if (ImGui.button("Moonlight")) {
             removeSelectedObject();
             selected = new Moonlight();
+        }
+
+        if (ImGui.isItemHovered()) {
+            ImGui.beginTooltip();
+            ImGui.text("Hold Left-Control to remove");
+            ImGui.endTooltip();
         }
 
         ImGui.sameLine();
@@ -1960,28 +2176,28 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         style.setColor(ImGuiCol.NavWindowingDimBg, 1.00f, 0.00f, 0.00f, 0.20f);
         style.setColor(ImGuiCol.ModalWindowDimBg, 1.00f, 0.00f, 0.00f, 0.35f);
 
-        style.setWindowPadding                     (8.00f, 8.00f);
-        style.setFramePadding                      (5.00f, 2.00f);
-        style.setCellPadding                       (6.00f, 6.00f);
-        style.setItemSpacing                       (6.00f, 6.00f);
-        style.setItemInnerSpacing                  (6.00f, 6.00f);
-        style.setTouchExtraPadding                 (0.00f, 0.00f);
-        style.setIndentSpacing                     (25);
-        style.setScrollbarSize                     (15);
-        style.setGrabMinSize                       (10);
-        style.setWindowBorderSize                  (1);
-        style.setChildBorderSize                   (1);
-        style.setPopupBorderSize                   (1);
-        style.setFrameBorderSize                   (1);
-        style.setTabBorderSize                     (1);
-        style.setWindowRounding                    (7);
-        style.setChildRounding                     (4);
-        style.setFrameRounding                     (3);
-        style.setPopupRounding                     (4);
-        style.setScrollbarRounding                 (9);
-        style.setGrabRounding                      (3);
-        style.setLogSliderDeadzone                 (4);
-        style.setTabRounding                       (4);
+        style.setWindowPadding(8.00f, 8.00f);
+        style.setFramePadding(5.00f, 2.00f);
+        style.setCellPadding(6.00f, 6.00f);
+        style.setItemSpacing(6.00f, 6.00f);
+        style.setItemInnerSpacing(6.00f, 6.00f);
+        style.setTouchExtraPadding(0.00f, 0.00f);
+        style.setIndentSpacing(25);
+        style.setScrollbarSize(15);
+        style.setGrabMinSize(10);
+        style.setWindowBorderSize(1);
+        style.setChildBorderSize(1);
+        style.setPopupBorderSize(1);
+        style.setFrameBorderSize(1);
+        style.setTabBorderSize(1);
+        style.setWindowRounding(7);
+        style.setChildRounding(4);
+        style.setFrameRounding(3);
+        style.setPopupRounding(4);
+        style.setScrollbarRounding(9);
+        style.setGrabRounding(3);
+        style.setLogSliderDeadzone(4);
+        style.setTabRounding(4);
 
         imGuiGlfw.init(windowHandle, true);
         imGuiGl.init("#version 110");

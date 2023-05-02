@@ -22,9 +22,9 @@ public enum PlayerState implements State<PlayerController> {
             // Handle state transitions
             if (entity.isAttacking()) {
                 entity.getStateMachine().changeState(PlayerState.ATTACK);
-            }else if (entity.isAttacked()){
+            } else if (entity.isAttacked()) {
                 entity.getStateMachine().changeState(PlayerState.ATTACKED);
-            }  else if (entity.isCollectingMoonlight()) {
+            } else if (entity.isCollectingMoonlight()) {
                 entity.getStateMachine().changeState(PlayerState.COLLECT);
             } else if (entity.player.isRunning()) {
                 entity.getStateMachine().changeState(PlayerState.RUN);
@@ -69,7 +69,7 @@ public enum PlayerState implements State<PlayerController> {
             // Handle state transitions
             if (entity.isAttacking()) {
                 entity.getStateMachine().changeState(PlayerState.ATTACK);
-            } else if (entity.isAttacked()){
+            } else if (entity.isAttacked()) {
                 entity.getStateMachine().changeState(PlayerState.ATTACKED);
             } else if (entity.player.getLinearVelocity().isZero()) {
                 entity.getStateMachine().changeState(PlayerState.IDLE);
@@ -103,7 +103,7 @@ public enum PlayerState implements State<PlayerController> {
             // Handle state transitions
             if (entity.isAttacking()) {
                 entity.getStateMachine().changeState(PlayerState.ATTACK);
-            } else if (entity.isAttacked()){
+            } else if (entity.isAttacked()) {
                 entity.getStateMachine().changeState(PlayerState.ATTACKED);
             } else if (entity.player.getLinearVelocity().isZero()) {
                 entity.getStateMachine().changeState(PlayerState.IDLE);
@@ -149,7 +149,7 @@ public enum PlayerState implements State<PlayerController> {
             // Handle state transitions
             if (entity.isAttacking()) {
                 entity.getStateMachine().changeState(PlayerState.ATTACK);
-            } else if (entity.isAttacked()){
+            } else if (entity.isAttacked()) {
                 entity.getStateMachine().changeState(PlayerState.ATTACKED);
             } else if (!entity.isCollectingMoonlight()) {
                 entity.getStateMachine().changeState(PlayerState.IDLE);

@@ -14,7 +14,6 @@ import infinityx.lunarhaze.controllers.EnemyState;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.entity.Enemy;
 import infinityx.lunarhaze.models.entity.Werewolf;
-import org.lwjgl.system.MathUtil;
 
 import java.util.Random;
 
@@ -90,7 +89,7 @@ public class TacticalManager implements Telegraph {
 //                control.strafe.setEnabled(false);
 //                control.attack.setEnabled(true);
             }
-            if (isBehind(control.getEnemy(), target)){
+            if (isBehind(control.getEnemy(), target)) {
                 Vector2 flankingPosition = target.getPosition();
                 MessageManager.getInstance().dispatchMessage(null, enemy, FLANK, flankingPosition);
             }
@@ -160,8 +159,12 @@ public class TacticalManager implements Telegraph {
 
         return x * sin + y * cos;
 
-    }/** helper method for determining if an enemy is behind the player (greater than 90 degrees)*/
-    public boolean isBehind(Enemy enemy, Werewolf target){
+    }
+
+    /**
+     * helper method for determining if an enemy is behind the player (greater than 90 degrees)
+     */
+    public boolean isBehind(Enemy enemy, Werewolf target) {
         Vector2 target_to_enemy = enemy.getPosition().sub(target.getPosition());
         double dot = target_to_enemy.x * Math.cos(target.getOrientation()) + target_to_enemy.y * Math.sin(target.getOrientation());
 
