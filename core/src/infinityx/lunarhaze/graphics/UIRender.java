@@ -510,24 +510,23 @@ public class UIRender {
         }
 
         // TODO: Need to draw this correctly
-        int filledHeight =  (int) (dash_bar.getHeight() * percentage); // Get half of the texture height
-        float unfilledHeight = (int) (dash_bar.getHeight() * (1 - percentage));
+        int filledHeight =  (int) (dash_bar.getHeight() * percentage);
+        int unfilledHeight = (int) (dash_bar.getHeight() * (1 - percentage));
+        float screen_height_filled = height * percentage;
+        float screen_height_unfilled = height * (1 - percentage);
         TextureRegion dash_bar_lower = new TextureRegion(dash_bar_all_filled,
-                0, dash_bar.getHeight(),
+                0, unfilledHeight,
                 dash_bar.getWidth(), filledHeight);
-        System.out.println("Width: " + dash_bar_lower.getRegionWidth());
-        System.out.println("Height: " + dash_bar_lower.getRegionHeight());
-        System.out.println("X: " + dash_bar_lower.getRegionX());
-        System.out.println("Y: " + dash_bar_lower.getRegionY());
         canvas.draw(dash_bar_lower, alphaTint,
-                BAR_HEIGHT * 3, canvas.getHeight() / 2 - height / 2,
-                DASH_ICON_SIZE, DASH_ICON_SIZE * percentage);
+                BAR_HEIGHT * 4, canvas.getHeight() / 2 - BAR_HEIGHT/2,
+                DASH_ICON_SIZE, screen_height_filled);
 
-        TextureRegion dash_bar_upper = new TextureRegion(dash_bar);
-        dash_bar_upper.setRegion(0, 0, dash_bar.getWidth(), unfilledHeight);
+        TextureRegion dash_bar_upper = new TextureRegion(dash_bar,
+                0, 0,
+                dash_bar.getWidth(), unfilledHeight);
         canvas.draw(dash_bar_upper, alphaTint,
-                BAR_HEIGHT * 3, canvas.getHeight() / 2 - height / 2 + filledHeight,
-                DASH_ICON_SIZE, DASH_ICON_SIZE * (1 - percentage));
+                BAR_HEIGHT * 4, canvas.getHeight() / 2 - BAR_HEIGHT/2 + screen_height_filled,
+                DASH_ICON_SIZE, screen_height_unfilled);
     }
 
     /**
