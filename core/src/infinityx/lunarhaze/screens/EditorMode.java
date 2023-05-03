@@ -1171,7 +1171,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             // mouse is on different tile now
             mouseBoard.set(boardX, boardY);
         }
-        if (selected == null) {
+        if (selected == null || selected.getType() == Selected.Type.EXIST_OBJECT || selected.getType() == Selected.Type.EXIST_ENEMY) {
+            removeSelection();
             // select object
             level.getWorld().QueryAABB(
                     selectCallback,
