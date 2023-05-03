@@ -313,7 +313,9 @@ public class GameCanvas {
             return;
         }
         shapeRenderer.dispose();
-        shaderRenderer.dispose();
+        if (shaderRenderer != null) {
+            shaderRenderer.dispose();
+        }
         spriteBatch.dispose();
         spriteBatch = null;
         shapeRenderer = null;

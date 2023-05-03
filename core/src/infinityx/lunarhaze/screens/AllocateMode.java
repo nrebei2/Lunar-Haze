@@ -340,20 +340,28 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
      * Update the status of this menu.
      */
     private void update(float delta) {
-        if (pressStateHp == 2 && hpCount <= 5) {
-            playerController.allocateHp();
+        if (pressStateHp == 2) {
             pressStateHp = 0;
-            hpCount++;
-        } else if (pressStateAttackPow == 2 && powerCount <= 5) {
-            playerController.allocateAttackPow();
+            if (hpCount < 5){
+                playerController.allocateHp();
+                hpCount++;
+            } else {
+                // TODO: show message CANNOT ALLOCATE MORE
+            }
+        } else if (pressStateAttackPow == 2) {
             pressStateAttackPow = 0;
-            powerCount++;
-            playerController.setNumPowerPress(powerCount);
-        } else if (pressStateAttackRan == 2 && rangeCount <= 5) {
-            playerController.allocateAttackRange();
+            if (powerCount < 5){
+                playerController.allocateAttackPow();
+                powerCount++;
+                playerController.setNumPowerPress(powerCount);
+            }
+        } else if (pressStateAttackRan == 2) {
             pressStateAttackRan = 0;
-            rangeCount++;
-            playerController.setNumRangePress(rangeCount);
+            if (rangeCount < 5){
+                playerController.allocateAttackRange();
+                rangeCount++;
+                playerController.setNumRangePress(rangeCount);
+            }
         }
         if (playerController.getPlayer().getMoonlightCollected() <= 0 && observer != null) {
             active = false;
@@ -434,7 +442,8 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
             Texture currButton = addHpButton;
             buttonCenterY = centerY0;
             icon = health_all;
-            stat = (int) playerController.getPlayer().hp;
+//            stat = (int) playerController.getPlayer().hp;
+            stat = hpCount;
         }
 
         canvas.drawText( " " + stat, UIFont_small,

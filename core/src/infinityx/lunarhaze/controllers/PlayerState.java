@@ -13,7 +13,11 @@ public enum PlayerState implements State<PlayerController> {
     IDLE() {
         @Override
         public void enter(PlayerController entity) {
-            entity.player.setStealth(entity.STILL_STEALTH);
+            if (entity.getPlayer().isOnMoonlight){
+                entity.player.setStealth(entity.MOON_STEALTH);
+            } else {
+                entity.player.setStealth(entity.STILL_STEALTH);
+            }
             setTexture(entity, "idle");
         }
 
@@ -59,7 +63,6 @@ public enum PlayerState implements State<PlayerController> {
         @Override
         public void enter(PlayerController entity) {
             direction = entity.player.direction;
-            entity.player.setStealth(entity.WALK_STEALTH);
             setTexture(entity, "walk");
             entity.player.texUpdate = 0.13f;
         }
@@ -75,6 +78,12 @@ public enum PlayerState implements State<PlayerController> {
                 entity.getStateMachine().changeState(PlayerState.IDLE);
             } else if (entity.player.isRunning()) {
                 entity.getStateMachine().changeState(PlayerState.RUN);
+            }
+
+            if (entity.getPlayer().isOnMoonlight){
+                entity.player.setStealth(entity.MOON_STEALTH);
+            } else {
+                entity.player.setStealth(entity.WALK_STEALTH);
             }
 
             // Animations
