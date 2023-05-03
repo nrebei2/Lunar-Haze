@@ -73,6 +73,7 @@ public abstract class AttackHandler {
         if (attackCounter >= entity.attackLength) {
             endAttack();
         }
+        entity.getAttackHitbox().update(delta);
     }
 
     /**

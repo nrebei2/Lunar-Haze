@@ -26,12 +26,14 @@ package infinityx.lunarhaze.models;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.physics.MultiShapeObstacle;
+import infinityx.lunarhaze.screens.EditorMode;
 import infinityx.util.Drawable;
 import infinityx.util.FilmStrip;
 
@@ -94,7 +96,12 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
     /**
      * The tint applied to the texture when drawing
      */
-    private Color tint = Color.WHITE;
+    protected Color tint;
+
+    /**
+     * Whether the filmstrip should loop when updating
+     */
+    protected boolean loop;
 
     /**
      * Creates game object at (0, 0)
@@ -115,6 +122,8 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
         super(x, y);
         filmstrips = new HashMap<>();
         this.origin = new Vector2();
+        this.loop = true;
+        this.tint = new Color(Color.WHITE);
     }
 
     /**
@@ -125,10 +134,8 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
      * @param container LevelContainer which this player is placed in
      */
     public void initialize(AssetDirectory directory, JsonValue json, LevelContainer container) {
-        // TODO: bother with error checking?
-
         // Box2D body info
-        String bodyType = json.get("bodytype").asString();
+        String bodyType = json.has("bodytype") ? json.get("bodytype").asString() : "static";
         if (bodyType.equals("static")) {
             setBodyType(BodyDef.BodyType.StaticBody);
         } else if (bodyType.equals("dynamic")) {
@@ -138,31 +145,37 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
         } else {
             setBodyType(BodyDef.BodyType.StaticBody);
         }
-        setLinearDamping(json.get("damping").asFloat());
-        setDensity(json.get("density").asFloat());
-        setFriction(json.get("friction").asFloat());
-        setRestitution(json.get("restitution").asFloat());
-        JsonValue textures = json.get("textures");
+        if (getBodyType() != BodyDef.BodyType.StaticBody) {
+            setLinearDamping(json.has("damping") ? json.get("damping").asFloat() : 0);
+            setDensity(json.get("density").asFloat());
+            setFriction(json.get("friction").asFloat());
+            setRestitution(json.get("restitution").asFloat());
+        }
+        // Otherwise just use defaults, static bodies don't move anyway
 
         // Texture info
-        for (JsonValue tex : textures) {
-            if (directory.hasEntry(tex.asString(), FilmStrip.class)) {
-                filmstrips.put(tex.name(), directory.getEntry(tex.asString(), FilmStrip.class));
-            } else {
-                // If the texture is not a filmstrip, assume it's a single texture
-                filmstrips.put(tex.name(), new FilmStrip(directory.getEntry(tex.asString(), Texture.class), 1, 1));
+        JsonValue textures = json.get("textures");
+        if (textures != null) {
+            for (JsonValue tex : textures) {
+                if (directory.hasEntry(tex.asString(), FilmStrip.class)) {
+                    filmstrips.put(tex.name(), directory.getEntry(tex.asString(), FilmStrip.class));
+                } else {
+                    // If the texture is not a filmstrip, assume it's a single texture
+                    filmstrips.put(tex.name(), new FilmStrip(directory.getEntry(tex.asString(), Texture.class), 1, 1));
+                }
             }
-        }
 
-        JsonValue texInfo = json.get("texture");
-        setTexture(texInfo.get("name").asString());
-        int[] texOrigin = texInfo.get("origin").asIntArray();
-        setOrigin(texOrigin[0], texOrigin[1]);
-        textureScale = texInfo.getFloat("scale");
-        texUpdate = -1;
+            JsonValue texInfo = json.get("texture");
+            setTexture(texInfo.get("name").asString());
+            int[] texOrigin = texInfo.get("origin").asIntArray();
+            setOrigin(texOrigin[0], texOrigin[1]);
+            textureScale = texInfo.getFloat("scale");
+            texUpdate = -1;
+        }
 
         // Shape collision info
         JsonValue p_dim = json.get("colliders");
+        if (p_dim == null) return;
         for (JsonValue coll : p_dim) {
             String name = coll.name();
 
@@ -189,9 +202,13 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
         return getShapeInformation("body").width / 2;
     }
 
+    public void setLoop(boolean loop) {
+        this.loop = loop;
+    }
+
     @Override
-    public void setDestroyed() {
-        this.destroyed = true;
+    public void setDestroyed(boolean destroyed) {
+        this.destroyed = destroyed;
     }
 
     @Override
@@ -200,7 +217,7 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
     }
 
     public void setTint(Color tint) {
-        this.tint = tint;
+        this.tint.set(tint);
     }
 
     /**
@@ -212,6 +229,7 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
         this.filmstrip = filmstrips.get(name);
         if (filmstrip == null) {
             Gdx.app.error("GameObject", "Could not find a texture with the name: " + name, new IllegalStateException());
+            Gdx.app.exit();
             return;
         }
         filmstrip.setFrame(0);
@@ -265,6 +283,8 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
      */
     public void update(float delta) {
         if (texUpdate == -1) return;
+        if (!loop && filmstrip.getFrame() == filmstrip.getSize() - 1) return;
+
         this.texTime += delta;
         if (filmstrip != null) {
             if (texTime >= texUpdate) {
@@ -276,6 +296,9 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
     }
 
     public float getDepth() {
+        // For level editor, force to draw above everything
+        if (tint.equals(EditorMode.SELECTED_COLOR) || tint.equals(EditorMode.OVERLAPPED_COLOR))
+            return Float.NEGATIVE_INFINITY;
         return this.getY();
     }
 

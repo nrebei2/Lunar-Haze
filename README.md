@@ -1,15 +1,15 @@
 # Lunar-Haze
 ## Game Control Lists:
-| Action | Key |
-| ------ | ---- | 
-| (From Main Menu) Go to Level Editor  |       L |
-| Move Up      |              W |
-| Move Down           |       S |
-| Move Left          |        A |
-| Move Right        |         D |
-| Run              |          Left_Shift |
-| Attack          |           Space |
-| Pause          |            ESC |
+| Action                              | Key |
+|-------------------------------------| ---- | 
+| (From Main Menu) Go to Level Editor |       L |
+| Move Up                             |              W |
+| Move Down                           |       S |
+| Move Left                           |        A |
+| Move Right                          |         D |
+| Dash                                |          Left_Shift |
+| Attack                              |           Space |
+| Pause                               |            ESC |
 
 ## Rules for the game:
 

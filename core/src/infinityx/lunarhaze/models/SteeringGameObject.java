@@ -80,7 +80,11 @@ public abstract class SteeringGameObject extends AttackingGameObject implements 
         // Update position and linear velocity.
         if (!steeringOutput.linear.isZero()) {
             // this method internally scales the force by deltaTime
-            body.applyForceToCenter(steeringOutput.linear, true);
+
+//            body.applyForceToCenter(steeringOutput.linear, true);
+            //using velocity
+            body.setLinearVelocity(steeringOutput.linear.x, steeringOutput.linear.y);
+
             anyAccelerations = true;
         }
 

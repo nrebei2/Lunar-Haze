@@ -3,6 +3,7 @@ package infinityx.lunarhaze;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.controllers.InputController;
 import infinityx.lunarhaze.controllers.LevelParser;
@@ -269,6 +270,16 @@ public class GDXRoot extends Game implements ScreenObserver {
                     game.setupLevel();
                     setScreen(game);
                     break;
+                case PauseMode.GO_EDITOR:
+                    editor.setLevel(
+                            LevelParser.LevelParser().loadLevel(
+                                    directory, directory.getEntry("levels", JsonValue.class).get(
+                                            String.valueOf(game.getLevel())
+                                    )
+                            )
+                    );
+                    setScreen(editor);
+                    break;
             }
         } else if (screen == allocate) {
             if (exitCode == AllocateMode.GO_PLAY) {
@@ -282,6 +293,8 @@ public class GDXRoot extends Game implements ScreenObserver {
             if (exitCode == EditorMode.GO_MENU) {
                 setScreen(menu);
             } else if (exitCode == EditorMode.GO_PLAY) {
+                // Really not necessary, could just move the levelContainer from editor to game
+                // But this works so whatever
                 game.setLevel(LevelSerializer.getMostRecent());
                 game.setupLevel();
                 setScreen(game);

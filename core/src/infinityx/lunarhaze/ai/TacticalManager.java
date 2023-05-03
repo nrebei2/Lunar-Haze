@@ -89,10 +89,10 @@ public class TacticalManager implements Telegraph {
 //                control.strafe.setEnabled(false);
 //                control.attack.setEnabled(true);
             }
-//            else{
-//                control.strafe.setEnabled(true);
-//                control.attack.setEnabled(false);
-//            }
+            if (isBehind(control.getEnemy(), target)) {
+                Vector2 flankingPosition = target.getPosition();
+                MessageManager.getInstance().dispatchMessage(null, enemy, FLANK, flankingPosition);
+            }
 
             i++;
         }
@@ -158,6 +158,17 @@ public class TacticalManager implements Telegraph {
         float sin = (float) Math.sin(radians);
 
         return x * sin + y * cos;
+
+    }
+
+    /**
+     * helper method for determining if an enemy is behind the player (greater than 90 degrees)
+     */
+    public boolean isBehind(Enemy enemy, Werewolf target) {
+        Vector2 target_to_enemy = enemy.getPosition().sub(target.getPosition()).nor();
+        double dot = target_to_enemy.x * Math.cos(target.getOrientation()) + target_to_enemy.y * Math.sin(target.getOrientation());
+
+        return dot < 0;
     }
 
     public static int ADD = 100;

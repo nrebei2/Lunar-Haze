@@ -5,7 +5,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
 import infinityx.lunarhaze.ai.TacticalManager;
 import infinityx.lunarhaze.models.Board;
@@ -85,11 +84,6 @@ public class GameplayController {
      * Owns the lighting controller
      */
     private LightingController lightingController;
-
-    /**
-     * Owns the enemy spawner, used for battle phase
-     */
-    private EnemySpawner enemySpawner;
 
     /**
      * Owns the player controller
@@ -175,15 +169,12 @@ public class GameplayController {
      * <p>
      *
      * @param levelContainer container holding model objects in level
-     * @param jsonValue      json value holding level layout
      */
-    public void start(LevelContainer levelContainer, JsonValue jsonValue) {
+    public void start(LevelContainer levelContainer) {
         this.gameState = GameState.PLAY;
         this.phase = Phase.STEALTH;
         this.container = levelContainer;
         this.collisionController = new CollisionController(levelContainer.getWorld());
-        this.enemySpawner = new EnemySpawner(levelContainer);
-        enemySpawner.initialize(jsonValue.get("settings").get("enemy-spawner"));
 
         lightingController = new LightingController(levelContainer);
 
@@ -191,7 +182,7 @@ public class GameplayController {
         player = levelContainer.getPlayer();
         this.playerController = new PlayerController(levelContainer, setting);
 
-        phaseTimer = levelContainer.getPhaseLength();
+        phaseTimer = levelContainer.getSettings().getPhaseLength();
         ambientLightTransitionTimer = 0;
 
         enemies = levelContainer.getEnemies();
@@ -246,7 +237,10 @@ public class GameplayController {
             if (player.hp <= 0) gameState = GameState.OVER;
         }
         // Enemies should still update even when game is outside play
-        resolveEnemies(delta);
+        if (!(phase == Phase.TRANSITION || phase == Phase.ALLOCATE)) {
+            resolveEnemies(delta);
+        }
+
 
         // TODO: for convenience, remove later
         if (Gdx.input.isKeyPressed(Input.Keys.PERIOD)) {
@@ -284,7 +278,7 @@ public class GameplayController {
      */
     public void switchPhase(float delta) {
         updateAmbientLight(delta);
-        if (ambientLightTransitionTimer >= container.getPhaseTransitionTime()) {
+        if (ambientLightTransitionTimer >= container.getSettings().getTransition()) {
             phase = Phase.ALLOCATE;
             for (int i = 0; i < enemies.size; i++) {
                 controls.get(enemies.get(i)).setInBattle(true);
@@ -298,9 +292,9 @@ public class GameplayController {
      * @param delta delta time
      */
     private void updateAmbientLight(float delta) {
-        if (ambientLightTransitionTimer < container.getPhaseTransitionTime()) {
+        if (ambientLightTransitionTimer < container.getSettings().getTransition()) {
             ambientLightTransitionTimer += delta;
-            float progress = Math.min(ambientLightTransitionTimer / container.getPhaseTransitionTime(), 1);
+            float progress = Math.min(ambientLightTransitionTimer / container.getSettings().getTransition(), 1);
 
             float[] startColor = container.getStealthAmbience();
             float[] endColor = container.getBattleAmbience();
@@ -323,7 +317,7 @@ public class GameplayController {
     public void resolveEnemies(float delta) {
         // add enemies during battle stage and in play
         if (getPhase() == Phase.BATTLE && gameState == GameState.PLAY) {
-            enemySpawner.update(battleTicks);
+            container.getEnemySpawner().update(delta);
             if (battleTicks % 60 == 0) {
                 tacticalManager.update();
             }

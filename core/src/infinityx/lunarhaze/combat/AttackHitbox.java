@@ -1,8 +1,8 @@
 package infinityx.lunarhaze.combat;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import infinityx.lunarhaze.graphics.GameCanvas;
@@ -17,11 +17,10 @@ import infinityx.lunarhaze.models.GameObject;
 public class AttackHitbox extends GameObject {
 
     /**
-     * The entity that initiated the attack and this hitbox is parented to
+     * The entity that initiated the attack and this hitbox is parented to.
+     * Needed for the collision controller.
      */
     private final AttackingGameObject attacker;
-
-    private final Color betaTint = new Color(255f / 255f, 255f / 255f, 255f / 255f, 0.2f);
 
     /**
      * @param initialSize holds initial reach and width of hitbox respectively
@@ -41,6 +40,8 @@ public class AttackHitbox extends GameObject {
                 new Vector2(attacker.getBoundingRadius() + initialSize.x / 2, 0),
                 0
         );
+
+        loop = false;
     }
 
     public AttackingGameObject getAttacker() {
@@ -54,7 +55,6 @@ public class AttackHitbox extends GameObject {
 
     @Override
     public boolean activatePhysics(World world) {
-        setBodyType(BodyDef.BodyType.DynamicBody);
         super.activatePhysics(world);
 
         // Enable better collision detection for fast-moving objects
@@ -72,12 +72,12 @@ public class AttackHitbox extends GameObject {
     }
 
     /**
-     * Updates the width of this hitbox
+     * Updates the range of this hitbox. The entire hitbox will be scaled, thus the width will be updated as well.
      *
      * @param range new range in world length
      */
     public void setHitboxRange(float range) {
-        resizeBox("body", range);
+        setScale(scale * range / getHitboxRange());
     }
 
     /**
@@ -86,10 +86,28 @@ public class AttackHitbox extends GameObject {
      * @param canvas canvas to draw on
      */
     public void drawHitbox(GameCanvas canvas) {
-        //System.out.printf("(x, y): (%f, %f)\n", canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y));
         canvas.drawPhysics((PolygonShape) getShapeInformation("body").shape, Color.RED,
                 getPosition().x, getPosition().y,
                 getAngle(), canvas.WorldToScreenX(1), canvas.WorldToScreenY(1)
         );
+    }
+
+    @Override
+    public float getDepth() {
+        // Must account offset from position
+        return super.getDepth() + MathUtils.sin(getAngle()) * getHitboxRange();
+    }
+
+    @Override
+    public void draw(GameCanvas canvas) {
+        // This is an OK solution
+        // Could remove/add from container but how many colliders are there going to be at a single time anyway?
+        if (!isActive()) {
+            return;
+        }
+        // Add 90 degrees since sprite is facing down
+        canvas.draw(filmstrip, tint, origin.x, origin.y,
+                canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y), getAngle() + MathUtils.PI / 2,
+                textureScale * scale, textureScale * scale);
     }
 }

@@ -87,7 +87,7 @@ public class LightingController {
                 dust.update(delta);
                 if (!dust.isDestroyed()) allDestroyed = false;
                 if (dust.inDestruction()) continue;
-                if (board.worldToBoardX(dust.getX()) != x || board.worldToBoardY(dust.getY()) != y) {
+                if (!board.inBoundsTileX(x, dust.getX()) || !board.inBoundsTileY(y, dust.getY())) {
                     dust.beginReset();
                 }
                 if (dust.shouldReset()) {

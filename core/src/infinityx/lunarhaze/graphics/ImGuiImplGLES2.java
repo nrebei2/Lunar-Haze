@@ -284,7 +284,7 @@ public class ImGuiImplGLES2 {
 
     private void createMesh() {
         // Safe bet for max Vertices/Indices
-        this.mesh = new Mesh(Mesh.VertexDataType.VertexArray, false, 1000, 1000 * 2,
+        this.mesh = new Mesh(Mesh.VertexDataType.VertexArray, false, 20000, 20000 * 2,
                 new VertexAttribute(VertexAttributes.Usage.Position, 2, "Position"),
                 new VertexAttribute(VertexAttributes.Usage.TextureCoordinates, 2, "UV"),
                 new VertexAttribute(VertexAttributes.Usage.ColorPacked, 4, "Color"));

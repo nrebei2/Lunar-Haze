@@ -103,7 +103,7 @@ public class GameCanvas {
     /**
      * Rendering context for drawing shapes
      */
-    public final ShapeRenderer shapeRenderer;
+    public ShapeRenderer shapeRenderer;
 
     /**
      * Rendering context for drawing shaders
@@ -175,6 +175,11 @@ public class GameCanvas {
     private float zoom;
 
     /**
+     * Screen coords of player, used to make scene objects transparent
+     */
+    public Vector2 playerCoords;
+
+    /**
      * Sets the scaling factor for the world to screen transformation
      *
      * @param worldToScreen x
@@ -198,6 +203,13 @@ public class GameCanvas {
 
     public float WorldToScreenY(float w_y) {
         return w_y * worldToScreen.y;
+    }
+
+    /**
+     * Scaling factors for world to screen translation. Use to map lengths, for positions use {@link #WorldToScreenX(float)} and Y
+     */
+    public Vector2 getWorldToScreen() {
+        return worldToScreen;
     }
 
     /**
@@ -243,6 +255,8 @@ public class GameCanvas {
         shapeRenderer.setProjectionMatrix(camera.combined);
         shaderRenderer.setProjectionMatrix(camera.combined);
 
+        playerCoords = new Vector2(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
+
         // Initialize the cache objects
         holder = new TextureRegion();
         local = new Affine2();
@@ -277,7 +291,7 @@ public class GameCanvas {
     }
 
     /**
-     * Updates the camera {@link #zoom}. Will force zoom to be positive.
+     * Updates the camera {@link #zoom}. Will clamp zoom to be positive.
      *
      * @param zoom the new camera zoom to set
      */
@@ -298,8 +312,12 @@ public class GameCanvas {
             Gdx.app.error("GameCanvas", "Cannot dispose while drawing active", new IllegalStateException());
             return;
         }
+        shapeRenderer.dispose();
+        shaderRenderer.dispose();
         spriteBatch.dispose();
         spriteBatch = null;
+        shapeRenderer = null;
+        shaderRenderer = null;
         local = null;
         global = null;
         holder = null;
@@ -1188,13 +1206,6 @@ public class GameCanvas {
         shapeRenderer.setColor(color);
         shapeRenderer.rect(x, y, width, height);
         shapeRenderer.end();
-    }
-
-    /**
-     * Draws a rectangle outline at the upper right corner
-     */
-    public void drawRecOutline(float width, float height) {
-        drawRecOutline(getWidth() - width, getHeight() - height * 4, width, height, Color.WHITE);
     }
 
     /**

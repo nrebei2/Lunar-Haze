@@ -1,12 +1,12 @@
 package infinityx.lunarhaze.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import infinityx.assets.AssetDirectory;
-import infinityx.lunarhaze.controllers.InputController;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.util.ScreenObservable;
 
@@ -35,6 +35,12 @@ public class PauseMode extends ScreenObservable implements Screen, InputProcesso
      * User requested to go to menu
      */
     public final static int GO_EXIT = 4;
+
+    /**
+     * User requested to go to menu
+     */
+    public final static int GO_EDITOR = 5;
+
     /**
      * Need an ongoing reference to the asset directory
      */
@@ -68,6 +74,10 @@ public class PauseMode extends ScreenObservable implements Screen, InputProcesso
      */
     private Texture pause_quit;
     /**
+     * Texture for goto editor button
+     */
+    private Texture pause_editor;
+    /**
      * The current state of the resume button
      */
     private int pressResumeState;
@@ -92,17 +102,17 @@ public class PauseMode extends ScreenObservable implements Screen, InputProcesso
      */
     private int pressBackState;
     /**
+     * The current state of the goto editor button
+     */
+    private int pressEditorState;
+    /**
      * The x-coordinate of the center of the buttons
      */
     private int centerX;
     /**
      * The y-coordinate of the center of the buttons
      */
-    private int centerYResume;
-    private int centerYRestart;
-    private int centerYReview;
-    private int centerYExit;
-    private int centerYQuit;
+    private int centerYResume, centerYRestart, centerYReview, centerYExit, centerYQuit, centerYEditor;
 
     /**
      * Scale for buttons
@@ -133,6 +143,10 @@ public class PauseMode extends ScreenObservable implements Screen, InputProcesso
      */
     private static final float QUIT_HEIGHT_RATIO = 0.14f;
     /**
+     * Ratio of about us height from bottom
+     */
+    private static final float EDITOR_HEIGHT_RATIO = 0.07f;
+    /**
      * Scaling factor for when the student changes the resolution.
      */
     private float scale;
@@ -153,10 +167,6 @@ public class PauseMode extends ScreenObservable implements Screen, InputProcesso
      * Reference to drawing context to display graphics (VIEW CLASS)
      */
     private GameCanvas canvas;
-    /**
-     * Reads input from keyboard or game pad (CONTROLLER CLASS)
-     */
-    private InputController inputController;
 
     /**
      * @return true if the player is ready to resume the game
@@ -201,6 +211,14 @@ public class PauseMode extends ScreenObservable implements Screen, InputProcesso
     }
 
     /**
+     * @return true if the player is ready to quit the game
+     */
+    public boolean isReadyEditor() {
+        return pressEditorState == 2;
+    }
+
+
+    /**
      * Creates a new Menu
      *
      * @param canvas The game canvas to draw to
@@ -226,6 +244,7 @@ public class PauseMode extends ScreenObservable implements Screen, InputProcesso
         pause_review = directory.getEntry("pause-review", Texture.class);
         pause_exit = directory.getEntry("pause-exit", Texture.class);
         pause_quit = directory.getEntry("pause-quit", Texture.class);
+        pause_editor = directory.getEntry("pause-editor", Texture.class);
     }
 
     private void update(float delta) {
@@ -265,6 +284,12 @@ public class PauseMode extends ScreenObservable implements Screen, InputProcesso
         canvas.draw(pause_quit, tintQuit, pause_quit.getWidth() / 2,
                 pause_quit.getHeight() / 2,
                 centerX, centerYQuit, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
+        Color tintEditor = (pressEditorState == 1 ? Color.BLACK : Color.WHITE);
+        canvas.draw(pause_editor, tintEditor, pause_editor.getWidth() / 2,
+                pause_editor.getHeight() / 2,
+                centerX, centerYEditor, 0,
+                BUTTON_SCALE * scale * pause_exit.getWidth() / pause_editor.getWidth(),
+                BUTTON_SCALE * scale * pause_exit.getHeight() / pause_editor.getHeight());
         canvas.end();
     }
 
@@ -277,6 +302,7 @@ public class PauseMode extends ScreenObservable implements Screen, InputProcesso
         pressExitState = 0;
         pressQuitState = 0;
         pressBackState = 0;
+        pressEditorState = 0;
         Gdx.input.setInputProcessor(this);
     }
 
@@ -300,6 +326,12 @@ public class PauseMode extends ScreenObservable implements Screen, InputProcesso
             if (isReadyQuit() && observer != null) {
                 observer.exitScreen(this, GO_EXIT);
             }
+            if (isReadyEditor()) {
+                observer.exitScreen(this, GO_EDITOR);
+            }
+
+            if (Gdx.input.isKeyPressed(Input.Keys.E) && observer != null) {
+            }
         }
     }
 
@@ -314,6 +346,7 @@ public class PauseMode extends ScreenObservable implements Screen, InputProcesso
         centerYReview = (int) (REVIEW_HEIGHT_RATIO * height);
         centerYExit = (int) (EXIT_HEIGHT_RATIO * height);
         centerYQuit = (int) (QUIT_HEIGHT_RATIO * height);
+        centerYEditor = (int) (EDITOR_HEIGHT_RATIO * height);
         centerX = width / 2;
         heightY = height;
     }
@@ -388,6 +421,10 @@ public class PauseMode extends ScreenObservable implements Screen, InputProcesso
         if (distX < x && distYQuit < y) {
             pressQuitState = 1;
         }
+        float distYEditor = Math.abs(screenY - centerYEditor);
+        if (distX < x && distYEditor < y) {
+            pressEditorState = 1;
+        }
         return false;
     }
 
@@ -415,6 +452,10 @@ public class PauseMode extends ScreenObservable implements Screen, InputProcesso
         }
         if (pressBackState == 1) {
             pressBackState = 2;
+            return false;
+        }
+        if (pressEditorState == 1) {
+            pressEditorState = 2;
             return false;
         }
         return true;

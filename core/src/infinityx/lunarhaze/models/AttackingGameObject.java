@@ -1,7 +1,6 @@
 package infinityx.lunarhaze.models;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.combat.AttackHitbox;
@@ -46,6 +45,21 @@ public abstract class AttackingGameObject extends GameObject {
      * Whether the entity is currently attacking
      */
     protected boolean isAttacking;
+
+    /**
+     * Whether the entity is currently attacked
+     */
+    protected boolean isAttacked;
+
+    /**
+     * Total time duration (in seconds) for attacked frames.
+     */
+    protected float isAttackedLength;
+
+    /**
+     * Current time duration for attacked frames
+     */
+    protected float attackedTime;
 
     /**
      * Hitbox parented to the entity. Only active when {@link #isAttacking}
@@ -97,6 +111,7 @@ public abstract class AttackingGameObject extends GameObject {
         canMove = true;
         isImmune = false;
         lockedOut = false;
+        isAttacked = false;
     }
 
 
@@ -114,13 +129,20 @@ public abstract class AttackingGameObject extends GameObject {
         attackCooldown = attack.getFloat("cooldown");
         attackLength = attack.getFloat("length");
         immunityLength = attack.getFloat("immunity");
+        isAttackedLength = attack.getFloat("lockout");
         lockout = attack.getFloat("lockout");
 
         JsonValue hitboxInfo = attack.get("hitbox");
         float attackRange = hitboxInfo.getFloat("range");
         // width is defaulted to the entity's body diameter
         float attackWidth = hitboxInfo.has("width") ? hitboxInfo.getFloat("width") : getBoundingRadius() * 2;
-        createAttackHitbox(container.getWorld(), new Vector2(attackRange, attackWidth));
+
+        // Create the hitbox
+        attackHitbox = new AttackHitbox(new Vector2(attackRange, attackWidth), this);
+        attackHitbox.initialize(directory, hitboxInfo, container);
+        attackHitbox.activatePhysics(container.getWorld());
+        attackHitbox.setActive(false);
+        attackHitbox.texUpdate = 0.16f;
     }
 
     /**
@@ -135,6 +157,7 @@ public abstract class AttackingGameObject extends GameObject {
         return isImmune;
     }
 
+
     /**
      * Begin lock out for this entity. Should be called when attacked.
      */
@@ -145,18 +168,6 @@ public abstract class AttackingGameObject extends GameObject {
 
     public boolean isLockedOut() {
         return lockedOut;
-    }
-
-    /**
-     * Creates a new rectangle hitbox that is parented to this entity
-     *
-     * @param world       Box2D world to store body
-     * @param initialSize width and height of hitbox
-     */
-    private void createAttackHitbox(World world, Vector2 initialSize) {
-        attackHitbox = new AttackHitbox(initialSize, this);
-        attackHitbox.activatePhysics(world);
-        attackHitbox.setActive(false);
     }
 
     /**
@@ -181,10 +192,23 @@ public abstract class AttackingGameObject extends GameObject {
     public void setAttacking(boolean value) {
         isAttacking = value;
         attackHitbox.setActive(value);
+        attackHitbox.getTexture().setFrame(0);
     }
 
     public boolean isAttacking() {
         return isAttacking;
+    }
+
+    /**
+     * Begin attacked frames for this entity.
+     */
+    public void setAttacked() {
+        isAttacked = true;
+        attackedTime = isAttackedLength;
+    }
+
+    public boolean isAttacked() {
+        return isAttacked;
     }
 
     public AttackHitbox getAttackHitbox() {
@@ -195,13 +219,20 @@ public abstract class AttackingGameObject extends GameObject {
     public void update(float delta) {
         super.update(delta);
         canMove = !isAttacking && !lockedOut;
-        attackHitbox.setHitboxRange(getAttackRange());
 
         // Update counters for immunity and lockout
         if (isImmune) {
             immunityTime -= delta;
-            if (immunityTime <= 0)
+            if (immunityTime <= 0) {
                 isImmune = false;
+            }
+        }
+
+        if (isAttacked) {
+            attackedTime -= delta;
+            if (attackedTime <= 0) {
+                isAttacked = false;
+            }
         }
         if (lockedOut) {
             lockoutTime -= delta;

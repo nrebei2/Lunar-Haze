@@ -21,6 +21,7 @@
     "pause-restart": "screens/pause-screen/pause_restart.png",
     "pause-resume": "screens/pause-screen/pause_resume.png",
     "pause-review": "screens/pause-screen/pause_review.png",
+    "pause-editor": "screens/pause-screen/pause_editor.png",
     "review": "screens/pause-screen/review.jpg",
     "background-level-selection": "screens/level-selection-screen/background.jpg",
     "level-selection-title": "screens/level-selection-screen/title.png",
@@ -226,36 +227,68 @@
         }
       }
     },
+    "werewolf.attacked-l": "images/player/left_attacked.png",
+    "werewolf.attacked-r": "images/player/right_attacked.png",
+    "werewolf.attacked-f": "images/player/front_attacked.png",
+    "werewolf.attacked-b": "images/player/back_attacked.png",
+    "werewolf.idle-r": "images/player/right_still.png",
+    "werewolf.idle-l": "images/player/left_still.png",
+    "werewolf.idle-b": "images/player/back_still.png",
+    "werewolf.idle-f": "images/player/front_still.png",
+
     "werewolf": {
-      "file": 	"images/player/right_still.png",
+      "file": 	"images/player/werewolf-attack.png",
       "wrap":  	false,
       "sprites":	{
-        "idle-r" : {
-          "size" : 1,
+        "attack-effect" : {
+          "size" : 3,
           "rows" : 1,
-          "cols" : 1
+          "cols" : 3
+        }
+      }
+    },
+
+    "werewolf": {
+      "file": 	"images/player/walk_spritesheet_left.png",
+      "wrap":  	false,
+      "sprites":	{
+        "walk-l" : {
+          "size" : 6,
+          "rows" : 1,
+          "cols" : 6
         }
       }
     },
     "werewolf": {
-      "file": 	"images/player/back_still.png",
+      "file": 	"images/player/walk_spritesheet_right.png",
       "wrap":  	false,
       "sprites":	{
-        "idle-b" : {
-          "size" : 1,
+        "walk-r" : {
+          "size" : 6,
           "rows" : 1,
-          "cols" : 1
+          "cols" : 6
         }
       }
     },
     "werewolf": {
-      "file": 	"images/player/front_still.png",
+      "file": 	"images/player/walk_spritesheet_back.png",
       "wrap":  	false,
       "sprites":	{
-        "idle-f" : {
-          "size" : 1,
+        "walk-b" : {
+          "size" : 6,
           "rows" : 1,
-          "cols" : 1
+          "cols" : 6
+        }
+      }
+    },
+    "werewolf": {
+      "file": 	"images/player/walk_spritesheet_front.png",
+      "wrap":  	false,
+      "sprites":	{
+        "walk-f" : {
+          "size" : 8,
+          "rows" : 1,
+          "cols" : 8
         }
       }
     },
@@ -348,51 +381,10 @@
         }
       }
     },
-    "villager":{
-      "file": 	"images/villager/enemy1-idle-down.png",
-      "wrap":  	false,
-      "sprites":	{
-        "idle-f" : {
-          "size" : 1,
-          "rows" : 1,
-          "cols" : 1
-        }
-      }
-    },
-    "villager":{
-      "file": 	"images/villager/enemy1-idle-up.png",
-      "wrap":  	false,
-      "sprites":	{
-        "idle-b" : {
-          "size" : 1,
-          "rows" : 1,
-          "cols" : 1
-        }
-      }
-    },
-    "villager":{
-      "file": 	"images/villager/enemy1-idle-left.png",
-      "wrap":  	false,
-      "sprites":	{
-        "idle-l" : {
-          "size" : 1,
-          "rows" : 1,
-          "cols" : 1
-        }
-      }
-    },
-    "villager":{
-      "file": 	"images/villager/enemy1-idle-right.png",
-      "wrap":  	false,
-      "sprites":	{
-        "idle-r" : {
-          "size" : 1,
-          "rows" : 1,
-          "cols" : 1
-        }
-      }
-    }
-
+    "villager.idle-f": "images/villager/enemy1-idle-down.png",
+    "villager.idle-b": "images/villager/enemy1-idle-up.png",
+    "villager.idle-l": "images/villager/enemy1-idle-left.png",
+    "villager.idle-r": "images/villager/enemy1-idle-right.png"
 },
   "shaders": {
     "meter": {
@@ -411,7 +403,8 @@
   "music": {
     "stealthBackground": "sounds/village_no_drum.ogg",
     "battleBackground": "sounds/village_with_drum.ogg",
-    "lobbyBackground": "sounds/lobby_music.ogg"
+    "lobbyBackground": "sounds/lobby_music.ogg",
+    "editorBackground": "sounds/editor_bg.ogg"
   },
   "sounds": {
     "collect": "sounds/collect.wav",

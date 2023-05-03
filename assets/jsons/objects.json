@@ -15,12 +15,7 @@
         "height": 2.5,
         "offset": [2, 0.9]
       }
-    },
-    "bodytype": "static",
-    "density": 0.0,
-    "friction": 0.0,
-    "restitution": 0.0,
-    "damping": 0.0
+    }
   },
   "house2": {
     "textures": {
@@ -29,7 +24,7 @@
     "texture": {
       "name": "static",
       "origin": [249, 157],
-      "scale": 0.815
+      "scale": 0.795
     },
     "colliders": {
       "body": {
@@ -38,12 +33,7 @@
         "height": 1.8,
         "offset": [2, 0.9]
       }
-    },
-    "bodytype": "static",
-    "density": 0.0,
-    "friction": 0.0,
-    "restitution": 0.0,
-    "damping": 0.0
+    }
   },
   "stone": {
     "textures": {
@@ -59,12 +49,7 @@
         "type": "circle",
         "radius": 0.5
       }
-    },
-    "bodytype": "static",
-    "density": 0.0,
-    "friction": 0.0,
-    "restitution": 0.0,
-    "damping": 0.0
+    }
   },
   "fence1": {
     "textures": {
@@ -79,15 +64,10 @@
       "body": {
         "type": "box",
         "width": 1.85,
-        "height": 0.2,
+        "height": 0.1,
         "offset": [0,0]
       }
-    },
-    "bodytype": "static",
-    "density": 0.0,
-    "friction": 0.0,
-    "restitution": 0.0,
-    "damping": 0.0
+    }
   },
   "fencex": {
     "textures": {
@@ -102,15 +82,10 @@
       "body": {
         "type": "box",
         "width": 1.85,
-        "height": 0.2,
+        "height": 0.1,
         "offset": [0,0]
       }
-    },
-    "bodytype": "static",
-    "density": 0.0,
-    "friction": 0.0,
-    "restitution": 0.0,
-    "damping": 0.0
+    }
   },
   "fence3": {
     "textures": {
@@ -125,15 +100,10 @@
       "body": {
         "type": "box",
         "width": 1.85,
-        "height": 0.2,
+        "height": 0.1,
         "offset": [0,0]
       }
-    },
-    "bodytype": "static",
-    "density": 0.0,
-    "friction": 0.0,
-    "restitution": 0.0,
-    "damping": 0.0
+    }
   },
   "fencey": {
     "textures": {
@@ -147,16 +117,11 @@
     "colliders": {
       "body": {
         "type": "box",
-        "width": 0.2,
-        "height": 1,
+        "width": 0.1,
+        "height": 0.85,
         "offset": [0,0]
       }
-    },
-    "bodytype": "static",
-    "density": 0.0,
-    "friction": 0.0,
-    "restitution": 0.0,
-    "damping": 0.0
+    }
   },
   "fence5": {
     "textures": {
@@ -171,15 +136,10 @@
       "body": {
         "type": "box",
         "width": 0.2,
-        "height": 1,
+        "height": 0.85,
         "offset": [0,0]
       }
-    },
-    "bodytype": "static",
-    "density": 0.0,
-    "friction": 0.0,
-    "restitution": 0.0,
-    "damping": 0.0
+    }
   },
   "lamp": {
     "textures": {
@@ -195,12 +155,7 @@
         "type": "circle",
         "radius": 0.2
       }
-    },
-    "bodytype": "static",
-    "density": 0.0,
-    "friction": 0.0,
-    "restitution": 0.0,
-    "damping": 0.0
+    }
   },
   "tree": {
     "textures": {
@@ -216,12 +171,7 @@
         "type": "circle",
         "radius": 0.4
       }
-    },
-    "bodytype": "static",
-    "density": 0.0,
-    "friction": 0.0,
-    "restitution": 0.0,
-    "damping": 0.0
+    }
   },
   "forest": {
     "textures": {
@@ -237,12 +187,7 @@
         "type": "circle",
         "radius": 0.3
       }
-    },
-    "bodytype": "static",
-    "density": 0.0,
-    "friction": 0.0,
-    "restitution": 0.0,
-    "damping": 0.0
+    }
   },
 
   "tree2": {
@@ -259,12 +204,7 @@
         "type": "circle",
         "radius": 0.3
       }
-    },
-    "bodytype": "static",
-    "density": 0.0,
-    "friction": 0.0,
-    "restitution": 0.0,
-    "damping": 0.0
+    }
   },
 
   "tree3": {
@@ -281,12 +221,7 @@
         "type": "circle",
         "radius": 0.15
       }
-    },
-    "bodytype": "static",
-    "density": 0.0,
-    "friction": 0.0,
-    "restitution": 0.0,
-    "damping": 0.0
+    }
   },
 
   "tree4": {
@@ -303,12 +238,7 @@
         "type": "circle",
         "radius": 0.3
       }
-    },
-    "bodytype": "static",
-    "density": 0.0,
-    "friction": 0.0,
-    "restitution": 0.0,
-    "damping": 0.0
+    }
   },
 
   "tree5": {
@@ -325,12 +255,7 @@
         "type": "circle",
         "radius": 0.3
       }
-    },
-    "bodytype": "static",
-    "density": 0.0,
-    "friction": 0.0,
-    "restitution": 0.0,
-    "damping": 0.0
+    }
   },
 
   "tree6": {
@@ -347,12 +272,7 @@
         "type": "circle",
         "radius": 0.3
       }
-    },
-    "bodytype": "static",
-    "density": 0.0,
-    "friction": 0.0,
-    "restitution": 0.0,
-    "damping": 0.0
+    }
   },
 
   "tree7": {
@@ -369,12 +289,7 @@
         "type": "circle",
         "radius": 0.3
       }
-    },
-    "bodytype": "static",
-    "density": 0.0,
-    "friction": 0.0,
-    "restitution": 0.0,
-    "damping": 0.0
+    }
   },
 
   "tree8": {
@@ -391,12 +306,7 @@
         "type": "circle",
         "radius": 0.3
       }
-    },
-    "bodytype": "static",
-    "density": 0.0,
-    "friction": 0.0,
-    "restitution": 0.0,
-    "damping": 0.0
+    }
   },
 
   "tree9": {
@@ -413,12 +323,7 @@
         "type": "circle",
         "radius": 0.3
       }
-    },
-    "bodytype": "static",
-    "density": 0.0,
-    "friction": 0.0,
-    "restitution": 0.0,
-    "damping": 0.0
+    }
   },
 
   "tree10": {
@@ -435,12 +340,7 @@
         "type": "circle",
         "radius": 0.3
       }
-    },
-    "bodytype": "static",
-    "density": 0.0,
-    "friction": 0.0,
-    "restitution": 0.0,
-    "damping": 0.0
+    }
   },
 
   "tree11": {
@@ -457,11 +357,6 @@
         "type": "circle",
         "radius": 0.3
       }
-    },
-    "bodytype": "static",
-    "density": 0.0,
-    "friction": 0.0,
-    "restitution": 0.0,
-    "damping": 0.0
+    }
   }
 }

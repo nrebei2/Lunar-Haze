@@ -24,6 +24,7 @@ import infinityx.lunarhaze.models.entity.Enemy;
 import infinityx.lunarhaze.models.entity.Werewolf;
 import infinityx.lunarhaze.physics.Box2DRaycastCollision;
 import infinityx.lunarhaze.physics.RaycastInfo;
+import infinityx.util.PatrolRegion;
 import infinityx.util.astar.AStarPathFinding;
 
 /**
@@ -219,9 +220,9 @@ public class EnemyController extends AttackHandler {
                     // Ray extends two units
                     rayCache.set(enemy.getPosition(), dir.scl(2).add(enemy.getPosition()));
                     //System.out.printf("Ray: (%s, %s)\n", rayCache.start, rayCache.end);
-                    communicationCollision.findCollision(collisionCache, rayCache);
+                    communicationCollision.findCollision(commCache, rayCache);
                     if (commRay.hit) {
-                        map.dangerMap[i] = raycast.fraction;
+                        map.dangerMap[i] = commRay.fraction;
                     }
                 }
 
@@ -233,7 +234,7 @@ public class EnemyController extends AttackHandler {
         this.combinedContext.add(separation);
 
         //Resolution is set to 8 to represent the 8 directions in which enemies can move
-        this.battleSB = new ContextSteering(enemy, combinedContext, 20);
+        this.battleSB = new ContextSteering(enemy, combinedContext, 40);
     }
 
     /**
@@ -365,9 +366,10 @@ public class EnemyController extends AttackHandler {
      * @return Random point in patrol area
      */
     public Vector2 getPatrolTarget() {
+        PatrolRegion region = enemy.getPatrolPath();
         return patrolTarget.set(
-                MathUtils.random(enemy.getBottomLeftOfRegion().x, enemy.getTopRightOfRegion().x),
-                MathUtils.random(enemy.getBottomLeftOfRegion().y, enemy.getTopRightOfRegion().y)
+                MathUtils.random(region.getBottomLeft()[0], region.getTopRight()[0]),
+                MathUtils.random(region.getBottomLeft()[1], region.getTopRight()[1])
         );
     }
 

@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.controllers.EnemyController;
+import infinityx.lunarhaze.controllers.EnemySpawner;
 import infinityx.lunarhaze.controllers.InputController;
 import infinityx.lunarhaze.graphics.CameraShake;
 import infinityx.lunarhaze.graphics.GameCanvas;
@@ -20,10 +21,10 @@ import infinityx.lunarhaze.models.entity.EnemyPool;
 import infinityx.lunarhaze.models.entity.SceneObject;
 import infinityx.lunarhaze.models.entity.Werewolf;
 import infinityx.util.Drawable;
+import infinityx.util.PatrolRegion;
 import infinityx.util.astar.AStarMap;
 import infinityx.util.astar.AStarPathFinding;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 
 /**
@@ -67,6 +68,13 @@ public class LevelContainer {
      * The Box2D World
      */
     private World world;
+
+
+    /**
+     * Owns the enemy spawner, used for battle phase
+     */
+    private EnemySpawner enemySpawner;
+
     /**
      * Memory pool for efficient storage of Enemies
      */
@@ -132,14 +140,14 @@ public class LevelContainer {
     private int totalMoonlight;
 
     /**
-     * the time it takes to transition from stealth to battle
-     */
-    private float phaseTransitionTime;
-
-    /**
      * the length of a stealth cycle
      */
     private float phaseLength;
+
+    /**
+     * Settings for this level
+     */
+    private Settings battleSettings;
 
     /**
      * Ambient lighting values during stealth phase
@@ -179,9 +187,12 @@ public class LevelContainer {
 
         board = null;
         pathfinder = null;
+        enemySpawner = new EnemySpawner(this);
         enemies = new EnemyPool(20);
         activeEnemies = new Array<>(10);
         sceneObjects = new Array<>(true, 5);
+
+        battleSettings = new Settings();
     }
 
     /**
@@ -204,6 +215,10 @@ public class LevelContainer {
 
     public RayHandler getRayHandler() {
         return rayHandler;
+    }
+
+    public Settings getSettings() {
+        return battleSettings;
     }
 
     /**
@@ -234,6 +249,8 @@ public class LevelContainer {
     public Enemy addEnemy(Enemy enemy) {
         activeEnemies.add(enemy);
         addDrawables(enemy);
+        addDrawables(enemy.getAttackHitbox());
+
         // Update enemy controller assigned to the new enemy
         getEnemyControllers().get(enemy).populate(this);
         alert_sound = this.getDirectory().getEntry("alerted", Sound.class);
@@ -259,6 +276,27 @@ public class LevelContainer {
     }
 
     /**
+     * Adds an enemy to the level with no patrol region.
+     *
+     * @param type type of Enemy to append to enemy list (e.g. villager)
+     * @param x    world x-position
+     * @param y    world y-position
+     * @return Enemy added
+     */
+    public Enemy addEnemy(String type, float x, float y) {
+        Enemy enemy = enemies.obtain();
+        enemy.initialize(directory, enemiesJson.get(type), this);
+
+        enemy.setPatrolPath(new PatrolRegion(0, 0, 0, 0));
+        enemy.setPosition(x, y);
+
+        enemy.setName(type);
+
+        return addEnemy(enemy);
+    }
+
+
+    /**
      * Adds an enemy to the level
      *
      * @param type   type of Enemy to append to enemy list (e.g. villager)
@@ -267,13 +305,12 @@ public class LevelContainer {
      * @param patrol patrol path for this enemy
      * @return Enemy added
      */
-    public Enemy addEnemy(String type, float x, float y, ArrayList<Vector2> patrol) {
+    public Enemy addEnemy(String type, float x, float y, PatrolRegion patrol) {
         Enemy enemy = enemies.obtain();
         enemy.initialize(directory, enemiesJson.get(type), this);
 
         enemy.setPatrolPath(patrol);
         enemy.setPosition(x, y);
-
         enemy.setName(type);
 
         return addEnemy(enemy);
@@ -307,34 +344,6 @@ public class LevelContainer {
      */
     public Werewolf getPlayer() {
         return player;
-    }
-
-    /**
-     * @return the time it takes to transition from stealth to battle
-     */
-    public float getPhaseTransitionTime() {
-        return phaseTransitionTime;
-    }
-
-    /**
-     * Sets the time it takes to transition from stealth to battle
-     */
-    public void setPhaseTransitionTime(float phaseTransitionTime) {
-        this.phaseTransitionTime = phaseTransitionTime;
-    }
-
-    /**
-     * @return the length of a stealth cycle
-     */
-    public float getPhaseLength() {
-        return phaseLength;
-    }
-
-    /**
-     * Sets the length of a stealth cycle
-     */
-    public void setPhaseLength(float phaseLength) {
-        this.phaseLength = phaseLength;
     }
 
     /**
@@ -387,6 +396,7 @@ public class LevelContainer {
      */
     public void setPlayer(Werewolf player) {
         drawables.add(player);
+        drawables.add(player.getAttackHitbox());
         this.player = player;
     }
 
@@ -410,6 +420,11 @@ public class LevelContainer {
         drawables.add(player);
         player.setActive(true);
         player.getSpotlight().setActive(true);
+    }
+
+
+    public EnemySpawner getEnemySpawner() {
+        return enemySpawner;
     }
 
     /**
@@ -463,6 +478,7 @@ public class LevelContainer {
 
         object.setPosition(x, y);
         object.setScale(scale);
+        object.setName(type);
 
         return addSceneObject(object);
     }
@@ -526,6 +542,9 @@ public class LevelContainer {
             d.draw(canvas);
         }
 
+        // The scene objects rendered before the player (behind) should not become transparent
+        canvas.playerCoords.set(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
+
         // Flush information to the graphic buffer.
         canvas.end();
 
@@ -555,7 +574,12 @@ public class LevelContainer {
                 getEnemyControllers().get(e).drawGizmo(canvas);
             }
             canvas.end();
+
+            canvas.begin(GameCanvas.DrawPass.SPRITE, view.x, view.y);
+            player.getAttackHitbox().draw(canvas);
+            canvas.end();
         }
+
     }
 
     /**

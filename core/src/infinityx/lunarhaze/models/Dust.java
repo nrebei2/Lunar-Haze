@@ -264,7 +264,7 @@ public class Dust implements Drawable {
                             reset = true;
                             break;
                         case DESTROY:
-                            setDestroyed();
+                            setDestroyed(true);
                             break;
                         case CONTINUE:
                             this.state = DustState.APPEARING;
@@ -285,7 +285,7 @@ public class Dust implements Drawable {
         this.state = DustState.APPEARING;
         this.condition = Condition.CONTINUE;
         this.reset = false;
-        this.destroyed = false;
+        setDestroyed(false);
         this.textureRot = 0;
         this.alpha = 0;
         this.elapsed = 0;
@@ -325,11 +325,8 @@ public class Dust implements Drawable {
         return destroyed;
     }
 
-    /**
-     * Sets this object as destroyed. Will be removed from drawing next timestep.
-     */
     @Override
-    public void setDestroyed() {
-        destroyed = true;
+    public void setDestroyed(boolean destroyed) {
+        this.destroyed = destroyed;
     }
 }

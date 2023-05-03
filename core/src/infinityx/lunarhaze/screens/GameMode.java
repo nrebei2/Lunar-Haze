@@ -134,7 +134,6 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
 
     private final static Color color = new Color(142.0f / 255.0f, 157.0f / 255.0f, 189.0f / 255.0f, 1.0f);
 
-    // TODO: Maybe change to enum if there are not that many levels, or string maybe?
     /**
      * Current level
      */
@@ -162,8 +161,11 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
      * @param level
      */
     public void setLevel(int level) {
-        //TODO DELETE ONE OF THESE
         this.level = level;
+    }
+
+    public int getLevel() {
+        return level;
     }
 
     /**
@@ -319,8 +321,13 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
      */
     public void setupLevel() {
         LevelParser ps = LevelParser.LevelParser();
-        levelContainer = ps.loadLevel(directory, levelFormat.get(String.valueOf(level)));
-        gameplayController.start(levelContainer, levelFormat.get(String.valueOf(level)));
+        JsonValue levelData = levelFormat.get(String.valueOf(level));
+        if (levelData == null) {
+            Gdx.app.error("GameMode", "Level does not exist!", new RuntimeException());
+            Gdx.app.exit();
+        }
+        levelContainer = ps.loadLevel(directory, levelData);
+        gameplayController.start(levelContainer);
     }
 
     /**
@@ -357,12 +364,15 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
                 displayFont.setColor(Color.YELLOW);
                 canvas.begin(GameCanvas.DrawPass.SPRITE);
                 canvas.drawTextCentered("VICTORY!", displayFont, 0.0f);
+                displayFont.setColor(Color.BLACK);
+                canvas.drawTextCentered("Press R to Restart", displayFont, -canvas.getHeight() * 0.1f);
                 canvas.end();
                 break;
             case OVER:
                 displayFont.setColor(Color.RED);
                 canvas.begin(GameCanvas.DrawPass.SPRITE); // DO NOT SCALE
                 canvas.drawTextCentered("FAILURE!", displayFont, 0.0f);
+                canvas.drawTextCentered("Press R to Restart", displayFont, -canvas.getHeight() * 0.1f);
                 canvas.end();
                 break;
             case PLAY:

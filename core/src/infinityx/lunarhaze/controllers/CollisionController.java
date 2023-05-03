@@ -100,6 +100,7 @@ public class CollisionController implements ContactListener {
      * @param attacked The entity that was attacked
      */
     private void handleCollision(AttackingGameObject attacker, AttackingGameObject attacked) {
+        if (attacker == attacked) return;
         boolean immune = attacked.isImmune();
         if (!immune) {
             // Immunity frames for being attacked and when attacking
@@ -114,10 +115,11 @@ public class CollisionController implements ContactListener {
             attacked.hp -= attacker.attackDamage;
             if (attacked.hp < 0) attacked.hp = 0;
 
-
             CameraShake.shake(attacker.attackKnockback * 3f, 0.3f);
-            if (attacked.getType() == GameObject.ObjectType.WEREWOLF)
+            if (attacked.getType() == GameObject.ObjectType.WEREWOLF) {
+                attacked.setAttacked();
                 ScreenFlash.flash(new Color(1f, 0.2f, 0.2f, 1), 0.15f, 0.05f, 0.05f, 0.15f);
+            }
         }
     }
 

@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 
 /**
- * Class represents a 2D grid of tiles.
+ * Class represents a 2D grid of tiles. The bottom left of the board defines (0, 0) in the world.
  * Wrapper around tile data
  * TODO: make this extend TiledMap? Useful if we will need layers later on. Tile can then extend StaticTiledMapTile.
  * Ref: https://libgdx.com/wiki/graphics/2d/tile-maps
@@ -152,6 +152,21 @@ public class Board {
     }
 
     /**
+     * @return the width of the board in world length.
+     */
+    public float getWorldWidth() {
+        return width * tileWorldDim.x;
+    }
+
+    /**
+     * @return the height of the board in world length.
+     */
+    public float getWorldHeight() {
+        return height * tileWorldDim.y;
+    }
+
+
+    /**
      * Returns the number of tiles horizontally across the board.
      *
      * @return the number of tiles horizontally across the board.
@@ -169,6 +184,7 @@ public class Board {
         return height;
     }
 
+
     // Drawing information
 
     /**
@@ -179,6 +195,7 @@ public class Board {
     public int worldToBoardX(float x) {
         return (int) (x / tileWorldDim.x);
     }
+
 
     /**
      * Returns the board cell index for a world y-position.
@@ -253,7 +270,7 @@ public class Board {
         canvas.shapeRenderer.setColor(Color.RED);
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                if (getTileType(x,y) == Tile.TileType.EMPTY)
+                if (getTileType(x, y) == Tile.TileType.EMPTY)
                     canvas.shapeRenderer.rect(
                             canvas.WorldToScreenX(boardToWorldX(x)) + 1, canvas.WorldToScreenY(boardToWorldY(y)),
                             tileScreenDim.x - 1, tileScreenDim.y - 1
@@ -539,6 +556,26 @@ public class Board {
      */
     public boolean inBoundsWorld(float x, float y) {
         return x >= 0 && y >= 0 && x < width * tileWorldDim.x && y < height * tileWorldDim.y;
+    }
+
+    /**
+     * Returns true if the given world x position is in a valid column.
+     *
+     * @param w_x The world x position
+     * @param t_x The x tile index
+     */
+    public boolean inBoundsTileX(int t_x, float w_x) {
+        return w_x >= tileWorldDim.x * t_x && w_x <= tileWorldDim.x * (t_x + 1);
+    }
+
+    /**
+     * Returns true if the given world y position is in a valid board row.
+     *
+     * @param w_y The world y position
+     * @param t_y The y tile index
+     */
+    public boolean inBoundsTileY(int t_y, float w_y) {
+        return w_y >= tileWorldDim.y * t_y && w_y <= tileWorldDim.y * (t_y + 1);
     }
 
 
