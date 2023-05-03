@@ -119,7 +119,7 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
     /**
      * Height of strokes
      */
-    private static final float STROKE_HEIGHT = 45.0f;
+    private static final float STROKE_HEIGHT = 52.0f;
 
     /**
      * Width of stars
@@ -231,6 +231,11 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
     private boolean firstRender = true;
 
     /**
+     * Number of times the user has allocated hp upgrades
+     */
+    private int hpCount;
+
+    /**
      * Number of times the user has allocated attack power upgrades
      */
     private int powerCount;
@@ -239,6 +244,11 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
      * Number of times the user has allocated attack range upgrades
      */
     private int rangeCount;
+
+    private Texture attack_pow_all;
+
+    private Texture attack_ran_all;
+    private Texture health_all;
 
     /**
      * Creates a new Allocate screen
@@ -288,6 +298,10 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
         title_left = directory.getEntry("title-left", Texture.class);
         title_right = directory.getEntry("title-right", Texture.class);
 
+        attack_pow_all = directory.getEntry("attack-pow-allocate", Texture.class);
+        attack_ran_all = directory.getEntry("attack-ran-allocate", Texture.class);
+        health_all = directory.getEntry("health-allocate", Texture.class);
+
         UIFont_large = directory.getEntry("libre-large", BitmapFont.class);
         UIFont_small = directory.getEntry("libre-small", BitmapFont.class);
     }
@@ -326,15 +340,16 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
      * Update the status of this menu.
      */
     private void update(float delta) {
-        if (pressStateHp == 2) {
+        if (pressStateHp == 2 && hpCount <= 5) {
             playerController.allocateHp();
             pressStateHp = 0;
-        } else if (pressStateAttackPow == 2 && powerCount <= 10) {
+            hpCount++;
+        } else if (pressStateAttackPow == 2 && powerCount <= 5) {
             playerController.allocateAttackPow();
             pressStateAttackPow = 0;
             powerCount++;
             playerController.setNumPowerPress(powerCount);
-        } else if (pressStateAttackRan == 2 && rangeCount <= 10) {
+        } else if (pressStateAttackRan == 2 && rangeCount <= 5) {
             playerController.allocateAttackRange();
             pressStateAttackRan = 0;
             rangeCount++;
@@ -364,8 +379,8 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
         Color alphaTint = Color.WHITE;
         canvas.drawOverlay(background, alphaTint, true);
 
-        canvas.drawText("Dear Lycan, you survived the stealth phase... \n Now it's time to allocate moonlights and arm for the battle!",
-                UIFont_small, canvas.getWidth() / 8, canvas.getHeight() / 2 + LINE_DIST);
+//        canvas.drawText("Dear Lycan, you survived the stealth phase... \n Now it's time to allocate moonlights and arm for the battle!",
+//                UIFont_small, canvas.getWidth() / 8, canvas.getHeight() / 2 + LINE_DIST);
 
         // Draw number of moonlight left
         canvas.draw(moon_icon, alphaTint, canvas.getWidth() / 4 - MOON_ICON_WIDTH / 2, canvas.getHeight() / 2, MOON_ICON_WIDTH, MOON_ICON_WIDTH);
@@ -373,7 +388,7 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
                 UIFont_large, canvas.getWidth() / 4 + MOON_ICON_WIDTH, canvas.getHeight() / 2 + MOON_ICON_WIDTH * 0.8f);
         Color gray = new Color(255f / 255.0f, 255f / 255.0f, 255f / 255.0f, 0.4f);
         setFontColor(gray);
-        canvas.drawText(" / " + totalMoonlightCollected,
+        canvas.drawText(" / " + (totalMoonlightCollected),
                 UIFont_small, canvas.getWidth() / 4 + MOON_ICON_WIDTH + UIFont_small.getAscent() * 4, canvas.getHeight() / 2 + MOON_ICON_WIDTH / 2);
         setFontColor(alphaTint);
         canvas.drawText("Moonlight Remaining",
@@ -408,59 +423,67 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
         if (s == "Attack Power") {
             Texture currButton = addAttackPowButton;
             buttonCenterY = centerY1;
-            icon = attack_pow_icon;
+            icon = attack_pow_all;
             stat = powerCount;
         } else if (s == "Attack Range") {
             Texture currButton = addAttackRanButton;
             buttonCenterY = centerY2;
-            icon = attack_ran_icon;
+            icon = attack_ran_all;
             stat = rangeCount;
         } else {
             Texture currButton = addHpButton;
             buttonCenterY = centerY0;
-            icon = heart_icon;
+            icon = health_all;
             stat = (int) playerController.getPlayer().hp;
         }
 
-        canvas.drawText("" + stat,
-                UIFont_small, buttonCenterX - UIFont_small.getAscent() * 17, buttonCenterY + UIFont_small.getLineHeight() / 2);
+        canvas.drawText( " " + stat, UIFont_small,
+                buttonCenterX - addHpButton.getWidth()/2 - UIFont_small.getAscent() * ("" + stat).length() * 16,
+                buttonCenterY + UIFont_small.getLineHeight() / 2);
         Color gray = new Color(1.0f, 1.0f, 1.0f, 0.4f);
         setFontColor(gray);
-        canvas.drawText(" / " + 10,
-                UIFont_small, buttonCenterX - UIFont_small.getAscent() * 14, buttonCenterY + UIFont_small.getLineHeight() / 2);
+        canvas.drawText(" / " + 5, UIFont_small,
+                buttonCenterX - addHpButton.getWidth()/2 - UIFont_small.getAscent() * ("" + stat).length() * 10,
+                buttonCenterY + UIFont_small.getLineHeight() / 2);
 
         float starY = buttonCenterY + INLINE_DIST;
-        canvas.draw(stroke, Color.WHITE, (float) (stroke.getWidth() / 2), (float) (stroke.getHeight() / 2),
-                centerX - 6 * STAR_WIDTH - STROKE_WIDTH, starY, 0,
-                STROKE_WIDTH / stroke.getWidth(), STROKE_HEIGHT / stroke.getHeight());
         float angle = 0.0f;
         if (icon == attack_pow_icon) {
             angle = 30.f / 180.0f * (float) Math.PI;
         }
         canvas.draw(icon, Color.WHITE, (float) (icon.getWidth() / 2), (float) (icon.getHeight() / 2),
                 centerX - 6 * STAR_WIDTH - STROKE_WIDTH, starY, angle,
-                SMALL_ICON_WIDTH / icon.getWidth(), SMALL_ICON_WIDTH / icon.getHeight());
-        for (int i = 1; i <= 10; i++) {
+                STROKE_WIDTH / icon.getWidth(), STROKE_HEIGHT / icon.getHeight());
+        for (int i = 1; i <= 5; i++) {
             if (stat >= i) {
                 // Draw a filled star for the ith star
                 canvas.draw(star_filled, Color.WHITE, star_filled.getWidth() / 2, star_filled.getHeight() / 2,
-                        centerX + (i - 6) * STAR_WIDTH, starY, 0,
+                        centerX + (i - 4) * STAR_WIDTH, starY, 0,
                         STAR_WIDTH / star_filled.getWidth(), STAR_HEIGHT / star_filled.getHeight());
             } else {
-                // Draw an empty heart for the ith heart
+                // Draw an empty heart for the ith star
                 canvas.draw(star_empty, Color.WHITE, star_filled.getWidth() / 2, star_filled.getHeight() / 2,
-                        centerX + (i - 6) * STAR_WIDTH, starY, 0,
+                        centerX + (i - 4) * STAR_WIDTH, starY, 0,
                         STAR_WIDTH / star_filled.getWidth(), STAR_HEIGHT / star_filled.getHeight());
             }
         }
 
         float titleY = starY + INLINE_DIST;
         setFontColor(Color.WHITE);
-        canvas.draw(title_left, Color.WHITE, centerX - 6 * STAR_WIDTH - STAR_WIDTH * 0.5f, titleY - UIFont_small.getCapHeight(),
-                STAR_WIDTH * 3.5f, UIFont_small.getCapHeight());
-        canvas.drawText(s, UIFont_small, centerX - STAR_WIDTH - s.length() * UIFont_small.getAscent(), titleY);
-        canvas.draw(title_right, Color.WHITE, centerX + STAR_WIDTH * 1.5f, titleY - UIFont_small.getCapHeight(),
-                STAR_WIDTH * 3.5f, UIFont_small.getCapHeight());
+        float title_width = STAR_WIDTH * 10 * 1.2f;
+        float text_width = s.length() * UIFont_small.getAscent() * 3;
+        float title_one_side_width = (title_width - text_width - STAR_WIDTH) / 2;
+        canvas.draw(title_left, Color.WHITE,
+                centerX - STAR_WIDTH - title_width/2,
+                titleY - UIFont_small.getCapHeight(),
+                title_one_side_width, UIFont_small.getCapHeight());
+        canvas.drawText(s, UIFont_small,
+                centerX - STAR_WIDTH * 1.2f - s.length() * UIFont_small.getAscent() * 1.4f,
+                titleY);
+        canvas.draw(title_right, Color.WHITE,
+                centerX - STAR_WIDTH + title_width/2 - title_one_side_width,
+                titleY - UIFont_small.getCapHeight(),
+                title_one_side_width, UIFont_small.getCapHeight());
     }
 
     /**
@@ -526,6 +549,7 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
         pressStateAttackRan = 0;
 
         // Should not set in constructor as this screen will most likely be seen multiple times in a play session
+        hpCount = 0;
         powerCount = 0;
         rangeCount = 0;
 

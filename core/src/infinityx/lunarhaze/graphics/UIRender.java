@@ -47,7 +47,7 @@ public class UIRender {
     /**
      * Distance between bars
      */
-    private final float GAP_DIST = 20f;
+    private final float GAP_DIST = 25f;
 
     /**
      * Top stroke width
@@ -72,7 +72,7 @@ public class UIRender {
     /**
      * Health stroke (located at top left corner) height
      */
-    private final static float HEALTH_STROKE_HEIGHT = 40f;
+    private final static float HEALTH_STROKE_HEIGHT = 50f;
 
     /**
      * Moonlight stroke (located at bottom left corner) width
@@ -97,7 +97,7 @@ public class UIRender {
     /**
      * Width of stroke background for attack power and range
      */
-    private final static float SQUARE_STROKE_WIDTH = 60.0f;
+    private final static float SQUARE_STROKE_WIDTH = 75.0f;
 
     /**
      * Height of moon center as a percentage of transition screen before rise
@@ -394,8 +394,6 @@ public class UIRender {
             canvas.begin(GameCanvas.DrawPass.SPRITE, level.getView().x, level.getView().y);
 
             if (gameplayController.getCollectingMoonlight() && phase == Phase.STEALTH) {
-//                canvas.drawCollectLightBar(BAR_WIDTH / 2, BAR_HEIGHT / 2,
-//                        gameplayController.getTimeOnMoonlightPercentage(), level.getPlayer());
                 drawCollectLightBar(canvas, BAR_WIDTH / 2, BAR_HEIGHT / 2,
                         gameplayController.getTimeOnMoonlightPercentage(), level.getPlayer());
             }
@@ -566,13 +564,17 @@ public class UIRender {
         } else {
             text = "Enemies Remaining";
             int remaining = gameplayController.getRemainingEnemies();
-            stat = remaining + "";
+            stat = "   " + remaining;
         }
-        canvas.drawText(text, UIFont_small, canvas.getWidth() / 2 - UIFont_small.getCapHeight() * text.length() / 2, canvas.getHeight() - TOP_MARGIN / 2.5f);
-        canvas.drawText(stat, UIFont_small, canvas.getWidth() / 2 - UIFont_small.getAscent() * 7, canvas.getHeight() - COUNTER_HEIGHT / 2.0f - TOP_MARGIN / 3);
-        canvas.draw(title_left, Color.WHITE, canvas.getWidth() / 2 - COUNTER_WIDTH - UIFont_small.getAscent() * 10, canvas.getHeight() - COUNTER_HEIGHT,
+        canvas.drawText(text, UIFont_small, canvas.getWidth() / 2 - UIFont_small.getAscent() * text.length() * 1.8f, canvas.getHeight() - HEALTH_STROKE_HEIGHT * 0.7f);
+        canvas.drawText(stat, UIFont_small,
+                canvas.getWidth() / 2 - UIFont_small.getAscent() * 7,
+                canvas.getHeight() - HEALTH_STROKE_HEIGHT * 2 + UIFont_small.getCapHeight() * 2.5f);
+        canvas.draw(title_left, Color.WHITE, canvas.getWidth() / 2 - COUNTER_WIDTH - UIFont_small.getAscent() * 10,
+                canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f,
                 COUNTER_WIDTH, UIFont_small.getCapHeight());
-        canvas.draw(title_right, Color.WHITE, canvas.getWidth() / 2 + UIFont_small.getAscent() * 10, canvas.getHeight() - COUNTER_HEIGHT,
+        canvas.draw(title_right, Color.WHITE, canvas.getWidth() / 2 + UIFont_small.getAscent() * 10,
+                canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f,
                 COUNTER_WIDTH, UIFont_small.getCapHeight());
     }
 
@@ -620,11 +622,17 @@ public class UIRender {
      * Draw the moonlight stroke and moonlight status
      */
     public void drawMoonlightStats(GameCanvas canvas, LevelContainer level, float delta) {
-        canvas.draw(moonlight_stroke, Color.WHITE, MOON_STROKE_WIDTH / 3 + HEALTH_STROKE_WIDTH, canvas.getHeight() - HEALTH_STROKE_HEIGHT - MOON_STROKE_HEIGHT, MOON_STROKE_WIDTH, MOON_STROKE_HEIGHT);
+        canvas.draw(moonlight_stroke, Color.WHITE,
+                MOON_STROKE_WIDTH / 3 + HEALTH_STROKE_WIDTH,
+                canvas.getHeight() - HEALTH_STROKE_HEIGHT * 2,
+                MOON_STROKE_WIDTH, HEALTH_STROKE_HEIGHT);
         canvas.draw(moon_icon, Color.WHITE, moon_icon.getWidth() / 2, moon_icon.getHeight() / 2,
-                MOON_STROKE_WIDTH / 2 + moon_icon.getWidth() / 4 + HEALTH_STROKE_WIDTH, canvas.getHeight() - HEALTH_STROKE_HEIGHT - MOON_STROKE_HEIGHT + moon_icon.getHeight() / 2, 0, 0.5f, 0.5f);
+                MOON_STROKE_WIDTH / 2 + moon_icon.getWidth() / 4 + HEALTH_STROKE_WIDTH,
+                canvas.getHeight() - HEALTH_STROKE_HEIGHT - MOON_STROKE_HEIGHT + moon_icon.getHeight() * 0.6f,
+                0, 0.5f, 0.5f);
         canvas.drawText(level.getPlayer().getMoonlightCollected() + "/" + ((int) level.getTotalMoonlight()), UIFont_small,
-                MOON_STROKE_WIDTH * 4 / 5 + HEALTH_STROKE_WIDTH, canvas.getHeight() - HEALTH_STROKE_HEIGHT * 2 + UIFont_small.getCapHeight() * 2.5f);
+                MOON_STROKE_WIDTH * 4 / 5 + HEALTH_STROKE_WIDTH,
+                canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.5f + UIFont_small.getCapHeight()/2);
         if (level.getPlayer().getMoonlightCollected() > last_moon) {
             drawMoonCollect(canvas, delta);
         }
@@ -692,7 +700,7 @@ public class UIRender {
         canvas.draw(attack_ran_icon, Color.WHITE,
                 attack_ran_icon.getWidth() / 2, attack_ran_icon.getHeight() / 2,
                 stroke_width + SQUARE_STROKE_WIDTH * 2 + GAP_DIST,
-                canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f,
+                canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.5f,
                 0, 1.0f, 1.0f);
         canvas.drawText(pc.getNumRangePress() + "", UIFont_small,
                 stroke_width + SQUARE_STROKE_WIDTH * 2 + attack_pow_icon.getWidth() / 2 + GAP_DIST,
