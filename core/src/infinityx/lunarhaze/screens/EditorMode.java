@@ -382,7 +382,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
 
     /**
-     * What is on my cursor right now?
+     * What is on my cursor right now? null if none
      */
     private Selected selected;
 
@@ -485,11 +485,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * Whether to show the save level popup
      */
     private boolean showSaveLevelPopup = false;
-
-    /**
-     * An index representing the currently selected spawn location.
-     */
-    private int selectedSpawnLocationIndex;
 
     public EditorMode(GameCanvas canvas) {
         this.canvas = canvas;
@@ -688,6 +683,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         switch (selected.getType()) {
             case EXIST_ENEMY:
                 ((ExistingEnemy) selected).enemy.setTint(Color.WHITE);
+                currEnemyControlled = null;
+                showEnemyControllerWindow.set(false);
                 break;
             case EXIST_OBJECT:
                 ((ExistingObject) selected).object.setTint(Color.WHITE);
@@ -889,6 +886,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             switch (hit.getType()) {
                 case ENEMY:
                     selected = new ExistingEnemy((Enemy) hit);
+                    // Open controller for selected enemy
+                    currEnemyControlled = (Enemy) hit;
+                    showEnemyControllerWindow.set(true);
                     break;
                 case WEREWOLF:
                     selected = new Player();
@@ -1094,7 +1094,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         showSaveLevelPopup = false;
         showOverwritePrompt = false;
         selected = new Tile(0);
-        selectedSpawnLocationIndex = -1;
 
         Gdx.input.setInputProcessor(this);
         RayHandler.setGammaCorrection(true);
@@ -1431,12 +1430,19 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
                         // Remove button
                         if (ImGui.button("Remove")) {
-                            if (enemy == selectedObject) {
+                            if (selected != null && selected.getType() != Selected.Type.ENEMY) {
+                                // Do not want to remove the same enemy twice
+                                // As this will mess with the free list
                                 removeSelection();
-                            } else {
-                                level.removeEnemy(enemy);
-                                doneActions.add(new RemoveObject(enemy));
-                                undoneActions.clear();
+                            }
+                            level.removeEnemy(enemy);
+                            doneActions.add(new RemoveObject(enemy));
+                            undoneActions.clear();
+                            selected = null;
+                            // Remove the controller window if its controlling the removed enemy
+                            if (currEnemyControlled == enemy) {
+                                currEnemyControlled = null;
+                                showEnemyControllerWindow.set(false);
                             }
                         }
 
@@ -1495,13 +1501,10 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
                         // Remove button
                         if (ImGui.button("Remove")) {
-                            if (object == selectedObject) {
-                                removeSelection();
-                            } else {
-                                level.removeSceneObject(object);
-                                doneActions.add(new RemoveObject(object));
-                                undoneActions.clear();
-                            }
+                            removeSelection();
+                            level.removeSceneObject(object);
+                            doneActions.add(new RemoveObject(object));
+                            undoneActions.clear();
                         }
 
                         ImGui.treePop();
@@ -1628,7 +1631,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         if (ImGui.beginMainMenuBar()) {
             createFileMenu();
             createEditMenu();
-            createEnemyMenu();
             createViewMenu();
             createSettingsMenu();
             createControlsMenu();
@@ -1858,28 +1860,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     }
 
     /**
-     * Enemy menu with options for each enemy
-     */
-    private void createEnemyMenu() {
-        if (ImGui.beginMenu("   Enemy   ")) {
-
-            // Iterate through enemies and create options for menu
-            for (int i = 0; i < level.getEnemies().size; i++) {
-                infinityx.lunarhaze.models.entity.Enemy enemy = level.getEnemies().get(i);
-                if (selected != null && selected.getType() == Selected.Type.ENEMY) {
-                    if (enemy == ((EnemySelection) selected).enemy) continue;
-                }
-                if (ImGui.menuItem("Show Enemy " + i + " Menu")) {
-                    currEnemyControlled = enemy;
-                    showEnemyControllerWindow.set(true);
-                }
-            }
-
-            ImGui.endMenu();
-        }
-    }
-
-    /**
      * Popup window for creating new board and setting board size
      */
     private void createNewBoardWindow() {
@@ -2048,9 +2028,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
                     if (ImGui.button("Remove Location")) {
                         level.getSettings().removeSpawnLocation(i);
-                        if (selectedSpawnLocationIndex >= level.getSettings().getSpawnLocations().size) {
-                            selectedSpawnLocationIndex--;
-                        }
                     }
                 } else {
                     nodeToClose = currentNode;
