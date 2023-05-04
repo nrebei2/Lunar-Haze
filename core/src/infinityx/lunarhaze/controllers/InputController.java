@@ -30,6 +30,12 @@ public class InputController {
      * Input key for attacking
      */
     private static final int ATTACK = Input.Keys.SPACE;
+
+    /**
+     * Input key for heavy attacking
+     */
+    private static final int HEAVY_ATTACK = Input.Keys.H;
+
     /**
      * Input key for collecting resource
      */
@@ -81,6 +87,11 @@ public class InputController {
      * Did we press the attack button?
      */
     private boolean attackPressed;
+
+    /**
+     * Did we press the heavy attack button?
+     */
+    private boolean heavyAttackPressed;
 
     /**
      * Whether the collect button was pressed.
@@ -169,6 +180,15 @@ public class InputController {
         return attackPressed;
     }
 
+    /**
+     * Returns true if the heavy attack button was pressed.
+     *
+     * @return true if the heavy attack button was pressed.
+     */
+    public boolean didHeavyAttack() {
+        return heavyAttackPressed;
+    }
+
 
     /**
      * Returns true if the collect button was pressed.
@@ -242,7 +262,8 @@ public class InputController {
      * This controller reads from the keyboard.
      */
     public void readKeyboard() {
-        attackPressed = Gdx.input.isKeyPressed(ATTACK);
+        attackPressed = Gdx.input.isKeyJustPressed(ATTACK);
+        heavyAttackPressed = Gdx.input.isKeyJustPressed(HEAVY_ATTACK);
         collectPressed = Gdx.input.isKeyPressed(COLLECT);
         usePressed = Gdx.input.isKeyPressed(USE);
         runPressed = Gdx.input.isKeyPressed(RUN);

@@ -261,4 +261,5 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
     public Location<Vector2> newLocation() {
         return new Box2dLocation(this.getPosition());
     }
+
 }

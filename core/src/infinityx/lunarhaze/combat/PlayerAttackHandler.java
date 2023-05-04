@@ -1,6 +1,7 @@
 package infinityx.lunarhaze.combat;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.controllers.GameplayController;
 import infinityx.lunarhaze.controllers.InputController;
@@ -14,21 +15,16 @@ import infinityx.lunarhaze.models.entity.Werewolf;
 public class PlayerAttackHandler extends AttackHandler {
 
     /**
-     * Current hand for attack sprite
-     */
-    private int hand;
-
-
-    /**
      * Dash variables
      */
-    private static final float DASH_SPEED = 10f;
     private static final float DASH_TIME = 0.15f;
     private float dashTimer;
     private Vector2 dashDirection;
     private boolean isDashing;
     public static final float DASH_COOLDOWN = 3.0f;
     private float dashCooldownCounter;
+
+    private boolean isHeavyAttack;
 
     /**
      * Creates a specialized attack system for the given player
@@ -39,6 +35,7 @@ public class PlayerAttackHandler extends AttackHandler {
         dashDirection = new Vector2();
         isDashing = false;
         dashCooldownCounter = DASH_COOLDOWN;
+        isHeavyAttack = false;
     }
 
     public float getDashCooldownCounter() {
@@ -59,7 +56,10 @@ public class PlayerAttackHandler extends AttackHandler {
             super.update(delta);
 
             if (InputController.getInstance().didAttack() && !player.isAttacking()) {
-                    initiateAttack();
+                initiateAttack();
+            }
+            else if (InputController.getInstance().didHeavyAttack() && !player.isAttacking()) {
+                initiateHeavyAttack();
             }
         }
 
@@ -82,6 +82,32 @@ public class PlayerAttackHandler extends AttackHandler {
         // movement component
         entity.getBody().applyLinearImpulse(entity.getLinearVelocity().nor(), entity.getBody().getWorldCenter(), true);
         super.initiateAttack();
+    }
+
+    public void initiateHeavyAttack() {
+        entity.attackDamage *= 2;
+        entity.attackKnockback *= 2;
+        entity.getAttackHitbox().setHitboxRange(entity.getAttackHitbox().getHitboxRange() * 1.5f);
+        isHeavyAttack = true;
+
+        initiateAttack();
+    }
+
+    @Override
+    protected void endAttack() {
+        super.endAttack();
+
+        if (isHeavyAttack) {
+            // Reset damage and knockback to their original values
+            entity.attackDamage /= 2;
+            entity.attackKnockback /= 2;
+            entity.getAttackHitbox().setHitboxRange(entity.getAttackHitbox().getHitboxRange() / 1.5f);
+
+            // Lock the player out after a heavy attack
+            entity.setLockedOut();
+
+            isHeavyAttack = false; // Reset the flag
+        }
     }
 
     /**
