@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
@@ -47,7 +48,7 @@ public class UIRender {
     /**
      * Distance between bars
      */
-    private final float GAP_DIST = 20f;
+    private final float GAP_DIST = 25f;
 
     /**
      * Top stroke width
@@ -72,7 +73,7 @@ public class UIRender {
     /**
      * Health stroke (located at top left corner) height
      */
-    private final static float HEALTH_STROKE_HEIGHT = 40f;
+    private final static float HEALTH_STROKE_HEIGHT = 50f;
 
     /**
      * Moonlight stroke (located at bottom left corner) width
@@ -97,7 +98,7 @@ public class UIRender {
     /**
      * Width of stroke background for attack power and range
      */
-    private final static float SQUARE_STROKE_WIDTH = 60.0f;
+    private final static float SQUARE_STROKE_WIDTH = 75.0f;
 
     /**
      * Height of moon center as a percentage of transition screen before rise
@@ -119,7 +120,11 @@ public class UIRender {
      */
     private final static float MOON_CENTERX_RATIO = 11.8f / 16;
 
-    private final static float ICON_SIZE = 20f;
+    private final static float ICON_SIZE = 30f;
+
+    private final static float DASH_ICON_SIZE = 50f;
+
+    private final static float CHANGE_STEALTH_RATE = 2f;
 
     private final Color hp_tint = new Color(135 / 255f, 23 / 255f, 47 / 255f, 1.0f);
 
@@ -246,11 +251,6 @@ public class UIRender {
     private Texture dash_bar;
 
     /**
-     * Texture for dash bar filled
-     */
-    private Texture dash_bar_filled;
-
-    /**
      * Texture for dash bar all filled
      */
     private Texture dash_bar_all_filled;
@@ -330,6 +330,16 @@ public class UIRender {
     private final Color colorCache = new Color();
 
     /**
+     * Target value for next stealth
+     */
+    float target = PlayerController.STILL_STEALTH;
+
+    /**
+     * Proportion of stealth bar to fill
+     */
+    float proportion = PlayerController.STILL_STEALTH;
+
+    /**
      * Create a new UIRender with font and directory assigned.
      *
      * @param font1
@@ -363,7 +373,6 @@ public class UIRender {
         attack_ran_icon = directory.getEntry("attack-ran-icon", Texture.class);
         ellipse = directory.getEntry("ellipse", Texture.class);
         dash_bar = directory.getEntry("bar", Texture.class);
-        dash_bar_filled = directory.getEntry("bar-filled", Texture.class);
         dash_bar_all_filled = directory.getEntry("bar-all-filled", Texture.class);
         dash_icon = directory.getEntry("dash-icon", Texture.class);
         enemy_hp = directory.getEntry("enemy-hp", Texture.class);
@@ -394,8 +403,6 @@ public class UIRender {
             canvas.begin(GameCanvas.DrawPass.SPRITE, level.getView().x, level.getView().y);
 
             if (gameplayController.getCollectingMoonlight() && phase == Phase.STEALTH) {
-//                canvas.drawCollectLightBar(BAR_WIDTH / 2, BAR_HEIGHT / 2,
-//                        gameplayController.getTimeOnMoonlightPercentage(), level.getPlayer());
                 drawCollectLightBar(canvas, BAR_WIDTH / 2, BAR_HEIGHT / 2,
                         gameplayController.getTimeOnMoonlightPercentage(), level.getPlayer());
             }
@@ -430,7 +437,7 @@ public class UIRender {
             if (phase == Phase.STEALTH) {
                 drawHealthStats(canvas, level);
                 drawMoonlightStats(canvas, level, delta);
-                drawStealthStats(canvas, level);
+                drawStealthStats(canvas, level, delta, gameplayController);
             } else if (phase == Phase.BATTLE) {
                 drawHealthStats(canvas, level);
                 drawPowerStats(canvas, level, gameplayController.getPlayerController());
@@ -444,7 +451,9 @@ public class UIRender {
             canvas.drawScreenFlash(level.getPlayer());
             canvas.end();
 
-            drawStealthIndicator(canvas, level);
+            if (phase == Phase.STEALTH) {
+                drawStealthIndicator(canvas, level);
+            }
 
             if (phase == Phase.TRANSITION) {
                 drawTransitionScreen(canvas, level, delta);
@@ -462,9 +471,8 @@ public class UIRender {
     }
 
     public void drawCollectLightBar(GameCanvas canvas, float width, float height, float percentage, Werewolf player) {
-        float padding = 5;
         float x = canvas.WorldToScreenX(player.getPosition().x) - width / 2;
-        float y = canvas.WorldToScreenY(player.getPosition().y) + player.getTextureHeight() + padding;
+        float y = canvas.WorldToScreenY(player.getPosition().y) + player.getTextureHeight() - 50;
 
         if (percentage == 1) {
             canvas.draw(moonlight_all_filled, alphaTint, x, y, width, height);
@@ -493,16 +501,31 @@ public class UIRender {
         canvas.draw(dash_icon, alphaTint, BAR_HEIGHT * 2, canvas.getHeight() / 2, ICON_SIZE, ICON_SIZE);
         PlayerAttackHandler pah = gc.getPlayerController().getAttackHandler();
         float percentage = pah.getDashCooldownCounter() / DASH_COOLDOWN;
-        float height = ICON_SIZE / dash_bar.getWidth() * dash_bar.getHeight();
-        if (percentage > 0.98) {
-            canvas.draw(dash_bar_all_filled, alphaTint, BAR_HEIGHT * 3, canvas.getHeight() / 2 - height / 2, ICON_SIZE,
-                    height + ICON_SIZE / 3);
-        } else {
-            canvas.draw(dash_bar, alphaTint, BAR_HEIGHT * 3, canvas.getHeight() / 2 - height / 2, ICON_SIZE,
-                    height + ICON_SIZE / 3);
-            canvas.draw(dash_bar_filled, alphaTint, BAR_HEIGHT * 3, canvas.getHeight() / 2 - height / 2, ICON_SIZE,
-                    height * percentage);
+        float height = DASH_ICON_SIZE / dash_bar.getWidth() * dash_bar.getHeight();
+
+        if (percentage > 0.99){
+            canvas.drawText("Ready to dash!", UIFont_small,
+                    BAR_HEIGHT * 2 - UIFont_small.getAscent(), canvas.getHeight() / 2 + ICON_SIZE * 2f);
         }
+
+        // TODO: Need to draw this correctly
+        int filledHeight =  (int) (dash_bar.getHeight() * percentage);
+        int unfilledHeight = (int) (dash_bar.getHeight() * (1 - percentage));
+        float screen_height_filled = height * percentage;
+        float screen_height_unfilled = height * (1 - percentage);
+        TextureRegion dash_bar_lower = new TextureRegion(dash_bar_all_filled,
+                0, unfilledHeight,
+                dash_bar.getWidth(), filledHeight);
+        canvas.draw(dash_bar_lower, alphaTint,
+                BAR_HEIGHT * 4, canvas.getHeight() / 2 - BAR_HEIGHT/2,
+                DASH_ICON_SIZE, screen_height_filled);
+
+        TextureRegion dash_bar_upper = new TextureRegion(dash_bar,
+                0, 0,
+                dash_bar.getWidth(), unfilledHeight);
+        canvas.draw(dash_bar_upper, alphaTint,
+                BAR_HEIGHT * 4, canvas.getHeight() / 2 - BAR_HEIGHT/2 + screen_height_filled,
+                DASH_ICON_SIZE, screen_height_unfilled);
     }
 
     /**
@@ -566,13 +589,17 @@ public class UIRender {
         } else {
             text = "Enemies Remaining";
             int remaining = gameplayController.getRemainingEnemies();
-            stat = remaining + "";
+            stat = "   " + remaining;
         }
-        canvas.drawText(text, UIFont_small, canvas.getWidth() / 2 - UIFont_small.getCapHeight() * text.length() / 2, canvas.getHeight() - TOP_MARGIN / 2.5f);
-        canvas.drawText(stat, UIFont_small, canvas.getWidth() / 2 - UIFont_small.getAscent() * 7, canvas.getHeight() - COUNTER_HEIGHT / 2.0f - TOP_MARGIN / 3);
-        canvas.draw(title_left, Color.WHITE, canvas.getWidth() / 2 - COUNTER_WIDTH - UIFont_small.getAscent() * 10, canvas.getHeight() - COUNTER_HEIGHT,
+        canvas.drawText(text, UIFont_small, canvas.getWidth() / 2 - UIFont_small.getAscent() * text.length() * 1.8f, canvas.getHeight() - HEALTH_STROKE_HEIGHT * 0.7f);
+        canvas.drawText(stat, UIFont_small,
+                canvas.getWidth() / 2 - UIFont_small.getAscent() * 7,
+                canvas.getHeight() - HEALTH_STROKE_HEIGHT * 2 + UIFont_small.getCapHeight() * 2.5f);
+        canvas.draw(title_left, Color.WHITE, canvas.getWidth() / 2 - COUNTER_WIDTH - UIFont_small.getAscent() * 10,
+                canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f,
                 COUNTER_WIDTH, UIFont_small.getCapHeight());
-        canvas.draw(title_right, Color.WHITE, canvas.getWidth() / 2 + UIFont_small.getAscent() * 10, canvas.getHeight() - COUNTER_HEIGHT,
+        canvas.draw(title_right, Color.WHITE, canvas.getWidth() / 2 + UIFont_small.getAscent() * 10,
+                canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f,
                 COUNTER_WIDTH, UIFont_small.getCapHeight());
     }
 
@@ -620,11 +647,17 @@ public class UIRender {
      * Draw the moonlight stroke and moonlight status
      */
     public void drawMoonlightStats(GameCanvas canvas, LevelContainer level, float delta) {
-        canvas.draw(moonlight_stroke, Color.WHITE, MOON_STROKE_WIDTH / 3 + HEALTH_STROKE_WIDTH, canvas.getHeight() - HEALTH_STROKE_HEIGHT - MOON_STROKE_HEIGHT, MOON_STROKE_WIDTH, MOON_STROKE_HEIGHT);
+        canvas.draw(moonlight_stroke, Color.WHITE,
+                MOON_STROKE_WIDTH / 3 + HEALTH_STROKE_WIDTH,
+                canvas.getHeight() - HEALTH_STROKE_HEIGHT * 2,
+                MOON_STROKE_WIDTH, HEALTH_STROKE_HEIGHT);
         canvas.draw(moon_icon, Color.WHITE, moon_icon.getWidth() / 2, moon_icon.getHeight() / 2,
-                MOON_STROKE_WIDTH / 2 + moon_icon.getWidth() / 4 + HEALTH_STROKE_WIDTH, canvas.getHeight() - HEALTH_STROKE_HEIGHT - MOON_STROKE_HEIGHT + moon_icon.getHeight() / 2, 0, 0.5f, 0.5f);
+                MOON_STROKE_WIDTH / 2 + moon_icon.getWidth() / 4 + HEALTH_STROKE_WIDTH,
+                canvas.getHeight() - HEALTH_STROKE_HEIGHT - MOON_STROKE_HEIGHT + moon_icon.getHeight() * 0.6f,
+                0, 0.5f, 0.5f);
         canvas.drawText(level.getPlayer().getMoonlightCollected() + "/" + ((int) level.getTotalMoonlight()), UIFont_small,
-                MOON_STROKE_WIDTH * 4 / 5 + HEALTH_STROKE_WIDTH, canvas.getHeight() - HEALTH_STROKE_HEIGHT * 2 + UIFont_small.getCapHeight() * 2.5f);
+                MOON_STROKE_WIDTH * 4 / 5 + HEALTH_STROKE_WIDTH,
+                canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.5f + UIFont_small.getCapHeight()/2);
         if (level.getPlayer().getMoonlightCollected() > last_moon) {
             drawMoonCollect(canvas, delta);
         }
@@ -634,9 +667,25 @@ public class UIRender {
     /**
      * Draw the stealth stroke and stealth status of the player
      */
-    public void drawStealthStats(GameCanvas canvas, LevelContainer level) {
+    public void drawStealthStats(GameCanvas canvas, LevelContainer level, float delta, GameplayController gc) {
         canvas.draw(stealth_stroke, Color.WHITE, canvas.getWidth() / 2 - STEALTH_STROKE_WIDTH / 2, MOON_STROKE_HEIGHT, STEALTH_STROKE_WIDTH, STEALTH_STROKE_HEIGHT);
-        float proportion = level.getPlayer().getStealth();
+        target = level.getPlayer().getStealth();
+        if (level.getPlayer().getLinearVelocity().isZero() && level.getPlayer().isOnMoonlight == false){
+            target = PlayerController.STILL_STEALTH;
+        }
+        if (target > proportion) {
+            if (target - proportion >= CHANGE_STEALTH_RATE / 1.0f * delta) {
+                proportion = proportion + CHANGE_STEALTH_RATE / 1.0f * delta;
+            } else {
+                proportion = target;
+            }
+        } else if (target < proportion){
+            if (proportion - target >= CHANGE_STEALTH_RATE / 1.0f * delta) {
+                proportion = proportion - CHANGE_STEALTH_RATE / 1.0f * delta;
+            } else {
+                proportion = target;
+            }
+        }
         canvas.draw(stealth_icon, Color.WHITE, stealth_icon.getWidth() / 2, stealth_icon.getHeight() / 2, canvas.getWidth() / 2 - STEALTH_STROKE_WIDTH / 2 + stealth_icon.getWidth(), MOON_STROKE_HEIGHT + stealth_icon.getHeight() * 3 / 5, (float) (13f / 180f * Math.PI), 0.7f, 0.7f);
         Color stealth_fill = new Color(255f / 255.0f, 255f / 255.0f, 255f / 255.0f, 1f);
         canvas.draw(stealth_stroke, stealth_fill, canvas.getWidth() / 2 - STEALTH_STROKE_WIDTH / 2, MOON_STROKE_HEIGHT, STEALTH_STROKE_WIDTH * proportion, STEALTH_STROKE_HEIGHT);
@@ -692,7 +741,7 @@ public class UIRender {
         canvas.draw(attack_ran_icon, Color.WHITE,
                 attack_ran_icon.getWidth() / 2, attack_ran_icon.getHeight() / 2,
                 stroke_width + SQUARE_STROKE_WIDTH * 2 + GAP_DIST,
-                canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f,
+                canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.5f,
                 0, 1.0f, 1.0f);
         canvas.drawText(pc.getNumRangePress() + "", UIFont_small,
                 stroke_width + SQUARE_STROKE_WIDTH * 2 + attack_pow_icon.getWidth() / 2 + GAP_DIST,

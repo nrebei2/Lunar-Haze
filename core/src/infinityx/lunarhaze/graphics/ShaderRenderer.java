@@ -128,7 +128,9 @@ public class ShaderRenderer implements Renderer {
     @Override
     public void dispose() {
         mesh.dispose();
-        shader.dispose();
+        if (shader != null) {
+            shader.dispose();
+        }
     }
 
     @Override

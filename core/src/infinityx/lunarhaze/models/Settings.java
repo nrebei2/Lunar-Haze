@@ -17,7 +17,9 @@ public class Settings {
     public ImInt delay = new ImInt(0);
     public ImInt transition = new ImInt(4);
 
-    /** List of locations enemies can spawn during battle phase */
+    /**
+     * List of locations enemies can spawn during battle phase
+     */
     private Array<Vector2> spawnLocations = new Array<>();
 
     /**
@@ -94,6 +96,7 @@ public class Settings {
 
     /**
      * Sets the phase length in seconds for the stealth phase.
+     *
      * @param phaseLength the length to set
      */
     public void setPhaseLength(int phaseLength) {
@@ -132,12 +135,16 @@ public class Settings {
         }
     }
 
-    /** @return The transition in seconds between stealth and battle ambient lighting */
+    /**
+     * @return The transition in seconds between stealth and battle ambient lighting
+     */
     public int getTransition() {
         return transition.get();
     }
 
-    /** Sets the number of seconds between transitioning from stealth and battle ambient lighting */
+    /**
+     * Sets the number of seconds between transitioning from stealth and battle ambient lighting
+     */
     public void setTransition(int transition) {
         this.transition.set(transition);
     }

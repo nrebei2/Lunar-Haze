@@ -1,8 +1,6 @@
 package infinityx.lunarhaze.models;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.combat.AttackHitbox;
@@ -230,9 +228,9 @@ public abstract class AttackingGameObject extends GameObject {
             }
         }
 
-        if(isAttacked){
+        if (isAttacked) {
             attackedTime -= delta;
-            if(attackedTime <= 0){
+            if (attackedTime <= 0) {
                 isAttacked = false;
             }
         }

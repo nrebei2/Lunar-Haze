@@ -365,14 +365,14 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
                 canvas.begin(GameCanvas.DrawPass.SPRITE);
                 canvas.drawTextCentered("VICTORY!", displayFont, 0.0f);
                 displayFont.setColor(Color.BLACK);
-                canvas.drawTextCentered("Press R to Restart", displayFont, - canvas.getHeight() * 0.1f);
+                canvas.drawTextCentered("Press R to Restart", displayFont, -canvas.getHeight() * 0.1f);
                 canvas.end();
                 break;
             case OVER:
                 displayFont.setColor(Color.RED);
                 canvas.begin(GameCanvas.DrawPass.SPRITE); // DO NOT SCALE
                 canvas.drawTextCentered("FAILURE!", displayFont, 0.0f);
-                canvas.drawTextCentered("Press R to Restart", displayFont, - canvas.getHeight() * 0.1f);
+                canvas.drawTextCentered("Press R to Restart", displayFont, -canvas.getHeight() * 0.1f);
                 canvas.end();
                 break;
             case PLAY:

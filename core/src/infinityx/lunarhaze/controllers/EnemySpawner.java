@@ -3,11 +3,9 @@ package infinityx.lunarhaze.controllers;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.JsonValue;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.Settings;
 import infinityx.lunarhaze.models.entity.Enemy;
-import infinityx.util.PatrolRegion;
 
 /**
  * Basically a monster spawner. Used for the battle phase.
@@ -39,7 +37,9 @@ public class EnemySpawner {
      */
     private float time;
 
-    /** List of locations enemies this spawner can spawn at */
+    /**
+     * List of locations enemies this spawner can spawn at
+     */
     private Array<Vector2> spawnLocations;
 
     /**
@@ -68,7 +68,6 @@ public class EnemySpawner {
 
     /**
      * Add enemy to level when applicable.
-     *
      */
     public void update(float delta) {
         if (count <= 0) return;

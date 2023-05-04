@@ -84,6 +84,9 @@
     "attack-pow-icon": "allocateUI/attack-pow-icon.png",
     "attack-ran-icon": "allocateUI/range-icon.png",
     "square-stroke": "allocateUI/square-stroke.png",
+    "attack-pow-allocate": "allocateUI/attack-power-allocation.png",
+    "attack-ran-allocate": "allocateUI/attack-range-allocation.png",
+    "health-allocate": "allocateUI/health-allocation.png",
     "star-empty": "allocateUI/star-empty.png",
     "star-filled": "allocateUI/star-filled.png",
     "title-left": "allocateUI/title-left.png",
@@ -423,7 +426,7 @@
     },
     "libre-small": {
       "file": "screens/LibreBaskerville-Regular.ttf",
-      "size": 15
+      "size": 16
     }
   }
 }

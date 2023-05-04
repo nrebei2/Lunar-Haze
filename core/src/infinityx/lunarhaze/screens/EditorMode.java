@@ -20,9 +20,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import imgui.*;
 import imgui.flag.*;
 import imgui.glfw.ImGuiImplGlfw;
-import imgui.internal.ImGuiWindow;
 import imgui.type.ImBoolean;
-import imgui.type.ImFloat;
 import imgui.type.ImInt;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.controllers.LevelParser;
@@ -32,11 +30,11 @@ import infinityx.lunarhaze.graphics.ImGuiImplGLES2;
 import infinityx.lunarhaze.models.Board;
 import infinityx.lunarhaze.models.GameObject;
 import infinityx.lunarhaze.models.LevelContainer;
+import infinityx.lunarhaze.models.entity.Enemy;
+import infinityx.lunarhaze.models.entity.SceneObject;
 import infinityx.util.FilmStrip;
 import infinityx.util.PatrolRegion;
 import infinityx.util.ScreenObservable;
-
-import java.util.ArrayList;
 
 import static infinityx.lunarhaze.controllers.LevelSerializer.saveLevel;
 
@@ -86,7 +84,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     /**
      * Whether to display the File->New popup to select board size
      */
-    private ImBoolean showNewBoardWindow;
+    private ImBoolean showNewBoardWindow = new ImBoolean();
 
     /**
      * Whether to display the error when you cannot save
@@ -106,7 +104,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     /**
      * List of moonlight point lights placed on level (for modifying color after placing lights)
      */
-    private ArrayList<PointLight> pointLights;
+    private Array<PointLight> pointLights;
 
     /**
      * Background texture for the editor
@@ -123,7 +121,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
          * Enum specifying the type of the selected object.
          */
         public enum Type {
-            TILE, PLAYER, ENEMY, OBJECT, MOONLIGHT
+            TILE, PLAYER, ENEMY, OBJECT, EXIST_ENEMY, EXIST_OBJECT, MOONLIGHT
         }
 
         /**
@@ -180,21 +178,15 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     /**
      * Holds the necessary information to place an enemy
      */
-    class Enemy extends Selected {
-        public Enemy(Texture texture, String type) {
-            this.type = type;
-            this.texture = texture;
+    class EnemySelection extends Selected {
+        public EnemySelection(Enemy enemy) {
+            this.enemy = enemy;
         }
 
         /**
-         * type of Enemy
+         * wrapped enemy
          */
-        public String type;
-
-        /**
-         * Texture for button
-         */
-        public Texture texture;
+        public Enemy enemy;
 
         @Override
         public Type getType() {
@@ -202,31 +194,60 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         }
     }
 
+    /**
+     * The user has selected an existing enemy in the scene
+     */
+    class ExistingEnemy extends Selected {
+        public ExistingEnemy(Enemy enemy) {
+            this.enemy = enemy;
+        }
+
+        /**
+         * wrapped enemy
+         */
+        public Enemy enemy;
+
+        @Override
+        public Type getType() {
+            return Type.EXIST_ENEMY;
+        }
+    }
 
     /**
      * Holds the necessary information to place an object
      */
-    class SceneObject extends Selected {
-        public SceneObject(Texture texture, String type) {
-            this.type = type;
-            this.texture = texture;
-            this.scale = 1;
+    class ObjectSelection extends Selected {
+        public ObjectSelection(SceneObject object) {
+            this.object = object;
         }
 
         /**
-         * type of scene object
+         * Wrapped object
          */
-        public String type;
-
-        /**
-         * Texture for button
-         */
-        public Texture texture;
-        public float scale;
+        public SceneObject object;
 
         @Override
         public Type getType() {
             return Type.OBJECT;
+        }
+    }
+
+    /**
+     * The user has selected an existing object in the scene
+     */
+    class ExistingObject extends Selected {
+        public ExistingObject(SceneObject object) {
+            this.object = object;
+        }
+
+        /**
+         * Wrapped object
+         */
+        public SceneObject object;
+
+        @Override
+        public Type getType() {
+            return Type.EXIST_OBJECT;
         }
     }
 
@@ -239,7 +260,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
          */
         public enum Type {
             MOONLIGHT,
-            OBJECT
+            ADD_OBJECT,
+            REMOVE_OBJECT
         }
 
         /**
@@ -269,7 +291,28 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
         @Override
         public Type getType() {
-            return Type.OBJECT;
+            return Type.ADD_OBJECT;
+        }
+    }
+
+    /**
+     * Represents an action for removing an object.
+     */
+    public static class RemoveObject extends Action {
+        public GameObject gameObject;
+
+        /**
+         * Constructs a RemoveObject action with the given GameObject.
+         *
+         * @param gameObject A GameObject that was removed.
+         */
+        public RemoveObject(GameObject gameObject) {
+            this.gameObject = gameObject;
+        }
+
+        @Override
+        public Type getType() {
+            return Type.REMOVE_OBJECT;
         }
     }
 
@@ -297,9 +340,49 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         }
     }
 
+    /**
+     * Holds the necessary information to display the enemy button
+     */
+    class EnemyButton {
+        public EnemyButton(Texture texture, String type) {
+            this.type = type;
+            this.texture = texture;
+        }
+
+        /**
+         * type of Enemy
+         */
+        public String type;
+
+        /**
+         * Texture for button
+         */
+        public Texture texture;
+    }
 
     /**
-     * What is on my cursor right now?
+     * Holds the necessary information to display the scene object button
+     */
+    class SceneButton {
+        public SceneButton(Texture texture, String type) {
+            this.type = type;
+            this.texture = texture;
+        }
+
+        /**
+         * type of scene object
+         */
+        public String type;
+
+        /**
+         * Texture for button
+         */
+        public Texture texture;
+    }
+
+
+    /**
+     * What is on my cursor right now? null if none
      */
     private Selected selected;
 
@@ -307,6 +390,11 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * Tint for textures before placement
      */
     public static final Color SELECTED_COLOR = new Color(0.5f, 0.5f, 0.5f, 0.9f);
+
+    /**
+     * Tint for textures for overlapping
+     */
+    public static final Color OVERLAPPED_COLOR = Color.RED.cpy().mul(1, 1, 1, 0.8f);
 
     /**
      * Holds world coordinates of cursor
@@ -341,23 +429,17 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     /**
      * Current enemy being changed in the Enemy->Enemy x new window
      */
-    private infinityx.lunarhaze.models.entity.Enemy currEnemyControlled;
+    private Enemy currEnemyControlled;
 
     /**
-     * List of possible scene object selections
+     * List of scene object buttons
      */
-    Array<SceneObject> objectSelections;
+    Array<SceneButton> objectSelections;
 
     /**
-     * List of possible scene enemy selections
+     * List of enemy brush buttons
      */
-    Array<Enemy> enemySelections;
-
-    /**
-     * The game object that is currently selected. Ignore if selected is a tile or moonlight.
-     * Otherwise, it should match the gameobject represented in {@link #selected}.
-     */
-    GameObject selectedObject;
+    Array<EnemyButton> enemySelections;
 
     /**
      * Whether the selected object is currently overlapping an existing object
@@ -365,10 +447,14 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     boolean overlapped;
 
     /**
+     * Whether the selected scene object is currently overlapping a player or enemy
+     */
+    boolean sceneOverlap;
+
+    /**
      * When false, display the stealth ambient lighting, when true, display the battle ambient lighting
      */
     private boolean showBattleLighting;
-
 
     /**
      * Whether an undo or redo was pressed this frame
@@ -400,14 +486,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     private boolean showSaveLevelPopup = false;
 
-    /**
-     * An index representing the currently selected spawn location.
-     */
-    private int selectedSpawnLocationIndex;
-
     public EditorMode(GameCanvas canvas) {
         this.canvas = canvas;
-        pointLights = new ArrayList<>();
+        pointLights = new Array<>();
         objectSelections = new Array<>();
         enemySelections = new Array<>();
     }
@@ -428,7 +509,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         // Add all objects in json
         for (JsonValue object : objects) {
             objectSelections.add(
-                    new SceneObject(
+                    new SceneButton(
                             directory.getEntry(
                                     object.get("textures").getString(
                                             object.get("texture").getString("name")
@@ -441,7 +522,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         // Add all enemies in json
         for (JsonValue enemy : enemies) {
             enemySelections.add(
-                    new Enemy(
+                    new EnemyButton(
                             directory.getEntry(
                                     enemy.get("textures").getString(
                                             enemy.get("texture").getString("name")
@@ -472,18 +553,26 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 (int) mouseBoard.x, (int) mouseBoard.y,
                 curr.num
         );
+
         // Sets the tile type for serialization
         board.setTileType((int) mouseBoard.x, (int) mouseBoard.y, infinityx.lunarhaze.models.Tile.TileType.Road);
     }
 
 
     /**
-     * Places the currently selected object (Tile, Player, SceneObject, or Enemy) at the current mouse
-     * position on the game board, handling each object type with the appropriate method (placeTile(),
+     * Places the current selection at the current mouse position on the game board,
+     * handling each object type with the appropriate method (placeTile(),
      * placeSceneObject(), etc.).
      */
     private void placeSelection() {
-        if (overlapped) return;
+        if (selected.getType() == Selected.Type.OBJECT) {
+            // Allow the user to place scene objects over each other
+            // But not on enemies or players
+            if (sceneOverlap)
+                return;
+        } else if (overlapped)
+            return;
+
         switch (selected.getType()) {
             case TILE:
                 board.removePreview();
@@ -493,7 +582,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 level.getPlayer().setPosition(mouseWorld);
                 playerPlaced = true;
                 level.getPlayer().setTint(Color.WHITE);
-                removeSelectedObject();
+                removeSelection();
                 break;
             case OBJECT:
                 // Perform action
@@ -501,7 +590,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 undoneActions.clear();
                 break;
             case ENEMY:
-                infinityx.lunarhaze.models.entity.Enemy newEnemy = placeEnemy();
+                Enemy newEnemy = placeEnemy();
 
                 currEnemyControlled = newEnemy;
                 showEnemyControllerWindow.set(true);
@@ -520,15 +609,17 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * Creates a new enemy of the selected type at the current mouse position on the game board,
      * adding it to the level.
      */
-    private infinityx.lunarhaze.models.entity.Enemy placeEnemy() {
-        Enemy e = (Enemy) selected;
+    private Enemy placeEnemy() {
+        EnemySelection enemySelection = (EnemySelection) selected;
         // Center initial region around placed enemy
         PatrolRegion initialRegion = new PatrolRegion(
                 mouseWorld.x - 1, mouseWorld.y - 1,
                 mouseWorld.x + 1, mouseWorld.y + 1
         );
 
-        return level.addEnemy(e.type, mouseWorld.x, mouseWorld.y, initialRegion);
+        Enemy newEnemy = level.addEnemy(enemySelection.enemy.getName(), mouseWorld.x, mouseWorld.y, initialRegion);
+        newEnemy.setScale(enemySelection.enemy.getScale());
+        return newEnemy;
     }
 
     /**
@@ -540,26 +631,34 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     private void placeMoonlightTile() {
         int x = (int) mouseBoard.x;
         int y = (int) mouseBoard.y;
-        if (!board.isLit(x, y)) {
-            // PointLight logic
-            PointLight light = new PointLight(
-                    level.getRayHandler(),
-                    40,
-                    new Color(moonlightLighting[0], moonlightLighting[1], moonlightLighting[2], moonlightLighting[3]),
-                    2.5f, board.boardCenterToWorldX(x), board.boardCenterToWorldY(y)
-            );
 
-            light.setSoft(true);
-            board.setSpotlight(x, y, light);
-            pointLights.add(light);
-
-            // Set board tile to lit
-            board.setLit(x, y, true);
+        if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
+            if (!board.isLit(x, y)) return;
+            board.setLit(x, y, false);
             // So moonlightTiles in board can update
-            board.setCollectable(x, y, true);
-            // Perform action
-            doneActions.add(new PlaceMoonlight(x, y));
-            undoneActions.clear();
+            board.setCollectable(x, y, false);
+        } else {
+            if (!board.isLit(x, y)) {
+                // PointLight logic
+                PointLight light = new PointLight(
+                        level.getRayHandler(),
+                        40,
+                        new Color(moonlightLighting[0], moonlightLighting[1], moonlightLighting[2], moonlightLighting[3]),
+                        2.5f, board.boardCenterToWorldX(x), board.boardCenterToWorldY(y)
+                );
+
+                light.setSoft(true);
+                board.setSpotlight(x, y, light);
+                pointLights.add(light);
+
+                // Set board tile to lit
+                board.setLit(x, y, true);
+                // So moonlightTiles in board can update
+                board.setCollectable(x, y, true);
+                // Perform action
+                doneActions.add(new PlaceMoonlight(x, y));
+                undoneActions.clear();
+            }
         }
     }
 
@@ -567,72 +666,46 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * Places a scene object of the selected type at the current mouse position on the game board
      * Invariant: selected is a SceneObject
      */
-    private infinityx.lunarhaze.models.entity.SceneObject placeSceneObject() {
-        // Enforce invariant
-        assert selected instanceof SceneObject;
-
-        SceneObject curr = (SceneObject) selected;
+    private SceneObject placeSceneObject() {
+        ObjectSelection curr = (ObjectSelection) selected;
         return level.addSceneObject(
-                curr.type,
+                curr.object.getName(),
                 mouseWorld.x, mouseWorld.y,
-                curr.scale
+                curr.object.getScale()
         );
     }
 
     /**
-     * Set the game object to be represented as {@link #selectedObject}.
-     * The object will render and follow the mouse cursor until placed.
-     * <p>
-     * The current {@link #selected} will determine which object to add
+     * Reset and stop drawing the current selection if exists
      */
-    private void setSelectedObject() {
-        // Board has its own logic
-        if (selectedObject != null) {
-            removeSelectedObject();
-        } else {
-            board.removePreview();
-        }
+    private void removeSelection() {
         if (selected == null) return;
-
         switch (selected.getType()) {
+            case EXIST_ENEMY:
+                ((ExistingEnemy) selected).enemy.setTint(Color.WHITE);
+                currEnemyControlled = null;
+                showEnemyControllerWindow.set(false);
+                break;
+            case EXIST_OBJECT:
+                ((ExistingObject) selected).object.setTint(Color.WHITE);
+                break;
             case ENEMY:
-                selectedObject = placeEnemy();
+                level.removeEnemy(((EnemySelection) selected).enemy);
                 break;
             case OBJECT:
-                selectedObject = placeSceneObject();
+                level.removeSceneObject(((ObjectSelection) selected).object);
                 break;
             case PLAYER:
-                selectedObject = level.getPlayer();
-                selectedObject.setPosition(mouseWorld);
-                level.showPlayer();
-            default:
-                break;
-        }
-        selectedObject.setTint(SELECTED_COLOR);
-        selectedObject.setSensor(true);
-    }
-
-    /**
-     * Reset and stop drawing the selected object
-     */
-    private void removeSelectedObject() {
-        board.removePreview();
-
-        if (selectedObject == null) return;
-        switch (selectedObject.getType()) {
-            case ENEMY:
-                level.removeEnemy((infinityx.lunarhaze.models.entity.Enemy) selectedObject);
-                break;
-            case SCENE:
-                level.removeSceneObject((infinityx.lunarhaze.models.entity.SceneObject) selectedObject);
-                break;
-            case WEREWOLF:
                 if (!playerPlaced)
                     level.hidePlayer();
+                break;
+            case TILE:
+                board.removePreview();
+                break;
             default:
                 break;
         }
-        selectedObject = null;
+        selected = null;
     }
 
     /**
@@ -647,7 +720,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                     PlaceMoonlight act = (PlaceMoonlight) lastAction;
                     board.setLit(act.x, act.y, false);
                     break;
-                case OBJECT:
+                case ADD_OBJECT:
                     GameObject obj = ((PlaceObject) lastAction).gameObject;
                     switch (obj.getType()) {
                         case ENEMY:
@@ -657,6 +730,18 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                             level.removeSceneObject((infinityx.lunarhaze.models.entity.SceneObject) obj);
                             break;
                     }
+                    break;
+                case REMOVE_OBJECT:
+                    GameObject removedObj = ((RemoveObject) lastAction).gameObject;
+                    switch (removedObj.getType()) {
+                        case ENEMY:
+                            level.addEnemy((infinityx.lunarhaze.models.entity.Enemy) removedObj);
+                            break;
+                        case SCENE:
+                            level.addSceneObject((infinityx.lunarhaze.models.entity.SceneObject) removedObj);
+                            break;
+                    }
+                    break;
             }
             undoneActions.add(lastAction);
         }
@@ -673,7 +758,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                     PlaceMoonlight act = (PlaceMoonlight) lastUndoneAction;
                     board.setLit(act.x, act.y, true);
                     break;
-                case OBJECT:
+                case ADD_OBJECT:
                     GameObject obj = ((PlaceObject) lastUndoneAction).gameObject;
                     switch (obj.getType()) {
                         case ENEMY:
@@ -683,17 +768,21 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                             level.addSceneObject((infinityx.lunarhaze.models.entity.SceneObject) obj);
                             break;
                     }
+                    break;
+                case REMOVE_OBJECT:
+                    GameObject removedObj = ((RemoveObject) lastUndoneAction).gameObject;
+                    switch (removedObj.getType()) {
+                        case ENEMY:
+                            level.removeEnemy((infinityx.lunarhaze.models.entity.Enemy) removedObj);
+                            break;
+                        case SCENE:
+                            level.removeSceneObject((infinityx.lunarhaze.models.entity.SceneObject) removedObj);
+                            break;
+                    }
+                    break;
             }
             doneActions.add(lastUndoneAction);
         }
-    }
-
-
-    /**
-     * Tests the level using the Board and LevelContainer references. Switches screens to GameMode.
-     */
-    private void testLevel() {
-        observer.exitScreen(this, GO_PLAY);
     }
 
     /**
@@ -762,11 +851,78 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     QueryCallback queryCallback = new QueryCallback() {
         @Override
         public boolean reportFixture(Fixture fixture) {
-            if (fixture.getBody().getUserData() == selectedObject) return true;
+            if (fixture.getBody().getUserData() == getSelectedObject()) return true;
             overlapped = true;
             return false;
         }
     };
+
+    /**
+     * Callback for scene used to determine {@link #overlapped} and {@link #sceneOverlap}
+     */
+    QueryCallback sceneCallback = new QueryCallback() {
+        @Override
+        public boolean reportFixture(Fixture fixture) {
+            if (fixture.getBody().getUserData() == getSelectedObject()) return true;
+            GameObject hit = (GameObject) fixture.getBody().getUserData();
+            if (hit.getType() == GameObject.ObjectType.ENEMY || hit.getType() == GameObject.ObjectType.WEREWOLF) {
+                sceneOverlap = true;
+                overlapped = true;
+                return false;
+            }
+            overlapped = true;
+            return true;
+        }
+    };
+
+    /**
+     * Callback for scene used to determine what object in scene to select
+     */
+    QueryCallback selectCallback = new QueryCallback() {
+        @Override
+        public boolean reportFixture(Fixture fixture) {
+            GameObject hit = (GameObject) fixture.getBody().getUserData();
+
+            switch (hit.getType()) {
+                case ENEMY:
+                    selected = new ExistingEnemy((Enemy) hit);
+                    // Open controller for selected enemy
+                    currEnemyControlled = (Enemy) hit;
+                    showEnemyControllerWindow.set(true);
+                    break;
+                case WEREWOLF:
+                    selected = new Player();
+                    playerPlaced = false;
+                    break;
+                case SCENE:
+                    selected = new ExistingObject((SceneObject) hit);
+            }
+
+            hit.setTint(SELECTED_COLOR);
+            return true;
+        }
+    };
+
+    /**
+     * Returns the currently selected game object if it exists, null otherwise
+     */
+    private GameObject getSelectedObject() {
+        if (selected == null) return null;
+        switch (selected.getType()) {
+            case EXIST_OBJECT:
+                return ((ExistingObject) selected).object;
+            case EXIST_ENEMY:
+                return ((ExistingEnemy) selected).enemy;
+            case ENEMY:
+                return ((EnemySelection) selected).enemy;
+            case OBJECT:
+                return ((ObjectSelection) selected).object;
+            case PLAYER:
+                return level.getPlayer();
+            default:
+                return null;
+        }
+    }
 
     /**
      * Update the status of this editor mode.
@@ -778,14 +934,19 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         if (level == null) return;
         level.getWorld().step(delta, 6, 2);
         overlapped = false;
+        sceneOverlap = false;
 
         // Determine if selected object is overlapping
         // I was forced to do this instead of contact listener since the scene objects are static
+        GameObject selectedObject = getSelectedObject();
+
         if (selectedObject != null) {
             getAABB(selectedObject.getShapeInformation("body").fixture, lowerCache, upperCache);
-            level.getWorld().QueryAABB(queryCallback, lowerCache.x, lowerCache.y, upperCache.x, upperCache.y);
+            if (selectedObject.getType() == GameObject.ObjectType.SCENE) {
+                level.getWorld().QueryAABB(sceneCallback, lowerCache.x, lowerCache.y, upperCache.x, upperCache.y);
+            } else {
+                level.getWorld().QueryAABB(queryCallback, lowerCache.x, lowerCache.y, upperCache.x, upperCache.y);
 
-            if (selectedObject.getType() == GameObject.ObjectType.WEREWOLF || selectedObject.getType() == GameObject.ObjectType.ENEMY) {
                 // Don't place werewolf or enemy outside board
                 if (!board.inBoundsWorld(selectedObject.getX(), selectedObject.getY())) {
                     overlapped = true;
@@ -793,12 +954,14 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             }
             // Change tint of object depending on overlapping
             if (overlapped) {
-                selectedObject.setTint(Color.RED);
+                selectedObject.setTint(OVERLAPPED_COLOR);
             } else {
                 selectedObject.setTint(SELECTED_COLOR);
             }
         }
+        changed = true;
 
+        if (ImGui.getIO().getWantCaptureKeyboard()) return;
         // Zoom in and out with arrow keys
         if (Gdx.input.isKeyPressed(Input.Keys.EQUALS)) {
             canvas.setZoom(canvas.getZoom() + 0.01f);
@@ -806,9 +969,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         if (Gdx.input.isKeyPressed(Input.Keys.MINUS)) {
             canvas.setZoom(canvas.getZoom() - 0.01f);
         }
-        changed = true;
 
-        if (ImGui.getIO().getWantCaptureMouse()) return;
         // Move world with arrow keys
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             level.translateView(-20, 0);
@@ -875,6 +1036,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         }
         ImGui.end();
 
+        createSceneMenu();
+
         // Position window right below Selection
         ImGui.setNextWindowPos(ImGui.getWindowPosX(), ImGui.getWindowPosY() + 300, ImGuiCond.FirstUseEver);
         ImGui.setNextWindowSize(800, 175, ImGuiCond.FirstUseEver);
@@ -924,14 +1087,12 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     public void show() {
         boardSize = new int[]{10, 10};
         objectScale = new float[]{1};
-        showNewBoardWindow = new ImBoolean(level == null);
+        showNewBoardWindow.set(level == null);
         showCannotSaveError = false;
         showEnemyControllerWindow.set(false);
         showBattleLighting = false;
         showSaveLevelPopup = false;
         showOverwritePrompt = false;
-        selected = new Tile(0);
-        selectedSpawnLocationIndex = -1;
 
         Gdx.input.setInputProcessor(this);
         RayHandler.setGammaCorrection(true);
@@ -1008,12 +1169,21 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             // mouse is on different tile now
             mouseBoard.set(boardX, boardY);
         }
-        if (selected == null) {
-            return false;
+        if (selected == null || selected.getType() == Selected.Type.EXIST_OBJECT || selected.getType() == Selected.Type.EXIST_ENEMY) {
+            removeSelection();
+            // select object
+            level.getWorld().QueryAABB(
+                    selectCallback,
+                    mouseWorld.x - 0.05f,
+                    mouseWorld.y - 0.05f,
+                    mouseWorld.x + 0.05f,
+                    mouseWorld.y + 0.05f
+            );
+
+            return true;
         }
 
         placeSelection();
-
         return true;
     }
 
@@ -1034,15 +1204,26 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         if (selected == null) {
             return false;
         }
-        if (selected.getType() == Selected.Type.TILE) {
-            int boardX = board.worldToBoardX(mouseWorld.x);
-            int boardY = board.worldToBoardY(mouseWorld.y);
 
-            if (!mouseBoard.epsilonEquals(boardX, boardY) || !board.hasPreview()) {
-                // mouse is on different tile now
-                mouseBoard.set(boardX, boardY);
-                placeTile();
-            }
+        switch (selected.getType()) {
+            case EXIST_OBJECT:
+                ((ExistingObject) selected).object.setPosition(mouseWorld.x, mouseWorld.y);
+                break;
+            case EXIST_ENEMY:
+                ((ExistingEnemy) selected).enemy.setPosition(mouseWorld.x, mouseWorld.y);
+                break;
+            case TILE:
+                int boardX = board.worldToBoardX(mouseWorld.x);
+                int boardY = board.worldToBoardY(mouseWorld.y);
+
+                if (!mouseBoard.epsilonEquals(boardX, boardY) || !board.hasPreview()) {
+                    // mouse is on different tile now
+                    mouseBoard.set(boardX, boardY);
+                    placeTile();
+                }
+                break;
+            default:
+                break;
         }
         return true;
     }
@@ -1085,10 +1266,13 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 // dont update position if placed
                 if (playerPlaced) break;
                 level.getPlayer().setPosition(mouseWorld);
+                break;
             case ENEMY:
+                ((EnemySelection) selected).enemy.setPosition(mouseWorld);
+                break;
             case OBJECT:
-                if (selectedObject == null) break;
-                selectedObject.setPosition(mouseWorld);
+                ((ObjectSelection) selected).object.setPosition(mouseWorld);
+                break;
         }
 
         return true;
@@ -1104,13 +1288,18 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     @Override
     public boolean scrolled(float amountX, float amountY) {
         if (level == null) return false;
-        if (ImGui.getIO().getWantCaptureMouse()) return false;
+        if (ImGui.getIO().getWantCaptureMouse() || selected == null) return false;
         if (selected.getType() == Selected.Type.OBJECT) {
             // Update the scale to the selected object
             float delta = 0.02f * amountY;
             objectScale[0] += delta;
-            ((SceneObject) selected).scale = objectScale[0];
-            selectedObject.setScale(objectScale[0]);
+            ((ObjectSelection) selected).object.setScale(objectScale[0]);
+        }
+        if (selected.getType() == Selected.Type.EXIST_OBJECT) {
+            // Update the scale to the selected object
+            float delta = 0.02f * amountY;
+            objectScale[0] += delta;
+            ((ExistingObject) selected).object.setScale(objectScale[0]);
         }
         return false;
     }
@@ -1128,11 +1317,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         }
 
         if (level == null) return false;
-        if (ImGui.getIO().getWantCaptureMouse()) return false;
+        if (ImGui.getIO().getWantCaptureKeyboard()) return false;
         if (keycode == Input.Keys.ESCAPE) {
-            selected = null;
-            removeSelectedObject();
-            board.removePreview();
+            removeSelection();
         }
 
         if (!changed) {
@@ -1187,6 +1374,173 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     // IMGUI FUNCTIONS
 
     /**
+     * Creates the ImGui "Scene" menu containing dropdowns for enemies and objects in the level.
+     * <p>
+     * The enemies dropdown lists all enemies, allowing the user to modify their position, scale,
+     * and remove them from the level. The objects dropdown lists all scene objects, providing options
+     * to modify their position, scale, visibility, and remove them from the level.
+     * <p>
+     * This function also handles the hover effect on enemies and objects, changing their tint color
+     * when hovered over in the ImGui menu.
+     */
+    private void createSceneMenu() {
+        float windowWidth = 300;
+        // Set the window position and size
+        ImGui.setNextWindowPos(ImGui.getIO().getDisplaySizeX() - windowWidth - 50, 50, ImGuiCond.FirstUseEver);
+        ImGui.setNextWindowSize(windowWidth, 550, ImGuiCond.FirstUseEver);
+
+        if (ImGui.begin("Scene")) {
+            GameObject selectedObject = getSelectedObject();
+
+            if (selectedObject != null && selectedObject.getType() == GameObject.ObjectType.ENEMY)
+                ImGui.setNextItemOpen(true);
+
+            // Enemies dropdown
+            if (ImGui.collapsingHeader("Enemies")) {
+                int i = 0;
+                for (Enemy enemy : level.getEnemies()) {
+                    ImGui.pushID(i);
+
+                    if (enemy == selectedObject) {
+                        ImGui.setNextItemOpen(true, ImGuiCond.Always);
+                        ImGui.pushStyleColor(ImGuiCol.Text, 0.2f, 0.6f, 1.0f, 1.0f);
+                    }
+                    if (ImGui.treeNode("Enemy " + (i + 1))) {
+                        if (enemy == selectedObject) {
+                            ImGui.setScrollHereY();
+                        } else {
+                            if (ImGui.isItemHovered()) {
+                                enemy.setTint(SELECTED_COLOR);
+                            } else {
+                                enemy.setTint(Color.WHITE);
+                            }
+                        }
+                        // Position
+                        float[] posX = new float[]{enemy.getX()};
+                        float[] posY = new float[]{enemy.getY()};
+                        ImGui.dragFloat("X", posX, 0.05f, 0, board.getWorldWidth());
+                        ImGui.dragFloat("Y", posY, 0.05f, 0, board.getWorldHeight());
+                        enemy.setPosition(posX[0], posY[0]);
+
+                        // Scale
+                        float[] scale = new float[]{enemy.getScale()};
+                        ImGui.dragFloat("Scale", scale, 0.01f);
+                        enemy.setScale(scale[0]);
+
+                        // Remove button
+                        if (ImGui.button("Remove")) {
+                            if (selected != null && selected.getType() != Selected.Type.ENEMY) {
+                                // Do not want to remove the same enemy twice
+                                // As this will mess with the free list
+                                removeSelection();
+                            }
+                            level.removeEnemy(enemy);
+                            doneActions.add(new RemoveObject(enemy));
+                            undoneActions.clear();
+                            selected = null;
+                            // Remove the controller window if its controlling the removed enemy
+                            if (currEnemyControlled == enemy) {
+                                currEnemyControlled = null;
+                                showEnemyControllerWindow.set(false);
+                            }
+                        }
+
+                        ImGui.treePop();
+                    } else {
+                        if (ImGui.isItemHovered()) {
+                            enemy.setTint(SELECTED_COLOR);
+                        } else {
+                            enemy.setTint(Color.WHITE);
+                        }
+                    }
+
+                    if (enemy == selectedObject) {
+                        ImGui.popStyleColor();
+                    }
+
+                    ImGui.popID();
+                    i++;
+                }
+            }
+
+            if (selectedObject != null && selectedObject.getType() == GameObject.ObjectType.SCENE)
+                ImGui.setNextItemOpen(true);
+
+            // Objects dropdown
+            if (ImGui.collapsingHeader("Objects")) {
+                int i = 0;
+                for (SceneObject object : level.getSceneObjects()) {
+                    ImGui.pushID(i);
+                    if (object == selectedObject) {
+                        ImGui.setNextItemOpen(true, ImGuiCond.Always);
+                        ImGui.pushStyleColor(ImGuiCol.Text, 0.2f, 0.6f, 1.0f, 1.0f);
+                    }
+                    if (ImGui.treeNode("Object " + (i + 1) + "   ")) {
+                        if (object == selectedObject) {
+                            ImGui.setScrollHereY();
+                        } else {
+                            // Selected object should always be tinted with SELECTED_COLOR
+                            if (ImGui.isItemHovered()) {
+                                object.setTint(SELECTED_COLOR);
+                            } else {
+                                object.setTint(Color.WHITE);
+                            }
+                        }
+                        // Position
+                        float[] posX = new float[]{object.getX()};
+                        float[] posY = new float[]{object.getY()};
+                        ImGui.dragFloat("X", posX, 0.05f);
+                        ImGui.dragFloat("Y", posY, 0.05f);
+                        object.setPosition(posX[0], posY[0]);
+
+                        // Scale
+                        float[] scale = new float[]{object.getScale()};
+                        ImGui.dragFloat("Scale", scale, 0.01f);
+                        object.setScale(scale[0]);
+
+                        // Remove button
+                        if (ImGui.button("Remove")) {
+                            removeSelection();
+                            level.removeSceneObject(object);
+                            doneActions.add(new RemoveObject(object));
+                            undoneActions.clear();
+                        }
+
+                        ImGui.treePop();
+                    } else {
+                        if (ImGui.isItemHovered()) {
+                            object.setTint(SELECTED_COLOR);
+                        } else {
+                            object.setTint(Color.WHITE);
+                        }
+                    }
+                    if (object == selectedObject) {
+                        ImGui.popStyleColor();
+                    }
+
+                    ImGui.sameLine();
+
+                    // Visibility
+                    ImBoolean visible = new ImBoolean(!object.isDestroyed());
+                    if (ImGui.checkbox("Visible", visible)) {
+                        if (!visible.get())
+                            object.setDestroyed(true);
+                        else {
+                            level.addDrawables(object);
+                            object.setDestroyed(false);
+                        }
+                    }
+
+                    ImGui.popID();
+                    i++;
+                }
+            }
+
+            ImGui.end();
+        }
+    }
+
+    /**
      * Popup window for tile selection using ImGui
      */
     private void createTileMenu() {
@@ -1206,7 +1560,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                             tiles.getU2(), tiles.getV2()
                     )
             ) {
-                removeSelectedObject();
+                removeSelection();
                 selected = new Tile(i);
             }
             ImGui.popID();
@@ -1228,7 +1582,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         float windowWidth = ImGui.getWindowWidth();
         float rowWidth = 0;
 
-        for (SceneObject obj : objectSelections) {
+        for (SceneButton obj : objectSelections) {
             // Scale if window height scales
             int height = Math.max(100, (int) ImGui.getWindowHeight() / 4);
             int width = height * obj.texture.getWidth() / obj.texture.getHeight();
@@ -1246,10 +1600,12 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             }
 
             if (ImGui.imageButton(obj.texture.getTextureObjectHandle(), width, height)) {
-                selected = obj;
+                removeSelection();
+                SceneObject newObject = level.addSceneObject(obj.type, mouseWorld.x, mouseWorld.y, 1);
+                selected = new ObjectSelection(newObject);
                 objectScale[0] = 1;
-                obj.scale = 1;
-                setSelectedObject();
+                newObject.setTint(SELECTED_COLOR);
+                newObject.setSensor(true);
             }
 
             rowWidth += totalButtonWidth;
@@ -1260,26 +1616,23 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         // Create a slider for the scale of the object
         if (ImGui.sliderFloat("Object Scale", objectScale, 0.1f, 5.0f)) {
             // Apply the scale to the selected object when the slider is moved
-            if (selected.getType() == Selected.Type.OBJECT) {
-                SceneObject selectedObj = (SceneObject) selected;
-                selectedObj.scale = objectScale[0];
-                selectedObject.setScale(objectScale[0]);
+            if (selected != null && selected.getType() == Selected.Type.OBJECT) {
+                SceneObject selectedObj = ((ObjectSelection) selected).object;
+                selectedObj.setScale(objectScale[0]);
             }
         }
     }
 
     /**
-     * Toolbar at top of window with File, Edit, Enemy, Objects, View
+     * Toolbar at top of window with File, Edit, Enemy, View, Settings, and Controls menu
      */
     private void createToolbar() {
         if (ImGui.beginMainMenuBar()) {
             createFileMenu();
             createEditMenu();
-            createEnemyMenu();
             createViewMenu();
             createSettingsMenu();
             createControlsMenu();
-
 
             ImGui.endMainMenuBar();
         }
@@ -1346,7 +1699,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 ImGui.tableNextColumn();
                 ImGui.text("Escape");
                 ImGui.tableNextColumn();
-                ImGui.text("Remove selection");
+                ImGui.text("Stop selecting item");
 
                 ImGui.tableNextColumn();
                 ImGui.text("Q");
@@ -1404,7 +1757,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         if (ImGui.beginPopup("Overwrite Level?")) {
             ImGui.text("Level already exists! Overwrite?");
             if (ImGui.button("Yes")) {
-                removeSelectedObject();
+                removeSelection();
                 saveLevel(level, directory, saveLevel.get(), true);
                 showOverwritePrompt = false;
                 ImGui.closeCurrentPopup();
@@ -1421,7 +1774,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
 
     /**
-     * File menu with New, Save, Load, Test and Exit
+     * File menu with New, Save, Test and Quit items
      */
     private void createFileMenu() {
         if (ImGui.beginMenu("   File   ")) {
@@ -1445,7 +1798,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             ImGui.spacing();
             if (ImGui.menuItem("Test")) {
                 if (canSave()) {
-                    removeSelectedObject();
+                    removeSelection();
                     LevelSerializer.saveLevel(level, directory, 0, true);
                     observer.exitScreen(this, GO_PLAY);
                 } else {
@@ -1458,7 +1811,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             ImGui.spacing();
 
             if (ImGui.menuItem("Quit")) {
-               observer.exitScreen(this, GO_MENU);
+                observer.exitScreen(this, GO_MENU);
             }
             ImGui.endMenu();
         }
@@ -1501,26 +1854,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 else
                     level.getRayHandler().setAmbientLight(stealthLighting[0], stealthLighting[1], stealthLighting[2], stealthLighting[3]);
             }
-            ImGui.endMenu();
-        }
-    }
-
-    /**
-     * Enemy menu with options for each enemy
-     */
-    private void createEnemyMenu() {
-        if (ImGui.beginMenu("   Enemy   ")) {
-
-            // Iterate through enemies and create options for menu
-            for (int i = 0; i < level.getEnemies().size; i++) {
-                infinityx.lunarhaze.models.entity.Enemy enemy = level.getEnemies().get(i);
-                if (enemy == selectedObject) continue;
-                if (ImGui.menuItem("Show Enemy " + i + " Menu")) {
-                    currEnemyControlled = enemy;
-                    showEnemyControllerWindow.set(true);
-                }
-            }
-
             ImGui.endMenu();
         }
     }
@@ -1586,11 +1919,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         ImGui.end();
     }
 
-    /** Cache for spawn location button */
-    ImFloat x = new ImFloat();
-    ImFloat y = new ImFloat();
-
-
     // Used in drawSettings to keep one tree node open at a time
     private int nodeToClose, currentNode = -1;
 
@@ -1635,11 +1963,11 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                     ImGui.text("Position Editor:");
                     ImGui.spacing();
 
-                    ImGui.beginChild("Position Editor (Click and drag to move location)", 300, 300, false);
 
-                    // Invisible button for input handling
                     float height = 300;
-                    float width = (float)board.getWidth() / board.getHeight() * height;
+                    float width = (float) board.getWidth() / board.getHeight() * height;
+                    ImGui.beginChild("Position Editor (Click and drag to move location)", width, height, false);
+                    // Invisible button for input handling
                     ImGui.invisibleButton("##positionButton", width, height);
 
                     float worldToWindowX = width / board.getWorldWidth();
@@ -1649,7 +1977,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                     // Translate spawn world position to mouse coordinates
                     ImGui.getWindowDrawList().addRect(
                             ImGui.getItemRectMinX() + spawnLocation.x * worldToWindowX - 20,
-                             ImGui.getItemRectMinY() + height - spawnLocation.y * worldToWindowY - 10,
+                            ImGui.getItemRectMinY() + height - spawnLocation.y * worldToWindowY - 10,
                             ImGui.getItemRectMinX() + spawnLocation.x * worldToWindowX + 20,
                             ImGui.getItemRectMinY() + height - spawnLocation.y * worldToWindowY + 10,
                             ImGui.getColorU32(1, 1, 1, 1));
@@ -1675,11 +2003,13 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                     drawList.addRect(
                             childWindowPos.x - 5,
                             childWindowPos.y - 5,
-                            childWindowPos.x + 305,
-                            childWindowPos.y + 305,
+                            childWindowPos.x + width + 5,
+                            childWindowPos.y + height + 5,
                             ImGui.getColorU32(1, 0.514f, 0.376f, 1),
                             0, ImDrawFlags.None, 10
                     );
+
+                    ImGui.spacing();
 
                     ImGui.pushItemWidth(120);
                     ImGui.text("Edit Position Manually:");
@@ -1697,9 +2027,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
                     if (ImGui.button("Remove Location")) {
                         level.getSettings().removeSpawnLocation(i);
-                        if (selectedSpawnLocationIndex >= level.getSettings().getSpawnLocations().size) {
-                            selectedSpawnLocationIndex--;
-                        }
                     }
                 } else {
                     nodeToClose = currentNode;
@@ -1726,7 +2053,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
         if (ImGui.isItemHovered()) {
             ImGui.beginTooltip();
-            ImGui.text("The total number of new enemies that spawn during the battle phase");
+            ImGui.text("The total number of new enemies that will spawn during the battle phase");
             ImGui.endTooltip();
         }
 
@@ -1738,7 +2065,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
         if (ImGui.isItemHovered()) {
             ImGui.beginTooltip();
-            ImGui.text("The spawner will spawn an enemy, then waits for Min to Max seconds before spawning a new one.");
+            ImGui.text("The spawner will spawn an enemy, then waits for a random time between Min to Max seconds before spawning a new one");
             ImGui.endTooltip();
         }
 
@@ -1814,8 +2141,14 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     private void createBrushSelection() {
         if (ImGui.button("Moonlight")) {
-            removeSelectedObject();
+            removeSelection();
             selected = new Moonlight();
+        }
+
+        if (ImGui.isItemHovered()) {
+            ImGui.beginTooltip();
+            ImGui.text("Hold Left-Control to remove");
+            ImGui.endTooltip();
         }
 
         ImGui.sameLine();
@@ -1825,9 +2158,15 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 playerTex.getTexture().getTextureObjectHandle(),
                 100, 100 * playerTex.getRegionHeight() / playerTex.getRegionWidth()
         )) {
-            playerPlaced = false;
+            removeSelection();
             selected = new Player();
-            setSelectedObject();
+            level.getPlayer().setPosition(mouseWorld);
+            if (!playerPlaced)
+                level.showPlayer();
+            playerPlaced = false;
+
+            level.getPlayer().setTint(SELECTED_COLOR);
+            level.getPlayer().setSensor(true);
         }
 
         if (ImGui.isItemHovered()) {
@@ -1836,14 +2175,22 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             ImGui.endTooltip();
         }
 
-        for (Enemy enemy : enemySelections) {
+        for (EnemyButton enemy : enemySelections) {
             ImGui.sameLine();
             if (ImGui.imageButton(
                     enemy.texture.getTextureObjectHandle(),
                     100, 100 * enemy.texture.getHeight() / enemy.texture.getWidth()
             )) {
-                selected = enemy;
-                setSelectedObject();
+                Enemy newEnemy = level.addEnemy(
+                        enemy.type,
+                        mouseWorld.x, mouseWorld.y,
+                        new PatrolRegion(0, 0, 0, 0)
+                );
+                removeSelection();
+                selected = new EnemySelection(newEnemy);
+
+                newEnemy.setTint(SELECTED_COLOR);
+                newEnemy.setSensor(true);
             }
 
             if (ImGui.isItemHovered()) {
@@ -1960,28 +2307,28 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         style.setColor(ImGuiCol.NavWindowingDimBg, 1.00f, 0.00f, 0.00f, 0.20f);
         style.setColor(ImGuiCol.ModalWindowDimBg, 1.00f, 0.00f, 0.00f, 0.35f);
 
-        style.setWindowPadding                     (8.00f, 8.00f);
-        style.setFramePadding                      (5.00f, 2.00f);
-        style.setCellPadding                       (6.00f, 6.00f);
-        style.setItemSpacing                       (6.00f, 6.00f);
-        style.setItemInnerSpacing                  (6.00f, 6.00f);
-        style.setTouchExtraPadding                 (0.00f, 0.00f);
-        style.setIndentSpacing                     (25);
-        style.setScrollbarSize                     (15);
-        style.setGrabMinSize                       (10);
-        style.setWindowBorderSize                  (1);
-        style.setChildBorderSize                   (1);
-        style.setPopupBorderSize                   (1);
-        style.setFrameBorderSize                   (1);
-        style.setTabBorderSize                     (1);
-        style.setWindowRounding                    (7);
-        style.setChildRounding                     (4);
-        style.setFrameRounding                     (3);
-        style.setPopupRounding                     (4);
-        style.setScrollbarRounding                 (9);
-        style.setGrabRounding                      (3);
-        style.setLogSliderDeadzone                 (4);
-        style.setTabRounding                       (4);
+        style.setWindowPadding(8.00f, 8.00f);
+        style.setFramePadding(5.00f, 2.00f);
+        style.setCellPadding(6.00f, 6.00f);
+        style.setItemSpacing(6.00f, 6.00f);
+        style.setItemInnerSpacing(6.00f, 6.00f);
+        style.setTouchExtraPadding(0.00f, 0.00f);
+        style.setIndentSpacing(25);
+        style.setScrollbarSize(15);
+        style.setGrabMinSize(10);
+        style.setWindowBorderSize(1);
+        style.setChildBorderSize(1);
+        style.setPopupBorderSize(1);
+        style.setFrameBorderSize(1);
+        style.setTabBorderSize(1);
+        style.setWindowRounding(7);
+        style.setChildRounding(4);
+        style.setFrameRounding(3);
+        style.setPopupRounding(4);
+        style.setScrollbarRounding(9);
+        style.setGrabRounding(3);
+        style.setLogSliderDeadzone(4);
+        style.setTabRounding(4);
 
         imGuiGlfw.init(windowHandle, true);
         imGuiGl.init("#version 110");

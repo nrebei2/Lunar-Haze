@@ -30,8 +30,12 @@ public interface Drawable {
     boolean isDestroyed();
 
     /**
-     * Sets this object as destroyed. Will be removed from drawing next timestep.
+     * Sets this object as destroyed or not.
+     * If you set this object as destroyed it will be removed from drawing next timestep.
+     * If you wish to reuse this object after destroying you must setDestroyed(false)!
+     *
+     * @param destroyed Whether to destroy (true) or not (false)
      */
-    void setDestroyed();
+    void setDestroyed(boolean destroyed);
 
 }

@@ -73,7 +73,7 @@ public enum EnemyState implements State<EnemyController> {
             float rotation = ArithmeticUtils.wrapAngleAroundZero(orientation - entity.getEnemy().getOrientation());
 
             // Mimic face sb
-            entity.getEnemy().setAngularVelocity(rotation < 0 ? -1 : 1);
+            entity.getEnemy().setAngularVelocity(rotation < 0 ? -1.2f : 1.2f);
 
             float rotationSize = rotation < 0f ? -rotation : rotation;
             if (rotationSize <= entity.faceSB.getAlignTolerance()) {
@@ -100,7 +100,10 @@ public enum EnemyState implements State<EnemyController> {
 
             // If the indicator is full, the enemy is alerted
             if (entity.getEnemy().getIndicatorAmount() == 1) {
-                MessageManager.getInstance().dispatchMessage(TacticalManager.FOUND, entity);
+                // only call for help if first to notice target
+                if (entity.getStateMachine().getPreviousState() == NOTICED) {
+                    MessageManager.getInstance().dispatchMessage(TacticalManager.FOUND, entity);
+                }
                 entity.getStateMachine().changeState(ALERT);
             }
 
@@ -156,6 +159,11 @@ public enum EnemyState implements State<EnemyController> {
                 entity.getStateMachine().changeState(ALERT);
             }
         }
+
+        @Override
+        public void exit(EnemyController entity) {
+            entity.getEnemy().setIndependentFacing(false);
+        }
     },
 
     /**
@@ -202,8 +210,8 @@ public enum EnemyState implements State<EnemyController> {
                 entity.getEnemy().setIndependentFacing(false);
                 entity.targetPos.set(entity.getTarget().getPosition());
                 entity.getEnemy().setSteeringBehavior(entity.followPathSB);
-                // Update path every 0.2 seconds
-                if (entity.time >= 0.2) {
+                // Update path every 0.1 seconds
+                if (entity.time >= 0.1) {
                     entity.updatePath();
                     entity.time = 0;
                 }
@@ -212,10 +220,10 @@ public enum EnemyState implements State<EnemyController> {
                     entity.getStateMachine().changeState(ATTACK);
                 }
                 // Switch to battle behavior when close enough
-                if (enemyToTarget.len() <= entity.getEnemy().getStrafeDistance()) {
+                else if (enemyToTarget.len() <= entity.getEnemy().getStrafeDistance()) {
                     // Always face towards target
-                    entity.getEnemy().setIndependentFacing(true);
-                    entity.getEnemy().setOrientation(AngleUtils.vectorToAngle(enemyToTarget));
+//                    entity.getEnemy().setIndependentFacing(true);
+//                    entity.getEnemy().setOrientation(AngleUtils.vectorToAngle(enemyToTarget));
                     entity.getEnemy().setSteeringBehavior(entity.battleSB);
                 } else {
                     // go back to chase (follow path)
@@ -223,8 +231,8 @@ public enum EnemyState implements State<EnemyController> {
                     entity.getEnemy().setIndependentFacing(false);
                     entity.targetPos.set(entity.getTarget().getPosition());
                     entity.getEnemy().setSteeringBehavior(entity.followPathSB);
-                    // Update path every 0.2 seconds
-                    if (entity.time >= 0.2) {
+                    // Update path every 0.1 seconds
+                    if (entity.time >= 0.1) {
                         entity.updatePath();
                         entity.time = 0;
                     }
@@ -245,7 +253,7 @@ public enum EnemyState implements State<EnemyController> {
             if (telegram.message == TacticalManager.FLANK) {
 
                 Vector2 flank_pos = (Vector2) telegram.extraInfo;
-                control.flank_pos = flank_pos;
+                control.flank_pos.set(flank_pos);
                 Vector2 cur_pos = control.getEnemy().getPosition();
                 Path path = control.pathfinder.findPath(cur_pos, flank_pos);
                 control.followPathSB.setPath(path);
@@ -290,7 +298,7 @@ public enum EnemyState implements State<EnemyController> {
 
             // Check if have arrived to patrol position
             float dist = entity.getEnemy().getPosition().dst(entity.targetPos);
-            if (dist <= 0.1f) entity.getStateMachine().changeState(LOOK_AROUND);
+            if (dist <= 0.2f) entity.getStateMachine().changeState(LOOK_AROUND);
 
             switch (entity.getDetection()) {
                 case NOTICED:

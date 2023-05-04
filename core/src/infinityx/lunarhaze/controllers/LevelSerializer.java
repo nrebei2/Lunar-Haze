@@ -72,7 +72,7 @@ public class LevelSerializer {
         enemySpawner.addChild("delay", new JsonValue(level.getSettings().getDelay()));
 
         JsonValue spawnLocations = new JsonValue(JsonValue.ValueType.array);
-        for (Vector2 loc: level.getSettings().getSpawnLocations()) {
+        for (Vector2 loc : level.getSettings().getSpawnLocations()) {
             JsonValue location = new JsonValue(JsonValue.ValueType.array);
             location.addChild(new JsonValue(loc.x));
             location.addChild(new JsonValue(loc.y));
@@ -198,6 +198,7 @@ public class LevelSerializer {
      * "enemies": [
      * {
      * "type": string,
+     * "scale": float
      * "position": [int, int],
      * "patrol": [
      * [int, int],
@@ -209,7 +210,7 @@ public class LevelSerializer {
      * "objects": [
      * {
      * "type": string,
-     * "scale": int,
+     * "scale": float,
      * "position": [int, int]
      * },
      * ...
@@ -231,6 +232,7 @@ public class LevelSerializer {
             JsonValue currEnemy = new JsonValue(JsonValue.ValueType.object);
             currEnemy.addChild("type", new JsonValue(e.getName()));
 
+            currEnemy.addChild("scale", new JsonValue(e.getScale()));
             JsonValue pos = new JsonValue(JsonValue.ValueType.array);
             pos.addChild(new JsonValue(e.getPosition().x));
             pos.addChild(new JsonValue(e.getPosition().y));

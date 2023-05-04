@@ -96,8 +96,12 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
         detection = Detection.NONE;
 
         // TODO
-        setMaxLinearAcceleration(0.5f);
-        setMaxLinearSpeed(1.61f);
+        setMaxLinearAcceleration(0.61f);
+        setMaxLinearSpeed(2.61f);
+
+//        setMaxLinearAcceleration(0.3f);
+//        setMaxLinearSpeed(1.11f);
+
         setMaxAngularAcceleration(1);
         // Angular speed is only used in NOTICED when turning around
         setMaxAngularSpeed(1f);
@@ -107,6 +111,9 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
     public void reset() {
         hp = maxHp;
         detection = Detection.NONE;
+        tint.set(Color.WHITE);
+        setScale(1);
+        loop = true;
     }
 
     /**

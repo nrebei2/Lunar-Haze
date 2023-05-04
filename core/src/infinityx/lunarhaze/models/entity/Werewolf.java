@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.controllers.InputController;
+import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.models.AttackingGameObject;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.util.AngleUtils;
@@ -223,6 +224,15 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
             // set the updated velocity to the player's Box2D body
             body.setLinearVelocity(velocity);
         }
+    }
+
+    @Override
+    public void draw(GameCanvas canvas) {
+        super.draw(canvas);
+        canvas.playerCoords.set(
+                canvas.WorldToScreenX(getPosition().x),
+                canvas.WorldToScreenY(getPosition().y) + getTextureHeight() * 0.6f
+        );
     }
 
     // Location interface methods

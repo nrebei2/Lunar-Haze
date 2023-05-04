@@ -50,12 +50,12 @@ public class PlayerController {
     /**
      * Attack power proportion increase for each moonlight allocated during phase ALLOCATE
      */
-    public static final float ADD_ATTACK_AMOUNT = 0.1f;
+    public static final float ADD_ATTACK_AMOUNT = 0.2f;
 
     /**
      * Attack range distance proportion increase for each moonlight allocated during phase ALLOCATE
      */
-    public static final float ADD_RANGE_AMOUNT = 0.1f;
+    public static final float ADD_RANGE_AMOUNT = 0.2f;
 
     /**
      * The player being controlled by this AIController
@@ -263,7 +263,7 @@ public class PlayerController {
      */
     public void allocateAttackPow() {
         player.reduceMoonlightCollected();
-        player.attackDamage = player.attackDamage * (1 + ADD_ATTACK_AMOUNT);
+        player.attackDamage = player.attackDamage + ADD_ATTACK_AMOUNT;
     }
 
     /**
@@ -271,7 +271,7 @@ public class PlayerController {
      */
     public void allocateAttackRange() {
         player.reduceMoonlightCollected();
-        player.setAttackRange(player.getAttackRange() * (1 + ADD_RANGE_AMOUNT));
+        player.setAttackRange(player.getAttackRange() + ADD_RANGE_AMOUNT);
     }
 
     /**

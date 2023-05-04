@@ -14,7 +14,6 @@ import infinityx.lunarhaze.controllers.EnemyState;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.entity.Enemy;
 import infinityx.lunarhaze.models.entity.Werewolf;
-import org.lwjgl.system.MathUtil;
 
 import java.util.Random;
 
@@ -71,10 +70,10 @@ public class TacticalManager implements Telegraph {
             StateMachine<EnemyController, EnemyState> enemy = control.getStateMachine();
             if (!enemy.isInState(EnemyState.ALERT)) continue;
             //change strafe rotation
-            if (rand.nextFloat() <= 0.4) {
+            if (rand.nextFloat() <= 0.4f) {
                 control.strafe.changeRotation();
             }
-            if (rand.nextFloat() <= 0.1) {
+            if (rand.nextFloat() <= 0.1f) {
                 // Calculate angle step for evenly distributing the enemies around the target
                 float angleStep = 360.0f / enemies.size;
 
@@ -90,8 +89,8 @@ public class TacticalManager implements Telegraph {
 //                control.strafe.setEnabled(false);
 //                control.attack.setEnabled(true);
             }
-            if (isBehind(control.getEnemy(), target)){
-                Vector2 flankingPosition = target.getPosition();
+            if (isBehind(control.getEnemy(), target) && rand.nextFloat() <=0.35f) {
+                Vector2 flankingPosition = target.getPosition().cpy();
                 MessageManager.getInstance().dispatchMessage(null, enemy, FLANK, flankingPosition);
             }
 
@@ -160,9 +159,13 @@ public class TacticalManager implements Telegraph {
 
         return x * sin + y * cos;
 
-    }/** helper method for determining if an enemy is behind the player (greater than 90 degrees)*/
-    public boolean isBehind(Enemy enemy, Werewolf target){
-        Vector2 target_to_enemy = enemy.getPosition().sub(target.getPosition());
+    }
+
+    /**
+     * helper method for determining if an enemy is behind the player (greater than 90 degrees)
+     */
+    public boolean isBehind(Enemy enemy, Werewolf target) {
+        Vector2 target_to_enemy = enemy.getPosition().sub(target.getPosition()).nor();
         double dot = target_to_enemy.x * Math.cos(target.getOrientation()) + target_to_enemy.y * Math.sin(target.getOrientation());
 
         return dot < 0;

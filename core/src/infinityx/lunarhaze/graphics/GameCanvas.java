@@ -31,6 +31,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Affine2;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
@@ -103,7 +104,7 @@ public class GameCanvas {
     /**
      * Rendering context for drawing shapes
      */
-    public final ShapeRenderer shapeRenderer;
+    public ShapeRenderer shapeRenderer;
 
     /**
      * Rendering context for drawing shaders
@@ -173,6 +174,32 @@ public class GameCanvas {
      * A zoom >1 will zoom in, and a zoom of <1 will zoom out
      */
     private float zoom;
+
+    /**
+     * Screen coords of player, used to make scene objects transparent
+     */
+    public Vector2 playerCoords;
+
+    /**
+     * The width of the camera view after applying the zoom factor.
+     */
+    private float camWidth;
+
+    /**
+     * The height of the camera view after applying the zoom factor.
+     */
+    private float camHeight;
+
+    /**
+     * The x-coordinate of the bottom-left corner of the camera view after applying the zoom factor.
+     */
+    private float camX;
+
+    /**
+     * The y-coordinate of the bottom-left corner of the camera view after applying the zoom factor.
+     */
+    private float camY;
+
 
     /**
      * Sets the scaling factor for the world to screen transformation
@@ -250,6 +277,8 @@ public class GameCanvas {
         shapeRenderer.setProjectionMatrix(camera.combined);
         shaderRenderer.setProjectionMatrix(camera.combined);
 
+        playerCoords = new Vector2(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
+
         // Initialize the cache objects
         holder = new TextureRegion();
         local = new Affine2();
@@ -268,7 +297,7 @@ public class GameCanvas {
         float width = (float) getWidth();
         float height = (float) getHeight();
         camera.setToOrtho(false, width / zoom, height / zoom);
-        // Center camera at (width/2, height/2)
+         //Center camera at (width/2, height/2)
         camera.translate(
                 (width - width / zoom) / 2, (height - height / zoom) / 2
         );
@@ -281,10 +310,21 @@ public class GameCanvas {
         );
 
         camera.update();
+        updateCameraBounds();
     }
 
     /**
-     * Updates the camera {@link #zoom}. Will force zoom to be positive.
+     * Updates the camera bounds based on the current zoom factor, width, and height.
+     */
+    private void updateCameraBounds() {
+        camWidth = getWidth() / zoom;
+        camHeight = getHeight() / zoom;
+        camX = (getWidth() - camWidth) / 2;
+        camY = (getHeight() - camHeight) / 2;
+    }
+
+    /**
+     * Updates the camera {@link #zoom}. Will clamp zoom to be positive.
      *
      * @param zoom the new camera zoom to set
      */
@@ -305,8 +345,14 @@ public class GameCanvas {
             Gdx.app.error("GameCanvas", "Cannot dispose while drawing active", new IllegalStateException());
             return;
         }
+        shapeRenderer.dispose();
+        if (shaderRenderer != null) {
+            shaderRenderer.dispose();
+        }
         spriteBatch.dispose();
         spriteBatch = null;
+        shapeRenderer = null;
+        shaderRenderer = null;
         local = null;
         global = null;
         holder = null;
@@ -450,7 +496,6 @@ public class GameCanvas {
     public void resize() {
         // Resizing screws up the projection matrix
         setupCameras();
-
 //        Gdx.gl.glViewport(0, 0, getWidth(), getHeight());
     }
 
@@ -532,6 +577,9 @@ public class GameCanvas {
         global.idt();
         global.translate(tx, ty, 0.0f);
 
+        camX -= tx;
+        camY -= ty;
+
         if (pass == DrawPass.LIGHT) {
             // Light uses a separate camera
             global.mulLeft(raycamera.combined);
@@ -607,6 +655,7 @@ public class GameCanvas {
                 break;
         }
         active = DrawPass.INACTIVE;
+        updateCameraBounds();
     }
 
     /**
@@ -639,6 +688,9 @@ public class GameCanvas {
             w = image.getWidth();
             h = image.getHeight();
         }
+
+        image.getHeight();
+        image.getWidth();
 
         float width = (float) getWidth();
         float height = (float) getHeight();
@@ -862,13 +914,54 @@ public class GameCanvas {
             return;
         }
 
-        // BUG: The draw command for texture regions does not work properly.
-        // There is a workaround, but it will break if the bug is fixed.
-        // For now, it is better to set the affine transform directly.
         computeTransform(ox, oy, x, y, angle, sx, sy);
-        spriteBatch.setColor(tint);
-        spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
+
+
+        float x1 = local.m02;
+        float y1 = local.m12;
+        if (x1 >= camX && x1 <= camX + camWidth && y1 >= camY && y1 <= camY + camHeight) {
+            spriteBatch.setColor(tint);
+            spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
+            return;
+        }
+
+        float regionHeight = region.getRegionHeight();
+        float x2 = local.m01 * regionHeight + local.m02;
+        float y2 = local.m11 * regionHeight + local.m12;
+        if (x2 >= camX && x2 <= camX + camWidth && y2 >= camY && y2 <= camY + camHeight) {
+            spriteBatch.setColor(tint);
+            spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
+            return;
+        }
+
+        float regionWidth = region.getRegionWidth();
+        float x3 = local.m00 * regionWidth + local.m01 * regionHeight + local.m02;
+        float y3 = local.m10 * regionWidth + local.m11 * regionHeight + local.m12;
+        if (x3 >= camX && x3 <= camX + camWidth && y3 >= camY && y3 <= camY + camHeight) {
+            spriteBatch.setColor(tint);
+            spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
+            return;
+        }
+
+        float x4 = local.m00 * regionWidth + local.m02;
+        float y4 = local.m10 * regionWidth + local.m12;
+        if (x4 >= camX && x4 <= camX + camWidth && y4 >= camY && y4 <= camY + camHeight) {
+            spriteBatch.setColor(tint);
+            spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
+            return;
+        }
+
+        // There is a possibility the texture covers the whole screen
+        // This check will only work if the angle is 0
+        if ((x1 <= camX && x3 >= camX + camWidth) || (y1 <= camY && y3 >= camY + camHeight)) {
+            spriteBatch.setColor(tint);
+            spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
+            return;
+        }
+
+        // Otherwise, clip
     }
+
 
 
     /**
@@ -1023,44 +1116,6 @@ public class GameCanvas {
         shapeRenderer.rect(x, y, width * percentage, height);
         shapeRenderer.end();
     }
-
-    public void drawAttackPow(float x, float y, float width, float height, float attackPow) {
-        if (active != DrawPass.SHAPE) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
-            return;
-        }
-
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(Color.WHITE);
-        shapeRenderer.rect(x, y, width, height);
-        shapeRenderer.end();
-
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        Color yellow = new Color(244.0f / 255.0f, 208.0f / 255.0f, 63.0f / 255.0f, 1.0f);
-        shapeRenderer.setColor(yellow);
-        shapeRenderer.rect(x, y, width * Math.min(attackPow, 1.0f), height);
-        shapeRenderer.end();
-    }
-
-//    public void drawAttackRange(float x, float y, float width, float height, float range) {
-//        if (active != DrawPass.SHAPE) {
-//            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
-//            return;
-//        }
-//
-//        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-//        shapeRenderer.setColor(Color.WHITE);
-//        shapeRenderer.rect(x, y, width, height);
-//        shapeRenderer.end();
-//
-//        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-//        Color blue = new Color(40.0f / 255.0f, 116.0f / 255.0f, 166.0f / 255.0f, 1.0f);
-//        shapeRenderer.setColor(blue);
-//        shapeRenderer.rect(x, y, width * (range - 1.0f) / (Werewolf - 1.0f), height);
-//        shapeRenderer.end();
-//
-////        draw(icon, Color.WHITE, x - width, y, width, height);
-//    }
 
     public void drawEnemyHpBars(float barWidth, float barHeight, Enemy enemy) {
         if (active != DrawPass.SHAPE) {
