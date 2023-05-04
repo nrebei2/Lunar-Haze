@@ -70,10 +70,10 @@ public class TacticalManager implements Telegraph {
             StateMachine<EnemyController, EnemyState> enemy = control.getStateMachine();
             if (!enemy.isInState(EnemyState.ALERT)) continue;
             //change strafe rotation
-            if (rand.nextFloat() <= 0.4) {
+            if (rand.nextFloat() <= 0.4f) {
                 control.strafe.changeRotation();
             }
-            if (rand.nextFloat() <= 0.1) {
+            if (rand.nextFloat() <= 0.1f) {
                 // Calculate angle step for evenly distributing the enemies around the target
                 float angleStep = 360.0f / enemies.size;
 
@@ -89,8 +89,8 @@ public class TacticalManager implements Telegraph {
 //                control.strafe.setEnabled(false);
 //                control.attack.setEnabled(true);
             }
-            if (isBehind(control.getEnemy(), target)) {
-                Vector2 flankingPosition = target.getPosition();
+            if (isBehind(control.getEnemy(), target) && rand.nextFloat() <=0.35f) {
+                Vector2 flankingPosition = target.getPosition().cpy();
                 MessageManager.getInstance().dispatchMessage(null, enemy, FLANK, flankingPosition);
             }
 
