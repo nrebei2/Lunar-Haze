@@ -509,7 +509,6 @@ public class UIRender {
                     BAR_HEIGHT * 2 - UIFont_small.getAscent(), canvas.getHeight() / 2 + ICON_SIZE * 2f);
         }
 
-        // TODO: Need to draw this correctly
         int filledHeight =  (int) (dash_bar.getHeight() * percentage);
         int unfilledHeight = (int) (dash_bar.getHeight() * (1 - percentage));
         float screen_height_filled = height * percentage;
