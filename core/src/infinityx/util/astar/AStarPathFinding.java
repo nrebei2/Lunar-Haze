@@ -65,10 +65,10 @@ public class AStarPathFinding {
             }
         };
 
-        RaycastInfo collRay = new RaycastInfo(null);
-        // collider should only care about scene objects
-        collRay.addIgnores(GameObject.ObjectType.WEREWOLF, GameObject.ObjectType.HITBOX, GameObject.ObjectType.ENEMY);
-        this.raycastCollisionDetector = new Box2DRaycastCollision(world, collRay);
+//        RaycastInfo collRay = new RaycastInfo(null);
+//        // collider should only care about scene objects
+//        collRay.addIgnores(GameObject.ObjectType.WEREWOLF, GameObject.ObjectType.HITBOX, GameObject.ObjectType.ENEMY);
+//        this.raycastCollisionDetector = new Box2DRaycastCollision(world, collRay);
     }
 
     /**
@@ -79,7 +79,21 @@ public class AStarPathFinding {
     public Path findPath(Vector2 source, Vector2 target) {
         // World to grid
         Node sourceNode = map.getNodeAtWorld(source.x, source.y);
+        if (sourceNode.isObstacle){
+            for (Connection<Node> neighbor: sourceNode.getConnections()){
+                Node next = neighbor.getToNode();
+                if (!next.isObstacle) sourceNode = map.getNodeAtWorld(next.x, next.y);
+            }
+        }
+
         Node targetNode = map.getNodeAtWorld(target.x, target.y);
+
+        if (targetNode.isObstacle){
+            for (Connection<Node> neighbor: targetNode.getConnections()){
+                Node next = neighbor.getToNode();
+                if (!next.isObstacle) targetNode = map.getNodeAtWorld(next.x, next.y);
+            }
+        }
 
         if (sourceNode == null || targetNode == null) {
             System.out.printf("source : %s, target: %s\n", source, target);
