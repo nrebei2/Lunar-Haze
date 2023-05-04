@@ -1093,7 +1093,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         showBattleLighting = false;
         showSaveLevelPopup = false;
         showOverwritePrompt = false;
-        selected = new Tile(0);
 
         Gdx.input.setInputProcessor(this);
         RayHandler.setGammaCorrection(true);
