@@ -90,9 +90,9 @@ public class AStarPathFinding {
         connectionPath.clear();
         pathfinder.searchNodePath(sourceNode, targetNode, heuristic, connectionPath);
 
-        //smoothing path
-        PathSmoother smoother = new PathSmoother(raycastCollisionDetector);
-        int removed = smoother.smoothPath(connectionPath);
+//        PathSmoother smoother = new PathSmoother(raycastCollisionDetector);
+//        int removed = smoother.smoothPath(connectionPath);
+////        System.out.println("removed " + removed);
 
         // Use the source and target world positions instead of start and goal node
         // This is so we always have at least two waypoints and the path is more accurate

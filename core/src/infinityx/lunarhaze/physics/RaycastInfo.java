@@ -78,7 +78,9 @@ public class RaycastInfo implements RayCastCallback {
         }
 
         this.fixture = fixture;
+//        if (outputCollision != null) {
         outputCollision.set(point, normal);
+//        }
         this.fraction = fraction;
         this.hit = fraction != 0;
         if (this.hit) {

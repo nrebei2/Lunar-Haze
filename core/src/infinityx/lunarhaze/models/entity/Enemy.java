@@ -96,8 +96,12 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
         detection = Detection.NONE;
 
         // TODO
-        setMaxLinearAcceleration(0.5f);
-        setMaxLinearSpeed(1.61f);
+        setMaxLinearAcceleration(0.61f);
+        setMaxLinearSpeed(2.61f);
+
+//        setMaxLinearAcceleration(0.3f);
+//        setMaxLinearSpeed(1.11f);
+
         setMaxAngularAcceleration(1);
         // Angular speed is only used in NOTICED when turning around
         setMaxAngularSpeed(1f);
@@ -138,8 +142,8 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
         if (body == null) activatePhysics(container.getWorld());
         setFlashlight(flashLight);
         setFlashlightOn(true);
-        // set strafe distance randomly between attack range*2 and attackrange + 1d
-        this.strafeDistance = rand.nextInt(2) + getAttackRange() * 2;
+        // set strafe distance randomly between attack range*2 and attackrange + 2
+        this.strafeDistance = rand.nextInt(3) + getAttackRange() * 2;
     }
 
     public float getStrafeDistance() {
