@@ -168,6 +168,8 @@ public class EnemyController extends AttackHandler {
         this.commRay = new RaycastInfo(enemy);
         commRay.addIgnores(GameObject.ObjectType.WEREWOLF);
 
+        this.flank_pos = new Vector2();
+
     }
 
     /**
