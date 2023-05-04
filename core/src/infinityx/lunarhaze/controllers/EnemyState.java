@@ -100,7 +100,10 @@ public enum EnemyState implements State<EnemyController> {
 
             // If the indicator is full, the enemy is alerted
             if (entity.getEnemy().getIndicatorAmount() == 1) {
-                MessageManager.getInstance().dispatchMessage(TacticalManager.FOUND, entity);
+                // only call for help if first to notice target
+                if (entity.getStateMachine().getPreviousState() == NOTICED) {
+                    MessageManager.getInstance().dispatchMessage(TacticalManager.FOUND, entity);
+                }
                 entity.getStateMachine().changeState(ALERT);
             }
 

@@ -471,9 +471,8 @@ public class UIRender {
     }
 
     public void drawCollectLightBar(GameCanvas canvas, float width, float height, float percentage, Werewolf player) {
-        float padding = 5;
         float x = canvas.WorldToScreenX(player.getPosition().x) - width / 2;
-        float y = canvas.WorldToScreenY(player.getPosition().y) + player.getTextureHeight() + padding;
+        float y = canvas.WorldToScreenY(player.getPosition().y) + player.getTextureHeight() - 50;
 
         if (percentage == 1) {
             canvas.draw(moonlight_all_filled, alphaTint, x, y, width, height);
