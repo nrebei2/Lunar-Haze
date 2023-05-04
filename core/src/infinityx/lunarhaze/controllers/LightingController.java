@@ -1,6 +1,7 @@
 package infinityx.lunarhaze.controllers;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.JsonValue;
@@ -113,6 +114,7 @@ public class LightingController {
         dust.reset();
         dust.setX(board.boardToWorldX(x) + MathUtils.random() * board.getTileWorldDim().x);
         dust.setY(board.boardToWorldY(y) + MathUtils.random() * board.getTileWorldDim().y);
+        dust.setZ(Interpolation.pow3In.apply(MathUtils.random()));
 
         JsonValue rps = dustInfo.get("rps");
         JsonValue spd = dustInfo.get("speed");

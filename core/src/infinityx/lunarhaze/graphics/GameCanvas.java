@@ -31,6 +31,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Affine2;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
@@ -180,6 +181,27 @@ public class GameCanvas {
     public Vector2 playerCoords;
 
     /**
+     * The width of the camera view after applying the zoom factor.
+     */
+    private float camWidth;
+
+    /**
+     * The height of the camera view after applying the zoom factor.
+     */
+    private float camHeight;
+
+    /**
+     * The x-coordinate of the bottom-left corner of the camera view after applying the zoom factor.
+     */
+    private float camX;
+
+    /**
+     * The y-coordinate of the bottom-left corner of the camera view after applying the zoom factor.
+     */
+    private float camY;
+
+
+    /**
      * Sets the scaling factor for the world to screen transformation
      *
      * @param worldToScreen x
@@ -275,7 +297,7 @@ public class GameCanvas {
         float width = (float) getWidth();
         float height = (float) getHeight();
         camera.setToOrtho(false, width / zoom, height / zoom);
-        // Center camera at (width/2, height/2)
+         //Center camera at (width/2, height/2)
         camera.translate(
                 (width - width / zoom) / 2, (height - height / zoom) / 2
         );
@@ -288,6 +310,17 @@ public class GameCanvas {
         );
 
         camera.update();
+        updateCameraBounds();
+    }
+
+    /**
+     * Updates the camera bounds based on the current zoom factor, width, and height.
+     */
+    private void updateCameraBounds() {
+        camWidth = getWidth() / zoom;
+        camHeight = getHeight() / zoom;
+        camX = (getWidth() - camWidth) / 2;
+        camY = (getHeight() - camHeight) / 2;
     }
 
     /**
@@ -463,7 +496,6 @@ public class GameCanvas {
     public void resize() {
         // Resizing screws up the projection matrix
         setupCameras();
-
 //        Gdx.gl.glViewport(0, 0, getWidth(), getHeight());
     }
 
@@ -545,6 +577,9 @@ public class GameCanvas {
         global.idt();
         global.translate(tx, ty, 0.0f);
 
+        camX -= tx;
+        camY -= ty;
+
         if (pass == DrawPass.LIGHT) {
             // Light uses a separate camera
             global.mulLeft(raycamera.combined);
@@ -620,6 +655,7 @@ public class GameCanvas {
                 break;
         }
         active = DrawPass.INACTIVE;
+        updateCameraBounds();
     }
 
     /**
@@ -652,6 +688,9 @@ public class GameCanvas {
             w = image.getWidth();
             h = image.getHeight();
         }
+
+        image.getHeight();
+        image.getWidth();
 
         float width = (float) getWidth();
         float height = (float) getHeight();
@@ -875,13 +914,54 @@ public class GameCanvas {
             return;
         }
 
-        // BUG: The draw command for texture regions does not work properly.
-        // There is a workaround, but it will break if the bug is fixed.
-        // For now, it is better to set the affine transform directly.
         computeTransform(ox, oy, x, y, angle, sx, sy);
-        spriteBatch.setColor(tint);
-        spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
+
+
+        float x1 = local.m02;
+        float y1 = local.m12;
+        if (x1 >= camX && x1 <= camX + camWidth && y1 >= camY && y1 <= camY + camHeight) {
+            spriteBatch.setColor(tint);
+            spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
+            return;
+        }
+
+        float regionHeight = region.getRegionHeight();
+        float x2 = local.m01 * regionHeight + local.m02;
+        float y2 = local.m11 * regionHeight + local.m12;
+        if (x2 >= camX && x2 <= camX + camWidth && y2 >= camY && y2 <= camY + camHeight) {
+            spriteBatch.setColor(tint);
+            spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
+            return;
+        }
+
+        float regionWidth = region.getRegionWidth();
+        float x3 = local.m00 * regionWidth + local.m01 * regionHeight + local.m02;
+        float y3 = local.m10 * regionWidth + local.m11 * regionHeight + local.m12;
+        if (x3 >= camX && x3 <= camX + camWidth && y3 >= camY && y3 <= camY + camHeight) {
+            spriteBatch.setColor(tint);
+            spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
+            return;
+        }
+
+        float x4 = local.m00 * regionWidth + local.m02;
+        float y4 = local.m10 * regionWidth + local.m12;
+        if (x4 >= camX && x4 <= camX + camWidth && y4 >= camY && y4 <= camY + camHeight) {
+            spriteBatch.setColor(tint);
+            spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
+            return;
+        }
+
+        // There is a possibility the texture covers the whole screen
+        // This check will only work if the angle is 0
+        if ((x1 <= camX && x3 >= camX + camWidth) || (y1 <= camY && y3 >= camY + camHeight)) {
+            spriteBatch.setColor(tint);
+            spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
+            return;
+        }
+
+        // Otherwise, clip
     }
+
 
 
     /**
