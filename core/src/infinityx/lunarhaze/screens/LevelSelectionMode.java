@@ -547,7 +547,7 @@ public class LevelSelectionMode extends ScreenObservable implements Screen, Inpu
      * prefer this in lecture.
      */
     private void draw() {
-        canvas.begin(GameCanvas.DrawPass.SPRITE);
+        canvas.beginUI(GameCanvas.DrawPass.SPRITE);
         Color alphaTint = Color.WHITE;
         canvas.drawOverlay(background, alphaTint, true);
         canvas.draw(title, alphaTint, title.getWidth() / 2, title.getHeight() / 2, canvas.getWidth() / 2, canvas.getHeight() * 0.83f, 0, scale * TITLE_SCALE, scale * TITLE_SCALE);

@@ -25,7 +25,7 @@ public class LightingController {
     /**
      * dustPool[p] holds the dust pool at tile p. Tile p should have collectable moonlight on it.
      */
-    private final IntMap<Dust[]> dustPools;
+    private IntMap<Dust[]> dustPools;
 
     /**
      * How many dust particles can be on a tile at once
@@ -133,5 +133,15 @@ public class LightingController {
      */
     public void removeDust(int x, int y) {
         for (Dust dust : dustPools.get(x + y * board.getWidth())) dust.beginDestruction();
+    }
+
+    /**
+     * Destroy all dust particles.
+     */
+    public void dispose() {
+        for (Dust[] pool : dustPools.values()) {
+            for (Dust dust : pool) dust.setDestroyed(true);
+        }
+        dustPools = null;
     }
 }

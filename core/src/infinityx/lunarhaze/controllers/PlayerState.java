@@ -14,9 +14,9 @@ public enum PlayerState implements State<PlayerController> {
         @Override
         public void enter(PlayerController entity) {
             if (entity.getPlayer().isOnMoonlight){
-                entity.player.setStealth(entity.MOON_STEALTH);
+                entity.setTargetStealth(PlayerController.MOON_STEALTH);
             } else {
-                entity.player.setStealth(entity.STILL_STEALTH);
+                entity.setTargetStealth(PlayerController.STILL_STEALTH);
             }
             setTexture(entity, "idle");
         }
@@ -64,7 +64,6 @@ public enum PlayerState implements State<PlayerController> {
         public void enter(PlayerController entity) {
             direction = entity.player.direction;
             setTexture(entity, "walk");
-            entity.player.texUpdate = 0.13f;
         }
 
         @Override
@@ -81,9 +80,9 @@ public enum PlayerState implements State<PlayerController> {
             }
 
             if (entity.getPlayer().isOnMoonlight){
-                entity.player.setStealth(entity.MOON_STEALTH);
+                entity.setTargetStealth(PlayerController.MOON_STEALTH);
             } else {
-                entity.player.setStealth(entity.WALK_STEALTH);
+                entity.setTargetStealth(PlayerController.WALK_STEALTH);
             }
 
             // Animations
@@ -100,11 +99,9 @@ public enum PlayerState implements State<PlayerController> {
         @Override
         public void enter(PlayerController entity) {
             direction = entity.player.direction;
-            entity.player.setStealth(entity.RUN_STEALTH);
+            entity.setTargetStealth(PlayerController.RUN_STEALTH);
             setTexture(entity, "walk");
             // texture update should be proportional to speed
-            entity.player.texUpdate = 0.1f * entity.player.walkSpeed / entity.player.runSpeed;
-
         }
 
         @Override
@@ -132,7 +129,6 @@ public enum PlayerState implements State<PlayerController> {
         public void enter(PlayerController entity) {
             entity.getAttackSound().play();
             setTexture(entity, "attack");
-            entity.player.texUpdate = 0.06f;
         }
 
         @Override
@@ -150,7 +146,7 @@ public enum PlayerState implements State<PlayerController> {
     COLLECT() {
         @Override
         public void enter(PlayerController entity) {
-            entity.player.setStealth(entity.MOON_STEALTH);
+            entity.setTargetStealth(PlayerController.MOON_STEALTH);
         }
 
         @Override

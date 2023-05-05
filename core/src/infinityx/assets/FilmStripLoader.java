@@ -24,7 +24,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import infinityx.util.FilmStrip;
+import infinityx.lunarhaze.graphics.FilmStrip;
 
 /**
  * This class is an {@link AssetLoader} to load {@link edu.cornell.gdiac.util.FilmStrip} assets.

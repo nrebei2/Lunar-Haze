@@ -38,41 +38,6 @@ public class Archer extends Enemy implements Pool.Poolable {
      */
     private int shoot_dist;
 
-    private float attackKnockback;
-
-    private int attackDamage;
-
-    /**
-     * The maximum amount of hit-points for this enemy
-     */
-    private float maxHp;
-
-    /**
-     * The current amount of hit-points for this enemy
-     */
-    private float hp;
-
-    /**
-     * Set knockback for the archer type
-     */
-    public void setAttackKnockback(float attackKnockback) {
-        this.attackKnockback = attackKnockback;
-    }
-
-    /**
-     * Set maximum hp for the archer type
-     */
-    public void setMaxHp(float maxHp) {
-        this.maxHp = maxHp;
-    }
-
-    /**
-     * Set attack damage for the archer type
-     */
-    public void setAttackDamage(int attackDamage) {
-        this.attackDamage = attackDamage;
-    }
-
     /**
      * Set shoot distance for the archer type
      */
@@ -91,11 +56,10 @@ public class Archer extends Enemy implements Pool.Poolable {
 
         // TODO: initialize shoot_dist from JSON
         // TODO: reinitialize hp, attack damage knockback
+        // FIXME FIXME FIXME FIXME
         JsonValue archerJson = json.get("archer");
         JsonValue attack = archerJson.get("attack");
-        setMaxHp(archerJson.getFloat("hp"));
-        setAttackKnockback(attack.getFloat("knockback"));
-        setAttackDamage(attack.getInt("damage"));
+        maxHp = archerJson.getFloat("hp");
         setShootDist(attack.getInt("shootdist"));
     }
 

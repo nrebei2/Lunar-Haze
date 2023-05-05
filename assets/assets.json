@@ -69,6 +69,7 @@
     "health-stroke": "screens/game-screen/health-paint-stroke.png",
     "moonlight-stroke": "screens/game-screen/moonlight-paint-stroke.png",
     "stealth-stroke": "screens/game-screen/visibility-paint-stroke.png",
+    "stealth-stroke-filled": "screens/game-screen/stealth-stroke-filled.png",
     "square-stroke": "screens/game-screen/square-stroke.png",
     "pause-button": "screens/game-screen/pause-button.png",
     "ellipse": "screens/game-screen/ellipse.png",

@@ -88,7 +88,7 @@ public class TacticalManager implements Telegraph {
                 MessageManager.getInstance().dispatchMessage(null, enemy, FLANK, flankingPosition);
 
             }
-            if (isBehind(control.getEnemy(), target) && rand.nextFloat() <=0.35f) {
+            if (isBehind(control.getEnemy(), target) && rand.nextFloat() <= 0.35f) {
                 Vector2 flankingPosition = target.getPosition();
                 MessageManager.getInstance().dispatchMessage(null, enemy, FLANK, flankingPosition);
             }
