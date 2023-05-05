@@ -64,7 +64,6 @@ public enum PlayerState implements State<PlayerController> {
         public void enter(PlayerController entity) {
             direction = entity.player.direction;
             setTexture(entity, "walk");
-            entity.player.texUpdate = 0.13f;
         }
 
         @Override
@@ -103,8 +102,6 @@ public enum PlayerState implements State<PlayerController> {
             entity.setTargetStealth(PlayerController.RUN_STEALTH);
             setTexture(entity, "walk");
             // texture update should be proportional to speed
-            entity.player.texUpdate = 0.1f * entity.player.walkSpeed / entity.player.runSpeed;
-
         }
 
         @Override
@@ -132,7 +129,6 @@ public enum PlayerState implements State<PlayerController> {
         public void enter(PlayerController entity) {
             entity.getAttackSound().play();
             setTexture(entity, "attack");
-            entity.player.texUpdate = 0.06f;
         }
 
         @Override

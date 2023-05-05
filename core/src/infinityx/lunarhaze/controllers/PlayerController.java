@@ -58,9 +58,9 @@ public class PlayerController {
     public static final float ADD_RANGE_AMOUNT = 0.2f;
 
     /**
-     * Change of stealth rate is 200% per second
+     * Change of stealth rate, percentage per second
      */
-    private final static float CHANGE_STEALTH_RATE = 2f;
+    private final static float CHANGE_STEALTH_RATE = 0.75f;
 
     /**
      * The player being controlled by this AIController

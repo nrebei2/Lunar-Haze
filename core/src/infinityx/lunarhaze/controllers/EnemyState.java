@@ -30,7 +30,6 @@ public enum EnemyState implements State<EnemyController> {
                     entity.getEnemy().setFilmstripPrefix("walk");
                     // Texture update is proportional to velocity
 //                    entity.getEnemy().texUpdate = 1 / (entity.getEnemy().getLinearVelocity().len() * 5);
-                    entity.getEnemy().texUpdate = 0.21f;
                 }
             }
         }
@@ -143,7 +142,6 @@ public enum EnemyState implements State<EnemyController> {
         public void enter(EnemyController entity) {
             //entity.getAttackSound().play();
             entity.getEnemy().setFilmstripPrefix("attack");
-            entity.getEnemy().texUpdate = 0.18f;
             entity.getEnemy().setIndependentFacing(true);
             entity.initiateAttack();
         }

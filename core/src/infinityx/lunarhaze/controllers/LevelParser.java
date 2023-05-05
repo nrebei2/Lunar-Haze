@@ -12,7 +12,7 @@ import infinityx.lunarhaze.models.Board;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.Tile;
 import infinityx.lunarhaze.models.entity.Enemy;
-import infinityx.util.FilmStrip;
+import infinityx.lunarhaze.graphics.FilmStrip;
 import infinityx.util.PatrolRegion;
 
 /**
