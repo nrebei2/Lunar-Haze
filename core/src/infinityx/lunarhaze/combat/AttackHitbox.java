@@ -40,7 +40,6 @@ public class AttackHitbox extends GameObject {
                 new Vector2(attacker.getBoundingRadius() + initialSize.x / 2, 0),
                 0
         );
-
     }
 
     public AttackingGameObject getAttacker() {
