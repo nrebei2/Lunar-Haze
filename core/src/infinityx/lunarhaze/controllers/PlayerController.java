@@ -58,6 +58,11 @@ public class PlayerController {
     public static final float ADD_RANGE_AMOUNT = 0.2f;
 
     /**
+     * Change of stealth rate is 200% per second
+     */
+    private final static float CHANGE_STEALTH_RATE = 2f;
+
+    /**
      * The player being controlled by this AIController
      */
     public Werewolf player;
@@ -112,6 +117,11 @@ public class PlayerController {
      */
     private Boolean allocateReady;
 
+    /**
+     * Stealth value of the state that player is going to enter
+     */
+    private float target;
+
     private GameSetting setting;
 
     /**
@@ -159,6 +169,14 @@ public class PlayerController {
         return attack_sound;
     }
 
+    public float getTargetStealth(){
+        return target;
+    }
+
+    public void setTargetStealth(float t){
+        target = t;
+    }
+
 
     /**
      * Initializes
@@ -175,6 +193,7 @@ public class PlayerController {
         attack_sound = levelContainer.getDirectory().getEntry("whip", Sound.class);
         stateMachine = new DefaultStateMachine<>(this, PlayerState.IDLE);
         allocateReady = false;
+        target = STILL_STEALTH;
         this.setting = setting;
     }
 
@@ -194,6 +213,33 @@ public class PlayerController {
                 )
         );*/
         player.update(delta);
+    }
+
+    /**
+     * Process stealth value change.
+     * <p>
+     *
+     * @param delta Number of seconds since last animation frame
+     */
+    public void resolveStealth(float delta) {
+        if (player.getLinearVelocity().isZero() && player.isOnMoonlight == false){
+            target = PlayerController.STILL_STEALTH;
+        }
+        float proportion = player.getStealth();
+        if (target > proportion) {
+            if (target - proportion >= CHANGE_STEALTH_RATE / 1.0f * delta) {
+                proportion = proportion + CHANGE_STEALTH_RATE / 1.0f * delta;
+            } else {
+                proportion = target;
+            }
+        } else if (target < proportion){
+            if (proportion - target >= CHANGE_STEALTH_RATE / 1.0f * delta) {
+                proportion = proportion - CHANGE_STEALTH_RATE / 1.0f * delta;
+            } else {
+                proportion = target;
+            }
+        }
+        player.setStealth(proportion);
     }
 
     /**
@@ -297,6 +343,9 @@ public class PlayerController {
     public void update(Phase currPhase, LightingController lightingController) {
         attackHandler.update(Gdx.graphics.getDeltaTime(), currPhase);
         resolvePlayer(Gdx.graphics.getDeltaTime());
+        if (currPhase == Phase.STEALTH) {
+            resolveStealth(Gdx.graphics.getDeltaTime());
+        }
         if (currPhase == GameplayController.Phase.STEALTH) {
             resolveMoonlight(Gdx.graphics.getDeltaTime(), lightingController);
         }
