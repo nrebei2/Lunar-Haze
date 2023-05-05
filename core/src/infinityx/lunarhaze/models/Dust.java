@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.util.Drawable;
 
@@ -15,12 +16,12 @@ public class Dust implements Drawable {
     /**
      * The particle position in world coordinates
      */
-    private final Vector2 position;
+    private final Vector3 position;
 
     /**
      * The particle velocity
      */
-    private final Vector2 velocity;
+    private final Vector3 velocity;
 
     /**
      * The current rotation of texture, affected by rps
@@ -110,7 +111,7 @@ public class Dust implements Drawable {
      *
      * @return the position of this particle
      */
-    public Vector2 getPosition() {
+    public Vector3 getPosition() {
         return position;
     }
 
@@ -151,14 +152,26 @@ public class Dust implements Drawable {
     }
 
     /**
+     * Sets the z-coordinate of the particle position.
+     *
+     * @param z the z-coordinate of the particle position
+     */
+    public void setZ(float z) {
+        position.z = z;
+    }
+
+    /**
      * Sets the angle (radians) of velocity for this particle.
      *
      * @param angle the angle of this particle (radians)
      * @param speed the speed
      */
     public void setVelocity(float angle, float speed) {
-        velocity.set((float) (speed * Math.cos(angle)),
-                (float) (speed * Math.sin(angle)));
+        velocity.set(
+                (float) (speed * Math.cos(angle)),
+                (float) (speed * Math.sin(angle)),
+                speed * MathUtils.random(-0.7f, 0.7f)
+        );
     }
 
     /**
@@ -231,8 +244,8 @@ public class Dust implements Drawable {
      * Many attributes of this particle should be set; use the appropriate setters.
      */
     public Dust() {
-        position = new Vector2();
-        velocity = new Vector2();
+        position = new Vector3();
+        velocity = new Vector3();
         reset();
     }
 
@@ -274,7 +287,7 @@ public class Dust implements Drawable {
                 }
                 break;
         }
-        position.add(velocity.x * delta, velocity.y * delta);
+        position.add(velocity.x * delta, velocity.y * delta, velocity.z * delta);
         textureRot += rps * delta;
     }
 
@@ -311,7 +324,7 @@ public class Dust implements Drawable {
     @Override
     public void draw(GameCanvas canvas) {
         canvas.draw(texture, alpha, texture.getWidth() / 2, texture.getHeight() / 2,
-                canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y), textureRot,
+                canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y + getPosition().z * 3/4), textureRot,
                 textureScale * scale, textureScale * scale);
     }
 
