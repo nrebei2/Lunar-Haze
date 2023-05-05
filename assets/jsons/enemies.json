@@ -8,14 +8,38 @@
       "degrees": 30
     },
     "textures": {
-      "attack-l": "villager.attack-l",
-      "attack-r": "villager.attack-r",
-      "attack-f": "villager.attack-f",
-      "attack-b": "villager.attack-b",
-      "walk-l": "villager.walk-l",
-      "walk-r": "villager.walk-r",
-      "walk-f": "villager.walk-f",
-      "walk-b": "villager.walk-b",
+      "attack-l": {
+        "name" : "villager.attack-l",
+        "durations" : [0.12, 0.12, 0.12]
+      },
+      "attack-r": {
+        "name" : "villager.attack-r",
+        "durations" : [0.12, 0.12, 0.12]
+      },
+      "attack-f": {
+        "name" : "villager.attack-f",
+        "durations" : [0.12, 0.12, 0.12]
+      },
+      "attack-b": {
+        "name" : "villager.attack-b",
+        "durations" : [0.12, 0.12, 0.12]
+      },
+      "walk-l": {
+        "name" : "villager.walk-l",
+        "durations" : [0.12, 0.12, 0.2, 0.12,  0.12, 0.12, 0.2, 0.12]
+      },
+      "walk-r": {
+        "name" : "villager.walk-r",
+        "durations" : [0.12, 0.12, 0.2, 0.12,  0.12, 0.12, 0.2, 0.12]
+      },
+      "walk-f": {
+        "name" : "villager.walk-f",
+        "durations" : [0.12, 0.2, 0.12, 0.2]
+      },
+      "walk-b": {
+        "name" : "villager.walk-b",
+        "durations" : [0.12, 0.2, 0.12, 0.2]
+      },
       "idle-l": "villager.idle-l",
       "idle-r": "villager.idle-r",
       "idle-f": "villager.idle-f",
@@ -49,7 +73,10 @@
         "range": 1,
         "width": 1,
         "textures": {
-          "hitbox": "werewolf.attack-effect"
+          "hitbox": {
+            "name" : "werewolf.attack-effect",
+            "durations" : [0.12, 0.12, 0.12]
+          }
         },
         "texture": {
           "name": "hitbox",

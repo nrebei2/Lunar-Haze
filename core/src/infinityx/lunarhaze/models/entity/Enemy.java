@@ -113,7 +113,6 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
         detection = Detection.NONE;
         tint.set(Color.WHITE);
         setScale(1);
-        loop = true;
     }
 
     /**

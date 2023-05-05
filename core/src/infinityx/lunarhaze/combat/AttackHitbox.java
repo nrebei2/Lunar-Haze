@@ -41,7 +41,6 @@ public class AttackHitbox extends GameObject {
                 0
         );
 
-        loop = false;
     }
 
     public AttackingGameObject getAttacker() {

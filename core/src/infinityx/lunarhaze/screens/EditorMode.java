@@ -518,15 +518,28 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
         // Add all enemies in json
         for (JsonValue enemy : enemies) {
-            enemySelections.add(
-                    new EnemyButton(
-                            directory.getEntry(
-                                    enemy.get("textures").getString(
-                                            enemy.get("texture").getString("name")
-                                    ), Texture.class
-                            ), enemy.name
-                    )
-            );
+            if (enemy.get("textures").get(enemy.get("texture").getString("name")).isObject()) {
+                enemySelections.add(
+                        new EnemyButton(
+                                directory.getEntry(
+                                        enemy.get("textures").get(
+                                                enemy.get("texture").getString("name")
+                                        ).getString("name"), Texture.class
+                                ), enemy.name
+                        )
+                );
+            }
+            else{
+                enemySelections.add(
+                        new EnemyButton(
+                                directory.getEntry(
+                                        enemy.get("textures").getString(
+                                                enemy.get("texture").getString("name")
+                                        ), Texture.class
+                                ), enemy.name
+                        )
+                );
+            }
         }
 
         this.background = directory.getEntry("bkg_allocate", Texture.class);
