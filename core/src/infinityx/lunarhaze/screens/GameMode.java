@@ -362,7 +362,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
         switch (gameplayController.getState()) {
             case WIN:
                 displayFont.setColor(Color.YELLOW);
-                canvas.begin(GameCanvas.DrawPass.SPRITE);
+                canvas.beginUI(GameCanvas.DrawPass.SPRITE);
                 canvas.drawTextCentered("VICTORY!", displayFont, 0.0f);
                 displayFont.setColor(Color.BLACK);
                 canvas.drawTextCentered("Press R to Restart", displayFont, -canvas.getHeight() * 0.1f);
@@ -370,7 +370,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
                 break;
             case OVER:
                 displayFont.setColor(Color.RED);
-                canvas.begin(GameCanvas.DrawPass.SPRITE); // DO NOT SCALE
+                canvas.beginUI(GameCanvas.DrawPass.SPRITE); // DO NOT SCALE
                 canvas.drawTextCentered("FAILURE!", displayFont, 0.0f);
                 canvas.drawTextCentered("Press R to Restart", displayFont, -canvas.getHeight() * 0.1f);
                 canvas.end();
@@ -378,7 +378,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
             case PLAY:
                 Phase phase = gameplayController.getPhase();
                 uiRender.drawUI(canvas, levelContainer, phase, gameplayController, delta);
-                canvas.begin(GameCanvas.DrawPass.SPRITE);
+                canvas.beginUI(GameCanvas.DrawPass.SPRITE);
                 Color tintPlay = (pressPauseState == 1 ? color : Color.WHITE);
                 canvas.draw(pauseButton, tintPlay, pauseButton.getWidth() / 2, pauseButton.getHeight() / 2,
                         centerXPause, centerYPause, 0, PAUSE_BUTTON_SIZE / pauseButton.getWidth(),
@@ -392,7 +392,6 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
      * Called when this screen becomes the current screen for a {@link Game}.
      */
     public void show() {
-//        setupLevel();
         pressPauseState = 0;
         Gdx.input.setInputProcessor(this);
     }

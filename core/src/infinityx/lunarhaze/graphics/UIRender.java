@@ -430,7 +430,7 @@ public class UIRender {
             }
 
             // Draw with view transform not considered
-            canvas.begin(GameCanvas.DrawPass.SPRITE);
+            canvas.beginUI(GameCanvas.DrawPass.SPRITE);
             // Draw top stroke at the top center of screen
             drawLevelStats(canvas, phase, gameplayController, level);
             drawDashCooldown(canvas, gameplayController);
@@ -445,7 +445,7 @@ public class UIRender {
             }
             canvas.end();
 
-            canvas.begin(GameCanvas.DrawPass.SHAPE);
+            canvas.beginUI(GameCanvas.DrawPass.SHAPE);
             // If necessary draw screen flash
             ScreenFlash.update(Gdx.graphics.getDeltaTime());
             canvas.drawScreenFlash(level.getPlayer());
@@ -503,13 +503,13 @@ public class UIRender {
         float percentage = pah.getDashCooldownCounter() / DASH_COOLDOWN;
         float height = DASH_ICON_SIZE / dash_bar.getWidth() * dash_bar.getHeight();
 
-        if (percentage > 0.99){
+        if (percentage > 0.99) {
             canvas.drawText("Ready to dash!", UIFont_small,
                     BAR_HEIGHT * 2 - UIFont_small.getAscent(), canvas.getHeight() / 2 + ICON_SIZE * 2f);
         }
 
         // TODO: Need to draw this correctly
-        int filledHeight =  (int) (dash_bar.getHeight() * percentage);
+        int filledHeight = (int) (dash_bar.getHeight() * percentage);
         int unfilledHeight = (int) (dash_bar.getHeight() * (1 - percentage));
         float screen_height_filled = height * percentage;
         float screen_height_unfilled = height * (1 - percentage);
@@ -517,14 +517,14 @@ public class UIRender {
                 0, unfilledHeight,
                 dash_bar.getWidth(), filledHeight);
         canvas.draw(dash_bar_lower, alphaTint,
-                BAR_HEIGHT * 4, canvas.getHeight() / 2 - BAR_HEIGHT/2,
+                BAR_HEIGHT * 4, canvas.getHeight() / 2 - BAR_HEIGHT / 2,
                 DASH_ICON_SIZE, screen_height_filled);
 
         TextureRegion dash_bar_upper = new TextureRegion(dash_bar,
                 0, 0,
                 dash_bar.getWidth(), unfilledHeight);
         canvas.draw(dash_bar_upper, alphaTint,
-                BAR_HEIGHT * 4, canvas.getHeight() / 2 - BAR_HEIGHT/2 + screen_height_filled,
+                BAR_HEIGHT * 4, canvas.getHeight() / 2 - BAR_HEIGHT / 2 + screen_height_filled,
                 DASH_ICON_SIZE, screen_height_unfilled);
     }
 
@@ -544,7 +544,7 @@ public class UIRender {
             alphaTint.a = EAS_FN.apply(1 - outProg);
         }
 
-        canvas.begin(GameCanvas.DrawPass.SPRITE);
+        canvas.beginUI(GameCanvas.DrawPass.SPRITE);
         canvas.drawOverlay(transition_background, Color.BLACK, true);
         canvas.drawOverlay(transition_background, alphaTint, true);
 
@@ -657,7 +657,7 @@ public class UIRender {
                 0, 0.5f, 0.5f);
         canvas.drawText(level.getPlayer().getMoonlightCollected() + "/" + ((int) level.getTotalMoonlight()), UIFont_small,
                 MOON_STROKE_WIDTH * 4 / 5 + HEALTH_STROKE_WIDTH,
-                canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.5f + UIFont_small.getCapHeight()/2);
+                canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.5f + UIFont_small.getCapHeight() / 2);
         if (level.getPlayer().getMoonlightCollected() > last_moon) {
             drawMoonCollect(canvas, delta);
         }
@@ -670,7 +670,7 @@ public class UIRender {
     public void drawStealthStats(GameCanvas canvas, LevelContainer level, float delta, GameplayController gc) {
         canvas.draw(stealth_stroke, Color.WHITE, canvas.getWidth() / 2 - STEALTH_STROKE_WIDTH / 2, MOON_STROKE_HEIGHT, STEALTH_STROKE_WIDTH, STEALTH_STROKE_HEIGHT);
         target = level.getPlayer().getStealth();
-        if (level.getPlayer().getLinearVelocity().isZero() && level.getPlayer().isOnMoonlight == false){
+        if (level.getPlayer().getLinearVelocity().isZero() && level.getPlayer().isOnMoonlight == false) {
             target = PlayerController.STILL_STEALTH;
         }
         if (target > proportion) {
@@ -679,7 +679,7 @@ public class UIRender {
             } else {
                 proportion = target;
             }
-        } else if (target < proportion){
+        } else if (target < proportion) {
             if (proportion - target >= CHANGE_STEALTH_RATE / 1.0f * delta) {
                 proportion = proportion - CHANGE_STEALTH_RATE / 1.0f * delta;
             } else {

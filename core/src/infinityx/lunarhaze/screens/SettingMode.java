@@ -240,7 +240,7 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
     }
 
     private void draw() {
-        canvas.begin(GameCanvas.DrawPass.SPRITE);
+        canvas.beginUI(GameCanvas.DrawPass.SPRITE);
         Color alphaTint = Color.WHITE;
         canvas.drawOverlay(background, alphaTint, true);
         canvas.drawTextCentered("Music Enabled", font, canvas.getHeight() * 0.3f);

@@ -1,11 +1,12 @@
 package infinityx.lunarhaze.models.entity;
 
-import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.models.GameObject;
 
 public class Arrow extends GameObject {
 
-    /** Reference to the archer that drew this arrow */
+    /**
+     * Reference to the archer that drew this arrow
+     */
     Archer archer;
 
     @Override

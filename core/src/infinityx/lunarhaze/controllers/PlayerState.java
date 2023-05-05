@@ -13,7 +13,7 @@ public enum PlayerState implements State<PlayerController> {
     IDLE() {
         @Override
         public void enter(PlayerController entity) {
-            if (entity.getPlayer().isOnMoonlight){
+            if (entity.getPlayer().isOnMoonlight) {
                 entity.player.setStealth(entity.MOON_STEALTH);
             } else {
                 entity.player.setStealth(entity.STILL_STEALTH);
@@ -80,7 +80,7 @@ public enum PlayerState implements State<PlayerController> {
                 entity.getStateMachine().changeState(PlayerState.RUN);
             }
 
-            if (entity.getPlayer().isOnMoonlight){
+            if (entity.getPlayer().isOnMoonlight) {
                 entity.player.setStealth(entity.MOON_STEALTH);
             } else {
                 entity.player.setStealth(entity.WALK_STEALTH);

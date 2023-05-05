@@ -14,8 +14,9 @@ public class CustomAnimation extends Animation {
 
     /**
      * Creates a new CustomAnimation with the specified frame duration and key frames.
+     *
      * @param frameDuration The duration of each frame in seconds.
-     * @param keyFrames An array of key frames.
+     * @param keyFrames     An array of key frames.
      */
     public CustomAnimation(float frameDuration, TextureRegion... keyFrames) {
         super(frameDuration, keyFrames);
@@ -23,8 +24,9 @@ public class CustomAnimation extends Animation {
 
     /**
      * Creates a new CustomAnimation with the specified frame duration and key frames.
+     *
      * @param frameDuration The duration of each frame in seconds.
-     * @param keyFrames An array of key frames.
+     * @param keyFrames     An array of key frames.
      */
     public CustomAnimation(float frameDuration, Array<? extends TextureRegion> keyFrames) {
         super(frameDuration, keyFrames);
@@ -32,7 +34,8 @@ public class CustomAnimation extends Animation {
 
     /**
      * Creates a new CustomAnimation with the specified key frames and frame durations.
-     * @param keyFrames An array of key frames.
+     *
+     * @param keyFrames      An array of key frames.
      * @param frameDurations An array of frame durations.
      */
     public CustomAnimation(Array<? extends TextureRegion> keyFrames, float[] frameDurations) {
@@ -42,6 +45,7 @@ public class CustomAnimation extends Animation {
 
     /**
      * Sets the frame durations for this animation.
+     *
      * @param frameDurations An array of frame durations.
      * @throws IllegalArgumentException if the frame durations array is null or has a different length than the key frames array.
      */

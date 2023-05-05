@@ -3,7 +3,6 @@ package infinityx.lunarhaze.models;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.util.Drawable;
@@ -324,7 +323,7 @@ public class Dust implements Drawable {
     @Override
     public void draw(GameCanvas canvas) {
         canvas.draw(texture, alpha, texture.getWidth() / 2, texture.getHeight() / 2,
-                canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y + getPosition().z * 3/4), textureRot,
+                canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y + getPosition().z * 3 / 4), textureRot,
                 textureScale * scale, textureScale * scale);
     }
 

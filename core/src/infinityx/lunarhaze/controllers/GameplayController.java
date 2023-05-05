@@ -190,8 +190,6 @@ public class GameplayController {
         battleTicks = 0;
 
         win_sound = levelContainer.getDirectory().getEntry("level-passed", Sound.class);
-//        allocateScreen = new AllocateScreen(canvas, playerController);
-
         tacticalManager = new TacticalManager(container);
     }
 
@@ -203,7 +201,6 @@ public class GameplayController {
      */
     public void resolveActions(float delta) {
         // Update the phase timer
-        lightingController.updateDust(delta);
 
         // FSM for state and phase
         if (gameState == GameState.PLAY) {
@@ -211,9 +208,12 @@ public class GameplayController {
             playerController.update(phase, lightingController);
             switch (phase) {
                 case STEALTH:
+                    lightingController.updateDust(delta);
                     phaseTimer -= delta;
-                    if (container.getBoard().getRemainingMoonlight() == 0 || phaseTimer <= 0)
+                    if (container.getBoard().getRemainingMoonlight() == 0 || phaseTimer <= 0) {
                         phase = Phase.TRANSITION;
+                        lightingController.dispose();
+                    }
                     break;
                 case BATTLE:
                     battleTicks += 1;
