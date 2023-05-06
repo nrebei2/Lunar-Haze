@@ -413,8 +413,11 @@
   "sounds": {
     "collect": "sounds/collect.wav",
     "level-passed": "sounds/level-passed.wav",
-    "whip": "sounds/whip.wav",
-    "alerted": "sounds/alerted.wav"
+    "whip": "sounds/whip2.wav",
+    "alerted": "sounds/alerted.wav",
+    "dash": "sounds/dash.wav",
+    "walking-on-grass": "sounds/walking_on_grass-02.wav",
+    "walking-on-soil": "sounds/walking_on_soil-03.wav"
   },
   "fonts": {
     "retro": {

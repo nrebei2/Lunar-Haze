@@ -188,8 +188,6 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
         stealth_background = directory.getEntry("stealthBackground", Music.class);
         battle_background = directory.getEntry("battleBackground", Music.class);
         lobby_background = directory.getEntry("lobbyBackground", Music.class);
-
-//        win_sound = directory.getEntry("level-passed", Sound.class);
     }
 
     /**
