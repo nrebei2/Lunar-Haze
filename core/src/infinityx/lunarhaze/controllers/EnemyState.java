@@ -251,7 +251,7 @@ public enum EnemyState implements State<EnemyController> {
             if (telegram.message == TacticalManager.FLANK) {
 
                 Vector2 flank_pos = (Vector2) telegram.extraInfo;
-                control.flank_pos.set(flank_pos);
+                control.flank_pos = flank_pos;
                 Vector2 cur_pos = control.getEnemy().getPosition();
                 Path path = control.pathfinder.findPath(cur_pos, flank_pos);
                 control.followPathSB.setPath(path);
