@@ -221,6 +221,50 @@
       }
     },
     "werewolf": {
+      "file": 	"images/player/heavyattack_spritesheet_left.png",
+      "wrap":  	false,
+      "sprites":	{
+        "heavyattack-l" : {
+          "size" : 2,
+          "rows" : 1,
+          "cols" : 2
+        }
+      }
+    },
+    "werewolf": {
+      "file": 	"images/player/heavyattack_spritesheet_right.png",
+      "wrap":  	false,
+      "sprites":	{
+        "heavyattack-r" : {
+          "size" : 2,
+          "rows" : 1,
+          "cols" : 2
+        }
+      }
+    },
+    "werewolf": {
+      "file": 	"images/player/heavyattack_spritesheet_back.png",
+      "wrap":  	false,
+      "sprites":	{
+        "heavyattack-b" : {
+          "size" : 2,
+          "rows" : 1,
+          "cols" : 2
+        }
+      }
+    },
+    "werewolf": {
+      "file": 	"images/player/heavyattack_spritesheet_front.png",
+      "wrap":  	false,
+      "sprites":	{
+        "heavyattack-f" : {
+          "size" : 2,
+          "rows" : 1,
+          "cols" : 2
+        }
+      }
+    },
+    "werewolf": {
       "file": 	"images/player/left_still.png",
       "wrap":  	false,
       "sprites":	{
@@ -239,6 +283,10 @@
     "werewolf.idle-l": "images/player/left_still.png",
     "werewolf.idle-b": "images/player/back_still.png",
     "werewolf.idle-f": "images/player/front_still.png",
+    "werewolf.windup-r": "images/player/windup-r.png",
+    "werewolf.windup-l": "images/player/windup-l.png",
+    "werewolf.windup-b": "images/player/windup-b.png",
+    "werewolf.windup-f": "images/player/windup-f.png",
 
     "werewolf": {
       "file": 	"images/player/werewolf-attack.png",

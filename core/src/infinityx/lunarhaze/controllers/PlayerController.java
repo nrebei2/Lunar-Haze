@@ -160,6 +160,12 @@ public class PlayerController {
         return player.isAttacking();
     }
 
+    public boolean isWindingUp() {
+        return attackHandler.isWindingUpHeavyAttack();
+    }
+
+    public boolean isHeavyAttacking() { return player.isAttacking() && attackHandler.isHeavyAttacking(); }
+
     public boolean isAttacked() {
         return player.isAttacked();
     }
@@ -203,12 +209,12 @@ public class PlayerController {
         this.board = levelContainer.getBoard();
         this.levelContainer = levelContainer;
         collectingMoonlight = false;
-        attackHandler = new PlayerAttackHandler(player);
         collect_sound = levelContainer.getDirectory().getEntry("collect", Sound.class);
         attack_sound = levelContainer.getDirectory().getEntry("whip", Sound.class);
         dash_sound = levelContainer.getDirectory().getEntry("dash", Sound.class);
         walk_sound = levelContainer.getDirectory().getEntry("walking-on-soil", Sound.class);
         stateMachine = new DefaultStateMachine<>(this, PlayerState.IDLE);
+        attackHandler = new PlayerAttackHandler(player, stateMachine);
         allocateReady = false;
         isWalkGrassPlaying = false;
         target = STILL_STEALTH;

@@ -1,9 +1,12 @@
 package infinityx.lunarhaze.combat;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.fsm.StateMachine;
 import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.controllers.GameplayController;
 import infinityx.lunarhaze.controllers.InputController;
+import infinityx.lunarhaze.controllers.PlayerController;
+import infinityx.lunarhaze.controllers.PlayerState;
 import infinityx.lunarhaze.models.entity.Werewolf;
 
 /**
@@ -14,29 +17,8 @@ import infinityx.lunarhaze.models.entity.Werewolf;
 public class PlayerAttackHandler extends AttackHandler {
 
     /**
-     * Counter for delay between combo attacks
-     */
-    private float comboAttackCooldownCounter;
-
-    /**
-     * Current combo step
-     */
-    private int comboStep;
-
-    /**
-     * Time since combo started
-     */
-    private float comboTime;
-
-    /**
-     * Max allowed time before combo timeout
-     */
-    private final static float MAX_COMBO_TIME = 1f;
-
-    /**
      * Dash variables
      */
-    private static final float DASH_SPEED = 10f;
     private static final float DASH_TIME = 0.15f;
     private float dashTimer;
     private Vector2 dashDirection;
@@ -44,18 +26,25 @@ public class PlayerAttackHandler extends AttackHandler {
     public static final float DASH_COOLDOWN = 3.0f;
     private float dashCooldownCounter;
 
+    private boolean heavyAttacking;
+    private boolean windingUpHeavyAttack;
+    private float heavyAttackWindupTimer;
+    private static final float HEAVY_ATTACK_WINDUP_TIME = 0.5f;
+
+    private StateMachine<PlayerController, PlayerState> stateMachine;
+
     /**
      * Creates a specialized attack system for the given player
      */
-    public PlayerAttackHandler(Werewolf player) {
+    public PlayerAttackHandler(Werewolf player, StateMachine<PlayerController, PlayerState> stateMachine) {
         super(player);
-        comboAttackCooldownCounter = 0f;
-        comboStep = 0;
-        comboTime = 0f;
-
+        this.stateMachine = stateMachine;
         dashDirection = new Vector2();
         isDashing = false;
         dashCooldownCounter = DASH_COOLDOWN;
+        heavyAttacking = false;
+        windingUpHeavyAttack = false;
+        heavyAttackWindupTimer = 0;
     }
 
     public float getDashCooldownCounter() {
@@ -70,92 +59,86 @@ public class PlayerAttackHandler extends AttackHandler {
      * @param phase current phase of the game
      */
     public void update(float delta, GameplayController.Phase phase) {
+        // Safe
+        Werewolf player = (Werewolf) entity;
         if (phase == GameplayController.Phase.BATTLE) {
             super.update(delta);
-            if (isDashing) {
-                processDash(dashDirection);
+
+            // Winding up logic
+            if(windingUpHeavyAttack) {
+                heavyAttackWindupTimer += delta;
+                if(heavyAttackWindupTimer >= HEAVY_ATTACK_WINDUP_TIME) {
+                    System.out.println("Starting heavy attack");
+                    initiateHeavyAttack();
+                    windingUpHeavyAttack = false;
+                }
             }
-            if (comboStep > 0) {
-                handleComboTimeout(delta);
-            }
-            // Safe
-            Werewolf player = (Werewolf) entity;
-            if (canStartNewAttackOrContinueCombo()) {
-                player.setDrawCooldownBar(false, 0);
-                if (InputController.getInstance().didAttack()) {
+
+            // Do not attack when locked out
+            else if(!player.isLockedOut() && !player.isHeavyLockedOut()) {
+
+                if (InputController.getInstance().didAttack() && !player.isAttacking()) {
                     initiateAttack();
+                } else if (InputController.getInstance().didHeavyAttack() && !player.isAttacking()) {
+                    initiateWindup();
                 }
-            } else if (!isDashing) {
-                if (comboStep == 0) {
-                    player.setDrawCooldownBar(true, attackCooldownCounter / entity.attackCooldown);
-                } else {
-                    // Will remove magic numbers later
-                    player.setDrawCooldownBar(true, comboAttackCooldownCounter / 0.4f);
-                }
+
             }
-            if (dashCooldownCounter < DASH_COOLDOWN) {
-                dashCooldownCounter += delta;
-            }
-            // Initiate dash based on input
-            if (InputController.getInstance().didRun() && !player.isAttacking() && dashCooldownCounter >= DASH_COOLDOWN) {
-                initiateDash(InputController.getInstance());
-            }
-        } else {
-            Werewolf player = (Werewolf) entity;
-            if (isDashing) {
-                processDash(dashDirection);
-            }
-            if (dashCooldownCounter < DASH_COOLDOWN) {
-                dashCooldownCounter += delta;
-            }
-            // Initiate dash based on input
-            if (InputController.getInstance().didRun() && !player.isAttacking() && dashCooldownCounter >= DASH_COOLDOWN) {
-                initiateDash(InputController.getInstance());
-            }
+
         }
 
-    }
+        // Dash logic
 
-    public void endAttack() {
-        super.endAttack();
-
-        // Combo logic
-        comboStep++;
-        comboTime = 0f;
-        // Step 3 is the last attack in the combo
-        if (comboStep >= 3) {
-            comboStep = 0;
-            attackCooldownCounter = 0f;
+        if (isDashing) {
+            processDash(dashDirection);
         }
-    }
-
-    /**
-     * Handles combo timeouts
-     */
-    private void handleComboTimeout(float delta) {
-        comboTime += delta;
-        comboAttackCooldownCounter += delta;
-
-        if (comboTime >= MAX_COMBO_TIME) {
-            comboStep = 0;
-            comboTime = 0f;
-            attackCooldownCounter = 0f;
+        if (dashCooldownCounter < DASH_COOLDOWN) {
+            dashCooldownCounter += delta;
         }
-    }
+        // Initiate dash based on input
+        if (InputController.getInstance().didRun() && !player.isAttacking() && dashCooldownCounter >= DASH_COOLDOWN) {
+            initiateDash(InputController.getInstance());
+        }
 
-    /**
-     * Returns true if the player can start a new attack or continue a combo
-     */
-    public boolean canStartNewAttackOrContinueCombo() {
-        return (comboStep == 0 && canStartNewAttack()) // Can start a new attack
-                || (comboStep > 0 && comboTime <= MAX_COMBO_TIME && comboAttackCooldownCounter >= 0.4f); // Can continue a combo
     }
 
     public void initiateAttack() {
         // movement component
         entity.getBody().applyLinearImpulse(entity.getLinearVelocity().nor(), entity.getBody().getWorldCenter(), true);
-        comboAttackCooldownCounter = 0f;
         super.initiateAttack();
+    }
+
+    /** Initiates windup component/channel time of heavy attack */
+    public void initiateWindup() {
+        heavyAttackWindupTimer = 0;
+        windingUpHeavyAttack = true;
+    }
+
+    public void initiateHeavyAttack() {
+        entity.attackDamage *= 2;
+        entity.attackKnockback *= 2;
+        entity.getAttackHitbox().setHitboxRange(entity.getAttackHitbox().getHitboxRange() * 1.5f);
+        heavyAttacking = true;
+
+        initiateAttack();
+    }
+
+    @Override
+    protected void endAttack() {
+        super.endAttack();
+
+        if (heavyAttacking) {
+            // Reset damage and knockback to their original values
+            entity.attackDamage /= 2;
+            entity.attackKnockback /= 2;
+            entity.getAttackHitbox().setHitboxRange(entity.getAttackHitbox().getHitboxRange() / 1.5f);
+
+            // Lock the player out after a heavy attack
+            Werewolf player = (Werewolf) entity;
+            player.setHeavyLockedOut();
+
+            heavyAttacking = false;
+        }
     }
 
     /**
@@ -172,7 +155,7 @@ public class PlayerAttackHandler extends AttackHandler {
     }
 
     private void processDash(Vector2 direction) {
-        entity.getBody().applyLinearImpulse(direction.x * 0.5f, direction.y * 0.5f, entity.getX(), entity.getY(), true);
+        entity.getBody().applyLinearImpulse(direction.x * 0.2f, direction.y * 0.2f, entity.getX(), entity.getY(), true);
         dashTimer += Gdx.graphics.getDeltaTime();
         if (dashTimer >= DASH_TIME) {
             endDash();
@@ -182,5 +165,13 @@ public class PlayerAttackHandler extends AttackHandler {
     private void endDash() {
         dashCooldownCounter = 0f;
         isDashing = false;
+    }
+
+    public boolean isHeavyAttacking() {
+        return heavyAttacking;
+    }
+
+    public boolean isWindingUpHeavyAttack() {
+        return windingUpHeavyAttack;
     }
 }
