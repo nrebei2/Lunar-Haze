@@ -151,6 +151,10 @@ public enum EnemyState implements State<EnemyController> {
             Vector2 enemyToTarget = entity.target.getPosition().sub(entity.getEnemy().getPosition());
             entity.getEnemy().setOrientation(AngleUtils.vectorToAngle(enemyToTarget));
 
+            if (entity.getEnemy().isAttacking()){
+                entity.getEnemy().setLinearVelocity(Vector2.Zero);
+            }
+
             // Handle state transitions
             if (!entity.getEnemy().isAttacking()) {
                 // Go back to whatever it was doing before. It may always be ALERT.
@@ -220,12 +224,13 @@ public enum EnemyState implements State<EnemyController> {
                 // Switch to battle behavior when close enough
                 else if (enemyToTarget.len() <= entity.getEnemy().getStrafeDistance()) {
                     // Always face towards target
-//                    entity.getEnemy().setIndependentFacing(true);
-//                    entity.getEnemy().setOrientation(AngleUtils.vectorToAngle(enemyToTarget));
+                    entity.getEnemy().setIndependentFacing(true);
+                    entity.getEnemy().setOrientation(AngleUtils.vectorToAngle(enemyToTarget));
                     entity.getEnemy().setSteeringBehavior(entity.battleSB);
+                    entity.getEnemy().setMaxLinearSpeed(0.8f);
                 } else {
                     // go back to chase (follow path)
-
+                    entity.getEnemy().setMaxLinearSpeed(1.11f);
                     entity.getEnemy().setIndependentFacing(false);
                     entity.targetPos.set(entity.getTarget().getPosition());
                     entity.getEnemy().setSteeringBehavior(entity.followPathSB);

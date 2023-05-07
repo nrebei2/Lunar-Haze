@@ -140,6 +140,8 @@ public class EnemyController extends AttackHandler {
      */
     public ContextBehavior attack;
 
+    public ContextBehavior evade;
+
     public Sound getAlertSound() {
         return alert_sound;
     }
@@ -200,9 +202,11 @@ public class EnemyController extends AttackHandler {
             @Override
             protected ContextMap calculateRealMaps(ContextMap map) {
                 map.setZero();
-                Vector2 targetDir = target.getPosition().sub(enemy.getPosition()).nor();
-                for (int i = 0; i < map.getResolution(); i++) {
-                    map.interestMap[i] = Math.max(0, map.dirFromSlot(i).dot(targetDir));
+                if (canStartNewAttack()) {
+                    Vector2 targetDir = target.getPosition().sub(enemy.getPosition()).nor();
+                    for (int i = 0; i < map.getResolution(); i++) {
+                        map.interestMap[i] = Math.max(0, map.dirFromSlot(i).dot(targetDir));
+                    }
                 }
 
                 return map;
@@ -220,7 +224,7 @@ public class EnemyController extends AttackHandler {
                 for (int i = 0; i < map.getResolution(); i++) {
                     Vector2 dir = map.dirFromSlot(i);
                     // Ray extends two units
-                    rayCache.set(enemy.getPosition(), dir.scl(2).add(enemy.getPosition()));
+                    rayCache.set(enemy.getPosition(), dir.scl(3).add(enemy.getPosition()));
                     //System.out.printf("Ray: (%s, %s)\n", rayCache.start, rayCache.end);
                     communicationCollision.findCollision(commCache, rayCache);
                     if (commRay.hit) {
@@ -231,12 +235,28 @@ public class EnemyController extends AttackHandler {
                 return map;
             }
         };
-//        this.combinedContext.add(attack);
+
+        evade = new ContextBehavior(enemy, true) {
+            @Override
+            protected ContextMap calculateRealMaps(ContextMap map) {
+                map.setZero();
+                if (!canStartNewAttack() || enemy.getHealthPercentage() < 0.5) {
+                    Vector2 evade_dir = enemy.getPosition().sub(target.getPosition()).nor();
+                    for (int i = 0; i < map.getResolution(); i++) {
+                        map.interestMap[i] =  Math.max(0, map.dirFromSlot(i).dot(evade_dir));
+                    }
+                }
+
+                return map;
+            }
+        };
+        this.combinedContext.add(attack);
         this.combinedContext.add(strafe);
         this.combinedContext.add(separation);
+        this.combinedContext.add(evade);
 
         //Resolution is set to 8 to represent the 8 directions in which enemies can move
-        this.battleSB = new ContextSteering(enemy, combinedContext, 40);
+        this.battleSB = new ContextSteering(enemy, combinedContext, 72);
     }
 
     /**
