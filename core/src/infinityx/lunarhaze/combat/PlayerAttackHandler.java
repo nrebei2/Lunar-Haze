@@ -55,12 +55,17 @@ public class PlayerAttackHandler extends AttackHandler {
         if (phase == GameplayController.Phase.BATTLE) {
             super.update(delta);
 
-            if (InputController.getInstance().didAttack() && !player.isAttacking()) {
-                initiateAttack();
+            // Do not attack when locked out
+            if(!player.isLockedOut() && !player.isHeavyLockedOut()) {
+
+                if (InputController.getInstance().didAttack() && !player.isAttacking()) {
+                    initiateAttack();
+                } else if (InputController.getInstance().didHeavyAttack() && !player.isAttacking()) {
+                    initiateHeavyAttack();
+                }
+
             }
-            else if (InputController.getInstance().didHeavyAttack() && !player.isAttacking()) {
-                initiateHeavyAttack();
-            }
+
         }
 
         // Dash logic
@@ -104,7 +109,8 @@ public class PlayerAttackHandler extends AttackHandler {
             entity.getAttackHitbox().setHitboxRange(entity.getAttackHitbox().getHitboxRange() / 1.5f);
 
             // Lock the player out after a heavy attack
-            entity.setLockedOut();
+            Werewolf player = (Werewolf) entity;
+            player.setHeavyLockedOut();
 
             isHeavyAttack = false; // Reset the flag
         }
