@@ -87,7 +87,7 @@ public abstract class AttackHandler {
     /**
      * Adjusts hitbox based on {@link #entity} transform
      */
-    private void updateHitboxPosition() {
+    protected void updateHitboxPosition() {
         // This is the logic that makes the hitbox "parented" to the entity
         entity.getAttackHitbox()
                 .getBody()

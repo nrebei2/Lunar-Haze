@@ -23,10 +23,7 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
      **/
     public float walkSpeed;
 
-    /**
-     * Move speed (running)
-     **/
-    public float runSpeed;
+    public float windupSpeed;
 
     public boolean isOnMoonlight;
 
@@ -59,6 +56,18 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
      * The direction the werewolf is facing
      */
     public Direction direction;
+
+    /**
+     * Whether the werewolf is locked out from heavy attacks
+     */
+    public boolean heavyLockedOut;
+
+    /**
+     * For use with {@link #heavyLockedOut}
+     */
+    public float heavyLockoutTime;
+
+    public boolean isWindingUp;
 
     /**
      * Returns the type of this object.
@@ -158,7 +167,27 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
         super();
         stealth = 0.0f;
         moonlightCollected = 0;
+        heavyLockedOut = false;
+        isWindingUp = false;
+        heavyLockoutTime= 0.4f; // this can be changed later
     }
+
+    /**
+     * Begin heavy lock out for this werewolf. Should be called when attacked.
+     */
+    public void setHeavyLockedOut() {
+        heavyLockedOut = true;
+        heavyLockoutTime = 0.4f;
+    }
+
+    public void setWindingUp(boolean b) {
+        isWindingUp = b;
+    }
+
+    public boolean isHeavyLockedOut() {
+        return heavyLockedOut;
+    }
+
 
     /**
      * Initialize the werewolf with the given data
@@ -176,7 +205,7 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
 
         JsonValue speedInfo = json.get("speed");
         walkSpeed = speedInfo.getFloat("walk");
-        runSpeed = speedInfo.getFloat("run");
+        windupSpeed = walkSpeed / 3f;
 
 
         PointLight spotLight = new PointLight(
@@ -200,13 +229,22 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
      */
     public void update(float delta) {
         super.update(delta);
+        canMove = canMove && !heavyLockedOut;
+
+        if (heavyLockedOut) {
+            // TODO: Change frame to show that the werewolf is locked out? If needed
+            heavyLockoutTime -= delta;
+            if (heavyLockoutTime <= 0)
+                heavyLockedOut = false;
+        }
+
         // get the current velocity of the player's Box2D body
         if (canMove) {
             Vector2 velocity = body.getLinearVelocity();
             float movementH = InputController.getInstance().getHorizontal();
             float movementV = InputController.getInstance().getVertical();
 
-            float speed = isRunning ? runSpeed : walkSpeed;
+            float speed = isWindingUp ? windupSpeed : walkSpeed;
             velocity.x = movementH * speed;
             velocity.y = movementV * speed;
 
@@ -265,4 +303,5 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
     public Location<Vector2> newLocation() {
         return new Box2dLocation(this.getPosition());
     }
+
 }
