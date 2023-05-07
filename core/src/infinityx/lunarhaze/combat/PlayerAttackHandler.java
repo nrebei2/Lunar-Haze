@@ -1,10 +1,12 @@
 package infinityx.lunarhaze.combat;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
+import com.badlogic.gdx.ai.fsm.StateMachine;
 import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.controllers.GameplayController;
 import infinityx.lunarhaze.controllers.InputController;
+import infinityx.lunarhaze.controllers.PlayerController;
+import infinityx.lunarhaze.controllers.PlayerState;
 import infinityx.lunarhaze.models.entity.Werewolf;
 
 /**
@@ -24,18 +26,25 @@ public class PlayerAttackHandler extends AttackHandler {
     public static final float DASH_COOLDOWN = 3.0f;
     private float dashCooldownCounter;
 
-    private boolean isHeavyAttack;
+    private boolean heavyAttacking;
+    private boolean windingUpHeavyAttack;
+    private float heavyAttackWindupTimer;
+    private static final float HEAVY_ATTACK_WINDUP_TIME = 0.5f;
+
+    private StateMachine<PlayerController, PlayerState> stateMachine;
 
     /**
      * Creates a specialized attack system for the given player
      */
-    public PlayerAttackHandler(Werewolf player) {
+    public PlayerAttackHandler(Werewolf player, StateMachine<PlayerController, PlayerState> stateMachine) {
         super(player);
-
+        this.stateMachine = stateMachine;
         dashDirection = new Vector2();
         isDashing = false;
         dashCooldownCounter = DASH_COOLDOWN;
-        isHeavyAttack = false;
+        heavyAttacking = false;
+        windingUpHeavyAttack = false;
+        heavyAttackWindupTimer = 0;
     }
 
     public float getDashCooldownCounter() {
@@ -55,13 +64,23 @@ public class PlayerAttackHandler extends AttackHandler {
         if (phase == GameplayController.Phase.BATTLE) {
             super.update(delta);
 
+            // Winding up logic
+            if(windingUpHeavyAttack) {
+                heavyAttackWindupTimer += delta;
+                if(heavyAttackWindupTimer >= HEAVY_ATTACK_WINDUP_TIME) {
+                    System.out.println("Starting heavy attack");
+                    initiateHeavyAttack();
+                    windingUpHeavyAttack = false;
+                }
+            }
+
             // Do not attack when locked out
-            if(!player.isLockedOut() && !player.isHeavyLockedOut()) {
+            else if(!player.isLockedOut() && !player.isHeavyLockedOut()) {
 
                 if (InputController.getInstance().didAttack() && !player.isAttacking()) {
                     initiateAttack();
                 } else if (InputController.getInstance().didHeavyAttack() && !player.isAttacking()) {
-                    initiateHeavyAttack();
+                    initiateWindup();
                 }
 
             }
@@ -89,11 +108,17 @@ public class PlayerAttackHandler extends AttackHandler {
         super.initiateAttack();
     }
 
+    /** Initiates windup component/channel time of heavy attack */
+    public void initiateWindup() {
+        heavyAttackWindupTimer = 0;
+        windingUpHeavyAttack = true;
+    }
+
     public void initiateHeavyAttack() {
         entity.attackDamage *= 2;
         entity.attackKnockback *= 2;
         entity.getAttackHitbox().setHitboxRange(entity.getAttackHitbox().getHitboxRange() * 1.5f);
-        isHeavyAttack = true;
+        heavyAttacking = true;
 
         initiateAttack();
     }
@@ -102,7 +127,7 @@ public class PlayerAttackHandler extends AttackHandler {
     protected void endAttack() {
         super.endAttack();
 
-        if (isHeavyAttack) {
+        if (heavyAttacking) {
             // Reset damage and knockback to their original values
             entity.attackDamage /= 2;
             entity.attackKnockback /= 2;
@@ -112,7 +137,7 @@ public class PlayerAttackHandler extends AttackHandler {
             Werewolf player = (Werewolf) entity;
             player.setHeavyLockedOut();
 
-            isHeavyAttack = false; // Reset the flag
+            heavyAttacking = false;
         }
     }
 
@@ -130,7 +155,7 @@ public class PlayerAttackHandler extends AttackHandler {
     }
 
     private void processDash(Vector2 direction) {
-        entity.getBody().applyLinearImpulse(direction.x * 0.5f, direction.y * 0.5f, entity.getX(), entity.getY(), true);
+        entity.getBody().applyLinearImpulse(direction.x * 0.2f, direction.y * 0.2f, entity.getX(), entity.getY(), true);
         dashTimer += Gdx.graphics.getDeltaTime();
         if (dashTimer >= DASH_TIME) {
             endDash();
@@ -140,5 +165,13 @@ public class PlayerAttackHandler extends AttackHandler {
     private void endDash() {
         dashCooldownCounter = 0f;
         isDashing = false;
+    }
+
+    public boolean isHeavyAttacking() {
+        return heavyAttacking;
+    }
+
+    public boolean isWindingUpHeavyAttack() {
+        return windingUpHeavyAttack;
     }
 }

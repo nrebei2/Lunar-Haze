@@ -23,10 +23,7 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
      **/
     public float walkSpeed;
 
-    /**
-     * Move speed (running)
-     **/
-    public float runSpeed;
+    public float windupSpeed;
 
     public boolean isOnMoonlight;
 
@@ -69,6 +66,8 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
      * For use with {@link #heavyLockedOut}
      */
     public float heavyLockoutTime;
+
+    public boolean isWindingUp;
 
     /**
      * Returns the type of this object.
@@ -169,7 +168,8 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
         stealth = 0.0f;
         moonlightCollected = 0;
         heavyLockedOut = false;
-        heavyLockoutTime= 1f; // this can be changed later
+        isWindingUp = false;
+        heavyLockoutTime= 0.4f; // this can be changed later
     }
 
     /**
@@ -177,7 +177,11 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
      */
     public void setHeavyLockedOut() {
         heavyLockedOut = true;
-        heavyLockoutTime = 1f;
+        heavyLockoutTime = 0.4f;
+    }
+
+    public void setWindingUp(boolean b) {
+        isWindingUp = b;
     }
 
     public boolean isHeavyLockedOut() {
@@ -201,7 +205,7 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
 
         JsonValue speedInfo = json.get("speed");
         walkSpeed = speedInfo.getFloat("walk");
-        runSpeed = speedInfo.getFloat("run");
+        windupSpeed = walkSpeed / 3f;
 
 
         PointLight spotLight = new PointLight(
@@ -240,7 +244,7 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
             float movementH = InputController.getInstance().getHorizontal();
             float movementV = InputController.getInstance().getVertical();
 
-            float speed = isRunning ? runSpeed : walkSpeed;
+            float speed = isWindingUp ? windupSpeed : walkSpeed;
             velocity.x = movementH * speed;
             velocity.y = movementV * speed;
 

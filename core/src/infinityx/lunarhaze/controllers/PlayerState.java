@@ -24,7 +24,9 @@ public enum PlayerState implements State<PlayerController> {
         @Override
         public void update(PlayerController entity) {
             // Handle state transitions
-            if (entity.isAttacking()) {
+            if(entity.isWindingUp()) {
+                entity.getStateMachine().changeState(PlayerState.HEAVY_ATTACK_WINDUP);
+            } else if (entity.isAttacking()) {
                 entity.getStateMachine().changeState(PlayerState.ATTACK);
             } else if (entity.isAttacked()) {
                 entity.getStateMachine().changeState(PlayerState.ATTACKED);
@@ -69,7 +71,9 @@ public enum PlayerState implements State<PlayerController> {
         @Override
         public void update(PlayerController entity) {
             // Handle state transitions
-            if (entity.isAttacking()) {
+            if(entity.isWindingUp()) {
+                entity.getStateMachine().changeState(PlayerState.HEAVY_ATTACK_WINDUP);
+            } else if (entity.isAttacking()) {
                 entity.getStateMachine().changeState(PlayerState.ATTACK);
             } else if (entity.isAttacked()) {
                 entity.getStateMachine().changeState(PlayerState.ATTACKED);
@@ -107,7 +111,9 @@ public enum PlayerState implements State<PlayerController> {
         @Override
         public void update(PlayerController entity) {
             // Handle state transitions
-            if (entity.isAttacking()) {
+            if(entity.isWindingUp()) {
+                entity.getStateMachine().changeState(PlayerState.HEAVY_ATTACK_WINDUP);
+            } else if (entity.isAttacking()) {
                 entity.getStateMachine().changeState(PlayerState.ATTACK);
             } else if (entity.isAttacked()) {
                 entity.getStateMachine().changeState(PlayerState.ATTACKED);
@@ -140,6 +146,21 @@ public enum PlayerState implements State<PlayerController> {
         }
     },
 
+    HEAVY_ATTACK() {
+        @Override
+        public void enter(PlayerController entity) {
+            entity.getAttackSound().play(0.8f);
+            setTexture(entity, "heavyattack");
+        }
+
+        @Override
+        public void update(PlayerController entity) {
+            if(!entity.isHeavyAttacking()) {
+                entity.getStateMachine().changeState(PlayerState.IDLE);
+            }
+        }
+    },
+
     /**
      * The player is currently collecting moonlight
      */
@@ -152,7 +173,9 @@ public enum PlayerState implements State<PlayerController> {
         @Override
         public void update(PlayerController entity) {
             // Handle state transitions
-            if (entity.isAttacking()) {
+            if(entity.isWindingUp()) {
+                entity.getStateMachine().changeState(PlayerState.HEAVY_ATTACK_WINDUP);
+            } else if (entity.isAttacking()) {
                 entity.getStateMachine().changeState(PlayerState.ATTACK);
             } else if (entity.isAttacked()) {
                 entity.getStateMachine().changeState(PlayerState.ATTACKED);
@@ -180,6 +203,29 @@ public enum PlayerState implements State<PlayerController> {
         @Override
         public void update(PlayerController entity) {
             // TODO: Add state transitions to other states
+        }
+    },
+
+    /**
+     * The player is currently winding up for heavy attack
+     */
+    HEAVY_ATTACK_WINDUP() {
+        @Override
+        public void enter(PlayerController entity) {
+            setTexture(entity, "windup");
+            entity.player.setWindingUp(true);
+        }
+
+        @Override
+        public void update(PlayerController entity) {
+            if(!entity.isWindingUp()) {
+                entity.getStateMachine().changeState(PlayerState.HEAVY_ATTACK);
+            }
+        }
+
+        @Override
+        public void exit(PlayerController entity) {
+            entity.player.setWindingUp(false);
         }
     };
 
