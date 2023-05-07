@@ -1,25 +1,8 @@
 package infinityx.lunarhaze.graphics;
 
-/*
- * GameCanvas.java
- *
- * To properly follow the model-view-controller separation, we should not have
- * any specific drawing code in GameMode. All of that code goes here.  As
- * with GameEngine, this is a class that you are going to want to copy for
- * your own projects.
- *
- * An important part of this canvas design is that it is loosely coupled with
- * the model classes. All of the drawing methods are abstracted enough that
- * it does not require knowledge of the interfaces of the model classes.  This
- * important, as the model classes are likely to change often.
- *
- * Author: Walker M. White
- * Based on original PhysicsDemo Lab by Don Holden, 2007
- * LibGDX version, 2/6/2015
- */
-
 import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -31,7 +14,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Affine2;
-import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
@@ -127,6 +109,11 @@ public class GameCanvas {
     private OrthographicCamera camera;
 
     /**
+     * Camera for the ui rendering
+     */
+    private OrthographicCamera uiCamera;
+
+    /**
      * Camera for the light renderer
      */
     private OrthographicCamera raycamera;
@@ -181,24 +168,33 @@ public class GameCanvas {
     public Vector2 playerCoords;
 
     /**
-     * The width of the camera view after applying the zoom factor.
+     * The width of the camera view.
      */
     private float camWidth;
 
     /**
-     * The height of the camera view after applying the zoom factor.
+     * The height of the camera view.
      */
     private float camHeight;
 
     /**
-     * The x-coordinate of the bottom-left corner of the camera view after applying the zoom factor.
+     * The x-coordinate of the bottom-left corner of the camera view.
      */
     private float camX;
 
     /**
-     * The y-coordinate of the bottom-left corner of the camera view after applying the zoom factor.
+     * The y-coordinate of the bottom-left corner of the camera view.
      */
     private float camY;
+
+    /**
+     * Standard window size to fit
+     */
+    private static final int STANDARD_WIDTH = 2112;
+    /**
+     * Standard window height to fit
+     */
+    private static final int STANDARD_HEIGHT = 1188;
 
 
     /**
@@ -271,7 +267,8 @@ public class GameCanvas {
 
         worldToScreen = new Vector2();
         camera = new OrthographicCamera();
-        setupCameras();
+        uiCamera = new OrthographicCamera();
+        resize();
 
         spriteBatch.setProjectionMatrix(camera.combined);
         shapeRenderer.setProjectionMatrix(camera.combined);
@@ -297,7 +294,7 @@ public class GameCanvas {
         float width = (float) getWidth();
         float height = (float) getHeight();
         camera.setToOrtho(false, width / zoom, height / zoom);
-         //Center camera at (width/2, height/2)
+        //Center camera at (width/2, height/2)
         camera.translate(
                 (width - width / zoom) / 2, (height - height / zoom) / 2
         );
@@ -308,6 +305,9 @@ public class GameCanvas {
                 getWidth() / (WorldToScreenX(1) * zoom),
                 getHeight() / (WorldToScreenY(1) * zoom)
         );
+
+        // ui camera should not be affected by zoom
+        uiCamera.setToOrtho(false, width, height);
 
         camera.update();
         updateCameraBounds();
@@ -496,6 +496,11 @@ public class GameCanvas {
     public void resize() {
         // Resizing screws up the projection matrix
         setupCameras();
+
+        // 1920x1080 standard
+        float sx = ((float) getWidth()) / STANDARD_WIDTH;
+        float sy = ((float) getHeight()) / STANDARD_HEIGHT;
+        setZoom(sx < sy ? sy : sx);
 //        Gdx.gl.glViewport(0, 0, getWidth(), getHeight());
     }
 
@@ -577,6 +582,7 @@ public class GameCanvas {
         global.idt();
         global.translate(tx, ty, 0.0f);
 
+        // Consider the view translation for the camera bounds
         camX -= tx;
         camY -= ty;
 
@@ -600,7 +606,6 @@ public class GameCanvas {
                 shaderRenderer.setProjectionMatrix(global);
                 break;
             case LIGHT:
-
 
         }
         active = pass;
@@ -639,6 +644,35 @@ public class GameCanvas {
     }
 
     /**
+     * Similar to {@link #begin(DrawPass)}, however the canvas is not affected by zoom.
+     * i.e., the canvas is always left anchored at (0,0) with width and height of {@link Graphics#getWidth()}
+     * and {@link Graphics#getHeight()} respectively.
+     */
+    public void beginUI(DrawPass pass) {
+        if (pass == DrawPass.INACTIVE) {
+            Gdx.app.error("GameCanvas", "What do you mean by that?", new IllegalStateException());
+            return;
+        }
+
+        switch (pass) {
+            case SPRITE:
+                spriteBatch.setProjectionMatrix(uiCamera.combined);
+                setBlendState(BlendState.NO_PREMULT);
+                spriteBatch.begin();
+                break;
+            case SHAPE:
+                // Enable blending
+                Gdx.gl.glEnable(GL20.GL_BLEND);
+                shapeRenderer.setProjectionMatrix(camera.combined);
+                break;
+            case SHADER:
+                shaderRenderer.setProjectionMatrix(camera.combined);
+                break;
+        }
+        active = pass;
+    }
+
+    /**
      * Ends a drawing sequence for the current pass, flushing stuff to the graphics card.
      */
     public void end() {
@@ -655,6 +689,8 @@ public class GameCanvas {
                 break;
         }
         active = DrawPass.INACTIVE;
+
+        // reset in case of previous view translation
         updateCameraBounds();
     }
 
@@ -682,8 +718,8 @@ public class GameCanvas {
         }
         float w, h;
         if (fill) {
-            w = getWidth() / zoom;
-            h = getHeight() / zoom;
+            w = getWidth();
+            h = getHeight();
         } else {
             w = image.getWidth();
             h = image.getHeight();
@@ -692,11 +728,9 @@ public class GameCanvas {
         image.getHeight();
         image.getWidth();
 
-        float width = (float) getWidth();
-        float height = (float) getHeight();
         spriteBatch.setColor(tint);
         // Should match bottom left and top right of camera
-        spriteBatch.draw(image, (width - width / zoom) / 2, (height - height / zoom) / 2, w, h);
+        spriteBatch.draw(image, 0, 0, w, h);
     }
 
     /**
@@ -916,7 +950,7 @@ public class GameCanvas {
 
         computeTransform(ox, oy, x, y, angle, sx, sy);
 
-
+        // Draw if any vertices are inside the camera view
         float x1 = local.m02;
         float y1 = local.m12;
         if (x1 >= camX && x1 <= camX + camWidth && y1 >= camY && y1 <= camY + camHeight) {
@@ -961,7 +995,6 @@ public class GameCanvas {
 
         // Otherwise, clip
     }
-
 
 
     /**

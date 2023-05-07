@@ -26,16 +26,17 @@ package infinityx.lunarhaze.models;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
+import infinityx.lunarhaze.graphics.Animation;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.physics.MultiShapeObstacle;
 import infinityx.lunarhaze.screens.EditorMode;
 import infinityx.util.Drawable;
-import infinityx.util.FilmStrip;
+import infinityx.lunarhaze.graphics.FilmStrip;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -69,9 +70,9 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
     protected FilmStrip filmstrip;
 
     /**
-     * Collection of named filmstrips
+     * Holds named filmstrips and performs animations
      */
-    public Map<String, FilmStrip> filmstrips;
+    public Animation animation;
 
     /**
      * How much the texture of this object should be scaled when drawn
@@ -84,24 +85,9 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
     protected boolean destroyed;
 
     /**
-     * Counter with texUpdate to update frame
-     */
-    private float texTime;
-
-    /**
-     * Time (in seconds) texture frame should increment
-     */
-    public float texUpdate;
-
-    /**
      * The tint applied to the texture when drawing
      */
     protected Color tint;
-
-    /**
-     * Whether the filmstrip should loop when updating
-     */
-    protected boolean loop;
 
     /**
      * Creates game object at (0, 0)
@@ -120,10 +106,9 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
      */
     public GameObject(float x, float y) {
         super(x, y);
-        filmstrips = new HashMap<>();
         this.origin = new Vector2();
-        this.loop = true;
         this.tint = new Color(Color.WHITE);
+        animation = new Animation();
     }
 
     /**
@@ -157,11 +142,14 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
         JsonValue textures = json.get("textures");
         if (textures != null) {
             for (JsonValue tex : textures) {
-                if (directory.hasEntry(tex.asString(), FilmStrip.class)) {
-                    filmstrips.put(tex.name(), directory.getEntry(tex.asString(), FilmStrip.class));
+                if (tex.isObject()) {
+                    float [] durations = tex.get("durations").asFloatArray();
+//                    animation.addAnimation(tex.name(), directory.getEntry(tex.asString(), FilmStrip.class), tex.get("durations").asFloatArray());
+                    animation.addAnimation(tex.name(), directory.getEntry(tex.getString("name"), FilmStrip.class), durations);
+
                 } else {
                     // If the texture is not a filmstrip, assume it's a single texture
-                    filmstrips.put(tex.name(), new FilmStrip(directory.getEntry(tex.asString(), Texture.class), 1, 1));
+                    animation.addStaticAnimation(tex.name(), directory.getEntry(tex.asString(), Texture.class));
                 }
             }
 
@@ -170,7 +158,6 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
             int[] texOrigin = texInfo.get("origin").asIntArray();
             setOrigin(texOrigin[0], texOrigin[1]);
             textureScale = texInfo.getFloat("scale");
-            texUpdate = -1;
         }
 
         // Shape collision info
@@ -203,7 +190,7 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
     }
 
     public void setLoop(boolean loop) {
-        this.loop = loop;
+        animation.setPlayMode(loop ? Animation.PlayMode.LOOP : Animation.PlayMode.NORMAL);
     }
 
     @Override
@@ -223,17 +210,11 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
     /**
      * Sets the filmstrip texture of this game object.
      *
-     * @param name Name of filmstrip in {@link #filmstrips} to set.
+     * @param name Name of filmstrip to set.
      */
     public void setTexture(String name) {
-        this.filmstrip = filmstrips.get(name);
-        if (filmstrip == null) {
-            Gdx.app.error("GameObject", "Could not find a texture with the name: " + name, new IllegalStateException());
-            Gdx.app.exit();
-            return;
-        }
-        filmstrip.setFrame(0);
-        this.texTime = 0;
+        animation.setCurrentAnimation(name);
+        filmstrip = animation.getKeyFrame(0);
     }
 
     /**
@@ -282,17 +263,7 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
      * @param delta Number of seconds since last animation frame
      */
     public void update(float delta) {
-        if (texUpdate == -1) return;
-        if (!loop && filmstrip.getFrame() == filmstrip.getSize() - 1) return;
-
-        this.texTime += delta;
-        if (filmstrip != null) {
-            if (texTime >= texUpdate) {
-                int next = (filmstrip.getFrame() + 1) % filmstrip.getSize();
-                filmstrip.setFrame(next);
-                texTime = 0;
-            }
-        }
+        filmstrip = animation.getKeyFrame(delta);
     }
 
     public float getDepth() {

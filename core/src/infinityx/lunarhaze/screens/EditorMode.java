@@ -18,7 +18,10 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import imgui.*;
-import imgui.flag.*;
+import imgui.flag.ImDrawFlags;
+import imgui.flag.ImGuiCol;
+import imgui.flag.ImGuiCond;
+import imgui.flag.ImGuiMouseButton;
 import imgui.glfw.ImGuiImplGlfw;
 import imgui.type.ImBoolean;
 import imgui.type.ImInt;
@@ -32,7 +35,7 @@ import infinityx.lunarhaze.models.GameObject;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.entity.Enemy;
 import infinityx.lunarhaze.models.entity.SceneObject;
-import infinityx.util.FilmStrip;
+import infinityx.lunarhaze.graphics.FilmStrip;
 import infinityx.util.PatrolRegion;
 import infinityx.util.ScreenObservable;
 
@@ -100,11 +103,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * Whether the player has been placed on the board
      */
     private boolean playerPlaced;
-
-    /**
-     * List of moonlight point lights placed on level (for modifying color after placing lights)
-     */
-    private Array<PointLight> pointLights;
 
     /**
      * Background texture for the editor
@@ -488,7 +486,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
     public EditorMode(GameCanvas canvas) {
         this.canvas = canvas;
-        pointLights = new Array<>();
         objectSelections = new Array<>();
         enemySelections = new Array<>();
     }
@@ -521,15 +518,28 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
         // Add all enemies in json
         for (JsonValue enemy : enemies) {
-            enemySelections.add(
-                    new EnemyButton(
-                            directory.getEntry(
-                                    enemy.get("textures").getString(
-                                            enemy.get("texture").getString("name")
-                                    ), Texture.class
-                            ), enemy.name
-                    )
-            );
+            if (enemy.get("textures").get(enemy.get("texture").getString("name")).isObject()) {
+                enemySelections.add(
+                        new EnemyButton(
+                                directory.getEntry(
+                                        enemy.get("textures").get(
+                                                enemy.get("texture").getString("name")
+                                        ).getString("name"), Texture.class
+                                ), enemy.name
+                        )
+                );
+            }
+            else{
+                enemySelections.add(
+                        new EnemyButton(
+                                directory.getEntry(
+                                        enemy.get("textures").getString(
+                                                enemy.get("texture").getString("name")
+                                        ), Texture.class
+                                ), enemy.name
+                        )
+                );
+            }
         }
 
         this.background = directory.getEntry("bkg_allocate", Texture.class);
@@ -649,7 +659,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
                 light.setSoft(true);
                 board.setSpotlight(x, y, light);
-                pointLights.add(light);
 
                 // Set board tile to lit
                 board.setLit(x, y, true);
@@ -993,7 +1002,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         imGuiGlfw.newFrame();
         ImGui.newFrame();
 
-        canvas.begin(GameCanvas.DrawPass.SPRITE);
+        canvas.beginUI(GameCanvas.DrawPass.SPRITE);
         canvas.drawOverlay(background, Color.WHITE, true);
         canvas.end();
 
@@ -1088,7 +1097,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         boardSize = new int[]{10, 10};
         objectScale = new float[]{1};
         showNewBoardWindow.set(level == null);
-        showCannotSaveError = false;
+        if (board != null)
+
+            showCannotSaveError = false;
         showEnemyControllerWindow.set(false);
         showBattleLighting = false;
         showSaveLevelPopup = false;
@@ -1146,7 +1157,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         canvas.dispose();
         imGuiGlfw.dispose();
         imGuiGl.dispose();
-        pointLights = null;
     }
 
     /**
@@ -2219,8 +2229,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         ImGui.spacing();
 
         if (ImGui.colorEdit4("Moonlight Lighting", moonlightLighting)) {
-            for (PointLight light : pointLights) {
-                light.setColor(new Color(moonlightLighting[0], moonlightLighting[1], moonlightLighting[2], moonlightLighting[3]));
+            for (PointLight light : board.getPointLights()) {
+                light.setColor(moonlightLighting[0], moonlightLighting[1], moonlightLighting[2], moonlightLighting[3]);
             }
         }
 

@@ -30,7 +30,6 @@ public enum EnemyState implements State<EnemyController> {
                     entity.getEnemy().setFilmstripPrefix("walk");
                     // Texture update is proportional to velocity
 //                    entity.getEnemy().texUpdate = 1 / (entity.getEnemy().getLinearVelocity().len() * 5);
-                    entity.getEnemy().texUpdate = 0.21f;
                 }
             }
         }
@@ -143,7 +142,6 @@ public enum EnemyState implements State<EnemyController> {
         public void enter(EnemyController entity) {
             //entity.getAttackSound().play();
             entity.getEnemy().setFilmstripPrefix("attack");
-            entity.getEnemy().texUpdate = 0.18f;
             entity.getEnemy().setIndependentFacing(true);
             entity.initiateAttack();
         }
@@ -253,7 +251,7 @@ public enum EnemyState implements State<EnemyController> {
             if (telegram.message == TacticalManager.FLANK) {
 
                 Vector2 flank_pos = (Vector2) telegram.extraInfo;
-                control.flank_pos.set(flank_pos);
+                control.flank_pos = flank_pos;
                 Vector2 cur_pos = control.getEnemy().getPosition();
                 Path path = control.pathfinder.findPath(cur_pos, flank_pos);
                 control.followPathSB.setPath(path);

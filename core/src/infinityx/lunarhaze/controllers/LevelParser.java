@@ -12,7 +12,7 @@ import infinityx.lunarhaze.models.Board;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.Tile;
 import infinityx.lunarhaze.models.entity.Enemy;
-import infinityx.util.FilmStrip;
+import infinityx.lunarhaze.graphics.FilmStrip;
 import infinityx.util.PatrolRegion;
 
 /**
@@ -227,6 +227,7 @@ public class LevelParser {
                 );
                 point.setColor(color[0], color[1], color[2], color[3]);
                 point.setSoft(light.getBoolean("soft"));
+                point.setXray(true);
                 board.setSpotlight(x, y, point);
                 board.setLit(x, y, false);
             }

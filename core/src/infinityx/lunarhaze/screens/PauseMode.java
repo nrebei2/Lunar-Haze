@@ -259,7 +259,7 @@ public class PauseMode extends ScreenObservable implements Screen, InputProcesso
      * prefer this in lecture.
      */
     private void draw() {
-        canvas.begin(GameCanvas.DrawPass.SPRITE);
+        canvas.beginUI(GameCanvas.DrawPass.SPRITE);
         Color alphaTint = Color.WHITE;
         canvas.drawOverlay(pause_menu, alphaTint, true);
         canvas.draw(pause_logo, alphaTint, pause_logo.getWidth() / 2, pause_logo.getHeight() / 2,

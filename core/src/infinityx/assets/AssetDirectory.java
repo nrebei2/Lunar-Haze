@@ -35,7 +35,7 @@ import com.badlogic.gdx.utils.ObjectMap;
 import infinityx.audio.AudioSource;
 import infinityx.audio.MusicQueue;
 import infinityx.audio.SoundEffect;
-import infinityx.util.FilmStrip;
+import infinityx.lunarhaze.graphics.FilmStrip;
 
 /**
  * An asset manager that uses a JSON file to define its assets.

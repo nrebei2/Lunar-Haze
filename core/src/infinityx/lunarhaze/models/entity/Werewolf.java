@@ -80,6 +80,10 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
         isRunning = running;
     }
 
+    public boolean isMoving(){
+        return body.getLinearVelocity().x != 0 || body.getLinearVelocity().y != 0;
+    }
+
     /**
      * Returns the current stealth of the werewolf.
      */

@@ -58,6 +58,11 @@ public class PlayerController {
     public static final float ADD_RANGE_AMOUNT = 0.2f;
 
     /**
+     * Change of stealth rate, percentage per second
+     */
+    private final static float CHANGE_STEALTH_RATE = 0.75f;
+
+    /**
      * The player being controlled by this AIController
      */
     public Werewolf player;
@@ -103,6 +108,16 @@ public class PlayerController {
     private Sound attack_sound;
 
     /**
+     * Sound for player dashing
+     */
+    private Sound dash_sound;
+
+    /**
+     * Sound for player walking on grass
+     */
+    private Sound walk_sound;
+
+    /**
      * Handles attacking logic
      */
     private final PlayerAttackHandler attackHandler;
@@ -111,6 +126,16 @@ public class PlayerController {
      * Indicate whether player has done with allocating moonlight
      */
     private Boolean allocateReady;
+
+    /**
+     * Stealth value of the state that player is going to enter
+     */
+    private float target;
+
+    /**
+     * Whether the walk_grass sound is playing
+     */
+    private boolean isWalkGrassPlaying = false;
 
     private GameSetting setting;
 
@@ -159,6 +184,14 @@ public class PlayerController {
         return attack_sound;
     }
 
+    public float getTargetStealth(){
+        return target;
+    }
+
+    public void setTargetStealth(float t){
+        target = t;
+    }
+
 
     /**
      * Initializes
@@ -173,8 +206,12 @@ public class PlayerController {
         attackHandler = new PlayerAttackHandler(player);
         collect_sound = levelContainer.getDirectory().getEntry("collect", Sound.class);
         attack_sound = levelContainer.getDirectory().getEntry("whip", Sound.class);
+        dash_sound = levelContainer.getDirectory().getEntry("dash", Sound.class);
+        walk_sound = levelContainer.getDirectory().getEntry("walking-on-soil", Sound.class);
         stateMachine = new DefaultStateMachine<>(this, PlayerState.IDLE);
         allocateReady = false;
+        isWalkGrassPlaying = false;
+        target = STILL_STEALTH;
         this.setting = setting;
     }
 
@@ -186,14 +223,49 @@ public class PlayerController {
      */
     public void resolvePlayer(float delta) {
         InputController inputController = InputController.getInstance();
-
-        // Button may be pressed, but player may not be moving!
-        /*player.setRunning(
-                inputController.didRun() && (
-                        InputController.getInstance().getHorizontal() != 0 || InputController.getInstance().getVertical() != 0
-                )
-        );*/
         player.update(delta);
+
+        if (setting.isMusicEnabled()) {
+            if (player.isMoving() && inputController.didRun()) {
+                dash_sound.play();
+            } else if (getStateMachine().isInState(PlayerState.WALK) && !isWalkGrassPlaying){
+                long soundId = walk_sound.loop();
+                walk_sound.setLooping(soundId, true);
+                walk_sound.play(0.2f);
+                isWalkGrassPlaying = true;
+            }
+            if (!getStateMachine().isInState(PlayerState.WALK)){
+                walk_sound.stop();
+                isWalkGrassPlaying = false;
+            }
+        }
+    }
+
+    /**
+     * Process stealth value change.
+     * <p>
+     *
+     * @param delta Number of seconds since last animation frame
+     */
+    public void resolveStealth(float delta) {
+        if (player.getLinearVelocity().isZero() && player.isOnMoonlight == false){
+            target = PlayerController.STILL_STEALTH;
+        }
+        float proportion = player.getStealth();
+        if (target > proportion) {
+            if (target - proportion >= CHANGE_STEALTH_RATE / 1.0f * delta) {
+                proportion = proportion + CHANGE_STEALTH_RATE / 1.0f * delta;
+            } else {
+                proportion = target;
+            }
+        } else if (target < proportion){
+            if (proportion - target >= CHANGE_STEALTH_RATE / 1.0f * delta) {
+                proportion = proportion - CHANGE_STEALTH_RATE / 1.0f * delta;
+            } else {
+                proportion = target;
+            }
+        }
+        player.setStealth(proportion);
     }
 
     /**
@@ -297,6 +369,9 @@ public class PlayerController {
     public void update(Phase currPhase, LightingController lightingController) {
         attackHandler.update(Gdx.graphics.getDeltaTime(), currPhase);
         resolvePlayer(Gdx.graphics.getDeltaTime());
+        if (currPhase == Phase.STEALTH) {
+            resolveStealth(Gdx.graphics.getDeltaTime());
+        }
         if (currPhase == GameplayController.Phase.STEALTH) {
             resolveMoonlight(Gdx.graphics.getDeltaTime(), lightingController);
         }

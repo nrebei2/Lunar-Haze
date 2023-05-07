@@ -321,7 +321,7 @@ public class LoadingMode extends ScreenObservable implements Screen {
      */
     private void draw(float delta) {
         canvas.clear(Color.BLACK);
-        canvas.begin(GameCanvas.DrawPass.SPRITE);
+        canvas.beginUI(GameCanvas.DrawPass.SPRITE);
 
         switch (loadingState) {
             case FADE_OUT:
@@ -400,10 +400,6 @@ public class LoadingMode extends ScreenObservable implements Screen {
      * @param height The new height in pixels
      */
     public void resize(int width, int height) {
-        // Compute the drawing scale
-        // We really only care about the y since our screen items are along a single column
-        // A linear interpolation for scale results in a hard-to-read title screen for small resolutions,
-        //  so I used fastSlow instead which is always above y=x.
         float sx = ((float) width) / STANDARD_WIDTH;
         float sy = ((float) height) / STANDARD_HEIGHT;
         scale = (sx < sy ? sx : sy);

@@ -257,7 +257,7 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
      */
     private void draw() {
         canvas.clear();
-        canvas.begin(GameCanvas.DrawPass.SPRITE);
+        canvas.beginUI(GameCanvas.DrawPass.SPRITE);
         Color alphaTint = Color.WHITE;
         canvas.draw(background, alphaTint, background.getWidth() / 2, background.getHeight() / 2, canvas.getWidth() / 2, canvas.getHeight() / 2, 0, BACKGROUND_SCALE * scale, BACKGROUND_SCALE * scale);
         canvas.draw(logo, alphaTint, logo.getWidth() / 2, logo.getHeight() / 2,

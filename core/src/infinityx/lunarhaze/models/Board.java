@@ -5,9 +5,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.screens.EditorMode;
-import infinityx.util.FilmStrip;
+import infinityx.lunarhaze.graphics.FilmStrip;
 
 import java.util.ArrayList;
 
@@ -64,6 +65,11 @@ public class Board {
     private FilmStrip tileSheet;
 
     /**
+     * List of moonlight point lights
+     */
+    private Array<PointLight> pointLights;
+
+    /**
      * Holds the necessary information to display a tile preview
      */
     public static class PreviewTile {
@@ -97,6 +103,7 @@ public class Board {
         for (int ii = 0; ii < tiles.length; ii++) {
             tiles[ii] = new Tile();
         }
+        pointLights = new Array<>();
     }
 
     public void setTileSheet(FilmStrip tileSheet) {
@@ -399,10 +406,17 @@ public class Board {
         }
         Tile t = getTile(x, y);
         if (t.getSpotLight() == null) {
-            Gdx.app.error("Board", "This should never happen! Talk to me if this pops up for you.");
+            Gdx.app.error("Board", "The tile must already have a spotlight on it!");
             return;
         }
-        getTile(x, y).setLit(lit);
+        if (lit && t.isLit()) return;
+        if (!lit && !t.isLit()) return;
+
+        t.setLit(lit);
+        if (!lit)
+            pointLights.removeValue(getSpotlight(x, y), true);
+        else
+            pointLights.add(getSpotlight(x, y));
     }
 
     /**
@@ -469,6 +483,20 @@ public class Board {
             return;
         }
         getTile(x, y).setSpotLight(light);
+    }
+
+    /**
+     * Retrieves the spotlight on the tile, represents the moonlight on the tile
+     * <p>
+     *
+     * @param x The x index for the Tile cell
+     * @param y The y index for the Tile cell
+     */
+    public PointLight getSpotlight(int x, int y) {
+        if (!inBounds(x, y)) {
+            Gdx.app.error("Board", "Illegal tile " + x + "," + y, new IndexOutOfBoundsException());
+        }
+        return getTile(x, y).getSpotLight();
     }
 
 
@@ -600,6 +628,9 @@ public class Board {
         return true;
     }
 
+    /**
+     * @return list of all lit tile board positions on this board
+     */
     public ArrayList<int[]> getMoonlightTiles() {
         ArrayList<int[]> lst = new ArrayList<>();
         for (int x = 0; x < height; x++) {
@@ -610,4 +641,7 @@ public class Board {
         return lst;
     }
 
+    public Array<PointLight> getPointLights() {
+        return pointLights;
+    }
 }

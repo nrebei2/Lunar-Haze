@@ -342,7 +342,7 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
     private void update(float delta) {
         if (pressStateHp == 2) {
             pressStateHp = 0;
-            if (hpCount < 5){
+            if (hpCount < 5) {
                 playerController.allocateHp();
                 hpCount++;
             } else {
@@ -350,14 +350,14 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
             }
         } else if (pressStateAttackPow == 2) {
             pressStateAttackPow = 0;
-            if (powerCount < 5){
+            if (powerCount < 5) {
                 playerController.allocateAttackPow();
                 powerCount++;
                 playerController.setNumPowerPress(powerCount);
             }
         } else if (pressStateAttackRan == 2) {
             pressStateAttackRan = 0;
-            if (rangeCount < 5){
+            if (rangeCount < 5) {
                 playerController.allocateAttackRange();
                 rangeCount++;
                 playerController.setNumRangePress(rangeCount);
@@ -383,7 +383,7 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
     private void draw() {
         setFontColor(Color.WHITE);
 
-        canvas.begin(GameCanvas.DrawPass.SPRITE);
+        canvas.beginUI(GameCanvas.DrawPass.SPRITE);
         Color alphaTint = Color.WHITE;
         canvas.drawOverlay(background, alphaTint, true);
 
@@ -446,13 +446,13 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
             stat = hpCount;
         }
 
-        canvas.drawText( " " + stat, UIFont_small,
-                buttonCenterX - addHpButton.getWidth()/2 - UIFont_small.getAscent() * ("" + stat).length() * 16,
+        canvas.drawText(" " + stat, UIFont_small,
+                buttonCenterX - addHpButton.getWidth() / 2 - UIFont_small.getAscent() * ("" + stat).length() * 16,
                 buttonCenterY + UIFont_small.getLineHeight() / 2);
         Color gray = new Color(1.0f, 1.0f, 1.0f, 0.4f);
         setFontColor(gray);
         canvas.drawText(" / " + 5, UIFont_small,
-                buttonCenterX - addHpButton.getWidth()/2 - UIFont_small.getAscent() * ("" + stat).length() * 10,
+                buttonCenterX - addHpButton.getWidth() / 2 - UIFont_small.getAscent() * ("" + stat).length() * 10,
                 buttonCenterY + UIFont_small.getLineHeight() / 2);
 
         float starY = buttonCenterY + INLINE_DIST;
@@ -483,14 +483,14 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
         float text_width = s.length() * UIFont_small.getAscent() * 3;
         float title_one_side_width = (title_width - text_width - STAR_WIDTH) / 2;
         canvas.draw(title_left, Color.WHITE,
-                centerX - STAR_WIDTH - title_width/2,
+                centerX - STAR_WIDTH - title_width / 2,
                 titleY - UIFont_small.getCapHeight(),
                 title_one_side_width, UIFont_small.getCapHeight());
         canvas.drawText(s, UIFont_small,
                 centerX - STAR_WIDTH * 1.2f - s.length() * UIFont_small.getAscent() * 1.4f,
                 titleY);
         canvas.draw(title_right, Color.WHITE,
-                centerX - STAR_WIDTH + title_width/2 - title_one_side_width,
+                centerX - STAR_WIDTH + title_width / 2 - title_one_side_width,
                 titleY - UIFont_small.getCapHeight(),
                 title_one_side_width, UIFont_small.getCapHeight());
     }
