@@ -243,7 +243,7 @@ public class EnemyController extends AttackHandler {
                 if (!canStartNewAttack() || enemy.getHealthPercentage() < 0.5) {
                     Vector2 evade_dir = enemy.getPosition().sub(target.getPosition()).nor();
                     for (int i = 0; i < map.getResolution(); i++) {
-                        map.interestMap[i] =  Math.max(0, map.dirFromSlot(i).dot(evade_dir));
+                        map.interestMap[i] = Math.max(0, map.dirFromSlot(i).dot(evade_dir));
                     }
                 }
 

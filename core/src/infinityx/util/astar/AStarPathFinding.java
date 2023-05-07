@@ -10,9 +10,6 @@ import com.badlogic.gdx.ai.utils.RaycastCollisionDetector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
-import infinityx.lunarhaze.models.GameObject;
-import infinityx.lunarhaze.physics.Box2DRaycastCollision;
-import infinityx.lunarhaze.physics.RaycastInfo;
 
 /**
  * A* pathfinding utility class
@@ -44,11 +41,6 @@ public class AStarPathFinding {
     private Array<Vector2> waypoints;
 
     /**
-     * Collision detector for path smoothing
-     */
-    public RaycastCollisionDetector raycastCollisionDetector;
-
-    /**
      * @param map   Map pathfinding will be perform on
      * @param world Box2D world
      */
@@ -64,11 +56,6 @@ public class AStarPathFinding {
                 return endNode.position.dst(node.position);
             }
         };
-
-//        RaycastInfo collRay = new RaycastInfo(null);
-//        // collider should only care about scene objects
-//        collRay.addIgnores(GameObject.ObjectType.WEREWOLF, GameObject.ObjectType.HITBOX, GameObject.ObjectType.ENEMY);
-//        this.raycastCollisionDetector = new Box2DRaycastCollision(world, collRay);
     }
 
     /**
@@ -79,17 +66,16 @@ public class AStarPathFinding {
     public Path findPath(Vector2 source, Vector2 target) {
         // World to grid
         Node sourceNode = map.getNodeAtWorld(source.x, source.y);
-        if (sourceNode.isObstacle){
-            for (Connection<Node> neighbor: sourceNode.getConnections()){
+        if (sourceNode.isObstacle) {
+            for (Connection<Node> neighbor : sourceNode.getConnections()) {
                 Node next = neighbor.getToNode();
                 if (!next.isObstacle) sourceNode = map.getNodeAtWorld(next.x, next.y);
             }
         }
 
         Node targetNode = map.getNodeAtWorld(target.x, target.y);
-
-        if (targetNode.isObstacle){
-            for (Connection<Node> neighbor: targetNode.getConnections()){
+        if (targetNode.isObstacle) {
+            for (Connection<Node> neighbor : targetNode.getConnections()) {
                 Node next = neighbor.getToNode();
                 if (!next.isObstacle) targetNode = map.getNodeAtWorld(next.x, next.y);
             }
@@ -104,10 +90,6 @@ public class AStarPathFinding {
         connectionPath.clear();
         pathfinder.searchNodePath(sourceNode, targetNode, heuristic, connectionPath);
 
-//        PathSmoother smoother = new PathSmoother(raycastCollisionDetector);
-//        int removed = smoother.smoothPath(connectionPath);
-////        System.out.println("removed " + removed);
-
         // Use the source and target world positions instead of start and goal node
         // This is so we always have at least two waypoints and the path is more accurate
         waypoints.clear();
@@ -117,11 +99,6 @@ public class AStarPathFinding {
             waypoints.add(node.position);
         }
         waypoints.add(target);
-
-        //System.out.println("source "  + sourceNode.wx + ", " + sourceNode.wy );
-        //System.out.println("target " + targetNode.wx + ", " + targetNode.wy );
-        //System.out.println("start of path");
-        //System.out.println(waypoints);
 
         Path path = new LinePath(waypoints);
         return path;
@@ -136,7 +113,6 @@ public class AStarPathFinding {
             new int[]{-1, -1},
             new int[]{1, -1},
             new int[]{1, 1}
-
     };
 
     /**

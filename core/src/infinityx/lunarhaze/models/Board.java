@@ -6,9 +6,9 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import infinityx.lunarhaze.graphics.FilmStrip;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.screens.EditorMode;
-import infinityx.lunarhaze.graphics.FilmStrip;
 
 import java.util.ArrayList;
 

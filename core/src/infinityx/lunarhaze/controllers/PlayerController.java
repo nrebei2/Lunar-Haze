@@ -164,7 +164,9 @@ public class PlayerController {
         return attackHandler.isWindingUpHeavyAttack();
     }
 
-    public boolean isHeavyAttacking() { return player.isAttacking() && attackHandler.isHeavyAttacking(); }
+    public boolean isHeavyAttacking() {
+        return player.isAttacking() && attackHandler.isHeavyAttacking();
+    }
 
     public boolean isAttacked() {
         return player.isAttacked();
@@ -190,11 +192,11 @@ public class PlayerController {
         return attack_sound;
     }
 
-    public float getTargetStealth(){
+    public float getTargetStealth() {
         return target;
     }
 
-    public void setTargetStealth(float t){
+    public void setTargetStealth(float t) {
         target = t;
     }
 
@@ -234,13 +236,13 @@ public class PlayerController {
         if (setting.isMusicEnabled()) {
             if (player.isMoving() && inputController.didRun()) {
                 dash_sound.play();
-            } else if (getStateMachine().isInState(PlayerState.WALK) && !isWalkGrassPlaying){
+            } else if (getStateMachine().isInState(PlayerState.WALK) && !isWalkGrassPlaying) {
                 long soundId = walk_sound.loop();
                 walk_sound.setLooping(soundId, true);
                 walk_sound.play(0.2f);
                 isWalkGrassPlaying = true;
             }
-            if (!getStateMachine().isInState(PlayerState.WALK)){
+            if (!getStateMachine().isInState(PlayerState.WALK)) {
                 walk_sound.stop();
                 isWalkGrassPlaying = false;
             }
@@ -254,7 +256,7 @@ public class PlayerController {
      * @param delta Number of seconds since last animation frame
      */
     public void resolveStealth(float delta) {
-        if (player.getLinearVelocity().isZero() && player.isOnMoonlight == false){
+        if (player.getLinearVelocity().isZero() && player.isOnMoonlight == false) {
             target = PlayerController.STILL_STEALTH;
         }
         float proportion = player.getStealth();
@@ -264,7 +266,7 @@ public class PlayerController {
             } else {
                 proportion = target;
             }
-        } else if (target < proportion){
+        } else if (target < proportion) {
             if (proportion - target >= CHANGE_STEALTH_RATE / 1.0f * delta) {
                 proportion = proportion - CHANGE_STEALTH_RATE / 1.0f * delta;
             } else {

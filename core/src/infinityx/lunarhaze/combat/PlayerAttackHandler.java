@@ -65,9 +65,9 @@ public class PlayerAttackHandler extends AttackHandler {
             super.update(delta);
 
             // Winding up logic
-            if(windingUpHeavyAttack) {
+            if (windingUpHeavyAttack) {
                 heavyAttackWindupTimer += delta;
-                if(heavyAttackWindupTimer >= HEAVY_ATTACK_WINDUP_TIME) {
+                if (heavyAttackWindupTimer >= HEAVY_ATTACK_WINDUP_TIME) {
                     System.out.println("Starting heavy attack");
                     initiateHeavyAttack();
                     windingUpHeavyAttack = false;
@@ -75,7 +75,7 @@ public class PlayerAttackHandler extends AttackHandler {
             }
 
             // Do not attack when locked out
-            else if(!player.isLockedOut() && !player.isHeavyLockedOut()) {
+            else if (!player.isLockedOut() && !player.isHeavyLockedOut()) {
 
                 if (InputController.getInstance().didAttack() && !player.isAttacking()) {
                     initiateAttack();
@@ -108,7 +108,9 @@ public class PlayerAttackHandler extends AttackHandler {
         super.initiateAttack();
     }
 
-    /** Initiates windup component/channel time of heavy attack */
+    /**
+     * Initiates windup component/channel time of heavy attack
+     */
     public void initiateWindup() {
         heavyAttackWindupTimer = 0;
         windingUpHeavyAttack = true;

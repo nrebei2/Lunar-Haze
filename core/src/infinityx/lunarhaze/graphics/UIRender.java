@@ -480,7 +480,7 @@ public class UIRender {
         float x = canvas.WorldToScreenX(player.getPosition().x) - width / 2;
         float y = canvas.WorldToScreenY(player.getPosition().y) + player.getTextureHeight() - 50;
 
-        int filledWidth =  (int) (enemy_hp.getWidth() * percentage);
+        int filledWidth = (int) (enemy_hp.getWidth() * percentage);
         int unfilledWidth = (int) (enemy_hp.getWidth() * (1 - percentage));
         float screen_width_filled = width * percentage;
         float screen_width_unfilled = width * (1 - percentage);
@@ -501,11 +501,11 @@ public class UIRender {
     }
 
     public void drawEnemyHpBars(GameCanvas canvas, float barWidth, float barHeight, Enemy enemy) {
-        float x = canvas.WorldToScreenX(enemy.getPosition().x) - barWidth/2;
+        float x = canvas.WorldToScreenX(enemy.getPosition().x) - barWidth / 2;
         float y = canvas.WorldToScreenY(enemy.getPosition().y) + enemy.getTextureHeight() - 50;
 
         float percentage = enemy.getHealthPercentage();
-        int filledWidth =  (int) (enemy_hp.getWidth() * percentage);
+        int filledWidth = (int) (enemy_hp.getWidth() * percentage);
         int unfilledWidth = (int) (enemy_hp.getWidth() * (1 - percentage));
         float screen_width_filled = barWidth * percentage;
         float screen_width_unfilled = barWidth * (1 - percentage);
@@ -536,7 +536,7 @@ public class UIRender {
                     BAR_HEIGHT * 2 - UIFont_small.getAscent(), canvas.getHeight() / 2 + ICON_SIZE * 2f);
         }
 
-        int filledHeight =  (int) (dash_bar.getHeight() * percentage);
+        int filledHeight = (int) (dash_bar.getHeight() * percentage);
         int unfilledHeight = (int) (dash_bar.getHeight() * (1 - percentage));
         float screen_height_filled = height * percentage;
         float screen_height_unfilled = height * (1 - percentage);
@@ -697,7 +697,7 @@ public class UIRender {
     public void drawStealthStats(GameCanvas canvas, LevelContainer level) {
 
         proportion = level.getPlayer().getStealth();
-        int filledWidth =  (int) (stealth_stroke.getWidth() * proportion);
+        int filledWidth = (int) (stealth_stroke.getWidth() * proportion);
         int unfilledWidth = (int) (stealth_stroke.getWidth() * (1 - proportion));
         float screen_width_filled = STEALTH_STROKE_WIDTH * proportion;
         float screen_width_unfilled = STEALTH_STROKE_WIDTH * (1 - proportion);

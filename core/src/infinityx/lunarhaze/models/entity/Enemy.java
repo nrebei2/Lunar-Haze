@@ -145,8 +145,8 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
         updateStrafeDistance();
     }
 
-    public void updateStrafeDistance(){
-        this.strafeDistance = rand.nextFloat(3) + getAttackRange() * 2;
+    public void updateStrafeDistance() {
+        this.strafeDistance = rand.nextFloat() * 3 + getAttackRange() * 2;
     }
 
     public float getStrafeDistance() {

@@ -23,23 +23,18 @@
  */
 package infinityx.lunarhaze.models;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.graphics.Animation;
+import infinityx.lunarhaze.graphics.FilmStrip;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.physics.MultiShapeObstacle;
 import infinityx.lunarhaze.screens.EditorMode;
 import infinityx.util.Drawable;
-import infinityx.lunarhaze.graphics.FilmStrip;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Base class for most model objects in the game.
@@ -143,12 +138,10 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
         if (textures != null) {
             for (JsonValue tex : textures) {
                 if (tex.isObject()) {
-                    float [] durations = tex.get("durations").asFloatArray();
-//                    animation.addAnimation(tex.name(), directory.getEntry(tex.asString(), FilmStrip.class), tex.get("durations").asFloatArray());
+                    float[] durations = tex.get("durations").asFloatArray();
                     animation.addAnimation(tex.name(), directory.getEntry(tex.getString("name"), FilmStrip.class), durations);
-
                 } else {
-                    // If the texture is not a filmstrip, assume it's a single texture
+                    // If no durations, assume it's a single texture
                     animation.addStaticAnimation(tex.name(), directory.getEntry(tex.asString(), Texture.class));
                 }
             }

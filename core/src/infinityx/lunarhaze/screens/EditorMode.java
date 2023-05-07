@@ -28,6 +28,7 @@ import imgui.type.ImInt;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.controllers.LevelParser;
 import infinityx.lunarhaze.controllers.LevelSerializer;
+import infinityx.lunarhaze.graphics.FilmStrip;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.graphics.ImGuiImplGLES2;
 import infinityx.lunarhaze.models.Board;
@@ -35,7 +36,6 @@ import infinityx.lunarhaze.models.GameObject;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.entity.Enemy;
 import infinityx.lunarhaze.models.entity.SceneObject;
-import infinityx.lunarhaze.graphics.FilmStrip;
 import infinityx.util.PatrolRegion;
 import infinityx.util.ScreenObservable;
 
@@ -518,28 +518,15 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
         // Add all enemies in json
         for (JsonValue enemy : enemies) {
-            if (enemy.get("textures").get(enemy.get("texture").getString("name")).isObject()) {
-                enemySelections.add(
-                        new EnemyButton(
-                                directory.getEntry(
-                                        enemy.get("textures").get(
-                                                enemy.get("texture").getString("name")
-                                        ).getString("name"), Texture.class
-                                ), enemy.name
-                        )
-                );
-            }
-            else{
-                enemySelections.add(
-                        new EnemyButton(
-                                directory.getEntry(
-                                        enemy.get("textures").getString(
-                                                enemy.get("texture").getString("name")
-                                        ), Texture.class
-                                ), enemy.name
-                        )
-                );
-            }
+            enemySelections.add(
+                    new EnemyButton(
+                            directory.getEntry(
+                                    enemy.get("textures").getString(
+                                            enemy.get("texture").getString("name")
+                                    ), Texture.class
+                            ), enemy.name
+                    )
+            );
         }
 
         this.background = directory.getEntry("bkg_allocate", Texture.class);
