@@ -39,6 +39,11 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
     private float stealth;
 
     /**
+     * Target stealth value {@link #stealth} is moving towards
+     */
+    private float target;
+
+    /**
      * Point light pointed on werewolf at all times
      */
     private PointLight spotLight;
@@ -68,6 +73,9 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
     public float heavyLockoutTime;
 
     public boolean isWindingUp;
+
+    /** Whether the player is in tall grass */
+    public boolean inTallGrass;
 
     /**
      * Returns the type of this object.
@@ -170,6 +178,7 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
         heavyLockedOut = false;
         isWindingUp = false;
         heavyLockoutTime = 0.4f; // this can be changed later
+        inTallGrass = false;
     }
 
     /**
@@ -187,6 +196,16 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
     public boolean isHeavyLockedOut() {
         return heavyLockedOut;
     }
+
+    public float getTargetStealth() {
+        return target;
+    }
+
+    public void setTargetStealth(float t) {
+        target = t;
+    }
+
+
 
 
     /**

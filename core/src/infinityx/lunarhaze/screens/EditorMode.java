@@ -1711,9 +1711,15 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 ImGui.text("Flip scene selection");
 
                 ImGui.tableNextColumn();
+                ImGui.text("Left-Ctrl");
+                ImGui.tableNextColumn();
+                ImGui.text("Snap scene selection to board");
+
+                ImGui.tableNextColumn();
                 ImGui.text("Escape");
                 ImGui.tableNextColumn();
                 ImGui.text("Stop selecting item");
+
 
                 ImGui.tableNextColumn();
                 ImGui.text("Q");
