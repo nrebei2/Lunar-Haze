@@ -133,11 +133,6 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
         }
         // Otherwise just use defaults, static bodies don't move anyway
 
-        if (json.hasChild("bullet"))
-            setBullet(json.getBoolean("bullet"));
-        if (json.hasChild("sensor"))
-            setSensor(json.getBoolean("sensor"));
-
         // Texture info
         JsonValue textures = json.get("textures");
         if (textures != null) {
@@ -157,6 +152,11 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
             setOrigin(texOrigin[0], texOrigin[1]);
             textureScale = texInfo.getFloat("scale");
         }
+
+        if (json.has("bullet"))
+            setBullet(json.getBoolean("bullet"));
+        if (json.has("sensor"))
+            setSensor(json.getBoolean("sensor"));
 
         // Shape collision info
         JsonValue p_dim = json.get("colliders");
@@ -178,6 +178,8 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
                 addCircle(name, coll.getFloat("radius"), offset);
             }
         }
+
+
     }
 
     /**

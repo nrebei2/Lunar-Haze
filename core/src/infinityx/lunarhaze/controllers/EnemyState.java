@@ -49,16 +49,11 @@ public enum EnemyState implements State<EnemyController> {
      * Question mark above enemy, turns towards location
      */
     NOTICED() {
-        /** For use in face steering */
-        Box2dLocation target;
 
         @Override
         public void enter(EnemyController entity) {
-            target = new Box2dLocation(entity.target);
             entity.getEnemy().setDetection(Enemy.Detection.NOTICED);
-            entity.targetPos.set(target.getPosition());
-
-            entity.faceSB.setTarget(target);
+            entity.targetPos.set(entity.target.getPosition());
 
             // Again steering behaviors are ass
             entity.getEnemy().setSteeringBehavior(null);
@@ -67,15 +62,15 @@ public enum EnemyState implements State<EnemyController> {
         @Override
         public void update(EnemyController entity) {
             // Check if we faced target
-            Vector2 toTarget = (target.getPosition()).cpy().sub(entity.getEnemy().getPosition());
+            Vector2 toTarget = entity.getEnemy().getPosition().sub(entity.targetPos).scl(-1, -1);
             float orientation = entity.getEnemy().vectorToAngle(toTarget);
             float rotation = ArithmeticUtils.wrapAngleAroundZero(orientation - entity.getEnemy().getOrientation());
 
-            // Mimic face sb
+            // Mimic face steering behavior
             entity.getEnemy().setAngularVelocity(rotation < 0 ? -1.2f : 1.2f);
 
             float rotationSize = rotation < 0f ? -rotation : rotation;
-            if (rotationSize <= entity.faceSB.getAlignTolerance()) {
+            if (rotationSize <= MathUtils.degreesToRadians * 10) {
                 entity.getStateMachine().changeState(INDICATOR);
             }
         }

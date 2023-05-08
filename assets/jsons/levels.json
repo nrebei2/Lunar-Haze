@@ -578,15 +578,273 @@
 			},
 			{
 				"type": "house",
-				"scale": 1.340000033378601,
-				"flip": true,
-				"position": [ 7.53125, 9.385416984558105 ]
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 4.04840087890625, 9.22312068939209 ]
 			},
 			{
 				"type": "house2",
 				"scale": 1.0,
 				"flip": false,
 				"position": [ 14.053421020507812, 12.448920249938965 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 2.6068944931030273, 13.491536140441895 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 2.7229104042053223, 14.009739875793457 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 2.8447265625, 13.30591106414795 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 3.1869726181030273, 13.715832710266113 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 3.001347541809082, 12.88825511932373 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 2.2878518104553223, 13.23630142211914 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 3.0419530868530273, 13.963333129882812 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 3.0303516387939453, 13.30591106414795 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 2.525683879852295, 13.452864646911621 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 2.398066520690918, 12.857317924499512 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 2.943340301513672, 13.135754585266113 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 3.0941600799560547, 13.522473335266113 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 2.9027347564697266, 13.85505199432373 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 2.7809181213378906, 13.69262981414795 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 2.7693166732788086, 13.623021125793457 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 2.7519140243530273, 13.460598945617676 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 2.7403125762939453, 13.352317810058594 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 2.7403125762939453, 13.352317810058594 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 2.7403125762939453, 13.352317810058594 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 2.7577147483825684, 13.104817390441895 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 2.7577147483825684, 13.089348793029785 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 2.7693166732788086, 13.019740104675293 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 2.7693166732788086, 12.996536254882812 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 2.7693166732788086, 12.996536254882812 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 2.7693166732788086, 12.996536254882812 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 2.7693166732788086, 12.91919231414795 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 2.7693166732788086, 12.91919231414795 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 2.7693166732788086, 12.91919231414795 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 2.7693166732788086, 12.857317924499512 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 2.7693166732788086, 12.826380729675293 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 2.8041210174560547, 12.988802909851074 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 2.8041210174560547, 13.08161449432373 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 2.7867188453674316, 13.360051155090332 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 2.7867188453674316, 13.360051155090332 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 2.7867188453674316, 13.383255004882812 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 2.7809181213378906, 13.677162170410156 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 2.7809181213378906, 13.677162170410156 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 2.7809181213378906, 13.677162170410156 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 2.7867188453674316, 13.85505199432373 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 2.7867188453674316, 13.85505199432373 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 2.7867188453674316, 14.032942771911621 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 2.7751173973083496, 14.27270793914795 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 2.7751173973083496, 14.27270793914795 ]
 			}
 		]
 	}

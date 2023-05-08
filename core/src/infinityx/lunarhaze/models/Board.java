@@ -279,8 +279,8 @@ public class Board {
             for (int x = 0; x < width; x++) {
                 if (getTileType(x, y) == Tile.TileType.EMPTY)
                     canvas.shapeRenderer.rect(
-                            canvas.WorldToScreenX(boardToWorldX(x)) + 1, canvas.WorldToScreenY(boardToWorldY(y)),
-                            tileScreenDim.x - 1, tileScreenDim.y - 1
+                            boardToWorldX(x) + 0.01f, boardToWorldY(y),
+                            tileWorldDim.x - 0.01f, tileWorldDim.y - 0.01f
                     );
             }
         }

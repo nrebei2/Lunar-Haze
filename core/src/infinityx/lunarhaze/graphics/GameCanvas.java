@@ -574,17 +574,24 @@ public class GameCanvas {
             return;
         }
         global.idt();
-        global.translate(tx, ty, 0.0f);
 
         updateCameraBounds(zoom);
         // Consider the view translation for the camera bounds
         camX -= tx;
         camY -= ty;
 
-        if (pass == DrawPass.LIGHT) {
+        if (pass == DrawPass.LIGHT || pass == DrawPass.SHAPE) {
+            // Mimic same view transform with different projection matrix
+            global.translate(
+                    (tx - getWidth() / 2) / WorldToScreenX(1),
+                    (ty - getHeight() / 2) / WorldToScreenY(1),
+                    0.0f
+            );
+
             // Light uses a separate camera
             global.mulLeft(raycamera.combined);
         } else {
+            global.translate(tx, ty, 0.0f);
             global.mulLeft(camera.combined);
         }
 
@@ -631,7 +638,8 @@ public class GameCanvas {
             case SHAPE:
                 // Enable blending
                 Gdx.gl.glEnable(GL20.GL_BLEND);
-                shapeRenderer.setProjectionMatrix(camera.combined);
+                // Using raycamera as it has a nicer projection
+                shapeRenderer.setProjectionMatrix(raycamera.combined);
                 break;
             case SHADER:
                 shaderRenderer.setProjectionMatrix(camera.combined);
@@ -1081,6 +1089,10 @@ public class GameCanvas {
      * @param handler holding lights
      */
     public void drawLights(RayHandler handler) {
+        if (active != DrawPass.LIGHT) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for LIGHT", new IllegalStateException());
+            return;
+        }
         handler.setCombinedMatrix(global);
         handler.updateAndRender();
     }
@@ -1122,78 +1134,6 @@ public class GameCanvas {
         font.draw(spriteBatch, layout, x, y + offset);
     }
 
-    public void drawCollectLightBar(float width, float height, float percentage, Werewolf player) {
-        if (active != DrawPass.SHAPE) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
-            return;
-        }
-
-        float padding = 5;
-        float x = WorldToScreenX(player.getPosition().x) - width / 2;
-        float y = WorldToScreenY(player.getPosition().y) + player.getTextureHeight() + padding;
-
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(Color.WHITE);
-        shapeRenderer.rect(
-                x, y, width, height
-        );
-
-        shapeRenderer.end();
-
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        Color yellow = new Color(244.0f / 255.0f, 208.0f / 255.0f, 63.0f / 255.0f, 1.0f);
-        shapeRenderer.setColor(yellow);
-        shapeRenderer.rect(x, y, width * percentage, height);
-        shapeRenderer.end();
-    }
-
-    public void drawEnemyHpBars(float barWidth, float barHeight, Enemy enemy) {
-        if (active != DrawPass.SHAPE) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
-            return;
-        }
-        float x = WorldToScreenX(enemy.getPosition().x);
-
-        float y = WorldToScreenY(enemy.getPosition().y);
-
-        // Draw border
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(Color.BLACK);
-        shapeRenderer.rect(x - 0.7f * barWidth, y + 2 * barWidth, barWidth, barHeight);
-        shapeRenderer.end();
-
-        // Draw the actual health bar
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(Color.RED);
-
-        shapeRenderer.rect(x - 0.7f * barWidth, y + 2 * barWidth, barWidth * enemy.getHealthPercentage(), barHeight);
-        shapeRenderer.end();
-    }
-
-
-    public void drawAttackCooldownBar(float barWidth, float barHeight, float xOffset, Werewolf werewolf) {
-        if (active != DrawPass.SHAPE) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
-            return;
-        }
-
-        float x = WorldToScreenX(werewolf.getPosition().x) + xOffset;
-        float y = WorldToScreenY(werewolf.getPosition().y);
-
-        // Draw border
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(Color.BLACK);
-        shapeRenderer.rect(x, y, barWidth, barHeight);
-        shapeRenderer.end();
-
-        // Draw the actual cooldown bar
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(Color.WHITE);
-
-        shapeRenderer.rect(x, y, barWidth, barHeight * werewolf.getCooldownPercent());
-        shapeRenderer.end();
-    }
-
     public void drawPlayerAttackRange(Texture ellipse, Werewolf player, LevelContainer level) {
         float attackRange = WorldToScreenX(player.getAttackHitbox().getHitboxRange());
         // Attack distance in one direction
@@ -1202,21 +1142,6 @@ public class GameCanvas {
 
         draw(ellipse, Color.WHITE, ellipse.getWidth() / 2, ellipse.getHeight() / 2, x, y, 0,
                 attackRange / ellipse.getWidth() * 2, attackRange / ellipse.getWidth() * 2);
-    }
-
-    /**
-     * Flashes the screen. Normally this draws transparent (alpha = 0) rect, but when screen flashes, draws another
-     * colr based on the flash.
-     */
-    public void drawScreenFlash(Werewolf player) {
-        Color flashColor = ModelFlash.getFlashColor();
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(flashColor);
-
-        float x = WorldToScreenX(player.getPosition().x) - Gdx.graphics.getWidth() / 2.0f;
-        float y = WorldToScreenY(player.getPosition().y) - Gdx.graphics.getHeight() / 2.0f;
-        shapeRenderer.rect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        shapeRenderer.end();
     }
 
     /**
@@ -1262,19 +1187,6 @@ public class GameCanvas {
     }
 
     /**
-     * Draws a solid rectangle at upper right corner with specified idth and height
-     */
-    public void drawRec(float width, float height) {
-        ShapeRenderer barRenderer = new ShapeRenderer();
-        barRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        barRenderer.setColor(Color.YELLOW);
-        float x = getWidth() - width;
-        float y = getHeight() - height * 4;
-        barRenderer.rect(x, y, width, height);
-        barRenderer.end();
-    }
-
-    /**
      * Draws a solid rectangle at the specified position with the specified width and height
      *
      * @param x      The x-coordinate of the rectangle's lower left corner
@@ -1286,19 +1198,6 @@ public class GameCanvas {
         ShapeRenderer barRenderer = new ShapeRenderer();
         barRenderer.begin(ShapeRenderer.ShapeType.Filled);
         barRenderer.setColor(Color.YELLOW);
-        barRenderer.rect(x, y, width, height);
-        barRenderer.end();
-    }
-
-    /**
-     * Draws a rectangle outline at the upper right corner with specified width, and height
-     */
-    public void drawRecLine(float width, float height) {
-        ShapeRenderer barRenderer = new ShapeRenderer();
-        barRenderer.begin(ShapeRenderer.ShapeType.Line);
-        barRenderer.setColor(Color.WHITE);
-        float x = getWidth() - width;
-        float y = getHeight() - height * 4;
         barRenderer.rect(x, y, width, height);
         barRenderer.end();
     }

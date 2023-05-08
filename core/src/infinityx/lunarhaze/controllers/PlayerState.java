@@ -14,9 +14,9 @@ public enum PlayerState implements State<PlayerController> {
         @Override
         public void enter(PlayerController entity) {
             if (entity.getPlayer().isOnMoonlight) {
-                entity.setTargetStealth(PlayerController.MOON_STEALTH);
+                entity.player.setTargetStealth(PlayerController.MOON_STEALTH);
             } else {
-                entity.setTargetStealth(PlayerController.STILL_STEALTH);
+                entity.player.setTargetStealth(PlayerController.STILL_STEALTH);
             }
             setTexture(entity, "idle");
         }
@@ -84,9 +84,9 @@ public enum PlayerState implements State<PlayerController> {
             }
 
             if (entity.getPlayer().isOnMoonlight) {
-                entity.setTargetStealth(PlayerController.MOON_STEALTH);
+                entity.player.setTargetStealth(PlayerController.MOON_STEALTH);
             } else {
-                entity.setTargetStealth(PlayerController.WALK_STEALTH);
+                entity.player.setTargetStealth(PlayerController.WALK_STEALTH);
             }
 
             // Animations
@@ -103,7 +103,7 @@ public enum PlayerState implements State<PlayerController> {
         @Override
         public void enter(PlayerController entity) {
             direction = entity.player.direction;
-            entity.setTargetStealth(PlayerController.RUN_STEALTH);
+            entity.player.setTargetStealth(PlayerController.RUN_STEALTH);
             setTexture(entity, "walk");
             // texture update should be proportional to speed
         }
@@ -167,7 +167,7 @@ public enum PlayerState implements State<PlayerController> {
     COLLECT() {
         @Override
         public void enter(PlayerController entity) {
-            entity.setTargetStealth(PlayerController.MOON_STEALTH);
+            entity.player.setTargetStealth(PlayerController.MOON_STEALTH);
         }
 
         @Override

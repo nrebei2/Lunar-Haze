@@ -9,6 +9,7 @@ import infinityx.lunarhaze.graphics.ModelFlash;
 import infinityx.lunarhaze.models.AttackingGameObject;
 import infinityx.lunarhaze.models.GameObject;
 import infinityx.lunarhaze.models.entity.Enemy;
+import infinityx.lunarhaze.models.entity.SceneObject;
 import infinityx.lunarhaze.models.entity.Werewolf;
 
 /**
@@ -70,6 +71,11 @@ public class CollisionController implements ContactListener {
                                 (AttackingGameObject) o1
                         );
                         break;
+                    case SCENE:
+                        handleCollision(
+                                (SceneObject) o2,
+                                (Werewolf) o1
+                        );
                     default:
                         break;
                 }
@@ -88,6 +94,15 @@ public class CollisionController implements ContactListener {
                         break;
                 }
                 break;
+            case SCENE:
+                switch (o2.getType()) {
+                    case WEREWOLF:
+                        handleCollision(
+                                (SceneObject) o1,
+                                (Werewolf) o2
+                        );
+                }
+
             default:
                 break;
         }
@@ -135,10 +150,78 @@ public class CollisionController implements ContactListener {
         // Maybe they can push each other, idk
     }
 
+    /**
+     * Collision logic between a scene object and the player.
+     *
+     * @param obj  The scene object
+     * @param player The player
+     */
+    private void handleCollision(SceneObject obj, Werewolf player) {
+        if (obj.isSensor()) {
+            // For now, we can assume obj is tall grass
+            player.inTallGrass = true;
+        }
+    }
+
     @Override
     public void endContact(Contact contact) {
+        Body body1 = contact.getFixtureA().getBody();
+        Body body2 = contact.getFixtureB().getBody();
 
+        // Safe since all entities that hold a Box2D body in our game are GameObjects
+        GameObject obj1 = (GameObject) body1.getUserData();
+        GameObject obj2 = (GameObject) body2.getUserData();
+
+        processEndCollision(obj1, obj2);
     }
+
+
+    /**
+     * Detect and resolve end of collisions between two game objects
+     *
+     * @param o1 First object
+     * @param o2 Second object
+     */
+    private void processEndCollision(GameObject o1, GameObject o2) {
+        switch (o1.getType()) {
+            case WEREWOLF:
+                switch (o2.getType()) {
+                    case SCENE:
+                        endCollision(
+                                (SceneObject) o2,
+                                (Werewolf) o1
+                        );
+                    default:
+                        break;
+                }
+                break;
+            case SCENE:
+                switch (o2.getType()) {
+                    case WEREWOLF:
+                        endCollision(
+                                (SceneObject) o1,
+                                (Werewolf) o2
+                        );
+                }
+
+            default:
+                break;
+        }
+    }
+
+    /**
+     * End of collision logic between a scene object and the player.
+     *
+     * @param obj  The scene object
+     * @param player The player
+     */
+    private void endCollision(SceneObject obj, Werewolf player) {
+        if (obj.isSensor()) {
+            // For now, we can assume obj is tall grass
+            player.inTallGrass = false;
+        }
+    }
+
 
     @Override
     public void preSolve(Contact contact, Manifold oldManifold) {

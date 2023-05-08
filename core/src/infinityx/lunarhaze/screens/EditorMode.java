@@ -1044,10 +1044,10 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
             // Draw the patrol region in pink
             canvas.drawRecOutline(
-                    canvas.WorldToScreenX(curRegion.getBottomLeft()[0]),
-                    canvas.WorldToScreenY(curRegion.getBottomLeft()[1]),
-                    canvas.getWorldToScreen().x * curRegion.getWidth(),
-                    canvas.getWorldToScreen().y * curRegion.getHeight(),
+                    curRegion.getBottomLeft()[0],
+                    curRegion.getBottomLeft()[1],
+                    curRegion.getWidth(),
+                    curRegion.getHeight(),
                     Color.PINK
             );
             canvas.end();
@@ -1711,9 +1711,15 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 ImGui.text("Flip scene selection");
 
                 ImGui.tableNextColumn();
+                ImGui.text("Left-Ctrl");
+                ImGui.tableNextColumn();
+                ImGui.text("Snap scene selection to board");
+
+                ImGui.tableNextColumn();
                 ImGui.text("Escape");
                 ImGui.tableNextColumn();
                 ImGui.text("Stop selecting item");
+
 
                 ImGui.tableNextColumn();
                 ImGui.text("Q");
@@ -1967,8 +1973,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                     canvas.shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
                     canvas.shapeRenderer.setColor(Color.WHITE);
                     canvas.shapeRenderer.rect(
-                            canvas.WorldToScreenX(spawnLocation.x) - 30, canvas.WorldToScreenY(spawnLocation.y) - 15,
-                            60, 30
+                            spawnLocation.x - 0.5f, spawnLocation.y - 0.2f,
+                            0.5f, 0.2f
                     );
                     canvas.shapeRenderer.end();
                     canvas.end();

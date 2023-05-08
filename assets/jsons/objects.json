@@ -373,10 +373,10 @@
       "body": {
         "type": "box",
         "width": 0.5,
-        "height": 0.1
+        "height": 0.25
       }
     },
-    "sensor": false
+    "sensor": true
   },
 
   "tallgrass-2": {
@@ -392,9 +392,9 @@
       "body": {
         "type": "box",
         "width": 0.5,
-        "height": 0.1
+        "height": 0.25
       }
     },
-    "sensor": false
+    "sensor": true
   }
 }

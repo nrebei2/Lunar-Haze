@@ -39,13 +39,14 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
     private float stealth;
 
     /**
+     * Target stealth value {@link #stealth} is moving towards
+     */
+    private float target;
+
+    /**
      * Point light pointed on werewolf at all times
      */
     private PointLight spotLight;
-
-    private boolean drawCooldownBar;
-
-    private float cooldownPercent;
 
     /**
      * Whether the werewolf is in sprint
@@ -68,6 +69,9 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
     public float heavyLockoutTime;
 
     public boolean isWindingUp;
+
+    /** Whether the player is in tall grass */
+    public boolean inTallGrass;
 
     /**
      * Returns the type of this object.
@@ -110,28 +114,6 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
     }
 
     /**
-     * Sets the cooldown bar to be drawn or not
-     */
-    public void setDrawCooldownBar(boolean b, float percentage) {
-        drawCooldownBar = b;
-        cooldownPercent = percentage;
-    }
-
-    /**
-     * @return whether the cooldown bar should be drawn
-     */
-    public boolean drawCooldownBar() {
-        return drawCooldownBar;
-    }
-
-    /**
-     * @return the percentage of the cooldown bar
-     */
-    public float getCooldownPercent() {
-        return cooldownPercent;
-    }
-
-    /**
      * @return Point light on player
      */
     public PointLight getSpotlight() {
@@ -170,6 +152,7 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
         heavyLockedOut = false;
         isWindingUp = false;
         heavyLockoutTime = 0.4f; // this can be changed later
+        inTallGrass = false;
     }
 
     /**
@@ -187,6 +170,16 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
     public boolean isHeavyLockedOut() {
         return heavyLockedOut;
     }
+
+    public float getTargetStealth() {
+        return target;
+    }
+
+    public void setTargetStealth(float t) {
+        target = t;
+    }
+
+
 
 
     /**
@@ -206,7 +199,7 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
         JsonValue speedInfo = json.get("speed");
         walkSpeed = speedInfo.getFloat("walk");
         windupSpeed = walkSpeed / 3f;
-
+        setFixedRotation(true);
 
         PointLight spotLight = new PointLight(
                 container.getRayHandler(), rays, Color.WHITE, dist,
@@ -217,8 +210,6 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
         activatePhysics(container.getWorld());
         setSpotLight(spotLight);
 
-        body.setFixedRotation(true);
-        body.setBullet(true);
     }
 
 

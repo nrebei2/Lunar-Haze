@@ -128,11 +128,6 @@ public class PlayerController {
     private Boolean allocateReady;
 
     /**
-     * Stealth value of the state that player is going to enter
-     */
-    private float target;
-
-    /**
      * Whether the walk_grass sound is playing
      */
     private boolean isWalkGrassPlaying = false;
@@ -192,14 +187,6 @@ public class PlayerController {
         return attack_sound;
     }
 
-    public float getTargetStealth() {
-        return target;
-    }
-
-    public void setTargetStealth(float t) {
-        target = t;
-    }
-
 
     /**
      * Initializes
@@ -219,7 +206,6 @@ public class PlayerController {
         attackHandler = new PlayerAttackHandler(player, stateMachine);
         allocateReady = false;
         isWalkGrassPlaying = false;
-        target = STILL_STEALTH;
         this.setting = setting;
     }
 
@@ -256,21 +242,21 @@ public class PlayerController {
      * @param delta Number of seconds since last animation frame
      */
     public void resolveStealth(float delta) {
-        if (player.getLinearVelocity().isZero() && player.isOnMoonlight == false) {
-            target = PlayerController.STILL_STEALTH;
+        if ((player.getLinearVelocity().isZero() && player.isOnMoonlight == false) || player.inTallGrass) {
+            player.setTargetStealth(PlayerController.STILL_STEALTH);
         }
         float proportion = player.getStealth();
-        if (target > proportion) {
-            if (target - proportion >= CHANGE_STEALTH_RATE / 1.0f * delta) {
+        if (player.getTargetStealth() > proportion) {
+            if (player.getTargetStealth() - proportion >= CHANGE_STEALTH_RATE / 1.0f * delta) {
                 proportion = proportion + CHANGE_STEALTH_RATE / 1.0f * delta;
             } else {
-                proportion = target;
+                proportion = player.getTargetStealth();
             }
-        } else if (target < proportion) {
-            if (proportion - target >= CHANGE_STEALTH_RATE / 1.0f * delta) {
+        } else if (player.getTargetStealth() < proportion) {
+            if (proportion - player.getTargetStealth() >= CHANGE_STEALTH_RATE / 1.0f * delta) {
                 proportion = proportion - CHANGE_STEALTH_RATE / 1.0f * delta;
             } else {
-                proportion = target;
+                proportion = player.getTargetStealth();
             }
         }
         player.setStealth(proportion);

@@ -111,11 +111,6 @@ public class EnemyController extends AttackHandler {
     private final StateMachine<EnemyController, EnemyState> stateMachine;
 
     /**
-     * Face direction behavior
-     */
-    public Face<Vector2> faceSB;
-
-    /**
      * Pathfinding behavior
      */
     public FollowPath followPathSB;
@@ -211,17 +206,11 @@ public class EnemyController extends AttackHandler {
         this.pathCollision = new Box2DRaycastCollision(container.getWorld(), pathRay);
         this.pathfinder = container.pathfinder;
 
-        // Steering behaviors
-        this.faceSB = new Face<>(enemy)
-                .setAlignTolerance(MathUtils.degreesToRadians * 10)
-                .setDecelerationRadius(MathUtils.degreesToRadians * 10);
-
         // Dummy path
         Array<Vector2> waypoints = new Array<>();
         waypoints.add(new Vector2());
         waypoints.add(new Vector2());
         followPathSB = new FollowPath(enemy, new LinePath(waypoints), 0.05f, 0.5f);
-
 
         // Prefer directions towards target
         attack = new ContextBehavior(enemy, true) {
@@ -290,8 +279,6 @@ public class EnemyController extends AttackHandler {
      * Lots of allocations here, should only be used for debugging.
      */
     public void drawGizmo(GameCanvas canvas) {
-        float s_x = canvas.WorldToScreenX(1);
-        float s_y = canvas.WorldToScreenY(1);
         float radius = 1;
         ContextMap map = battleSB.getMap();
 
@@ -301,8 +288,8 @@ public class EnemyController extends AttackHandler {
         for (int i = 0; i < map.getResolution(); i++) {
             Vector2 dir = map.dirFromSlot(i);
             canvas.shapeRenderer.line(
-                    getEnemy().getPosition().cpy().add(dir.cpy().scl(radius)).scl(s_x, s_y),
-                    getEnemy().getPosition().cpy().add(dir.cpy().scl(radius + map.interestMap[i])).scl(s_x, s_y)
+                    getEnemy().getPosition().cpy().add(dir.cpy().scl(radius)),
+                    getEnemy().getPosition().cpy().add(dir.cpy().scl(radius + map.interestMap[i]))
             );
         }
 
@@ -311,8 +298,8 @@ public class EnemyController extends AttackHandler {
         for (int i = 0; i < map.getResolution(); i++) {
             Vector2 dir = map.dirFromSlot(i);
             canvas.shapeRenderer.line(
-                    getEnemy().getPosition().cpy().add(dir.cpy().scl(radius)).scl(s_x, s_y),
-                    getEnemy().getPosition().cpy().add(dir.cpy().scl(radius + map.dangerMap[i])).scl(s_x, s_y)
+                    getEnemy().getPosition().cpy().add(dir.cpy().scl(radius)),
+                    getEnemy().getPosition().cpy().add(dir.cpy().scl(radius + map.dangerMap[i]))
             );
         }
 
@@ -320,8 +307,8 @@ public class EnemyController extends AttackHandler {
         canvas.shapeRenderer.setColor(Color.BLUE);
         Vector2 dir = battleSB.getDirection();
         canvas.shapeRenderer.line(
-                getEnemy().getPosition().cpy().add(dir.cpy().nor().scl(radius)).scl(s_x, s_y),
-                getEnemy().getPosition().cpy().add(dir.cpy().nor().scl(radius + dir.len())).scl(s_x, s_y)
+                getEnemy().getPosition().cpy().add(dir.cpy().nor().scl(radius)),
+                getEnemy().getPosition().cpy().add(dir.cpy().nor().scl(radius + dir.len()))
         );
         canvas.shapeRenderer.end();
     }
@@ -334,10 +321,6 @@ public class EnemyController extends AttackHandler {
     public void update(LevelContainer container, float delta) {
         super.update(delta);
         if (enemy.hp <= 0) container.removeEnemy(enemy);
-
-        //if (inBattle && !stateMachine.isInState(EnemyState.ALERT)) {
-        //    stateMachine.changeState(EnemyState.ALERT);
-        //}
 
         // Process the FSM
         enemy.update(delta);
@@ -353,10 +336,10 @@ public class EnemyController extends AttackHandler {
      */
     public Enemy.Detection getDetection() {
         /* Area of interests:
-         * Focused view - same angle as flashlight, extends between [2.75, 4.5]
-         * Short distance - angle of 100, extends between [1.75, 3]
+         * Focused view - same angle as flashlight, extends between [2.75, 3]
+         * Short distance - angle of 100, extends between [1.75, 2]
          * Peripheral vision - angle of 180, extends between [1.25, 2.25]
-         * Hearing radius - angle of 360, extends between [1.5, 3.5]
+         * Hearing radius - angle of 360, extends between [1.75, 3.5]
          * Lerp between player stealth for max distance,
          * but maybe add cutoffs for NONE?
          */
@@ -408,6 +391,51 @@ public class EnemyController extends AttackHandler {
 
         // Target is too far away
         return Enemy.Detection.NONE;
+    }
+
+    /**
+     * Draws the areas of interests (cones of vision) for the enemy controlled by this controller
+     */
+    public void drawDetection(GameCanvas canvas) {
+        canvas.shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        canvas.shapeRenderer.setColor(Color.PURPLE);
+
+        // Fake range increasing for ALERT and INDICATOR
+        float stealth = target.getStealth();
+        if (enemy.getDetection() == Enemy.Detection.ALERT) {
+            stealth = 1;
+        } else if (enemy.getDetection() == Enemy.Detection.INDICATOR) {
+            stealth = 0.5f;
+        }
+        if (getTarget().isOnMoonlight) {
+            stealth = 2;
+        }
+
+        Interpolation lerp = Interpolation.linear;
+
+        canvas.shapeRenderer.arc(
+                enemy.getX(),
+                enemy.getY(),
+                lerp.apply(2.75f, 3f, stealth),
+                enemy.getOrientation() * MathUtils.radiansToDegrees - enemy.getFlashlight().getConeDegree() / 2,
+                enemy.getFlashlight().getConeDegree(), 20
+        );
+        canvas.shapeRenderer.arc(
+                enemy.getX(),
+                enemy.getY(),
+                lerp.apply(1.75f, 2f, stealth),
+                enemy.getOrientation() * MathUtils.radiansToDegrees - 50,
+                100, 20
+        );
+        canvas.shapeRenderer.arc(
+                enemy.getX(),
+                enemy.getY(),
+                lerp.apply(1.25f, 1.75f, stealth),
+                enemy.getOrientation() * MathUtils.radiansToDegrees - 90,
+                180, 20
+        );
+
+        canvas.shapeRenderer.end();
     }
 
     /**
