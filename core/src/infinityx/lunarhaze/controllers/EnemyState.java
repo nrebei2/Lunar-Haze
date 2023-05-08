@@ -177,6 +177,7 @@ public enum EnemyState implements State<EnemyController> {
 
         @Override
         public void enter(EnemyController entity) {
+            entity.getEnemy().setMaxLinearSpeed(1.11f);
             entity.getEnemy().setDetection(Enemy.Detection.ALERT);
 
             entity.targetPos.set(entity.getTarget().getPosition());
@@ -227,7 +228,7 @@ public enum EnemyState implements State<EnemyController> {
                     entity.getEnemy().setIndependentFacing(true);
                     entity.getEnemy().setOrientation(AngleUtils.vectorToAngle(enemyToTarget));
                     entity.getEnemy().setSteeringBehavior(entity.battleSB);
-                    entity.getEnemy().setMaxLinearSpeed(0.8f);
+                    entity.getEnemy().setMaxLinearSpeed(0.6f);
                 } else {
                     // go back to chase (follow path)
                     entity.getEnemy().setMaxLinearSpeed(1.11f);
@@ -246,6 +247,7 @@ public enum EnemyState implements State<EnemyController> {
 
         @Override
         public void exit(EnemyController entity) {
+            entity.getEnemy().setMaxLinearSpeed(0.8f);
             if (!entity.isInBattle()) {
                 MessageManager.getInstance().dispatchMessage(TacticalManager.REMOVE, entity);
             }
@@ -269,6 +271,11 @@ public enum EnemyState implements State<EnemyController> {
 
     FLANK() {
         @Override
+        public void enter(EnemyController entity) {
+            entity.getEnemy().setMaxLinearSpeed(1.11f);
+        }
+
+        @Override
         public void update(EnemyController entity) {
             Vector2 enemyToTarget = entity.target.getPosition().sub(entity.getEnemy().getPosition());
             // Switch to battle behavior when close enough
@@ -280,6 +287,11 @@ public enum EnemyState implements State<EnemyController> {
             if (enemyToTarget.len() <= entity.getEnemy().getAttackRange() && entity.canStartNewAttack()) {
                 entity.getStateMachine().changeState(ATTACK);
             }
+        }
+
+        @Override
+        public void exit(EnemyController entity) {
+            entity.getEnemy().setMaxLinearSpeed(0.8f);
         }
     },
 
