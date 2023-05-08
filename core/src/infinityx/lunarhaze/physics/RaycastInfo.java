@@ -32,7 +32,7 @@ public class RaycastInfo implements RayCastCallback {
     /**
      * Game object types the ray will ignore
      */
-    private final ObjectSet<GameObject.ObjectType> ignore;
+    private ObjectSet<GameObject.ObjectType> ignore;
 
     /**
      * The gameobject that is attached to the fixture hit
@@ -52,12 +52,12 @@ public class RaycastInfo implements RayCastCallback {
     }
 
     /**
-     * Add types The ray will ignore objects of given types
+     * The ray will ignore the
      *
-     * @param types of game objects ignore
+     * @param raycastCollision Box2DRayCastCollision holding ignore list
      */
-    public void addIgnores(GameObject.ObjectType... types) {
-        ignore.addAll(types);
+    public void pushIgnores(Box2DRaycastCollision raycastCollision) {
+        ignore = raycastCollision.getIgnore();
     }
 
     /**

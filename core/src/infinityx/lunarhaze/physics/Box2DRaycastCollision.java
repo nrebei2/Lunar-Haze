@@ -6,6 +6,7 @@ import com.badlogic.gdx.ai.utils.RaycastCollisionDetector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.ObjectSet;
 import infinityx.lunarhaze.models.GameObject;
 
 /**
@@ -20,9 +21,15 @@ public class Box2DRaycastCollision implements RaycastCollisionDetector<Vector2> 
      */
     public GameObject hitObject;
 
+    /**
+     * Game object types the collision will ignore
+     */
+    private final ObjectSet<GameObject.ObjectType> ignore;
+
     public Box2DRaycastCollision(World world, RaycastInfo raycastInfo) {
         this.world = world;
         this.callback = raycastInfo;
+        this.ignore = new ObjectSet<>();
     }
 
     @Override
@@ -32,6 +39,7 @@ public class Box2DRaycastCollision implements RaycastCollisionDetector<Vector2> 
 
     @Override
     public boolean findCollision(Collision<Vector2> outputCollision, Ray<Vector2> inputRay) {
+        callback.pushIgnores(this);
         callback.hit = false;
         if (!inputRay.start.epsilonEquals(inputRay.end, MathUtils.FLOAT_ROUNDING_ERROR)) {
             callback.outputCollision = outputCollision;
@@ -39,6 +47,15 @@ public class Box2DRaycastCollision implements RaycastCollisionDetector<Vector2> 
             hitObject = callback.hitObject;
         }
         return callback.hit;
+    }
+
+    public Box2DRaycastCollision addIgnore(GameObject.ObjectType type) {
+        ignore.add(type);
+        return this;
+    }
+
+    public ObjectSet<GameObject.ObjectType> getIgnore() {
+        return ignore;
     }
 }
 
