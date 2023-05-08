@@ -13,7 +13,7 @@ public enum PlayerState implements State<PlayerController> {
     IDLE() {
         @Override
         public void enter(PlayerController entity) {
-            if (entity.getPlayer().isOnMoonlight){
+            if (entity.getPlayer().isOnMoonlight) {
                 entity.setTargetStealth(PlayerController.MOON_STEALTH);
             } else {
                 entity.setTargetStealth(PlayerController.STILL_STEALTH);
@@ -24,7 +24,7 @@ public enum PlayerState implements State<PlayerController> {
         @Override
         public void update(PlayerController entity) {
             // Handle state transitions
-            if(entity.isWindingUp()) {
+            if (entity.isWindingUp()) {
                 entity.getStateMachine().changeState(PlayerState.HEAVY_ATTACK_WINDUP);
             } else if (entity.isAttacking()) {
                 entity.getStateMachine().changeState(PlayerState.ATTACK);
@@ -71,7 +71,7 @@ public enum PlayerState implements State<PlayerController> {
         @Override
         public void update(PlayerController entity) {
             // Handle state transitions
-            if(entity.isWindingUp()) {
+            if (entity.isWindingUp()) {
                 entity.getStateMachine().changeState(PlayerState.HEAVY_ATTACK_WINDUP);
             } else if (entity.isAttacking()) {
                 entity.getStateMachine().changeState(PlayerState.ATTACK);
@@ -83,7 +83,7 @@ public enum PlayerState implements State<PlayerController> {
                 entity.getStateMachine().changeState(PlayerState.RUN);
             }
 
-            if (entity.getPlayer().isOnMoonlight){
+            if (entity.getPlayer().isOnMoonlight) {
                 entity.setTargetStealth(PlayerController.MOON_STEALTH);
             } else {
                 entity.setTargetStealth(PlayerController.WALK_STEALTH);
@@ -111,7 +111,7 @@ public enum PlayerState implements State<PlayerController> {
         @Override
         public void update(PlayerController entity) {
             // Handle state transitions
-            if(entity.isWindingUp()) {
+            if (entity.isWindingUp()) {
                 entity.getStateMachine().changeState(PlayerState.HEAVY_ATTACK_WINDUP);
             } else if (entity.isAttacking()) {
                 entity.getStateMachine().changeState(PlayerState.ATTACK);
@@ -155,7 +155,7 @@ public enum PlayerState implements State<PlayerController> {
 
         @Override
         public void update(PlayerController entity) {
-            if(!entity.isHeavyAttacking()) {
+            if (!entity.isHeavyAttacking()) {
                 entity.getStateMachine().changeState(PlayerState.IDLE);
             }
         }
@@ -173,7 +173,7 @@ public enum PlayerState implements State<PlayerController> {
         @Override
         public void update(PlayerController entity) {
             // Handle state transitions
-            if(entity.isWindingUp()) {
+            if (entity.isWindingUp()) {
                 entity.getStateMachine().changeState(PlayerState.HEAVY_ATTACK_WINDUP);
             } else if (entity.isAttacking()) {
                 entity.getStateMachine().changeState(PlayerState.ATTACK);
@@ -218,7 +218,7 @@ public enum PlayerState implements State<PlayerController> {
 
         @Override
         public void update(PlayerController entity) {
-            if(!entity.isWindingUp()) {
+            if (!entity.isWindingUp()) {
                 entity.getStateMachine().changeState(PlayerState.HEAVY_ATTACK);
             }
         }

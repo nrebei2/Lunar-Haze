@@ -151,7 +151,7 @@ public enum EnemyState implements State<EnemyController> {
             Vector2 enemyToTarget = entity.target.getPosition().sub(entity.getEnemy().getPosition());
             entity.getEnemy().setOrientation(AngleUtils.vectorToAngle(enemyToTarget));
 
-            if (entity.getEnemy().isAttacking()){
+            if (entity.getEnemy().isAttacking()) {
                 entity.getEnemy().setLinearVelocity(Vector2.Zero);
             }
 

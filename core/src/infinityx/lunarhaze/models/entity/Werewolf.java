@@ -89,7 +89,7 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
         isRunning = running;
     }
 
-    public boolean isMoving(){
+    public boolean isMoving() {
         return body.getLinearVelocity().x != 0 || body.getLinearVelocity().y != 0;
     }
 
@@ -169,7 +169,7 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
         moonlightCollected = 0;
         heavyLockedOut = false;
         isWindingUp = false;
-        heavyLockoutTime= 0.4f; // this can be changed later
+        heavyLockoutTime = 0.4f; // this can be changed later
     }
 
     /**
