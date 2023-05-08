@@ -23,7 +23,8 @@ public class PlayerAttackHandler extends AttackHandler {
     private float dashTimer;
     private Vector2 dashDirection;
     private boolean isDashing;
-    public static final float DASH_COOLDOWN = 5.0f;
+    public static float DASH_COOLDOWN = 5.0f;
+    public static final float DASH_REDUCE_AMOUNT = 0.5f;
     private float dashCooldownCounter;
 
     private boolean heavyAttacking;

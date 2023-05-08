@@ -341,6 +341,14 @@ public class PlayerController {
     }
 
     /**
+     * Player allocates one moonlight to reduce dash cooldown
+     */
+    public void allocateDashCooldown() {
+        player.reduceMoonlightCollected();
+        attackHandler.DASH_COOLDOWN = attackHandler.DASH_COOLDOWN - attackHandler.DASH_REDUCE_AMOUNT;
+    }
+
+    /**
      * Returns if player finished allocating the attibutes
      */
     public boolean getAllocateReady() {

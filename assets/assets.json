@@ -463,6 +463,7 @@
   "sounds": {
     "collect": "sounds/collect.wav",
     "level-passed": "sounds/level-passed.wav",
+    "level-fail": "sounds/level-fail.wav",
     "whip": "sounds/whip2.wav",
     "alerted": "sounds/alerted.wav",
     "dash": "sounds/dash.wav",

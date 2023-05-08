@@ -98,7 +98,7 @@
     "immunity": 0.5,
     "lockout": 0.5,
     "hitbox": {
-      "range": 1,
+      "range": 1.5,
       "width": 1.25,
       "textures": {
         "hitbox": {
