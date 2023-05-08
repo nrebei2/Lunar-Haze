@@ -63,7 +63,7 @@
     "colliders": {
       "body": {
         "type": "box",
-        "width": 1.85,
+        "width": 2,
         "height": 0.1,
         "offset": [0,0]
       }
@@ -81,7 +81,7 @@
     "colliders": {
       "body": {
         "type": "box",
-        "width": 1.85,
+        "width": 2,
         "height": 0.1,
         "offset": [0,0]
       }
@@ -99,7 +99,7 @@
     "colliders": {
       "body": {
         "type": "box",
-        "width": 1.85,
+        "width": 2,
         "height": 0.1,
         "offset": [0,0]
       }
@@ -118,7 +118,7 @@
       "body": {
         "type": "box",
         "width": 0.1,
-        "height": 0.85,
+        "height": 1,
         "offset": [0,0]
       }
     }
@@ -136,7 +136,7 @@
       "body": {
         "type": "box",
         "width": 0.2,
-        "height": 0.85,
+        "height": 1,
         "offset": [0,0]
       }
     }

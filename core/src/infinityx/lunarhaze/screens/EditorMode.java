@@ -445,11 +445,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     boolean overlapped;
 
     /**
-     * Whether the selected scene object is currently overlapping a player or enemy
-     */
-    boolean sceneOverlap;
-
-    /**
      * When false, display the stealth ambient lighting, when true, display the battle ambient lighting
      */
     private boolean showBattleLighting;
@@ -561,12 +556,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * placeSceneObject(), etc.).
      */
     private void placeSelection() {
-        if (selected.getType() == Selected.Type.OBJECT) {
-            // Allow the user to place scene objects over each other
-            // But not on enemies or players
-            if (sceneOverlap)
-                return;
-        } else if (overlapped)
+        if (overlapped)
             return;
 
         switch (selected.getType()) {
@@ -663,11 +653,19 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     private SceneObject placeSceneObject() {
         SceneObject curr = ((ObjectSelection) selected).object;
-        return level.addSceneObject(
-                curr.getName(),
-                mouseWorld.x, mouseWorld.y,
-                curr.getScale(), curr.isFlipped()
-        );
+        if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
+            return level.addSceneObject(
+                    curr.getName(),
+                    mouseBoard.x, mouseBoard.y,
+                    curr.getScale(), curr.isFlipped()
+            );
+        } else {
+            return level.addSceneObject(
+                    curr.getName(),
+                    mouseWorld.x, mouseWorld.y,
+                    curr.getScale(), curr.isFlipped()
+            );
+        }
     }
 
     /**
@@ -853,7 +851,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     };
 
     /**
-     * Callback for scene used to determine {@link #overlapped} and {@link #sceneOverlap}
+     * Callback for scene used to determine {@link #overlapped}
      */
     QueryCallback sceneCallback = new QueryCallback() {
         @Override
@@ -861,11 +859,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             if (fixture.getBody().getUserData() == getSelectedObject()) return true;
             GameObject hit = (GameObject) fixture.getBody().getUserData();
             if (hit.getType() == GameObject.ObjectType.ENEMY || hit.getType() == GameObject.ObjectType.WEREWOLF) {
-                sceneOverlap = true;
                 overlapped = true;
                 return false;
             }
-            overlapped = true;
             return true;
         }
     };
@@ -928,7 +924,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     private void update(float delta) {
         if (level == null) return;
         overlapped = false;
-        sceneOverlap = false;
 
         // Determine if selected object is overlapping
         // I was forced to do this instead of contact listener since the scene objects are static
@@ -1175,7 +1170,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                     mouseWorld.x + 0.05f,
                     mouseWorld.y + 0.05f
             );
-
             return true;
         }
 
@@ -1235,8 +1229,10 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     public boolean mouseMoved(int screenX, int screenY) {
         if (level == null) return false;
         mouseWorld.set(canvas.ScreenToWorldX(Gdx.input.getX(), level.getView()), canvas.ScreenToWorldY(Gdx.input.getY(), level.getView()));
+
         if (ImGui.getIO().getWantCaptureMouse()) return false;
-        // Cursor world position
+        int boardX = board.worldToBoardX(mouseWorld.x);
+        int boardY = board.worldToBoardY(mouseWorld.y);
 
         if (selected == null) {
             return true;
@@ -1245,9 +1241,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         switch (selected.getType()) {
             case TILE:
                 // snap to tile
-                int boardX = board.worldToBoardX(mouseWorld.x);
-                int boardY = board.worldToBoardY(mouseWorld.y);
-
                 if (!board.inBoundsWorld(mouseWorld.x, mouseWorld.y)) {
                     board.removePreview();
                     break;
@@ -1267,7 +1260,12 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 ((EnemySelection) selected).enemy.setPosition(mouseWorld);
                 break;
             case OBJECT:
-                ((ObjectSelection) selected).object.setPosition(mouseWorld);
+                if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
+                    mouseBoard.set(boardX, boardY);
+                    ((ObjectSelection) selected).object.setPosition(mouseBoard);
+                }
+                else
+                    ((ObjectSelection) selected).object.setPosition(mouseWorld);
                 break;
         }
 
@@ -1321,6 +1319,10 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         if (keycode == Input.Keys.F) {
             if (selected.getType() == Selected.Type.OBJECT) {
                 SceneObject obj = ((ObjectSelection) selected).object;
+                obj.setFlipped(!obj.isFlipped());
+            }
+            if (selected.getType() == Selected.Type.EXIST_OBJECT) {
+                SceneObject obj = ((ExistingObject) selected).object;
                 obj.setFlipped(!obj.isFlipped());
             }
         }
@@ -1702,6 +1704,11 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 ImGui.text("Mouse scroll");
                 ImGui.tableNextColumn();
                 ImGui.text("Scale scene selection");
+
+                ImGui.tableNextColumn();
+                ImGui.text("F");
+                ImGui.tableNextColumn();
+                ImGui.text("Flip scene selection");
 
                 ImGui.tableNextColumn();
                 ImGui.text("Escape");
