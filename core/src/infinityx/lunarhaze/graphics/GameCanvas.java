@@ -1212,7 +1212,7 @@ public class GameCanvas {
      * colr based on the flash.
      */
     public void drawScreenFlash(Werewolf player) {
-        Color flashColor = ScreenFlash.getFlashColor();
+        Color flashColor = ModelFlash.getFlashColor();
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(flashColor);
 

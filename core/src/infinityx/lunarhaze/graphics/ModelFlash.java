@@ -2,9 +2,10 @@ package infinityx.lunarhaze.graphics;
 
 import com.badlogic.gdx.graphics.Color;
 
-public class ScreenFlash {
+public class ModelFlash {
 
     private static Color flashColor = new Color();
+    private static Color baseColor = new Color(1, 1, 1, 1);
     private static float flashDuration;
     private static float flashElapsedTime;
     private static float fadeIn;
@@ -17,7 +18,7 @@ public class ScreenFlash {
         flashElapsedTime = 0;
         fadeIn = fadeInTime;
         fadeOut = fadeOutTime;
-        ScreenFlash.maxAlpha = maxAlpha;
+        ModelFlash.maxAlpha = maxAlpha;
     }
 
     public static void update(float delta) {
@@ -35,6 +36,9 @@ public class ScreenFlash {
             flashDuration = 0;
             flashColor.a = 0;
         }
+
+        // Interpolate between baseColor (white) and flashColor based on the alpha value
+        flashColor.lerp(baseColor, 1 - flashColor.a);
     }
 
     public static float timeLeft() {

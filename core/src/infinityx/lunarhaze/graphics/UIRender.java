@@ -453,8 +453,9 @@ public class UIRender {
 
             canvas.beginUI(GameCanvas.DrawPass.SHAPE);
             // If necessary draw screen flash
-            ScreenFlash.update(Gdx.graphics.getDeltaTime());
-            canvas.drawScreenFlash(level.getPlayer());
+            ModelFlash.update(Gdx.graphics.getDeltaTime());
+            level.getPlayer().setTint(ModelFlash.getFlashColor());
+            //canvas.drawScreenFlash(level.getPlayer());
             canvas.end();
 
             if (phase == Phase.STEALTH) {
