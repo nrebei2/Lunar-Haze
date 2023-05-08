@@ -7,7 +7,11 @@ import com.badlogic.gdx.utils.Array;
  * Represents a patrol path for an enemy. The path is a piecewise linear curve.
  */
 public class PatrolPath {
+
+    /** Current index into {@link #path} the enemy is considering moving towards */
     private int currentWayPoint;
+
+    /** Vertices of path */
     Array<Vector2> path;
 
     /**
@@ -62,5 +66,9 @@ public class PatrolPath {
         if (index < path.size) {
             path.removeIndex(index);
         }
+    }
+
+    public Array<Vector2> getPath() {
+        return path;
     }
 }

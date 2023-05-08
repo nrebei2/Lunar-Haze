@@ -608,14 +608,14 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     private Enemy placeEnemy() {
         EnemySelection enemySelection = (EnemySelection) selected;
         // Center initial region around placed enemy
-        PatrolRegion initialRegion = new PatrolRegion(
-                mouseWorld.x - 1, mouseWorld.y - 1,
-                mouseWorld.x + 1, mouseWorld.y + 1
-        );
-
-        Enemy newEnemy = level.addEnemy(enemySelection.enemy.getName(), mouseWorld.x, mouseWorld.y, initialRegion);
-        newEnemy.setScale(enemySelection.enemy.getScale());
-        return newEnemy;
+        //PatrolRegion initialRegion = new PatrolRegion(
+        //        mouseWorld.x - 1, mouseWorld.y - 1,
+        //        mouseWorld.x + 1, mouseWorld.y + 1
+        //);
+        //
+        //Enemy newEnemy = level.addEnemy(enemySelection.enemy.getName(), mouseWorld.x, mouseWorld.y, initialRegion);
+        //newEnemy.setScale(enemySelection.enemy.getScale());
+        return null;
     }
 
     /**
@@ -1045,16 +1045,16 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         if (showEnemyControllerWindow.get()) {
             createEnemyControllerWindow();
             canvas.begin(GameCanvas.DrawPass.SHAPE, level.getView().x, level.getView().y);
-            PatrolRegion curRegion = currEnemyControlled.getPatrolPath();
-
-            // Draw the patrol region in pink
-            canvas.drawRecOutline(
-                    canvas.WorldToScreenX(curRegion.getBottomLeft()[0]),
-                    canvas.WorldToScreenY(curRegion.getBottomLeft()[1]),
-                    canvas.getWorldToScreen().x * curRegion.getWidth(),
-                    canvas.getWorldToScreen().y * curRegion.getHeight(),
-                    Color.PINK
-            );
+            //PatrolRegion curRegion = currEnemyControlled.getPatrolPath();
+            //
+            //// Draw the patrol region in pink
+            //canvas.drawRecOutline(
+            //        canvas.WorldToScreenX(curRegion.getBottomLeft()[0]),
+            //        canvas.WorldToScreenY(curRegion.getBottomLeft()[1]),
+            //        canvas.getWorldToScreen().x * curRegion.getWidth(),
+            //        canvas.getWorldToScreen().y * curRegion.getHeight(),
+            //        Color.PINK
+            //);
             canvas.end();
         }
 
@@ -2102,35 +2102,35 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         ImGui.setNextWindowSize(600, 160, ImGuiCond.FirstUseEver);
 
         ImGui.begin("Enemy Controller", showEnemyControllerWindow);
-        ImGui.text("Enter patrol region:");
+        ImGui.text("Enter patrol path:");
 
-        PatrolRegion curRegion = currEnemyControlled.getPatrolPath();
+        //PatrolRegion curRegion = currEnemyControlled.getPatrolPath();
 
         // Force non-negative patrol width and height
-        if (ImGui.sliderFloat2(
-                "Bottom Left Position",
-                curRegion.getBottomLeft(),
-                0, Math.max(board.getWorldWidth(), board.getWorldHeight())
-        )) {
-            if (curRegion.getWidth() < 0) {
-                curRegion.getBottomLeft()[0] = curRegion.getTopRight()[0];
-            }
-            if (curRegion.getHeight() < 0) {
-                curRegion.getBottomLeft()[1] = curRegion.getTopRight()[1];
-            }
-        }
-        if (ImGui.sliderFloat2(
-                "Top Right Position",
-                curRegion.getTopRight(),
-                0, Math.max(board.getWorldWidth(), board.getWorldHeight())
-        )) {
-            if (curRegion.getWidth() < 0) {
-                curRegion.getTopRight()[0] = curRegion.getBottomLeft()[0];
-            }
-            if (curRegion.getHeight() < 0) {
-                curRegion.getTopRight()[1] = curRegion.getBottomLeft()[1];
-            }
-        }
+        //if (ImGui.sliderFloat2(
+        //        "Bottom Left Position",
+        //        curRegion.getBottomLeft(),
+        //        0, Math.max(board.getWorldWidth(), board.getWorldHeight())
+        //)) {
+        //    if (curRegion.getWidth() < 0) {
+        //        curRegion.getBottomLeft()[0] = curRegion.getTopRight()[0];
+        //    }
+        //    if (curRegion.getHeight() < 0) {
+        //        curRegion.getBottomLeft()[1] = curRegion.getTopRight()[1];
+        //    }
+        //}
+        //if (ImGui.sliderFloat2(
+        //        "Top Right Position",
+        //        curRegion.getTopRight(),
+        //        0, Math.max(board.getWorldWidth(), board.getWorldHeight())
+        //)) {
+        //    if (curRegion.getWidth() < 0) {
+        //        curRegion.getTopRight()[0] = curRegion.getBottomLeft()[0];
+        //    }
+        //    if (curRegion.getHeight() < 0) {
+        //        curRegion.getTopRight()[1] = curRegion.getBottomLeft()[1];
+        //    }
+        //}
 
         if (ImGui.button("Close")) {
             showEnemyControllerWindow.set(false);
@@ -2182,15 +2182,15 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                     enemy.texture.getTextureObjectHandle(),
                     100, 100 * enemy.texture.getHeight() / enemy.texture.getWidth()
             )) {
-                Enemy newEnemy = level.addEnemy(
-                        enemy.type,
-                        mouseWorld.x, mouseWorld.y,
-                        new PatrolRegion(0, 0, 0, 0)
-                );
-                removeSelection();
-                selected = new EnemySelection(newEnemy);
-
-                newEnemy.setTint(SELECTED_COLOR);
+                //Enemy newEnemy = level.addEnemy(
+                //        enemy.type,
+                //        mouseWorld.x, mouseWorld.y,
+                //        new PatrolRegion(0, 0, 0, 0)
+                //);
+                //removeSelection();
+                //selected = new EnemySelection(newEnemy);
+                //
+                //newEnemy.setTint(SELECTED_COLOR);
             }
 
             if (ImGui.isItemHovered()) {
