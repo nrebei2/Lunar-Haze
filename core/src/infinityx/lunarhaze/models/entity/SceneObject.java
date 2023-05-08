@@ -14,10 +14,14 @@ import infinityx.util.Drawable;
  */
 public class SceneObject extends GameObject implements Drawable {
 
-    /** Name of object from json */
-    private String type;
+    /**
+     * Name of object from json
+     */
+    private final String type;
 
-    /** Whether the texture is flipped horizontally */
+    /**
+     * Whether the texture is flipped horizontally
+     */
     private boolean flipped;
 
     /**
@@ -54,6 +58,7 @@ public class SceneObject extends GameObject implements Drawable {
 
     /**
      * Call after {@link #initialize(AssetDirectory, JsonValue, LevelContainer)}.
+     *
      * @param flipped whether the texture should be flipped horizontally
      */
     public void setFlipped(boolean flipped) {
@@ -72,7 +77,10 @@ public class SceneObject extends GameObject implements Drawable {
 
     @Override
     public void draw(GameCanvas canvas) {
-        float recX = canvas.WorldToScreenX(getPosition().x) - origin.x * textureScale * scale;
+        // ugly but it is what it is
+        float recX = canvas.WorldToScreenX(getPosition().x)
+                - origin.x * (flipped ? -1 : 1) * textureScale * scale
+                - (flipped ? 1 : 0) * getTextureWidth();
         float recY = canvas.WorldToScreenY(getPosition().y) - origin.y * textureScale * scale;
         float width = getTextureWidth();
         float height = getTextureHeight();
