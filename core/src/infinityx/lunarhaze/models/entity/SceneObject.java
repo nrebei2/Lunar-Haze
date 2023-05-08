@@ -1,5 +1,6 @@
 package infinityx.lunarhaze.models.entity;
 
+import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.graphics.GameCanvas;
@@ -51,8 +52,18 @@ public class SceneObject extends GameObject implements Drawable {
         return type;
     }
 
+    /**
+     * Call after {@link #initialize(AssetDirectory, JsonValue, LevelContainer)}.
+     * @param flipped whether the texture should be flipped horizontally
+     */
     public void setFlipped(boolean flipped) {
+        if (this.flipped == flipped) return;
         this.flipped = flipped;
+
+        // Flip the collider offset
+        ShapeCache bodyInfo = getShapeInformation("body");
+        if (bodyInfo.shape.getType() == Shape.Type.Polygon && !bodyInfo.offset.isZero())
+            resizeBox("body", bodyInfo.width, bodyInfo.height, bodyInfo.offset.scl(-1, 1));
     }
 
     public boolean isFlipped() {

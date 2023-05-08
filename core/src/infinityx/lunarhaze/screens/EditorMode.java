@@ -1501,6 +1501,11 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                         ImGui.dragFloat("Scale", scale, 0.01f);
                         object.setScale(scale[0]);
 
+                        ImBoolean flip = new ImBoolean(object.isFlipped());
+                        if (ImGui.checkbox("Flip", flip)) {
+                           object.setFlipped(flip.get());
+                        }
+
                         // Remove button
                         if (ImGui.button("Remove")) {
                             removeSelection();
