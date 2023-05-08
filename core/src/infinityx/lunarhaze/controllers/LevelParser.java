@@ -13,6 +13,7 @@ import infinityx.lunarhaze.models.Board;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.Tile;
 import infinityx.lunarhaze.models.entity.Enemy;
+import infinityx.lunarhaze.models.entity.SceneObject;
 import infinityx.util.PatrolRegion;
 
 /**
@@ -116,16 +117,16 @@ public class LevelParser {
         // Generate scene objects
         if (scene.has("objects")) {
             JsonValue objects = scene.get("objects");
-            int objId = 0;
             for (JsonValue objInfo : objects) {
                 JsonValue objPos = objInfo.get("position");
                 float objScale = objInfo.getFloat("scale");
 
+                boolean flip = objInfo.has("flip") ? objInfo.getBoolean("flip") : false;
+
                 levelContainer.addSceneObject(
                         objInfo.getString("type"), objPos.getFloat(0),
-                        objPos.getFloat(1), objScale
+                        objPos.getFloat(1), objScale, flip
                 );
-                objId++;
             }
         }
 

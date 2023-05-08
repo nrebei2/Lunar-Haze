@@ -13,7 +13,11 @@ import infinityx.util.Drawable;
  */
 public class SceneObject extends GameObject implements Drawable {
 
+    /** Name of object from json */
     private String type;
+
+    /** Whether the texture is flipped horizontally */
+    private boolean flipped;
 
     /**
      * Initialize a scene object.
@@ -21,6 +25,7 @@ public class SceneObject extends GameObject implements Drawable {
     public SceneObject(float x, float y, String type) {
         super(x, y);
         this.type = type;
+        this.flipped = false;
     }
 
     /**
@@ -28,16 +33,6 @@ public class SceneObject extends GameObject implements Drawable {
      */
     public SceneObject(String type) {
         this(0, 0, type);
-    }
-
-    /**
-     * Initialize scene object given json.
-     *
-     * @param container LevelContainer which this player is placed in
-     */
-    public void initialize(AssetDirectory directory, JsonValue json, LevelContainer container) {
-        super.initialize(directory, json, container);
-        activatePhysics(container.getWorld());
     }
 
     /**
@@ -54,6 +49,14 @@ public class SceneObject extends GameObject implements Drawable {
 
     public String getSceneObjectType() {
         return type;
+    }
+
+    public void setFlipped(boolean flipped) {
+        this.flipped = flipped;
+    }
+
+    public boolean isFlipped() {
+        return flipped;
     }
 
     @Override
@@ -74,6 +77,8 @@ public class SceneObject extends GameObject implements Drawable {
         } else {
             tint.a = Math.min(1f, tint.a + 0.01f);
         }
-        super.draw(canvas);
+        canvas.draw(filmstrip, tint, origin.x, origin.y,
+                canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y), 0.0f,
+                (flipped ? -1 : 1) * textureScale * scale, textureScale * scale);
     }
 }

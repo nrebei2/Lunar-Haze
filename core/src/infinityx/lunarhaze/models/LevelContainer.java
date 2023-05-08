@@ -470,15 +470,18 @@ public class LevelContainer {
      * @param x     world x-position
      * @param y     world y-position
      * @param scale scale of object
+     * @param flipped {@link SceneObject#isFlipped()}
      * @return scene object added
      */
-    public SceneObject addSceneObject(String type, float x, float y, float scale) {
+    public SceneObject addSceneObject(String type, float x, float y, float scale, boolean flipped) {
         SceneObject object = new SceneObject(type);
         object.initialize(directory, objectJson.get(type), this);
+        object.activatePhysics(world);
 
         object.setPosition(x, y);
         object.setScale(scale);
         object.setName(type);
+        object.setFlipped(flipped);
 
         return addSceneObject(object);
     }

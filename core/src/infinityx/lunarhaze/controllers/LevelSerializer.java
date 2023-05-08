@@ -211,6 +211,7 @@ public class LevelSerializer {
      * {
      * "type": string,
      * "scale": float,
+     * "flip": boolean
      * "position": [int, int]
      * },
      * ...
@@ -260,6 +261,7 @@ public class LevelSerializer {
 
             currObj.addChild("type", new JsonValue(obj.getSceneObjectType()));
             currObj.addChild("scale", new JsonValue(obj.getScale()));
+            currObj.addChild("flip", new JsonValue(obj.isFlipped()));
 
             JsonValue objPos = new JsonValue(JsonValue.ValueType.array);
             objPos.addChild(new JsonValue(obj.getPosition().x));

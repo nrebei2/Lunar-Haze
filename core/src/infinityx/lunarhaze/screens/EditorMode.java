@@ -662,11 +662,11 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * Invariant: selected is a SceneObject
      */
     private SceneObject placeSceneObject() {
-        ObjectSelection curr = (ObjectSelection) selected;
+        SceneObject curr = ((ObjectSelection) selected).object;
         return level.addSceneObject(
-                curr.object.getName(),
+                curr.getName(),
                 mouseWorld.x, mouseWorld.y,
-                curr.object.getScale()
+                curr.getScale(), curr.isFlipped()
         );
     }
 
@@ -1318,6 +1318,13 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             removeSelection();
         }
 
+        if (keycode == Input.Keys.F) {
+            if (selected.getType() == Selected.Type.OBJECT) {
+                SceneObject obj = ((ObjectSelection) selected).object;
+                obj.setFlipped(!obj.isFlipped());
+            }
+        }
+
         if (!changed) {
             return true;
         }
@@ -1597,7 +1604,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
             if (ImGui.imageButton(obj.texture.getTextureObjectHandle(), width, height)) {
                 removeSelection();
-                SceneObject newObject = level.addSceneObject(obj.type, mouseWorld.x, mouseWorld.y, 1);
+                SceneObject newObject = level.addSceneObject(obj.type, mouseWorld.x, mouseWorld.y, 1, false);
                 selected = new ObjectSelection(newObject);
                 objectScale[0] = 1;
                 newObject.setTint(SELECTED_COLOR);
