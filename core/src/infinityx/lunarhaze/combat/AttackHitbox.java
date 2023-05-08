@@ -51,17 +51,6 @@ public class AttackHitbox extends GameObject {
         return ObjectType.HITBOX;
     }
 
-    @Override
-    public boolean activatePhysics(World world) {
-        super.activatePhysics(world);
-
-        // Enable better collision detection for fast-moving objects
-        setBullet(true);
-        // Make the hitbox a sensor, so it doesn't push around other objects
-        setSensor(true);
-        return true;
-    }
-
     /**
      * @return The current range (width) of this hitbox
      */

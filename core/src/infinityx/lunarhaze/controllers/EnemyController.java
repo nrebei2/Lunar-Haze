@@ -205,7 +205,7 @@ public class EnemyController extends AttackHandler {
                 if (canStartNewAttack()) {
                     Vector2 targetDir = target.getPosition().sub(enemy.getPosition()).nor();
                     for (int i = 0; i < map.getResolution(); i++) {
-                        map.interestMap[i] = Math.max(0, map.dirFromSlot(i).dot(targetDir));
+                        map.interestMap[i] += Math.max(0, map.dirFromSlot(i).dot(targetDir));
                     }
                 }
 
@@ -224,11 +224,11 @@ public class EnemyController extends AttackHandler {
                 for (int i = 0; i < map.getResolution(); i++) {
                     Vector2 dir = map.dirFromSlot(i);
                     // Ray extends two units
-                    rayCache.set(enemy.getPosition(), dir.scl(3).add(enemy.getPosition()));
+                    rayCache.set(enemy.getPosition(), dir.scl(1.5f).add(enemy.getPosition()));
                     //System.out.printf("Ray: (%s, %s)\n", rayCache.start, rayCache.end);
                     communicationCollision.findCollision(commCache, rayCache);
                     if (commRay.hit) {
-                        map.dangerMap[i] = commRay.fraction;
+                        map.dangerMap[i] += commRay.fraction;
                     }
                 }
 
@@ -243,7 +243,7 @@ public class EnemyController extends AttackHandler {
                 if (!canStartNewAttack() || enemy.getHealthPercentage() < 0.5) {
                     Vector2 evade_dir = enemy.getPosition().sub(target.getPosition()).nor();
                     for (int i = 0; i < map.getResolution(); i++) {
-                        map.interestMap[i] = Math.max(0, map.dirFromSlot(i).dot(evade_dir));
+                        map.interestMap[i] +=  Math.max(0, map.dirFromSlot(i).dot(evade_dir));
                     }
                 }
 
