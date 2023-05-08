@@ -206,10 +206,7 @@ public class GameCanvas {
         this.worldToScreen = worldToScreen;
 
         // We have the actual world to screen now
-        raycamera = new OrthographicCamera(
-                getWidth() / WorldToScreenX(1),
-                getHeight() / WorldToScreenY(1)
-        );
+        setupCameras();
     }
 
     /**
@@ -268,6 +265,7 @@ public class GameCanvas {
         worldToScreen = new Vector2();
         camera = new OrthographicCamera();
         uiCamera = new OrthographicCamera();
+        zoom = 1;
         resize();
 
         spriteBatch.setProjectionMatrix(camera.combined);
@@ -281,7 +279,6 @@ public class GameCanvas {
         local = new Affine2();
         global = new Matrix4();
         alphaCache = new Color(1, 1, 1, 1);
-        zoom = 1;
 
         this.layout = new GlyphLayout();
     }
@@ -298,18 +295,18 @@ public class GameCanvas {
         camera.translate(
                 (width - width / zoom) / 2, (height - height / zoom) / 2
         );
+        camera.update();
 
         // Different transform for light camera sadly
         // This one is alot easier to work with tho
         raycamera = new OrthographicCamera(
-                getWidth() / (WorldToScreenX(1) * zoom),
-                getHeight() / (WorldToScreenY(1) * zoom)
+                width / (WorldToScreenX(1) * zoom),
+                height / (WorldToScreenY(1) * zoom)
         );
 
         // ui camera should not be affected by zoom
         uiCamera.setToOrtho(false, width, height);
 
-        camera.update();
     }
 
     /**
@@ -495,14 +492,10 @@ public class GameCanvas {
      * weird scaling issues.
      */
     public void resize() {
-        // Resizing screws up the projection matrix
-        setupCameras();
-
-        // 1920x1080 standard
         float sx = ((float) getWidth()) / STANDARD_WIDTH;
         float sy = ((float) getHeight()) / STANDARD_HEIGHT;
         setZoom(sx < sy ? sy : sx);
-//        Gdx.gl.glViewport(0, 0, getWidth(), getHeight());
+        // Gdx.gl.glViewport(0, 0, getWidth(), getHeight());
     }
 
     /**

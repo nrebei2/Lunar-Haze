@@ -530,7 +530,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         }
 
         this.background = directory.getEntry("bkg_allocate", Texture.class);
-
         this.music = directory.getEntry("editorBackground", Music.class);
     }
 
@@ -928,7 +927,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     private void update(float delta) {
         if (level == null) return;
-        level.getWorld().step(delta, 6, 2);
         overlapped = false;
         sceneOverlap = false;
 
@@ -939,7 +937,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         if (selectedObject != null) {
             getAABB(selectedObject.getShapeInformation("body").fixture, lowerCache, upperCache);
             if (selectedObject.getType() == GameObject.ObjectType.SCENE) {
-                level.getWorld().QueryAABB(sceneCallback, lowerCache.x, lowerCache.y, upperCache.x, upperCache.y);
+                if (!selectedObject.isSensor())
+                    level.getWorld().QueryAABB(sceneCallback, lowerCache.x, lowerCache.y, upperCache.x, upperCache.y);
             } else {
                 level.getWorld().QueryAABB(queryCallback, lowerCache.x, lowerCache.y, upperCache.x, upperCache.y);
 
@@ -1085,8 +1084,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         objectScale = new float[]{1};
         showNewBoardWindow.set(level == null);
         if (board != null)
-
             showCannotSaveError = false;
+
         showEnemyControllerWindow.set(false);
         showBattleLighting = false;
         showSaveLevelPopup = false;
@@ -1602,7 +1601,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 selected = new ObjectSelection(newObject);
                 objectScale[0] = 1;
                 newObject.setTint(SELECTED_COLOR);
-                newObject.setSensor(true);
             }
 
             rowWidth += totalButtonWidth;
@@ -2163,7 +2161,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             playerPlaced = false;
 
             level.getPlayer().setTint(SELECTED_COLOR);
-            level.getPlayer().setSensor(true);
         }
 
         if (ImGui.isItemHovered()) {
@@ -2187,7 +2184,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 selected = new EnemySelection(newEnemy);
 
                 newEnemy.setTint(SELECTED_COLOR);
-                newEnemy.setSensor(true);
             }
 
             if (ImGui.isItemHovered()) {

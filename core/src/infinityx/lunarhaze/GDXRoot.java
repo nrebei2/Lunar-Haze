@@ -191,7 +191,6 @@ public class GDXRoot extends Game implements ScreenObserver {
 
             LevelParser ps = LevelParser.LevelParser();
             ps.loadConstants(directory, canvas);
-
             loading.dispose();
             loading = null;
         } else if (screen == menu) {
@@ -199,6 +198,7 @@ public class GDXRoot extends Game implements ScreenObserver {
             switch (exitCode) {
                 case MenuMode.GO_EDITOR:
                     setScreen(editor);
+
                     break;
                 case MenuMode.GO_PLAY:
                     setScreen(selection);

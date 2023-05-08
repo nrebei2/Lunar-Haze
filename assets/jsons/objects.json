@@ -367,13 +367,13 @@
     "texture": {
       "name": "static",
       "origin": [1300, 200],
-      "scale": 0.25
+      "scale": 0.12
     },
     "colliders": {
       "body": {
         "type": "box",
         "width": 0.5,
-        "height": 0.5
+        "height": 0.1
       }
     },
     "sensor": false
@@ -386,13 +386,13 @@
     "texture": {
       "name": "static",
       "origin": [1220, 192],
-      "scale": 0.1
+      "scale": 0.12
     },
     "colliders": {
       "body": {
         "type": "box",
         "width": 0.5,
-        "height": 0.5
+        "height": 0.1
       }
     },
     "sensor": false
