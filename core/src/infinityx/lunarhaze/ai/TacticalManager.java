@@ -76,25 +76,29 @@ public class TacticalManager implements Telegraph {
 //            if (rand.nextFloat() <= 0.3f){
 //                control.getEnemy().updateStrafeDistance();
 //            }
-//            if (rand.nextFloat() <= 0.1f) {
-//                // Calculate angle step for evenly distributing the enemies around the target
-//                float angleStep = 360.0f / enemies.size;
-//
-//                // Calculate the angle for this enemy
-//                float enemyAngle = angleStep * i;
-//
-//                // Calculate a flanking position relative to the target
-//                Vector2 flankingPosition = target.getPosition().cpy().add(rotateDegreeX(enemyAngle, 1, 0), rotateDegreeY(enemyAngle, 1, 0));
-//                if (container.pathfinder.map.getNodeAtWorld(flankingPosition.x, flankingPosition.y) == null) {
-//                    continue;
-//                }
-//                MessageManager.getInstance().dispatchMessage(null, enemy, FLANK, flankingPosition);
-//
-//            }
             //if behind enemy go attack
-            if (isBehind(control.getEnemy(), target) && rand.nextFloat() <= 0.4f) {
+            if (control.isBehind(control.getEnemy(), target) && control.canStartNewAttack()) {
                 Vector2 flankingPosition = target.getPosition().cpy();
                 MessageManager.getInstance().dispatchMessage(null, enemy, FLANK, flankingPosition);
+            }
+            else{
+                //attacking from front
+                if (rand.nextFloat() <= 0.1f && control.canStartNewAttack()) {
+                    System.out.println("can attack from front");
+                    // Calculate angle step for evenly distributing the enemies around the target
+                    float angleStep = 360.0f / enemies.size;
+
+                    // Calculate the angle for this enemy
+                    float enemyAngle = angleStep * i;
+
+                    // Calculate a flanking position relative to the target
+                    Vector2 flankingPosition = target.getPosition().cpy().add(rotateDegreeX(enemyAngle, 1, 0), rotateDegreeY(enemyAngle, 1, 0));
+                    if (container.pathfinder.map.getNodeAtWorld(flankingPosition.x, flankingPosition.y) == null) {
+                        continue;
+                    }
+                    MessageManager.getInstance().dispatchMessage(null, enemy, FLANK, flankingPosition);
+
+                }
             }
 
             i++;
@@ -162,16 +166,6 @@ public class TacticalManager implements Telegraph {
 
         return x * sin + y * cos;
 
-    }
-
-    /**
-     * helper method for determining if an enemy is behind the player (greater than 90 degrees)
-     */
-    public boolean isBehind(Enemy enemy, Werewolf target) {
-        Vector2 target_to_enemy = enemy.getPosition().sub(target.getPosition()).nor();
-        double dot = target_to_enemy.x * Math.cos(target.getOrientation()) + target_to_enemy.y * Math.sin(target.getOrientation());
-
-        return dot < 0;
     }
 
     public static int ADD = 100;
