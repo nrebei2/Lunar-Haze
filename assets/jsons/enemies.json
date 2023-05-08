@@ -61,7 +61,7 @@
     "friction": 0.0,
     "restitution": 1.0,
     "damping": 0.0,
-    "health": 3,
+    "health": 8,
     "attack": {
       "knockback": 0.3,
       "damage": 0.5,
@@ -70,8 +70,8 @@
       "immunity": 0.5,
       "lockout": 0.8,
       "hitbox": {
-        "range": 1,
-        "width": 1,
+        "range": 1.75,
+        "width": 1.25,
         "textures": {
           "hitbox": {
             "name" : "werewolf.attack-effect",
@@ -81,7 +81,7 @@
         "texture": {
           "name": "hitbox",
           "origin": [280, 440],
-          "scale": 0.25
+          "scale": 0.5
         },
         "bullet": true,
         "sensor": true

@@ -23,7 +23,7 @@ public class PlayerAttackHandler extends AttackHandler {
     private float dashTimer;
     private Vector2 dashDirection;
     private boolean isDashing;
-    public static final float DASH_COOLDOWN = 3.0f;
+    public static final float DASH_COOLDOWN = 5.0f;
     private float dashCooldownCounter;
 
     private boolean heavyAttacking;
@@ -92,7 +92,7 @@ public class PlayerAttackHandler extends AttackHandler {
         if (isDashing) {
             processDash(dashDirection);
         }
-        if (dashCooldownCounter < DASH_COOLDOWN) {
+        if (dashCooldownCounter < (phase == GameplayController.Phase.BATTLE ? DASH_COOLDOWN : DASH_COOLDOWN * 2)) {
             dashCooldownCounter += delta;
         }
         // Initiate dash based on input
@@ -157,7 +157,7 @@ public class PlayerAttackHandler extends AttackHandler {
     }
 
     private void processDash(Vector2 direction) {
-        entity.getBody().applyLinearImpulse(direction.x * 0.2f, direction.y * 0.2f, entity.getX(), entity.getY(), true);
+        entity.getBody().applyLinearImpulse(direction.x * 0.3f, direction.y * 0.3f, entity.getX(), entity.getY(), true);
         dashTimer += Gdx.graphics.getDeltaTime();
         if (dashTimer >= DASH_TIME) {
             endDash();

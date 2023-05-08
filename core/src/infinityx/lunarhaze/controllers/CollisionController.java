@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import infinityx.lunarhaze.combat.AttackHitbox;
 import infinityx.lunarhaze.graphics.CameraShake;
-import infinityx.lunarhaze.graphics.ScreenFlash;
+import infinityx.lunarhaze.graphics.ModelFlash;
 import infinityx.lunarhaze.models.AttackingGameObject;
 import infinityx.lunarhaze.models.GameObject;
 import infinityx.lunarhaze.models.entity.Enemy;
@@ -115,10 +115,11 @@ public class CollisionController implements ContactListener {
             attacked.hp -= attacker.attackDamage;
             if (attacked.hp < 0) attacked.hp = 0;
 
-            CameraShake.shake(attacker.attackKnockback * 3f, 0.3f);
+            CameraShake.shake(attacker.attackKnockback * 4f, 0.3f);
             if (attacked.getType() == GameObject.ObjectType.WEREWOLF) {
                 attacked.setAttacked();
-                ScreenFlash.flash(new Color(1f, 0.2f, 0.2f, 1), 0.15f, 0.05f, 0.05f, 0.15f);
+                // This class now flashes the werewolf only
+                ModelFlash.flash(new Color(1f, 0f, 0f, 1), 0.7f, 0.2f, 0.2f, 1f);
             }
         }
     }
