@@ -133,6 +133,11 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
         }
         // Otherwise just use defaults, static bodies don't move anyway
 
+        if (json.hasChild("bullet"))
+            setBullet(json.getBoolean("bullet"));
+        if (json.hasChild("sensor"))
+            setSensor(json.getBoolean("sensor"));
+
         // Texture info
         JsonValue textures = json.get("textures");
         if (textures != null) {

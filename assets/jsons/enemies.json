@@ -82,7 +82,9 @@
           "name": "hitbox",
           "origin": [280, 440],
           "scale": 0.25
-        }
+        },
+        "bullet": true,
+        "sensor": true
       }
     }
   },

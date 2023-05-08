@@ -130,6 +130,8 @@
     "tree9":  "images/objects/Tree_b_6.png",
     "tree10":  "images/objects/Tree_b_7.png",
     "tree11":  "images/objects/Tree_b_8.png",
+    "tallgrass-1": "images/objects/tallgrass-1.png",
+    "tallgrass-2": "images/objects/tallgrass-2.png",
 
     "dust": "images/dust.png",
     "werewolf": {

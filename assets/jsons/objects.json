@@ -358,5 +358,43 @@
         "radius": 0.3
       }
     }
+  },
+
+  "tallgrass-1": {
+    "textures": {
+      "static": "tallgrass-1"
+    },
+    "texture": {
+      "name": "static",
+      "origin": [1300, 200],
+      "scale": 0.25
+    },
+    "colliders": {
+      "body": {
+        "type": "box",
+        "width": 0.5,
+        "height": 0.5
+      }
+    },
+    "sensor": false
+  },
+
+  "tallgrass-2": {
+    "textures": {
+      "static": "tallgrass-2"
+    },
+    "texture": {
+      "name": "static",
+      "origin": [1220, 192],
+      "scale": 0.1
+    },
+    "colliders": {
+      "body": {
+        "type": "box",
+        "width": 0.5,
+        "height": 0.5
+      }
+    },
+    "sensor": false
   }
 }
