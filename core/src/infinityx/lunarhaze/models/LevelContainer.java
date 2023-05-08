@@ -483,6 +483,12 @@ public class LevelContainer {
         object.setName(type);
         object.setFlipped(flipped);
 
+        if (type == "lamp"){
+            int screenX = board.worldToBoardX(x);
+            int screenY = board.worldToBoardY(y);
+            board.setLit(screenX, screenY, true);
+        }
+
         return addSceneObject(object);
     }
 

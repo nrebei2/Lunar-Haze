@@ -495,6 +495,7 @@ public class GameCanvas {
         float sx = ((float) getWidth()) / STANDARD_WIDTH;
         float sy = ((float) getHeight()) / STANDARD_HEIGHT;
         setZoom(sx < sy ? sy : sx);
+//        setZoom(1);
         // Gdx.gl.glViewport(0, 0, getWidth(), getHeight());
     }
 

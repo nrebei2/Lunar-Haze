@@ -845,7 +845,7 @@
 				"scale": 1.0,
 				"flip": false,
 				"position": [ 2.7751173973083496, 14.27270793914795 ]
-			}
+			},
 		]
 	}
 },
@@ -1444,7 +1444,7 @@
 "2": {
 	"settings": {
 		"transition": 4,
-		"phaseLength": 3,
+		"phaseLength": 30,
 		"enemy-spawner": {
 			"count": 3,
 			"add-tick": [ 0.0, 4.820000171661377 ],
