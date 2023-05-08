@@ -134,7 +134,7 @@ public enum PlayerState implements State<PlayerController> {
         @Override
         public void enter(PlayerController entity) {
             entity.getAttackSound().play(0.8f);
-            setTexture(entity, "attack");
+            setTexture(entity, entity.getAttackHandler().useRightHand() ? "attack1" : "attack2");
         }
 
         @Override
