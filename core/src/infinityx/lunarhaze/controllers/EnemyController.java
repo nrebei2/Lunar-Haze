@@ -24,6 +24,7 @@ import infinityx.lunarhaze.models.entity.Enemy;
 import infinityx.lunarhaze.models.entity.Werewolf;
 import infinityx.lunarhaze.physics.Box2DRaycastCollision;
 import infinityx.lunarhaze.physics.RaycastInfo;
+import infinityx.util.PatrolPath;
 import infinityx.util.PatrolRegion;
 import infinityx.util.astar.AStarPathFinding;
 
@@ -385,14 +386,11 @@ public class EnemyController extends AttackHandler {
     }
 
     /**
-     * @return Random point in patrol area
+     * @return A next way point to move to in patrol path
      */
     public Vector2 getPatrolTarget() {
-        PatrolRegion region = enemy.getPatrolPath();
-        return patrolTarget.set(
-                MathUtils.random(region.getBottomLeft()[0], region.getTopRight()[0]),
-                MathUtils.random(region.getBottomLeft()[1], region.getTopRight()[1])
-        );
+        PatrolPath path = enemy.getPatrolPath();
+        return patrolTarget.set(path.getNextPatrol());
     }
 
     /**

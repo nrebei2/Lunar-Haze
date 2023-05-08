@@ -313,7 +313,16 @@ public enum EnemyState implements State<EnemyController> {
 
             // Check if have arrived to patrol position
             float dist = entity.getEnemy().getPosition().dst(entity.targetPos);
-            if (dist <= 0.2f) entity.getStateMachine().changeState(LOOK_AROUND);
+            if (dist <= 0.2f) {
+                if (entity.getEnemy().rand.nextFloat() <= 0.5f) {
+                    entity.getStateMachine().changeState(LOOK_AROUND);
+                }
+                else{
+                    Vector2 patrol = entity.getPatrolTarget();
+                    entity.targetPos.set(patrol);
+                    entity.updatePath();
+                }
+            }
 
             switch (entity.getDetection()) {
                 case NOTICED:

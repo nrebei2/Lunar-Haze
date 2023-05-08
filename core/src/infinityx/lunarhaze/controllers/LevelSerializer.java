@@ -239,18 +239,18 @@ public class LevelSerializer {
             pos.addChild(new JsonValue(e.getPosition().y));
             currEnemy.addChild("position", pos);
 
-            JsonValue patrol = new JsonValue(JsonValue.ValueType.array);
-            // Bottom left
-            for (float patrolPos : e.getPatrolPath().getBottomLeft()) {
-                patrol.addChild(new JsonValue(patrolPos));
-            }
-            // Top right
-            for (float patrolPos : e.getPatrolPath().getTopRight()) {
-                patrol.addChild(new JsonValue(patrolPos));
-            }
+//            JsonValue patrol = new JsonValue(JsonValue.ValueType.array);
+//            // Bottom left
+//            for (float patrolPos : e.getPatrolPath().getBottomLeft()) {
+//                patrol.addChild(new JsonValue(patrolPos));
+//            }
+//            // Top right
+//            for (float patrolPos : e.getPatrolPath().getTopRight()) {
+//                patrol.addChild(new JsonValue(patrolPos));
+//            }
 
-            currEnemy.addChild("patrol", patrol);
-            enemy.addChild(currEnemy);
+//            currEnemy.addChild("patrol", patrol);
+//            enemy.addChild(currEnemy);
         }
         scene.addChild("enemies", enemy);
 
