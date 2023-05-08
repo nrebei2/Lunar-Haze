@@ -5,6 +5,7 @@ import com.badlogic.gdx.ai.fsm.StateMachine;
 import com.badlogic.gdx.ai.steer.behaviors.Face;
 import com.badlogic.gdx.ai.steer.behaviors.FollowPath;
 import com.badlogic.gdx.ai.steer.utils.Path;
+import com.badlogic.gdx.ai.steer.utils.RayConfiguration;
 import com.badlogic.gdx.ai.steer.utils.paths.LinePath;
 import com.badlogic.gdx.ai.utils.Collision;
 import com.badlogic.gdx.ai.utils.Ray;
@@ -48,6 +49,17 @@ public class EnemyController extends AttackHandler {
     private final RaycastInfo commRay;
 
     /**
+     * raycast for path selection
+     */
+    public final RaycastInfo pathRay;
+
+    /**
+     * Collision detector for path detection
+     */
+    public Box2DRaycastCollision pathCollision;
+
+
+    /**
      * Collision detector for enemy communication
      */
     public Box2DRaycastCollision communicationCollision;
@@ -61,6 +73,12 @@ public class EnemyController extends AttackHandler {
      * Cache for collision output from raycastCollision
      */
     Collision<Vector2> collisionCache = new Collision<>(new Vector2(), new Vector2());
+
+    /**
+     * Cache for collision output from pathCollision
+     */
+    public Collision<Vector2> pathCache= new Collision<>(new Vector2(), new Vector2());
+
 
     /**
      * Pathfinder reference from level container
@@ -142,6 +160,10 @@ public class EnemyController extends AttackHandler {
 
     public ContextBehavior evade;
 
+    Ray<Vector2> rayCache = new Ray<>(new Vector2(), new Vector2());
+
+    public int attackCoolDown = 0;
+
     public Sound getAlertSound() {
         return alert_sound;
     }
@@ -168,7 +190,10 @@ public class EnemyController extends AttackHandler {
         raycast.addIgnores(GameObject.ObjectType.ENEMY, GameObject.ObjectType.HITBOX);
 
         this.commRay = new RaycastInfo(enemy);
-        commRay.addIgnores(GameObject.ObjectType.WEREWOLF);
+        commRay.addIgnores(GameObject.ObjectType.WEREWOLF, GameObject.ObjectType.HITBOX);
+
+        this.pathRay = new RaycastInfo(enemy);
+        pathRay.addIgnores(GameObject.ObjectType.WEREWOLF, GameObject.ObjectType.ENEMY, GameObject.ObjectType.HITBOX);
 
         this.flank_pos = new Vector2();
 
@@ -183,6 +208,7 @@ public class EnemyController extends AttackHandler {
         target = container.getPlayer();
         this.raycastCollision = new Box2DRaycastCollision(container.getWorld(), raycast);
         this.communicationCollision = new Box2DRaycastCollision(container.getWorld(), commRay);
+        this.pathCollision = new Box2DRaycastCollision(container.getWorld(), pathRay);
         this.pathfinder = container.pathfinder;
 
         // Steering behaviors
@@ -205,8 +231,9 @@ public class EnemyController extends AttackHandler {
                 if (canStartNewAttack()) {
                     Vector2 targetDir = target.getPosition().sub(enemy.getPosition()).nor();
                     for (int i = 0; i < map.getResolution(); i++) {
-                        map.interestMap[i] += Math.max(0, map.dirFromSlot(i).dot(targetDir));
+                        map.interestMap[i] = Math.max(0, map.dirFromSlot(i).dot(targetDir));
                     }
+                    attackCoolDown = 0;
                 }
 
                 return map;
@@ -216,7 +243,6 @@ public class EnemyController extends AttackHandler {
         strafe = new Strafe(enemy, target, Strafe.Rotation.COUNTERCLOCKWISE);
 
         separation = new ContextBehavior(enemy, true) {
-            Ray<Vector2> rayCache = new Ray<>(new Vector2(), new Vector2());
 
             @Override
             protected ContextMap calculateRealMaps(ContextMap map) {
@@ -228,7 +254,7 @@ public class EnemyController extends AttackHandler {
                     //System.out.printf("Ray: (%s, %s)\n", rayCache.start, rayCache.end);
                     communicationCollision.findCollision(commCache, rayCache);
                     if (commRay.hit) {
-                        map.dangerMap[i] += commRay.fraction;
+                        map.dangerMap[i] = commRay.fraction;
                     }
                 }
 
@@ -241,22 +267,22 @@ public class EnemyController extends AttackHandler {
             protected ContextMap calculateRealMaps(ContextMap map) {
                 map.setZero();
                 if (!canStartNewAttack() || enemy.getHealthPercentage() < 0.5) {
-                    Vector2 evade_dir = enemy.getPosition().sub(target.getPosition()).nor();
+                    Vector2 evade_dir = enemy.getPosition().sub(target.getPosition());
                     for (int i = 0; i < map.getResolution(); i++) {
-                        map.interestMap[i] +=  Math.max(0, map.dirFromSlot(i).dot(evade_dir));
+                        map.interestMap[i] = 1/evade_dir.len() * Math.max(0, map.dirFromSlot(i).dot(evade_dir.nor()));
                     }
                 }
 
                 return map;
             }
         };
-        this.combinedContext.add(attack);
+//        this.combinedContext.add(attack);
         this.combinedContext.add(strafe);
         this.combinedContext.add(separation);
         this.combinedContext.add(evade);
 
         //Resolution is set to 8 to represent the 8 directions in which enemies can move
-        this.battleSB = new ContextSteering(enemy, combinedContext, 72);
+        this.battleSB = new ContextSteering(enemy, combinedContext, 40);
     }
 
     /**
@@ -428,5 +454,15 @@ public class EnemyController extends AttackHandler {
 
     public Werewolf getTarget() {
         return target;
+    }
+
+    /**
+     * helper method for determining if an enemy is behind the player (greater than 90 degrees)
+     */
+    public boolean isBehind(Enemy enemy, Werewolf target) {
+        Vector2 target_to_enemy = enemy.getPosition().sub(target.getPosition()).nor();
+        double dot = target_to_enemy.x * Math.cos(target.getOrientation()) + target_to_enemy.y * Math.sin(target.getOrientation());
+
+        return dot < 0;
     }
 }

@@ -222,17 +222,12 @@ public enum EnemyState implements State<EnemyController> {
                 if (enemyToTarget.len() <= entity.getEnemy().getAttackRange() && entity.canStartNewAttack()) {
                     entity.getStateMachine().changeState(ATTACK);
                 }
-                // Switch to battle behavior when close enough
-                else if (enemyToTarget.len() <= entity.getEnemy().getStrafeDistance()) {
-                    // Always face towards target
-                    entity.getEnemy().setIndependentFacing(true);
-                    entity.getEnemy().setOrientation(AngleUtils.vectorToAngle(enemyToTarget));
-                    entity.getEnemy().setSteeringBehavior(entity.battleSB);
-                    entity.getEnemy().setMaxLinearSpeed(0.6f);
-                } else {
-                    // go back to chase (follow path)
-                    entity.getEnemy().setMaxLinearSpeed(1.11f);
-                    entity.getEnemy().setIndependentFacing(false);
+                entity.rayCache.set(entity.getEnemy().getPosition(), entity.getTarget().getPosition());
+                entity.pathCollision.findCollision(entity.pathCache, entity.rayCache);
+                // use Astar to target if there is obstacle in the way or farther than straafe distance from target
+                if (entity.pathRay.hit || enemyToTarget.len() > entity.getEnemy().getStrafeDistance()) {
+                    System.out.println("Astar");
+//                    entity.getEnemy().setMaxLinearSpeed(1.11f);
                     entity.targetPos.set(entity.getTarget().getPosition());
                     entity.getEnemy().setSteeringBehavior(entity.followPathSB);
                     // Update path every 0.1 seconds
@@ -240,6 +235,15 @@ public enum EnemyState implements State<EnemyController> {
                         entity.updatePath();
                         entity.time = 0;
                     }
+                }
+                else {
+                    System.out.println("inbattle");
+                    //go to battle mode
+                    // Always face towards target
+                    entity.getEnemy().setIndependentFacing(true);
+                    entity.getEnemy().setOrientation(AngleUtils.vectorToAngle(enemyToTarget));
+                    entity.getEnemy().setSteeringBehavior(entity.battleSB);
+                    entity.getEnemy().setMaxLinearSpeed(0.6f);
                 }
             }
 

@@ -65,7 +65,7 @@ public class Strafe extends ContextBehavior {
         targetDir.rotate90(rotation.ordinal() - 1);
 
         for (int i = 0; i < map.getResolution(); i++) {
-            map.interestMap[i] += Math.max(0, map.dirFromSlot(i).dot(targetDir));
+            map.interestMap[i] = Math.max(0, map.dirFromSlot(i).dot(targetDir));
         }
         return map;
     }
