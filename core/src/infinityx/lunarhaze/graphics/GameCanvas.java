@@ -310,13 +310,14 @@ public class GameCanvas {
         uiCamera.setToOrtho(false, width, height);
 
         camera.update();
-        updateCameraBounds();
     }
 
     /**
      * Updates the camera bounds based on the current zoom factor, width, and height.
+     *
+     * @param zoom the zoom factor to consider
      */
-    private void updateCameraBounds() {
+    private void updateCameraBounds(float zoom) {
         camWidth = getWidth() / zoom;
         camHeight = getHeight() / zoom;
         camX = (getWidth() - camWidth) / 2;
@@ -582,6 +583,7 @@ public class GameCanvas {
         global.idt();
         global.translate(tx, ty, 0.0f);
 
+        updateCameraBounds(zoom);
         // Consider the view translation for the camera bounds
         camX -= tx;
         camY -= ty;
@@ -625,6 +627,8 @@ public class GameCanvas {
             return;
         }
 
+        updateCameraBounds(zoom);
+
         switch (pass) {
             case SPRITE:
                 spriteBatch.setProjectionMatrix(camera.combined);
@@ -653,6 +657,9 @@ public class GameCanvas {
             Gdx.app.error("GameCanvas", "What do you mean by that?", new IllegalStateException());
             return;
         }
+
+        // Do not zoom in for UI
+        updateCameraBounds(1);
 
         switch (pass) {
             case SPRITE:
@@ -689,9 +696,6 @@ public class GameCanvas {
                 break;
         }
         active = DrawPass.INACTIVE;
-
-        // reset in case of previous view translation
-        updateCameraBounds();
     }
 
     /**
