@@ -48,10 +48,6 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
      */
     private PointLight spotLight;
 
-    private boolean drawCooldownBar;
-
-    private float cooldownPercent;
-
     /**
      * Whether the werewolf is in sprint
      */
@@ -115,28 +111,6 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
      */
     public void setStealth(float value) {
         stealth = value;
-    }
-
-    /**
-     * Sets the cooldown bar to be drawn or not
-     */
-    public void setDrawCooldownBar(boolean b, float percentage) {
-        drawCooldownBar = b;
-        cooldownPercent = percentage;
-    }
-
-    /**
-     * @return whether the cooldown bar should be drawn
-     */
-    public boolean drawCooldownBar() {
-        return drawCooldownBar;
-    }
-
-    /**
-     * @return the percentage of the cooldown bar
-     */
-    public float getCooldownPercent() {
-        return cooldownPercent;
     }
 
     /**
@@ -225,7 +199,7 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
         JsonValue speedInfo = json.get("speed");
         walkSpeed = speedInfo.getFloat("walk");
         windupSpeed = walkSpeed / 3f;
-
+        setFixedRotation(true);
 
         PointLight spotLight = new PointLight(
                 container.getRayHandler(), rays, Color.WHITE, dist,
@@ -236,8 +210,6 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
         activatePhysics(container.getWorld());
         setSpotLight(spotLight);
 
-        body.setFixedRotation(true);
-        body.setBullet(true);
     }
 
 

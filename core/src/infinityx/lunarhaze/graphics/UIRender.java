@@ -423,12 +423,6 @@ public class UIRender {
                     );
                     canvas.end();
                 }
-                if (level.getPlayer().drawCooldownBar()) {
-                    canvas.begin(GameCanvas.DrawPass.SHAPE, level.getView().x, level.getView().y);
-                    canvas.drawAttackCooldownBar(10f, 60f, 65f, level.getPlayer());
-                    canvas.end();
-                }
-
 
                 canvas.begin(GameCanvas.DrawPass.SPRITE, level.getView().x, level.getView().y);
                 canvas.drawPlayerAttackRange(ellipse, level.getPlayer(), level);

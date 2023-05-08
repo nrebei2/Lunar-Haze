@@ -17,6 +17,7 @@
   "friction": 0.0,
   "restitution": 0.0,
   "damping": 6.0,
+  "bullet": true,
   "speed": {
     "walk": 1.8,
     "run": 2

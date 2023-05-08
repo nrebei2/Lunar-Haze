@@ -551,13 +551,7 @@ public class LevelContainer {
         // Flush information to the graphic buffer.
         canvas.end();
 
-        // A separate transform for lights :(
-        // In an ideal world they would be the same, but lights should be scaled while textures shouldn't
-        // Mimic same view transform
-        canvas.begin(GameCanvas.DrawPass.LIGHT,
-                (view.x - canvas.getWidth() / 2) / canvas.WorldToScreenX(1),
-                (view.y - canvas.getHeight() / 2) / canvas.WorldToScreenY(1)
-        );
+        canvas.begin(GameCanvas.DrawPass.LIGHT, view.x, view.y);
         canvas.drawLights(rayHandler);
         canvas.end();
 
@@ -575,6 +569,7 @@ public class LevelContainer {
             canvas.begin(GameCanvas.DrawPass.SHAPE, view.x, view.y);
             for (Enemy e : activeEnemies) {
                 getEnemyControllers().get(e).drawGizmo(canvas);
+                getEnemyControllers().get(e).drawDetection(canvas);
             }
             canvas.end();
 
