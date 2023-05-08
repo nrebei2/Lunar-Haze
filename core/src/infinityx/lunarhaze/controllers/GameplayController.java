@@ -121,6 +121,11 @@ public class GameplayController {
      */
     private Sound win_sound;
 
+    /**
+     * Sound of losing a level
+     */
+    private Sound fail_sound;
+
     private GameSetting setting;
 
 
@@ -190,6 +195,7 @@ public class GameplayController {
         battleTicks = 0;
 
         win_sound = levelContainer.getDirectory().getEntry("level-passed", Sound.class);
+        fail_sound = levelContainer.getDirectory().getEntry("level-fail", Sound.class);
         tacticalManager = new TacticalManager(container);
     }
 
@@ -234,7 +240,12 @@ public class GameplayController {
                     }
                     break;
             }
-            if (player.hp <= 0) gameState = GameState.OVER;
+            if (player.hp <= 0){
+                gameState = GameState.OVER;
+                if (setting.isSoundEnabled()) {
+                    fail_sound.play();
+                }
+            }
         }
         // Enemies should still update even when game is outside play
         if (!(phase == Phase.TRANSITION || phase == Phase.ALLOCATE)) {

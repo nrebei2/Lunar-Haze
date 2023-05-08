@@ -23,21 +23,37 @@
     "run": 2
   },
   "textures": {
-    "attack-l": {
-      "name" : "werewolf.attack-l",
-      "durations" : [0.12, 0.12, 0.12, 0.12, 0.12, 0.12]
+    "attack1-l": {
+      "name" : "werewolf.attack1-l",
+      "durations" : [0.02, 0.12, 0.36]
     },
-    "attack-r": {
-      "name" : "werewolf.attack-r",
-      "durations" : [0.12, 0.12, 0.12, 0.12, 0.12, 0.12]
+    "attack2-l": {
+      "name" : "werewolf.attack2-l",
+      "durations" : [0.02, 0.12, 0.36]
     },
-    "attack-f": {
-      "name" : "werewolf.attack-f",
-      "durations" : [0.12, 0.12, 0.12, 0.12, 0.12, 0.12]
+    "attack1-r": {
+      "name" : "werewolf.attack1-r",
+      "durations" : [0.02, 0.12, 0.36]
     },
-    "attack-b": {
-      "name" : "werewolf.attack-b",
-      "durations" : [0.12, 0.12, 0.12, 0.12, 0.12, 0.12]
+    "attack2-r": {
+      "name" : "werewolf.attack2-r",
+      "durations" : [0.02, 0.12, 0.36]
+    },
+    "attack1-b": {
+      "name" : "werewolf.attack1-b",
+      "durations" : [0.02, 0.12, 0.36]
+    },
+    "attack2-b": {
+      "name" : "werewolf.attack2-b",
+      "durations" : [0.02, 0.12, 0.36]
+    },
+    "attack1-f": {
+      "name" : "werewolf.attack1-f",
+      "durations" : [0.02, 0.12, 0.36]
+    },
+    "attack2-f": {
+      "name" : "werewolf.attack2-f",
+      "durations" : [0.02, 0.12, 0.36]
     },
     "heavyattack-l": {
       "name" : "werewolf.heavyattack-l",
@@ -98,7 +114,7 @@
     "immunity": 0.5,
     "lockout": 0.5,
     "hitbox": {
-      "range": 1,
+      "range": 1.5,
       "width": 1.25,
       "textures": {
         "hitbox": {

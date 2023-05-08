@@ -23,13 +23,16 @@ public class PlayerAttackHandler extends AttackHandler {
     private float dashTimer;
     private Vector2 dashDirection;
     private boolean isDashing;
-    public static final float DASH_COOLDOWN = 5.0f;
+    public static float DASH_COOLDOWN = 5.0f;
+    public static final float DASH_REDUCE_AMOUNT = 0.5f;
     private float dashCooldownCounter;
 
     private boolean heavyAttacking;
     private boolean windingUpHeavyAttack;
     private float heavyAttackWindupTimer;
     private static final float HEAVY_ATTACK_WINDUP_TIME = 0.5f;
+
+    private boolean useRightHand;
 
     private StateMachine<PlayerController, PlayerState> stateMachine;
 
@@ -45,6 +48,7 @@ public class PlayerAttackHandler extends AttackHandler {
         heavyAttacking = false;
         windingUpHeavyAttack = false;
         heavyAttackWindupTimer = 0;
+        useRightHand = false;
     }
 
     public float getDashCooldownCounter() {
@@ -140,6 +144,9 @@ public class PlayerAttackHandler extends AttackHandler {
             player.setHeavyLockedOut();
 
             heavyAttacking = false;
+        } else {
+            // If light attacking toggle hand
+            useRightHand = !useRightHand;
         }
     }
 
@@ -175,5 +182,9 @@ public class PlayerAttackHandler extends AttackHandler {
 
     public boolean isWindingUpHeavyAttack() {
         return windingUpHeavyAttack;
+    }
+
+    public boolean useRightHand() {
+        return useRightHand;
     }
 }
