@@ -118,10 +118,6 @@ public class AttackHitbox extends GameObject {
                 canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y), getAngle() + MathUtils.PI / 2,
                 textureScale * scale, textureScale * scale);
     }
-
-    public AttackHitbox getAttackHitbox() {
-        return this;
-    }
     /**
      * Adjusts hitbox based on {@link #} transform
      */

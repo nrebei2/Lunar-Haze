@@ -244,6 +244,10 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
 //
 //    }
 
+    public AttackHitbox getAttackHitbox(){
+        return this.attackHitbox;
+    }
+
 
 
 

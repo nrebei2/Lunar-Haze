@@ -113,11 +113,11 @@ public class PlayerAttackHandler extends AttackHandler {
     @Override
     public void processAttack(float delta) {
         attackCounter += delta;
-        ((Werewolf)entity).attackHitbox.updateHitboxPosition();
+        ((Werewolf)entity).getAttackHitbox().updateHitboxPosition();
         if (attackCounter >= entity.attackLength) {
             endAttack();
         }
-        ((Werewolf)entity).attackHitbox.update(delta);
+        ((Werewolf)entity).getAttackHitbox().update(delta);
     }
 
     public void initiateAttack() {
@@ -138,7 +138,7 @@ public class PlayerAttackHandler extends AttackHandler {
         Werewolf player = (Werewolf) entity;
         player.attackDamage *= 2;
         player.attackKnockback *= 2;
-        player.attackHitbox.setHitboxRange(player.attackHitbox.getHitboxRange() * 1.5f);
+        player.getAttackHitbox().setHitboxRange(player.getAttackHitbox().getHitboxRange() * 1.5f);
         heavyAttacking = true;
 
         initiateAttack();
@@ -152,7 +152,7 @@ public class PlayerAttackHandler extends AttackHandler {
             // Reset damage and knockback to their original values
             player.attackDamage /= 2;
             player.attackKnockback /= 2;
-            player.attackHitbox.setHitboxRange(player.attackHitbox.getHitboxRange() / 1.5f);
+            player.getAttackHitbox().setHitboxRange(player.getAttackHitbox().getHitboxRange() / 1.5f);
 
             // Lock the player out after a heavy attack
             player.setHeavyLockedOut();
