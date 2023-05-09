@@ -67,6 +67,10 @@ public class PlayerAttackHandler extends AttackHandler {
         Werewolf player = (Werewolf) entity;
         if (phase == GameplayController.Phase.BATTLE) {
             super.update(delta);
+            //update hitbox
+            if(player.isAttacking()) {
+                processAttack(delta);
+            }
 
             // Winding up logic
             if (windingUpHeavyAttack) {
@@ -106,6 +110,16 @@ public class PlayerAttackHandler extends AttackHandler {
 
     }
 
+    @Override
+    public void processAttack(float delta) {
+        attackCounter += delta;
+        ((Werewolf)entity).attackHitbox.updateHitboxPosition();
+        if (attackCounter >= entity.attackLength) {
+            endAttack();
+        }
+        ((Werewolf)entity).attackHitbox.update(delta);
+    }
+
     public void initiateAttack() {
         // movement component
         entity.getBody().applyLinearImpulse(entity.getLinearVelocity().nor(), entity.getBody().getWorldCenter(), true);
@@ -121,9 +135,10 @@ public class PlayerAttackHandler extends AttackHandler {
     }
 
     public void initiateHeavyAttack() {
-        entity.attackDamage *= 2;
-        entity.attackKnockback *= 2;
-        entity.getAttackHitbox().setHitboxRange(entity.getAttackHitbox().getHitboxRange() * 1.5f);
+        Werewolf player = (Werewolf) entity;
+        player.attackDamage *= 2;
+        player.attackKnockback *= 2;
+        player.attackHitbox.setHitboxRange(player.attackHitbox.getHitboxRange() * 1.5f);
         heavyAttacking = true;
 
         initiateAttack();
@@ -132,15 +147,14 @@ public class PlayerAttackHandler extends AttackHandler {
     @Override
     protected void endAttack() {
         super.endAttack();
-
+        Werewolf player = (Werewolf) entity;
         if (heavyAttacking) {
             // Reset damage and knockback to their original values
-            entity.attackDamage /= 2;
-            entity.attackKnockback /= 2;
-            entity.getAttackHitbox().setHitboxRange(entity.getAttackHitbox().getHitboxRange() / 1.5f);
+            player.attackDamage /= 2;
+            player.attackKnockback /= 2;
+            player.attackHitbox.setHitboxRange(player.attackHitbox.getHitboxRange() / 1.5f);
 
             // Lock the player out after a heavy attack
-            Werewolf player = (Werewolf) entity;
             player.setHeavyLockedOut();
 
             heavyAttacking = false;

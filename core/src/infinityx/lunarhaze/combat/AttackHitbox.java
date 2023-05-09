@@ -5,9 +5,12 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.JsonValue;
+import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.models.AttackingGameObject;
 import infinityx.lunarhaze.models.GameObject;
+import infinityx.lunarhaze.models.LevelContainer;
 
 /**
  * This class represents a rectangular attack hitbox that is parented to an entity,
@@ -23,24 +26,42 @@ public class AttackHitbox extends GameObject {
     private final AttackingGameObject attacker;
 
     /**
-     * @param initialSize holds initial reach and width of hitbox respectively
      * @param attacker    entity this hitbox is parented to
      */
-    public AttackHitbox(Vector2 initialSize, AttackingGameObject attacker) {
+    public AttackHitbox(AttackingGameObject attacker) {
         super(0, 0);
         this.attacker = attacker;
 
         // Important! So that rotation rotates around attacker
         setPosition(attacker.getPosition());
 
+    }
+
+
+    @Override
+    public void initialize(AssetDirectory directory, JsonValue json, LevelContainer container) {
+        super.initialize(directory, json, container);
+
+
+        float attackRange = json.getFloat("range");
+        // width is defaulted to the entity's body diameter
+        float attackWidth = json.has("width") ? json.getFloat("width") : getBoundingRadius() * 2;
+
         // Since I'm setting the position of the hitbox to the position of the attacker, I have to offset it
         // I offset it so that it is externally tangent to the body of the attacker
         addBox(
-                "body", initialSize.x, initialSize.y,
-                new Vector2(attacker.getBoundingRadius() + initialSize.x / 2, 0),
+                //bad name ignore yellow box
+                "body", attackRange, attackWidth,
+                new Vector2(attacker.getBoundingRadius() + attackRange / 2, 0),
                 0
         );
+
+        this.activatePhysics(container.getWorld());
+        this.setActive(false);
+
     }
+
+
 
     public AttackingGameObject getAttacker() {
         return attacker;
@@ -97,4 +118,16 @@ public class AttackHitbox extends GameObject {
                 canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y), getAngle() + MathUtils.PI / 2,
                 textureScale * scale, textureScale * scale);
     }
+
+    public AttackHitbox getAttackHitbox() {
+        return this;
+    }
+    /**
+     * Adjusts hitbox based on {@link #} transform
+     */
+    public void updateHitboxPosition() {
+        // This is the logic that makes the hitbox "parented" to the entity
+        this.getBody().setTransform(attacker.getPosition(), attacker.getAngle());
+    }
+
 }

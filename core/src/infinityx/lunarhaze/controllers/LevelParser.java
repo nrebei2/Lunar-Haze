@@ -145,12 +145,23 @@ public class LevelParser {
 
             float[] patrolInfo = enemyInfo.get("patrol").asFloatArray();
 
-            Enemy newEnemy = levelContainer.addEnemy(
-                    enemyInfo.getString("type"),
-                    enemyPos.getFloat(0),
-                    enemyPos.getFloat(1),
-                    new PatrolRegion(patrolInfo[0], patrolInfo[1], patrolInfo[2], patrolInfo[3])
-            );
+            Enemy newEnemy;
+            if ( enemyInfo.getString("type") .equals("villager")) {
+                 newEnemy = levelContainer.addVillager(
+                        enemyInfo.getString("type"),
+                        enemyPos.getFloat(0),
+                        enemyPos.getFloat(1),
+                        new PatrolRegion(patrolInfo[0], patrolInfo[1], patrolInfo[2], patrolInfo[3])
+                );
+            }
+            else{
+                 newEnemy = levelContainer.addArcher(
+                        enemyInfo.getString("type"),
+                        enemyPos.getFloat(0),
+                        enemyPos.getFloat(1),
+                        new PatrolRegion(patrolInfo[0], patrolInfo[1], patrolInfo[2], patrolInfo[3])
+                );
+            }
 
             if (enemyInfo.has("scale"))
                 newEnemy.setScale(enemyInfo.getFloat("scale"));

@@ -21,7 +21,9 @@ import infinityx.lunarhaze.combat.AttackHandler;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.models.GameObject;
 import infinityx.lunarhaze.models.LevelContainer;
+import infinityx.lunarhaze.models.entity.Archer;
 import infinityx.lunarhaze.models.entity.Enemy;
+import infinityx.lunarhaze.models.entity.Villager;
 import infinityx.lunarhaze.models.entity.Werewolf;
 import infinityx.lunarhaze.physics.Box2DRaycastCollision;
 import infinityx.lunarhaze.physics.RaycastInfo;
@@ -31,7 +33,7 @@ import infinityx.util.astar.AStarPathFinding;
 /**
  * Controller class, handles logic for a single enemy
  */
-public class EnemyController extends AttackHandler {
+public class EnemyController{
     /**
      * Output collision cache from Box2DRaycastCollision
      */
@@ -129,8 +131,12 @@ public class EnemyController extends AttackHandler {
      * Steering behavior for attacking
      */
     public ContextBehavior attack;
-
+    /**
+     * Steering behavior for evading
+     */
     public ContextBehavior evade;
+
+    public AttackHandler attackHandler;
 
     Ray<Vector2> rayCache = new Ray<>(new Vector2(), new Vector2());
 
@@ -148,7 +154,7 @@ public class EnemyController extends AttackHandler {
      * @param enemy The enemy being controlled by this AIController
      */
     public EnemyController(final Enemy enemy) {
-        super(enemy);
+        this.attackHandler = new AttackHandler(enemy);
         patrolTarget = new Vector2();
         this.targetPos = new Vector2();
         this.enemy = enemy;
@@ -197,7 +203,7 @@ public class EnemyController extends AttackHandler {
             @Override
             protected ContextMap calculateRealMaps(ContextMap map) {
                 map.setZero();
-                if (canStartNewAttack()) {
+                if (attackHandler.canStartNewAttack()) {
                     Vector2 targetDir = target.getPosition().sub(enemy.getPosition()).nor();
                     for (int i = 0; i < map.getResolution(); i++) {
                         map.interestMap[i] = Math.max(0, map.dirFromSlot(i).dot(targetDir));
@@ -239,7 +245,7 @@ public class EnemyController extends AttackHandler {
             @Override
             protected ContextMap calculateRealMaps(ContextMap map) {
                 map.setZero();
-                if (!canStartNewAttack() || enemy.getHealthPercentage() < 0.5) {
+                if (!attackHandler.canStartNewAttack() || enemy.getHealthPercentage() < 0.5) {
                     Vector2 evade_dir = enemy.getPosition().sub(target.getPosition());
                     for (int i = 0; i < map.getResolution(); i++) {
                         map.interestMap[i] = 1/evade_dir.len() * Math.max(0, map.dirFromSlot(i).dot(evade_dir.nor()));
@@ -303,8 +309,16 @@ public class EnemyController extends AttackHandler {
      * @param delta time between last frame in seconds
      */
     public void update(LevelContainer container, float delta) {
-        super.update(delta);
-        if (enemy.hp <= 0) container.removeEnemy(enemy);
+        attackHandler.update(delta);
+        if (enemy.hp <= 0) {
+            if (enemy.getType() == GameObject.ObjectType.VILLAGER) {
+                container.removeVillager((Villager) enemy);
+            }
+            else{
+                container.removeArcher((Archer) enemy);
+
+            }
+        }
 
         // Process the FSM
         enemy.update(delta);

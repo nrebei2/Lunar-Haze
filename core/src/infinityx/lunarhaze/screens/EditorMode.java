@@ -34,8 +34,10 @@ import infinityx.lunarhaze.graphics.ImGuiImplGLES2;
 import infinityx.lunarhaze.models.Board;
 import infinityx.lunarhaze.models.GameObject;
 import infinityx.lunarhaze.models.LevelContainer;
+import infinityx.lunarhaze.models.entity.Archer;
 import infinityx.lunarhaze.models.entity.Enemy;
 import infinityx.lunarhaze.models.entity.SceneObject;
+import infinityx.lunarhaze.models.entity.Villager;
 import infinityx.util.PatrolRegion;
 import infinityx.util.ScreenObservable;
 
@@ -602,9 +604,15 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 mouseWorld.x - 1, mouseWorld.y - 1,
                 mouseWorld.x + 1, mouseWorld.y + 1
         );
-
-        Enemy newEnemy = level.addEnemy(enemySelection.enemy.getName(), mouseWorld.x, mouseWorld.y, initialRegion);
-        newEnemy.setScale(enemySelection.enemy.getScale());
+        Enemy newEnemy;
+        if (enemySelection.enemy.getName().equals("villager")) {
+            newEnemy = level.addVillager(enemySelection.enemy.getName(), mouseWorld.x, mouseWorld.y, initialRegion);
+            newEnemy.setScale(enemySelection.enemy.getScale());
+        }
+        else {
+            newEnemy = level.addArcher(enemySelection.enemy.getName(), mouseWorld.x, mouseWorld.y, initialRegion);
+            newEnemy.setScale(enemySelection.enemy.getScale());
+        }
         return newEnemy;
     }
 
@@ -683,7 +691,12 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 ((ExistingObject) selected).object.setTint(Color.WHITE);
                 break;
             case ENEMY:
-                level.removeEnemy(((EnemySelection) selected).enemy);
+                if (((EnemySelection)selected).enemy.getName().equals("villager")) {
+                    level.removeVillager((Villager) ((EnemySelection) selected).enemy);
+                }
+                else{
+                    level.removeArcher((Archer) ((EnemySelection) selected).enemy);
+                }
                 break;
             case OBJECT:
                 level.removeSceneObject(((ObjectSelection) selected).object);
@@ -717,7 +730,12 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                     GameObject obj = ((PlaceObject) lastAction).gameObject;
                     switch (obj.getType()) {
                         case ENEMY:
-                            level.removeEnemy((infinityx.lunarhaze.models.entity.Enemy) obj);
+                            if (obj.getName().equals("villager")) {
+                                level.removeVillager((Villager) obj);
+                            }
+                            else{
+                                level.removeArcher((Archer) obj);
+                            }
                             break;
                         case SCENE:
                             level.removeSceneObject((infinityx.lunarhaze.models.entity.SceneObject) obj);
@@ -728,7 +746,12 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                     GameObject removedObj = ((RemoveObject) lastAction).gameObject;
                     switch (removedObj.getType()) {
                         case ENEMY:
-                            level.addEnemy((infinityx.lunarhaze.models.entity.Enemy) removedObj);
+                            if (removedObj.getName().equals("villager")) {
+                                level.removeVillager((Villager) removedObj);
+                            }
+                            else{
+                                level.removeArcher((Archer) removedObj);
+                            }
                             break;
                         case SCENE:
                             level.addSceneObject((infinityx.lunarhaze.models.entity.SceneObject) removedObj);
@@ -755,7 +778,12 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                     GameObject obj = ((PlaceObject) lastUndoneAction).gameObject;
                     switch (obj.getType()) {
                         case ENEMY:
-                            level.addEnemy((infinityx.lunarhaze.models.entity.Enemy) obj);
+                            if (obj.getName().equals("villager")) {
+                                level.removeVillager((Villager) obj);
+                            }
+                            else{
+                                level.removeArcher((Archer) obj);
+                            }
                             break;
                         case SCENE:
                             level.addSceneObject((infinityx.lunarhaze.models.entity.SceneObject) obj);
@@ -766,7 +794,13 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                     GameObject removedObj = ((RemoveObject) lastUndoneAction).gameObject;
                     switch (removedObj.getType()) {
                         case ENEMY:
-                            level.removeEnemy((infinityx.lunarhaze.models.entity.Enemy) removedObj);
+                            if (removedObj.getName().equals("villager")) {
+                                level.removeVillager((Villager) removedObj);
+                            }
+                            else{
+                                level.removeArcher((Archer) removedObj);
+
+                            }
                             break;
                         case SCENE:
                             level.removeSceneObject((infinityx.lunarhaze.models.entity.SceneObject) removedObj);
@@ -1439,7 +1473,12 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                                 // As this will mess with the free list
                                 removeSelection();
                             }
-                            level.removeEnemy(enemy);
+                            if (enemy.getName().equals("villager")){
+                                level.removeVillager((Villager) enemy);
+                            }
+                            else{
+                                level.removeArcher((Archer) enemy);
+                            }
                             doneActions.add(new RemoveObject(enemy));
                             undoneActions.clear();
                             selected = null;
@@ -2200,11 +2239,21 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                     enemy.texture.getTextureObjectHandle(),
                     100, 100 * enemy.texture.getHeight() / enemy.texture.getWidth()
             )) {
-                Enemy newEnemy = level.addEnemy(
-                        enemy.type,
-                        mouseWorld.x, mouseWorld.y,
-                        new PatrolRegion(0, 0, 0, 0)
-                );
+                Enemy newEnemy;
+                if (enemy.type.equals("villager")) {
+                    newEnemy = level.addVillager(
+                            enemy.type,
+                            mouseWorld.x, mouseWorld.y,
+                            new PatrolRegion(0, 0, 0, 0)
+                    );
+                }
+                else{
+                    newEnemy = level.addArcher(
+                            enemy.type,
+                            mouseWorld.x, mouseWorld.y,
+                            new PatrolRegion(0, 0, 0, 0)
+                    );
+                }
                 removeSelection();
                 selected = new EnemySelection(newEnemy);
 

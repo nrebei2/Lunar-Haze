@@ -9,24 +9,6 @@ import infinityx.lunarhaze.models.LevelContainer;
  * Model class representing an enemy.
  */
 public class Archer extends Enemy implements Pool.Poolable {
-    public enum Detection {
-        /**
-         * The enemy is alerted (Exclamation point!)
-         */
-        ALERT,
-        /**
-         * The enemy has noticed sometime amiss (Question mark?)
-         */
-        NOTICED,
-        /**
-         * The enemy indicator is increasing
-         */
-        INDICATOR,
-        /**
-         * Neither heard nor seen anything
-         */
-        NONE
-    }
 
     /**
      * Arrow the archer holds
@@ -57,11 +39,31 @@ public class Archer extends Enemy implements Pool.Poolable {
         // TODO: initialize shoot_dist from JSON
         // TODO: reinitialize hp, attack damage knockback
         // FIXME FIXME FIXME FIXME
-        JsonValue archerJson = json.get("archer");
-        JsonValue attack = archerJson.get("attack");
-        maxHp = archerJson.getFloat("hp");
-        setShootDist(attack.getInt("shootdist"));
+//        JsonValue archerJson = json.get("archer");
+//        JsonValue attack = archerJson.get("attack");
+//        maxHp = archerJson.getFloat("hp");
+//        setShootDist(attack.getInt("shootdist"));
     }
+
+    @Override
+    public float getAttackRange() {
+        return 0;
+    }
+
+    @Override
+    public void setAttackRange(float attackRange) {
+
+    }
+
+    @Override
+    public void setAttacking(boolean value) {
+
+    }
+
+//    @Override
+//    public void updateAttack(float delta) {
+//
+//    }
 
     /**
      * Returns the type of this object.

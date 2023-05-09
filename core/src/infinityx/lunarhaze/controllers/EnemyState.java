@@ -138,7 +138,7 @@ public enum EnemyState implements State<EnemyController> {
             //entity.getAttackSound().play();
             entity.getEnemy().setFilmstripPrefix("attack");
             entity.getEnemy().setIndependentFacing(true);
-            entity.initiateAttack();
+            entity.attackHandler.initiateAttack();
         }
 
         @Override
@@ -202,7 +202,7 @@ public enum EnemyState implements State<EnemyController> {
 
             //if in stealth just walk towards target and attack if close enough
             if (!entity.isInBattle()) {
-                if (enemyToTarget <= entity.getEnemy().getAttackRange() && entity.canStartNewAttack()) {
+                if (enemyToTarget <= entity.getEnemy().getAttackRange() && entity.attackHandler.canStartNewAttack()) {
                     entity.getStateMachine().changeState(ATTACK);
                 }
                 entity.getEnemy().setIndependentFacing(false);
@@ -214,7 +214,7 @@ public enum EnemyState implements State<EnemyController> {
                     entity.time = 0;
                 }
             } else {
-                if (enemyToTarget <= entity.getEnemy().getAttackRange() && entity.canStartNewAttack()) {
+                if (enemyToTarget <= entity.getEnemy().getAttackRange() && entity.attackHandler.canStartNewAttack()) {
                     entity.getStateMachine().changeState(ATTACK);
                 }
                 entity.rayCache.set(entity.getEnemy().getPosition(), entity.getTarget().getPosition());
@@ -222,7 +222,6 @@ public enum EnemyState implements State<EnemyController> {
                 entity.pathCollision.findCollision(entity.collCache, entity.rayCache);
                 // use Astar to target if there is obstacle in the way or farther than straafe distance from target
                 if (entity.raycast.hit || enemyToTarget > entity.getEnemy().getStrafeDistance()) {
-                    System.out.println("obstacle in the way");
 //                    entity.getEnemy().setMaxLinearSpeed(1.11f);
                     entity.targetPos.set(entity.getTarget().getPosition());
                     entity.getEnemy().setSteeringBehavior(entity.followPathSB);

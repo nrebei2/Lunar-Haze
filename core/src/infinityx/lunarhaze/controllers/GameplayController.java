@@ -8,8 +8,11 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 import infinityx.lunarhaze.ai.TacticalManager;
 import infinityx.lunarhaze.models.Board;
+import infinityx.lunarhaze.models.GameObject;
 import infinityx.lunarhaze.models.LevelContainer;
+import infinityx.lunarhaze.models.entity.Archer;
 import infinityx.lunarhaze.models.entity.Enemy;
+import infinityx.lunarhaze.models.entity.Villager;
 import infinityx.lunarhaze.models.entity.Werewolf;
 import infinityx.lunarhaze.screens.GameSetting;
 
@@ -78,7 +81,9 @@ public class GameplayController {
     /**
      * Reference of enemy model-controller map from container
      */
-    private ObjectMap<Enemy, EnemyController> controls;
+    private ObjectMap<Villager, EnemyController> villagerControls;
+
+    private ObjectMap<Archer, EnemyController> archerControls;
 
     /**
      * Owns the lighting controller
@@ -191,7 +196,8 @@ public class GameplayController {
         ambientLightTransitionTimer = 0;
 
         enemies = levelContainer.getEnemies();
-        controls = levelContainer.getEnemyControllers();
+        villagerControls = levelContainer.getVillagerControllers();
+        archerControls= levelContainer.getArcherControllers();
         battleTicks = 0;
 
         win_sound = levelContainer.getDirectory().getEntry("level-passed", Sound.class);
@@ -292,7 +298,12 @@ public class GameplayController {
         if (ambientLightTransitionTimer >= container.getSettings().getTransition()) {
             phase = Phase.ALLOCATE;
             for (int i = 0; i < enemies.size; i++) {
-                controls.get(enemies.get(i)).setInBattle(true);
+                if (enemies.get(i).getType() == GameObject.ObjectType.VILLAGER) {
+                    villagerControls.get((Villager) enemies.get(i)).setInBattle(true);
+                }
+                else{
+                    archerControls.get((Archer) enemies.get(i)).setInBattle(true);
+                }
             }
         }
     }
@@ -334,7 +345,12 @@ public class GameplayController {
             }
         }
         for (int i = 0; i < enemies.size; i++) {
-            controls.get(enemies.get(i)).update(container, delta);
+            if (enemies.get(i).getType() == GameObject.ObjectType.VILLAGER) {
+                villagerControls.get((Villager) enemies.get(i)).update(container, delta);
+            }
+            else{
+                archerControls.get((Archer) enemies.get(i)).update(container, delta);
+            }
         }
     }
 }

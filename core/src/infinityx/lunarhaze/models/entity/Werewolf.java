@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
+import infinityx.lunarhaze.combat.AttackHitbox;
 import infinityx.lunarhaze.controllers.InputController;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.models.AttackingGameObject;
@@ -72,6 +73,9 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
 
     /** Whether the player is in tall grass */
     public boolean inTallGrass;
+
+    public AttackHitbox attackHitbox;
+
 
     /**
      * Returns the type of this object.
@@ -210,7 +214,37 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
         activatePhysics(container.getWorld());
         setSpotLight(spotLight);
 
+        // Create the hitbox
+        JsonValue hitboxInfo = json.get("attack").get("hitbox");
+        attackHitbox = new AttackHitbox(this);
+        attackHitbox.initialize(directory, hitboxInfo, container);
     }
+
+    @Override
+    public float getAttackRange() {
+        return attackHitbox.getHitboxRange();
+    }
+
+    @Override
+    public void setAttackRange(float attackRange) {
+        attackHitbox.setHitboxRange(attackRange);
+    }
+
+    /**
+     * Set whether the entity is currently attacking
+     */
+    public void setAttacking(boolean value) {
+        isAttacking = value;
+        attackHitbox.setActive(value);
+        attackHitbox.getTexture().setFrame(0);
+    }
+
+//    @Override
+//    public void updateAttack(float delta) {
+//
+//    }
+
+
 
 
     /**

@@ -18,7 +18,7 @@ import java.util.Random;
 /**
  * Model class representing an enemy.
  */
-public class Enemy extends SteeringGameObject implements Pool.Poolable {
+public abstract class Enemy extends SteeringGameObject implements Pool.Poolable {
     public enum Detection {
         /**
          * The enemy is alerted (Exclamation point!)
@@ -141,12 +141,11 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
         if (body == null) activatePhysics(container.getWorld());
         setFlashlight(flashLight);
         setFlashlightOn(true);
-        updateStrafeDistance();
     }
 
     public void updateStrafeDistance() {
-        // set strafe distance randomly between attack range*2 and attackrange*2 + 2
-        this.strafeDistance = rand.nextFloat() * 3 + getAttackRange() * 2;
+        // set strafe distance randomly between attack range+2 and attackrange + 4
+        this.strafeDistance = rand.nextFloat() * 3 + (getAttackRange()+2);
     }
 
     public float getStrafeDistance() {
