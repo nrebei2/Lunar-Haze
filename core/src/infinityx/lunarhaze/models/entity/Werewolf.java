@@ -85,7 +85,6 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
         return ObjectType.WEREWOLF;
     }
 
-
     public boolean isRunning() {
         return isRunning;
     }
@@ -216,9 +215,7 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
         spotLight.setSoft(light.getBoolean("soft"));
         activatePhysics(container.getWorld());
         setSpotLight(spotLight);
-
     }
-
 
     /**
      * Updates the animation frame and position of this werewolf.

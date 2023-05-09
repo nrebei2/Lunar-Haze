@@ -67,7 +67,8 @@
         "height": 0.1,
         "offset": [0,0]
       }
-    }
+    },
+    "overlook":true
   },
   "fencex": {
     "textures": {
@@ -85,7 +86,8 @@
         "height": 0.1,
         "offset": [0,0]
       }
-    }
+    },
+    "overlook": true
   },
   "fence3": {
     "textures": {
@@ -103,7 +105,8 @@
         "height": 0.1,
         "offset": [0,0]
       }
-    }
+    },
+    "overlook": true
   },
   "fencey": {
     "textures": {
@@ -121,7 +124,8 @@
         "height": 1,
         "offset": [0,0]
       }
-    }
+    },
+    "overlook": true
   },
   "fence5": {
     "textures": {
@@ -139,7 +143,8 @@
         "height": 1,
         "offset": [0,0]
       }
-    }
+    },
+    "overlook": true
   },
   "lamp": {
     "textures": {

@@ -336,16 +336,6 @@ public class UIRender {
     private final Color colorCache = new Color();
 
     /**
-     * Target value for next stealth
-     */
-    float target = PlayerController.STILL_STEALTH;
-
-    /**
-     * Proportion of stealth bar to fill
-     */
-    float proportion = PlayerController.STILL_STEALTH;
-
-    /**
      * Create a new UIRender with font and directory assigned.
      *
      * @param font1
@@ -466,7 +456,6 @@ public class UIRender {
             if (phase == Phase.STEALTH) {
                 drawHealthStats(canvas, level);
                 drawMoonlightStats(canvas, level, delta);
-                drawStealthStats(canvas, level);
             } else if (phase == Phase.BATTLE) {
                 drawHealthStats(canvas, level);
                 drawPowerStats(canvas, level, gameplayController.getPlayerController());
@@ -713,39 +702,6 @@ public class UIRender {
             drawMoonCollect(canvas, delta);
         }
         last_moon = level.getPlayer().getMoonlightCollected();
-    }
-
-    /**
-     * Draw the stealth stroke and stealth status of the player
-     */
-    public void drawStealthStats(GameCanvas canvas, LevelContainer level) {
-
-        proportion = level.getPlayer().getStealth();
-        int filledWidth = (int) (stealth_stroke.getWidth() * proportion);
-        int unfilledWidth = (int) (stealth_stroke.getWidth() * (1 - proportion));
-        float screen_width_filled = STEALTH_STROKE_WIDTH * proportion;
-        float screen_width_unfilled = STEALTH_STROKE_WIDTH * (1 - proportion);
-
-        TextureRegion stealth_bar_left = new TextureRegion(stealth_stroke_filled,
-                0, 0,
-                filledWidth, stealth_stroke.getHeight());
-        canvas.draw(stealth_bar_left, alphaTint,
-                canvas.getWidth() / 2 - STEALTH_STROKE_WIDTH / 2,
-                MOON_STROKE_HEIGHT,
-                screen_width_filled, STEALTH_STROKE_HEIGHT);
-
-        canvas.draw(stealth_icon, Color.WHITE, stealth_icon.getWidth() / 2, stealth_icon.getHeight() / 2,
-                canvas.getWidth() / 2 - STEALTH_STROKE_WIDTH / 2 + stealth_icon.getWidth(),
-                MOON_STROKE_HEIGHT + stealth_icon.getHeight() * 4 / 5,
-                (float) (13f / 180f * Math.PI), 0.7f, 0.7f);
-
-        TextureRegion stealth_bar_right = new TextureRegion(stealth_stroke,
-                filledWidth, 0,
-                unfilledWidth, stealth_stroke.getHeight());
-        canvas.draw(stealth_bar_right, alphaTint,
-                canvas.getWidth() / 2 - STEALTH_STROKE_WIDTH / 2 + screen_width_filled,
-                MOON_STROKE_HEIGHT,
-                screen_width_unfilled, STEALTH_STROKE_HEIGHT);
     }
 
     /**
