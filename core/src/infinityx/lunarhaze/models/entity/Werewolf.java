@@ -74,7 +74,7 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
     public boolean isWindingUp;
 
     /** Whether the player is in tall grass */
-    public boolean inTallGrass;
+    public SceneObject inTallGrass;
 
     /**
      * Returns the type of this object.
@@ -154,7 +154,6 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
         heavyLockedOut = false;
         isWindingUp = false;
         heavyLockoutTime = 0.4f; // this can be changed later
-        inTallGrass = false;
         direction = Direction.RIGHT;
     }
 
@@ -200,7 +199,7 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
     }
 
     public void setTargetStealth(float t) {
-        target = t;
+        target = Math.max(0, t);
     }
 
 
@@ -208,7 +207,7 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
      * @return The radius of the werewolf's noise in world length
      */
     public float getNoiseRadius() {
-        return Interpolation.linear.apply(0, 4.0f, stealth);
+        return Interpolation.linear.apply(0, 4.0f, inTallGrass != null ? 0 : stealth);
     }
 
     /**

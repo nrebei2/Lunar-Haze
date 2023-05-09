@@ -5991,6 +5991,180 @@
 				"scale": 0.8200001120567322,
 				"flip": false,
 				"position": [ 21.322193145751953, 4.894514560699463 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 13.509815216064453, 7.631882190704346 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 13.525032997131348, 7.398552417755127 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 13.395687103271484, 6.62755012512207 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 13.836984634399414, 6.749287128448486 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 13.578292846679688, 6.120311737060547 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 13.441338539123535, 5.572494029998779 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 13.486989974975586, 5.694231033325195 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 13.273950576782227, 5.430467128753662 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 13.593509674072266, 5.288440704345703 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 13.311992645263672, 5.065255641937256 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 13.502206802368164, 4.649320125579834 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 13.372861862182617, 4.456569194793701 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 13.601119041442871, 4.192805290222168 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 14.247847557067871, 4.558017253875732 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 14.255456924438477, 4.395700931549072 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 14.704362869262695, 4.1623711585998535 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 15.617391586303711, 4.507293224334717 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 15.739129066467285, 4.121791839599609 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 16.51520347595215, 4.466713905334473 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 16.697811126708984, 4.1420817375183105 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 17.27606201171875, 4.395700931549072 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 17.49671173095703, 4.152225971221924 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 18.386913299560547, 4.071068286895752 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 18.295612335205078, 5.765244960784912 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 18.424957275390625, 6.586970806121826 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 18.402130126953125, 5.7145209312438965 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 18.326045989990234, 7.266670227050781 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 18.310829162597656, 5.592783451080322 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 18.539085388183594, 4.994242191314697 ]
 			}
 		]
 	}
