@@ -1152,7 +1152,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             canvas.end();
         }
 
-        ImGui.showDemoWindow();
+        //ImGui.showDemoWindow();
 
         ImGui.render();
         imGuiGl.renderDrawData(ImGui.getDrawData());

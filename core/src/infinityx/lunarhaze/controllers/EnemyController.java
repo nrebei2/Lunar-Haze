@@ -344,7 +344,7 @@ public class EnemyController extends AttackHandler {
         if (inBattle) return Enemy.Detection.ALERT;
 
         Interpolation lerp = Interpolation.linear;
-        raycastCollision.findCollision(collCache, new Ray<>(enemy.getPosition(), target.getPosition()));
+        raycastCollision.findCollision(collCache, rayCache.set(enemy.getPosition(), target.getPosition()));
 
         if (!raycast.hit) {
             // For any reason...
@@ -370,7 +370,7 @@ public class EnemyController extends AttackHandler {
         }
 
         // target may be behind object, but enemy should still be able to hear
-        if (dist <= lerp.apply(1.75f, 3.5f, stealth)) {
+        if (dist <= target.getNoiseRadius()) {
             return Enemy.Detection.NOTICED;
         }
 
@@ -431,13 +431,11 @@ public class EnemyController extends AttackHandler {
         return patrolTarget.set(path.getNextPatrol());
     }
 
-    /** Ray cache for find collision */
-    Ray<Vector2> collRay = new Ray<>(new Vector2(), new Vector2());
     /**
      * used to find ray collsion between this enemy and another enemy
      */
     public void findCollision(Enemy target) {
-        communicationCollision.findCollision(collCache, collRay.set(enemy.getPosition(), target.getPosition()));
+        communicationCollision.findCollision(collCache, rayCache.set(enemy.getPosition(), target.getPosition()));
     }
 
     /**

@@ -1135,16 +1135,6 @@ public class GameCanvas {
         font.draw(spriteBatch, layout, x, y + offset);
     }
 
-    public void drawPlayerAttackRange(Texture ellipse, Werewolf player, LevelContainer level) {
-        float attackRange = WorldToScreenX(player.getAttackHitbox().getHitboxRange());
-        // Attack distance in one direction
-        float x = WorldToScreenX(player.getPosition().x);
-        float y = WorldToScreenY(player.getPosition().y);
-
-        draw(ellipse, Color.WHITE, ellipse.getWidth() / 2, ellipse.getHeight() / 2, x, y, 0,
-                attackRange / ellipse.getWidth() * 2, attackRange / ellipse.getWidth() * 2);
-    }
-
     /**
      * Draws a shader instanced on quads with given width and height.
      *

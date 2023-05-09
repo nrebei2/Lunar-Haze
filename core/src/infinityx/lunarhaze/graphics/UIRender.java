@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
@@ -414,6 +415,38 @@ public class UIRender {
             }
             canvas.end();
 
+            if (phase == Phase.STEALTH) {
+                // Draw noise radius around player
+                canvas.begin(GameCanvas.DrawPass.SPRITE, level.getView().x, level.getView().y);
+                float x = canvas.WorldToScreenX(level.getPlayer().getPosition().x);
+                float y = canvas.WorldToScreenY(level.getPlayer().getPosition().y);
+                float scale = level.getPlayer().getNoiseRadius() * 0.63f;
+                Color color = Color.WHITE;
+
+                outer: for (Enemy enemy: level.getEnemies()) {
+                    switch (enemy.getDetection()) {
+                        case INDICATOR:
+                        case NOTICED:
+                            if (color != Color.RED) {
+                                color = Color.ORANGE;
+                            }
+                            break;
+                        case ALERT:
+                            color = Color.RED;
+                            break outer;
+                    }
+                }
+
+                canvas.draw(
+                        ellipse,
+                        color,
+                        ellipse.getWidth() / 2,
+                        ellipse.getHeight() / 2,
+                        x, y, 0,
+                        scale, scale
+                );
+                canvas.end();
+            }
 
             if (phase == Phase.BATTLE) {
                 for (Enemy enemy : level.getEnemies()) {
@@ -423,10 +456,6 @@ public class UIRender {
                     );
                     canvas.end();
                 }
-
-                canvas.begin(GameCanvas.DrawPass.SPRITE, level.getView().x, level.getView().y);
-                canvas.drawPlayerAttackRange(ellipse, level.getPlayer(), level);
-                canvas.end();
             }
 
             // Draw with view transform not considered
