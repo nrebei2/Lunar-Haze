@@ -68,7 +68,7 @@ public class PlayerAttackHandler extends AttackHandler {
         if (phase == GameplayController.Phase.BATTLE) {
             super.update(delta);
             //update hitbox
-            if(player.isAttacking()) {
+            if (player.isAttacking()) {
                 processAttack(delta);
             }
 
@@ -114,11 +114,11 @@ public class PlayerAttackHandler extends AttackHandler {
     @Override
     public void processAttack(float delta) {
         attackCounter += delta;
-        ((Werewolf)entity).getAttackHitbox().updateHitboxPosition();
+        ((Werewolf) entity).getAttackHitbox().updateHitboxPosition();
         if (attackCounter >= entity.attackLength) {
             endAttack();
         }
-        ((Werewolf)entity).getAttackHitbox().update(delta);
+        ((Werewolf) entity).getAttackHitbox().update(delta);
     }
 
     public void initiateAttack() {
@@ -175,7 +175,7 @@ public class PlayerAttackHandler extends AttackHandler {
             dashTimer = 0f;
             entity.setImmune();
             entity.setLockedOut();
-            ((Werewolf) entity).setTargetStealth( ((Werewolf)entity).getTargetStealth() + 0.2f);
+            ((Werewolf) entity).setTargetStealth(((Werewolf) entity).getTargetStealth() + 0.2f);
         }
     }
 
@@ -190,7 +190,7 @@ public class PlayerAttackHandler extends AttackHandler {
     private void endDash() {
         dashCooldownCounter = 0f;
         isDashing = false;
-        ((Werewolf) entity).setTargetStealth( ((Werewolf)entity).getTargetStealth() - 0.2f);
+        ((Werewolf) entity).setTargetStealth(((Werewolf) entity).getTargetStealth() - 0.2f);
     }
 
     public boolean isHeavyAttacking() {

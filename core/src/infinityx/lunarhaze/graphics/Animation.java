@@ -246,7 +246,7 @@ public class Animation {
         return 0;
     }
 
-    public void clearFrames(){
+    public void clearFrames() {
         animations.clear();
     }
 }

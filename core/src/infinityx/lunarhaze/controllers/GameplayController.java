@@ -1,6 +1,5 @@
 package infinityx.lunarhaze.controllers;
 
-import box2dLight.PointLight;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
@@ -9,15 +8,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import infinityx.lunarhaze.ai.TacticalManager;
 import infinityx.lunarhaze.models.Board;
-import infinityx.lunarhaze.models.GameObject;
 import infinityx.lunarhaze.models.LevelContainer;
-import infinityx.lunarhaze.models.entity.Archer;
 import infinityx.lunarhaze.models.entity.Enemy;
-import infinityx.lunarhaze.models.entity.Villager;
 import infinityx.lunarhaze.models.entity.Werewolf;
 import infinityx.lunarhaze.screens.GameSetting;
-
-import java.util.Map;
 
 import static infinityx.lunarhaze.controllers.GameplayController.Phase.BATTLE;
 
@@ -284,7 +278,7 @@ public class GameplayController {
                     }
                     break;
             }
-            if (player.hp <= 0){
+            if (player.hp <= 0) {
                 gameState = GameState.OVER;
                 if (setting.isSoundEnabled()) {
                     fail_sound.play();
@@ -296,7 +290,6 @@ public class GameplayController {
             resolveEnemies(delta);
         }
 
-
         // TODO: for convenience, remove later
         if (Gdx.input.isKeyPressed(Input.Keys.PERIOD)) {
             gameState = GameState.WIN;
@@ -307,7 +300,7 @@ public class GameplayController {
         }
     }
 
-    public void turnLightAt(Board board, int x, int y, boolean b){
+    public void turnLightAt(Board board, int x, int y, boolean b) {
         board.setLit(x, y, b);
         board.setLit(x - 1, y, b);
         board.setLit(x + 1, y, b);

@@ -12,7 +12,6 @@ import infinityx.lunarhaze.models.SteeringGameObject;
 import infinityx.lunarhaze.physics.ConeSource;
 import infinityx.util.Direction;
 import infinityx.util.PatrolPath;
-import infinityx.util.PatrolRegion;
 
 import java.util.Random;
 
@@ -21,10 +20,19 @@ import java.util.Random;
  */
 public abstract class Enemy extends SteeringGameObject implements Pool.Poolable {
 
-    /** Types of enemies */
+    /**
+     * Types of enemies
+     */
     public enum EnemyType {
-        VILLAGER,
-        ARCHER
+        Villager,
+        Archer;
+
+        /** Inverse of to string */
+        public static EnemyType fromString(String string) {
+            if (string.equalsIgnoreCase("villager"))
+                return Villager;
+            return Archer;
+        }
     }
 
     public enum Detection {
@@ -173,7 +181,7 @@ public abstract class Enemy extends SteeringGameObject implements Pool.Poolable 
 
     public void updateStrafeDistance() {
         // set strafe distance randomly between attack range+2 and attackrange + 4
-        this.strafeDistance = rand.nextFloat() * 3 + (getAttackRange()+2);
+        this.strafeDistance = rand.nextFloat() * 3 + (getAttackRange() + 2);
     }
 
     public float getStrafeDistance() {

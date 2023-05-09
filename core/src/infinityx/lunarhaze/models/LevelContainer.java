@@ -11,7 +11,6 @@ import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.ObjectMap;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.controllers.EnemyController;
 import infinityx.lunarhaze.controllers.EnemySpawner;
@@ -24,7 +23,6 @@ import infinityx.util.PatrolPath;
 import infinityx.util.astar.AStarMap;
 import infinityx.util.astar.AStarPathFinding;
 
-import java.awt.*;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -215,8 +213,8 @@ public class LevelContainer {
         battleSettings = new Settings();
     }
 
-    public void setEnemyDamage(float damage){
-        for (Enemy enemy: activeEnemies){
+    public void setEnemyDamage(float damage) {
+        for (Enemy enemy : activeEnemies) {
             enemy.attackDamage = damage;
         }
     }
@@ -232,7 +230,7 @@ public class LevelContainer {
         initialize();
     }
 
-    public void switchWolf(){
+    public void switchWolf() {
 
         player.switchToWolf(directory, playerJson.get("werewolf"), this);
         player.walkSpeed = 2.2f;
@@ -276,7 +274,7 @@ public class LevelContainer {
     }
 
     /**
-     * @param enemy enemy to append to enemy list
+     * @param enemy           enemy to append to enemy list
      * @param enemyController controller of that enemy
      * @return enemy added
      */
@@ -284,7 +282,7 @@ public class LevelContainer {
         activeEnemies.add(enemy);
         activeControllers.add(enemyController);
         addDrawables(enemy);
-        if (enemy.getEnemyType() == Enemy.EnemyType.VILLAGER)
+        if (enemy.getEnemyType() == Enemy.EnemyType.Villager)
             addDrawables(((Villager) enemy).attackHitbox);
 
         // Update enemy controller assigned to the new enemy
@@ -305,11 +303,11 @@ public class LevelContainer {
      */
     public void removeEnemy(Enemy enemy) {
         switch (enemy.getEnemyType()) {
-            case ARCHER:
+            case Archer:
                 archers.free((Archer) enemy);
                 activeControllers.removeValue(archers.controls.get((Archer) enemy), true);
                 break;
-            case VILLAGER:
+            case Villager:
                 villagers.free((Villager) enemy);
                 activeControllers.removeValue(villagers.controls.get((Villager) enemy), true);
                 drawables.removeValue(((Villager) enemy).attackHitbox, true);
@@ -317,13 +315,12 @@ public class LevelContainer {
 
         activeEnemies.removeValue(enemy, true);
         drawables.removeValue(enemy, true);
-        drawables.removeValue(enemy.attackHitbox, true);
         enemy.setActive(false);
         enemy.getFlashlight().setActive(false);
     }
 
     /**
-     * Adds an enemy to the level with no patrol region.
+     * Adds an enemy to the level with no patrol path.
      *
      * @param type type of enemy to append to enemy list (e.g. archer)
      * @param x    world x-position
@@ -331,7 +328,7 @@ public class LevelContainer {
      * @return Enemy added
      */
     public Enemy addEnemy(Enemy.EnemyType type, float x, float y) {
-        return addEnemy(type, x, y, new PatrolRegion(0, 0, 0, 0));
+        return addEnemy(type, x, y, new PatrolPath().addWaypoint(x, y));
     }
 
 
@@ -344,21 +341,20 @@ public class LevelContainer {
      * @param patrol patrol path for this enemy
      * @return Enemy added
      */
-    public Enemy addEnemy(Enemy.EnemyType type, float x, float y, PatrolRegion patrol) {
+    public Enemy addEnemy(Enemy.EnemyType type, float x, float y, PatrolPath patrol) {
         Enemy enemy = null;
         EnemyController controller = null;
         switch (type) {
-            case VILLAGER:
+            case Villager:
                 enemy = villagers.obtain();
                 controller = villagers.controls.get((Villager) enemy);
-                enemy.initialize(directory, enemiesJson.get("villager"), this);
                 break;
-            case ARCHER:
+            case Archer:
                 enemy = archers.obtain();
                 controller = archers.controls.get((Archer) enemy);
-                enemy.initialize(directory, enemiesJson.get("archer"), this);
                 break;
         }
+        enemy.initialize(directory, enemiesJson.get(type.toString()), this);
         enemy.setPatrolPath(patrol);
         enemy.setPosition(x, y);
 
@@ -512,10 +508,10 @@ public class LevelContainer {
     }
 
     /**
-     * @param type  type of scene object to add (e.g. house)
-     * @param x     world x-position
-     * @param y     world y-position
-     * @param scale scale of object
+     * @param type    type of scene object to add (e.g. house)
+     * @param x       world x-position
+     * @param y       world y-position
+     * @param scale   scale of object
      * @param flipped {@link SceneObject#isFlipped()}
      * @return scene object added
      */
@@ -529,7 +525,7 @@ public class LevelContainer {
         object.setName(type);
         object.setFlipped(flipped);
 
-        if (Objects.equals(type, "lamp")){
+        if (Objects.equals(type, "lamp")) {
 
             Vector2 pos = new Vector2(board.worldToBoardX(x), board.worldToBoardY(y));
             PointLight light = new PointLight(rayHandler, 20, new Color(1, 1, 0.8f, 0.7f), 6, x, y);
@@ -547,12 +543,12 @@ public class LevelContainer {
         return lamps;
     }
 
-    public boolean isOn (Vector2 pos) {
+    public boolean isOn(Vector2 pos) {
         return lamps.get(pos).isOn();
     }
 
     public void toggleLamps() {
-        for(Map.Entry<Vector2, Lamp> entry : lamps.entrySet()) {
+        for (Map.Entry<Vector2, Lamp> entry : lamps.entrySet()) {
             entry.getValue().toggle();
         }
     }

@@ -54,7 +54,7 @@ public class Archer extends Enemy implements Pool.Poolable {
 //    }
 
     public EnemyType getEnemyType() {
-        return EnemyType.ARCHER;
+        return EnemyType.Archer;
     }
 
     /**

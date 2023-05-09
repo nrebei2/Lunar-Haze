@@ -153,7 +153,7 @@ public class CollisionController implements ContactListener {
     /**
      * Collision logic between a scene object and the player.
      *
-     * @param obj  The scene object
+     * @param obj    The scene object
      * @param player The player
      */
     private void handleCollision(SceneObject obj, Werewolf player) {
@@ -212,7 +212,7 @@ public class CollisionController implements ContactListener {
     /**
      * End of collision logic between a scene object and the player.
      *
-     * @param obj  The scene object
+     * @param obj    The scene object
      * @param player The player
      */
     private void endCollision(SceneObject obj, Werewolf player) {

@@ -2,10 +2,8 @@ package infinityx.lunarhaze.controllers;
 
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.fsm.StateMachine;
-import com.badlogic.gdx.ai.steer.behaviors.Face;
 import com.badlogic.gdx.ai.steer.behaviors.FollowPath;
 import com.badlogic.gdx.ai.steer.utils.Path;
-import com.badlogic.gdx.ai.steer.utils.RayConfiguration;
 import com.badlogic.gdx.ai.steer.utils.paths.LinePath;
 import com.badlogic.gdx.ai.utils.Collision;
 import com.badlogic.gdx.ai.utils.Ray;
@@ -22,21 +20,18 @@ import infinityx.lunarhaze.combat.AttackHandler;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.models.GameObject;
 import infinityx.lunarhaze.models.LevelContainer;
-import infinityx.lunarhaze.models.entity.Archer;
 import infinityx.lunarhaze.models.entity.Enemy;
 import infinityx.lunarhaze.models.entity.SceneObject;
-import infinityx.lunarhaze.models.entity.Villager;
 import infinityx.lunarhaze.models.entity.Werewolf;
 import infinityx.lunarhaze.physics.Box2DRaycastCollision;
 import infinityx.lunarhaze.physics.RaycastInfo;
 import infinityx.util.PatrolPath;
-import infinityx.util.PatrolRegion;
 import infinityx.util.astar.AStarPathFinding;
 
 /**
  * Controller class, handles logic for a single enemy
  */
-public class EnemyController{
+public class EnemyController {
     /**
      * Output collision cache from Box2DRaycastCollision
      */
@@ -277,8 +272,8 @@ public class EnemyController{
                     if (raycast.hit) {
                         map.dangerMap[i] = 1;
 
-                        for (int j = -2; j <= 2; j++ ){
-                            map.dangerMap[(i+j+map.getResolution())%map.getResolution()] = 1;
+                        for (int j = -2; j <= 2; j++) {
+                            map.dangerMap[(i + j + map.getResolution()) % map.getResolution()] = 1;
                         }
 
                     }
@@ -295,7 +290,7 @@ public class EnemyController{
                 if (!getAttackHandler().canStartNewAttack() || enemy.getHealthPercentage() < 0.5) {
                     Vector2 evade_dir = enemy.getPosition().sub(target.getPosition());
                     for (int i = 0; i < map.getResolution(); i++) {
-                        map.interestMap[i] = 1/evade_dir.len() * Math.max(0, map.dirFromSlot(i).dot(evade_dir.nor()));
+                        map.interestMap[i] = 1 / evade_dir.len() * Math.max(0, map.dirFromSlot(i).dot(evade_dir.nor()));
                     }
                 }
 
@@ -311,7 +306,7 @@ public class EnemyController{
         this.battleSB = new ContextSteering(enemy, combinedContext, 30);
     }
 
-    public AttackHandler getAttackHandler(){
+    public AttackHandler getAttackHandler() {
         return attackHandler;
     }
 

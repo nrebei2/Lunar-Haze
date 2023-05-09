@@ -8,10 +8,14 @@ import com.badlogic.gdx.utils.Array;
  */
 public class PatrolPath {
 
-    /** Current index into {@link #path} the enemy is considering moving towards */
+    /**
+     * Current index into {@link #path} the enemy is considering moving towards
+     */
     private int currentWayPoint;
 
-    /** Vertices of path */
+    /**
+     * Vertices of path
+     */
     Array<Vector2> path;
 
     /**
@@ -25,7 +29,6 @@ public class PatrolPath {
 
     /**
      * Creates a new PatrolPath instance with an empty path.
-     *
      */
     public PatrolPath() {
         this.path = new Array<>();

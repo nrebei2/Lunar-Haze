@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.graphics.GameCanvas;
@@ -26,7 +25,7 @@ public class AttackHitbox extends GameObject {
     private final AttackingGameObject attacker;
 
     /**
-     * @param attacker    entity this hitbox is parented to
+     * @param attacker entity this hitbox is parented to
      */
     public AttackHitbox(AttackingGameObject attacker) {
         super(0, 0);
@@ -60,7 +59,6 @@ public class AttackHitbox extends GameObject {
         this.setActive(false);
 
     }
-
 
 
     public AttackingGameObject getAttacker() {
@@ -118,6 +116,7 @@ public class AttackHitbox extends GameObject {
                 canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y), getAngle() + MathUtils.PI / 2,
                 textureScale * scale, textureScale * scale);
     }
+
     /**
      * Adjusts hitbox based on {@link #} transform
      */

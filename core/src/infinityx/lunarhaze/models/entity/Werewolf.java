@@ -74,7 +74,9 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
 
     public boolean isWindingUp;
 
-    /** Whether the player is in tall grass */
+    /**
+     * Whether the player is in tall grass
+     */
     public SceneObject inTallGrass;
 
     public AttackHitbox attackHitbox;
@@ -161,7 +163,7 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
         direction = Direction.RIGHT;
     }
 
-    public void switchToWolf(AssetDirectory directory, JsonValue json, LevelContainer container){
+    public void switchToWolf(AssetDirectory directory, JsonValue json, LevelContainer container) {
         JsonValue textures = json.get("textures");
         if (textures != null) {
             for (JsonValue tex : textures) {
@@ -272,11 +274,9 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
 //
 //    }
 
-    public AttackHitbox getAttackHitbox(){
+    public AttackHitbox getAttackHitbox() {
         return this.attackHitbox;
     }
-
-
 
 
     /**

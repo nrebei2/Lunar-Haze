@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
@@ -413,7 +412,8 @@ public class UIRender {
                 float scale = level.getPlayer().getNoiseRadius() * 0.63f;
                 Color color = Color.WHITE;
 
-                outer: for (Enemy enemy: level.getEnemies()) {
+                outer:
+                for (Enemy enemy : level.getEnemies()) {
                     switch (enemy.getDetection()) {
                         case INDICATOR:
                         case NOTICED:

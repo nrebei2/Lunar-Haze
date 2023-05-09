@@ -5,7 +5,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.Settings;
-import infinityx.lunarhaze.models.entity.Archer;
 import infinityx.lunarhaze.models.entity.Enemy;
 
 /**
@@ -75,7 +74,7 @@ public class EnemySpawner {
         time += delta;
         if (time >= enemyAddTime) {
             Vector2 position = spawnLocations.random();
-            Enemy newEnemy = container.addEnemy(Enemy.EnemyType.ARCHER, position.x, position.y);
+            Enemy newEnemy = container.addEnemy(Enemy.EnemyType.Archer, position.x, position.y);
             // This spawner is only used in battle phase
             newEnemy.setInBattle(true);
             enemyAddTime = MathUtils.random(addMin, addMax);

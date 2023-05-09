@@ -1,22 +1,14 @@
 package infinityx.lunarhaze.ai;
 
 import com.badlogic.gdx.ai.fsm.StateMachine;
-import com.badlogic.gdx.ai.msg.MessageDispatcher;
 import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.OrderedSet;
 import infinityx.lunarhaze.controllers.EnemyController;
 import infinityx.lunarhaze.controllers.EnemyState;
-import infinityx.lunarhaze.models.GameObject;
 import infinityx.lunarhaze.models.LevelContainer;
-import infinityx.lunarhaze.models.entity.Archer;
-import infinityx.lunarhaze.models.entity.Enemy;
-import infinityx.lunarhaze.models.entity.Villager;
 import infinityx.lunarhaze.models.entity.Werewolf;
 
 import java.util.Random;
@@ -77,12 +69,10 @@ public class TacticalManager implements Telegraph {
             //if behind enemy go attack
             if (control.isBehind(control.getEnemy(), target) && control.getAttackHandler().canStartNewAttack()) {
                 MessageManager.getInstance().dispatchMessage(null, enemy, ATTACK);
-            }
-            else if (control.getAttackHandler().canStartNewAttack() && rand.nextFloat() <= 0.1f){
+            } else if (control.getAttackHandler().canStartNewAttack() && rand.nextFloat() <= 0.1f) {
                 //attacking from front
                 MessageManager.getInstance().dispatchMessage(null, enemy, ATTACK);
-            }
-            else {
+            } else {
                 MessageManager.getInstance().dispatchMessage(null, enemy, STRAFE);
             }
 

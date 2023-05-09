@@ -1,9 +1,7 @@
 package infinityx.lunarhaze.models;
 
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
-import infinityx.lunarhaze.combat.AttackHitbox;
 
 /**
  * A game object that can and can be attack

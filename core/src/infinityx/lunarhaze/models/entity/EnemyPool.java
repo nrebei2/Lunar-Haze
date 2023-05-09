@@ -48,7 +48,8 @@ public class EnemyPool<T extends Enemy> extends Pool<T> {
                 T e = enemyType.getDeclaredConstructor().newInstance();
                 enemies.add(e);
                 controls.put(e, new EnemyController(e));
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException ex) {
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                     NoSuchMethodException ex) {
                 throw new RuntimeException("Failed to create enemy instance of type " + enemyType.getSimpleName(), ex);
             }
         }
@@ -69,7 +70,8 @@ public class EnemyPool<T extends Enemy> extends Pool<T> {
                 enemies.add(enemy);
                 controls.put(enemy, new EnemyController(enemy));
                 return enemy;
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException ex) {
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                     NoSuchMethodException ex) {
                 throw new RuntimeException("Failed to create enemy instance of type " + enemies.first().getClass().getSimpleName(), ex);
             }
         }

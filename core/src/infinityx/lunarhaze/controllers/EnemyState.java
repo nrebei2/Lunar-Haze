@@ -4,14 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
-import com.badlogic.gdx.ai.steer.utils.Path;
 import com.badlogic.gdx.ai.utils.ArithmeticUtils;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.ai.TacticalManager;
 import infinityx.lunarhaze.models.entity.Enemy;
 import infinityx.util.AngleUtils;
-import infinityx.util.Box2dLocation;
 
 /**
  * States for each enemy's state machine
@@ -49,7 +47,6 @@ public enum EnemyState implements State<EnemyController> {
      * Question mark above enemy, turns towards location
      */
     NOTICED() {
-
         @Override
         public void enter(EnemyController entity) {
             entity.getEnemy().setMaxLinearSpeed(1.3f);
@@ -232,8 +229,7 @@ public enum EnemyState implements State<EnemyController> {
                         entity.updatePath();
                         entity.time = 0;
                     }
-                }
-                else {
+                } else {
                     //go to battle mode
                     // Always face towards target
                     entity.getEnemy().setIndependentFacing(true);
@@ -260,7 +256,7 @@ public enum EnemyState implements State<EnemyController> {
                 control.strafe.setEnabled(false);
                 control.evade.setEnabled(false);
             }
-            if (telegram.message == TacticalManager.STRAFE){
+            if (telegram.message == TacticalManager.STRAFE) {
                 control.strafe.setEnabled(true);
                 control.evade.setEnabled(true);
                 control.attack.setEnabled(false);
@@ -289,8 +285,7 @@ public enum EnemyState implements State<EnemyController> {
             if (dist <= 0.3f) {
                 if (entity.getEnemy().rand.nextFloat() <= 0.5f) {
                     entity.getStateMachine().changeState(LOOK_AROUND);
-                }
-                else{
+                } else {
                     Vector2 patrol = entity.getPatrolTarget();
                     entity.targetPos.set(patrol);
                     entity.updatePath();

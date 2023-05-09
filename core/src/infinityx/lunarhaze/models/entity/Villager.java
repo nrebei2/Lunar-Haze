@@ -1,18 +1,17 @@
 package infinityx.lunarhaze.models.entity;
 
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.combat.AttackHitbox;
 import infinityx.lunarhaze.models.LevelContainer;
 
-public class Villager extends Enemy{
+public class Villager extends Enemy {
     /**
      * Hitbox parented to the entity. Only active when {@link #isAttacking}
      */
-    public AttackHitbox attackHitbox ;
+    public AttackHitbox attackHitbox;
 
-    public Villager(){
+    public Villager() {
         super();
     }
 
@@ -57,7 +56,7 @@ public class Villager extends Enemy{
 //
 //    }
 
-    public AttackHitbox getAttackHitbox(){
+    public AttackHitbox getAttackHitbox() {
         return attackHitbox;
     }
 
@@ -71,6 +70,6 @@ public class Villager extends Enemy{
 
     @Override
     public EnemyType getEnemyType() {
-        return EnemyType.VILLAGER;
+        return EnemyType.Villager;
     }
 }
