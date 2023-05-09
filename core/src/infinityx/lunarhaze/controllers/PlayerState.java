@@ -13,11 +13,6 @@ public enum PlayerState implements State<PlayerController> {
     IDLE() {
         @Override
         public void enter(PlayerController entity) {
-            if (entity.getPlayer().isOnMoonlight) {
-                entity.player.setTargetStealth(PlayerController.MOON_STEALTH);
-            } else {
-                entity.player.setTargetStealth(PlayerController.STILL_STEALTH);
-            }
             setTexture(entity, "idle");
         }
 
@@ -66,6 +61,7 @@ public enum PlayerState implements State<PlayerController> {
         public void enter(PlayerController entity) {
             direction = entity.player.direction;
             setTexture(entity, "walk");
+            entity.player.setTargetStealth(entity.player.getTargetStealth() + PlayerController.WALK_STEALTH);
         }
 
         @Override
@@ -83,16 +79,16 @@ public enum PlayerState implements State<PlayerController> {
                 entity.getStateMachine().changeState(PlayerState.RUN);
             }
 
-            if (entity.getPlayer().isOnMoonlight) {
-                entity.player.setTargetStealth(PlayerController.MOON_STEALTH);
-            } else {
-                entity.player.setTargetStealth(PlayerController.WALK_STEALTH);
-            }
 
             // Animations
             if (entity.player.direction == direction) return;
             setTexture(entity, "walk");
             direction = entity.player.direction;
+        }
+
+        @Override
+        public void exit(PlayerController entity) {
+            entity.player.setTargetStealth(entity.player.getTargetStealth() - PlayerController.WALK_STEALTH);
         }
     },
 
@@ -103,7 +99,6 @@ public enum PlayerState implements State<PlayerController> {
         @Override
         public void enter(PlayerController entity) {
             direction = entity.player.direction;
-            entity.player.setTargetStealth(PlayerController.RUN_STEALTH);
             setTexture(entity, "walk");
             // texture update should be proportional to speed
         }
