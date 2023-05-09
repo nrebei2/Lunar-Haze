@@ -1,5 +1,8 @@
 {
   "textures": {
+    "filter": "screens/game-screen/filter.png",
+    "defeat": "screens/game-screen/defeat.png",
+    "victory": "screens/game-screen/victory.png",
     "background": "screens/menu-screen/menu_bg.png",
     "play": "screens/menu-screen/play.png",
     "menu-logo": "screens/menu-screen/menu_logo.png",

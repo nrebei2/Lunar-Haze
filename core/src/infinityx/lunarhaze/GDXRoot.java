@@ -268,6 +268,11 @@ public class GDXRoot extends Game implements ScreenObserver {
                     allocate.setCanvas(canvas);
                     setScreen(allocate);
                     break;
+                case GameMode.GO_NEXT:
+                    selection.setLevelSelected(selection.getLevelSelected()+1);
+                    game.setLevel(selection.getLevelSelected());
+                    game.setupLevel();
+                    setScreen(game);
             }
         } else if (screen == pause) {
             switch (exitCode) {
