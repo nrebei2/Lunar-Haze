@@ -21,6 +21,7 @@ import infinityx.lunarhaze.models.entity.EnemyPool;
 import infinityx.lunarhaze.models.entity.SceneObject;
 import infinityx.lunarhaze.models.entity.Werewolf;
 import infinityx.util.Drawable;
+import infinityx.util.PatrolPath;
 import infinityx.util.PatrolRegion;
 import infinityx.util.astar.AStarMap;
 import infinityx.util.astar.AStarPathFinding;
@@ -287,7 +288,7 @@ public class LevelContainer {
         Enemy enemy = enemies.obtain();
         enemy.initialize(directory, enemiesJson.get(type), this);
 
-        enemy.setPatrolPath(new PatrolRegion(0, 0, 0, 0));
+        enemy.setPatrolPath(new PatrolPath(new Array<Vector2>()));
         enemy.setPosition(x, y);
 
         enemy.setName(type);
@@ -305,7 +306,7 @@ public class LevelContainer {
      * @param patrol patrol path for this enemy
      * @return Enemy added
      */
-    public Enemy addEnemy(String type, float x, float y, PatrolRegion patrol) {
+    public Enemy addEnemy(String type, float x, float y, PatrolPath patrol) {
         Enemy enemy = enemies.obtain();
         enemy.initialize(directory, enemiesJson.get(type), this);
 

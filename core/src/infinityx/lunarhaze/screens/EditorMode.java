@@ -36,6 +36,7 @@ import infinityx.lunarhaze.models.GameObject;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.entity.Enemy;
 import infinityx.lunarhaze.models.entity.SceneObject;
+import infinityx.util.PatrolPath;
 import infinityx.util.PatrolRegion;
 import infinityx.util.ScreenObservable;
 
@@ -597,13 +598,12 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     private Enemy placeEnemy() {
         EnemySelection enemySelection = (EnemySelection) selected;
-        // Center initial region around placed enemy
-        PatrolRegion initialRegion = new PatrolRegion(
-                mouseWorld.x - 1, mouseWorld.y - 1,
-                mouseWorld.x + 1, mouseWorld.y + 1
+        // Initial waypoint as enemy position
+        Enemy newEnemy = level.addEnemy(
+                enemySelection.enemy.getName(),
+                mouseWorld.x, mouseWorld.y,
+                enemySelection.enemy.getPatrolPath().addWaypoint(mouseWorld.x, mouseWorld.y)
         );
-
-        Enemy newEnemy = level.addEnemy(enemySelection.enemy.getName(), mouseWorld.x, mouseWorld.y, initialRegion);
         newEnemy.setScale(enemySelection.enemy.getScale());
         return newEnemy;
     }
@@ -1040,20 +1040,25 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         if (showEnemyControllerWindow.get()) {
             createEnemyControllerWindow();
             canvas.begin(GameCanvas.DrawPass.SHAPE, level.getView().x, level.getView().y);
-            PatrolRegion curRegion = currEnemyControlled.getPatrolPath();
+            canvas.shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+            canvas.shapeRenderer.setColor(Color.PINK);
 
-            // Draw the patrol region in pink
-            canvas.drawRecOutline(
-                    curRegion.getBottomLeft()[0],
-                    curRegion.getBottomLeft()[1],
-                    curRegion.getWidth(),
-                    curRegion.getHeight(),
-                    Color.PINK
-            );
+            PatrolPath curPath = currEnemyControlled.getPatrolPath();
+            for(int i = 0; i < curPath.getWaypointCount() - 1; i++)
+            {
+                canvas.shapeRenderer.line(
+                        curPath.getWaypointAtIndex(i).x,
+                        curPath.getWaypointAtIndex(i).y,
+                        curPath.getWaypointAtIndex(i+1).x,
+                        curPath.getWaypointAtIndex(i+1).y
+                );
+            }
+
+            canvas.shapeRenderer.end();
             canvas.end();
         }
 
-        //ImGui.showDemoWindow();
+        ImGui.showDemoWindow();
 
         ImGui.render();
         imGuiGl.renderDrawData(ImGui.getDrawData());
@@ -1850,11 +1855,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             if (ImGui.menuItem("Redo")) {
                 redo();
             }
-            //ImGui.spacing();
-            //ImGui.spacing();
-            //if (ImGui.menuItem("Clear Board")) {
-            //
-            //}
             ImGui.endMenu();
         }
     }
@@ -2120,34 +2120,55 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         ImGui.setNextWindowSize(600, 160, ImGuiCond.FirstUseEver);
 
         ImGui.begin("Enemy Controller", showEnemyControllerWindow);
-        ImGui.text("Enter patrol region:");
+        ImGui.text("Patrol paths:");
 
-        PatrolRegion curRegion = currEnemyControlled.getPatrolPath();
-
-        // Force non-negative patrol width and height
-        if (ImGui.sliderFloat2(
-                "Bottom Left Position",
-                curRegion.getBottomLeft(),
-                0, Math.max(board.getWorldWidth(), board.getWorldHeight())
-        )) {
-            if (curRegion.getWidth() < 0) {
-                curRegion.getBottomLeft()[0] = curRegion.getTopRight()[0];
-            }
-            if (curRegion.getHeight() < 0) {
-                curRegion.getBottomLeft()[1] = curRegion.getTopRight()[1];
-            }
+        if (ImGui.isItemHovered()) {
+            ImGui.beginTooltip();
+            ImGui.text("Add vertices to define a polygonal chain. Note order matters");
+            ImGui.endTooltip();
         }
-        if (ImGui.sliderFloat2(
-                "Top Right Position",
-                curRegion.getTopRight(),
-                0, Math.max(board.getWorldWidth(), board.getWorldHeight())
-        )) {
-            if (curRegion.getWidth() < 0) {
-                curRegion.getTopRight()[0] = curRegion.getBottomLeft()[0];
+
+        for (int i = 0; i < currEnemyControlled.getPatrolPath().getWaypointCount(); i++) {
+            Vector2 waypoint = currEnemyControlled.getPatrolPath().getWaypointAtIndex(i);
+
+            ImGui.pushID(i);
+
+            // Close the node if needed
+            if (nodeToClose == i) {
+                ImGui.setNextItemOpen(false, ImGuiCond.Always);
+                nodeToClose = -1;
             }
-            if (curRegion.getHeight() < 0) {
-                curRegion.getTopRight()[1] = curRegion.getBottomLeft()[1];
+            if (ImGui.treeNode("Location " + (i + 1))) {
+                if (currentNode == i) {
+                    ImGui.pushItemWidth(120);
+                    ImGui.text("Edit Position Manually:");
+                    float[] positionX = {waypoint.x};
+                    if (ImGui.dragFloat("##positionX", positionX, 0.05f, 0, board.getWorldWidth(), "X: %.01f")) {
+                        waypoint.x = positionX[0];
+                    }
+
+                    ImGui.sameLine();
+                    float[] positionY = {waypoint.y};
+                    if (ImGui.dragFloat("##positionY", positionY, 0.05f, 0, board.getWorldHeight(), "Y: %.01f")) {
+                        waypoint.y = positionY[0];
+                    }
+                    ImGui.popItemWidth();
+
+                    if (ImGui.button("Remove Location")) {
+                        currEnemyControlled.getPatrolPath().removeWaypoint(i);
+                    }
+                } else {
+                    nodeToClose = currentNode;
+                    currentNode = i;
+                }
+
+                ImGui.treePop();
             }
+            ImGui.popID();
+        }
+
+        if (ImGui.button("Add Location")) {
+            currEnemyControlled.getPatrolPath().addWaypoint(0, 0);
         }
 
         if (ImGui.button("Close")) {
@@ -2203,7 +2224,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 Enemy newEnemy = level.addEnemy(
                         enemy.type,
                         mouseWorld.x, mouseWorld.y,
-                        new PatrolRegion(0, 0, 0, 0)
+                        new PatrolPath()
                 );
                 removeSelection();
                 selected = new EnemySelection(newEnemy);

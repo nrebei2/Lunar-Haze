@@ -11,6 +11,7 @@ import infinityx.lunarhaze.models.Board;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.entity.Enemy;
 import infinityx.lunarhaze.models.entity.SceneObject;
+import infinityx.util.PatrolPath;
 
 import java.util.ArrayList;
 
@@ -202,7 +203,8 @@ public class LevelSerializer {
      * "position": [int, int],
      * "patrol": [
      * [int, int],
-     * [int, int]
+     * [int, int],
+     * ...
      * ]
      * },
      * ...
@@ -240,13 +242,11 @@ public class LevelSerializer {
             currEnemy.addChild("position", pos);
 
             JsonValue patrol = new JsonValue(JsonValue.ValueType.array);
-            // Bottom left
-            for (float patrolPos : e.getPatrolPath().getBottomLeft()) {
-                patrol.addChild(new JsonValue(patrolPos));
-            }
-            // Top right
-            for (float patrolPos : e.getPatrolPath().getTopRight()) {
-                patrol.addChild(new JsonValue(patrolPos));
+            for (Vector2 loc : e.getPatrolPath().getPath()) {
+                JsonValue location = new JsonValue(JsonValue.ValueType.array);
+                location.addChild(new JsonValue(loc.x));
+                location.addChild(new JsonValue(loc.y));
+                patrol.addChild(location);
             }
 
             currEnemy.addChild("patrol", patrol);
