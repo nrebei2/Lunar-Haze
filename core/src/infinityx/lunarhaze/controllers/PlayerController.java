@@ -242,9 +242,6 @@ public class PlayerController {
      * @param delta Number of seconds since last animation frame
      */
     public void resolveStealth(float delta) {
-        if (player.inTallGrass) {
-            player.setTargetStealth(PlayerController.STILL_STEALTH);
-        }
         float proportion = player.getStealth();
         if (player.getTargetStealth() > proportion) {
             if (player.getTargetStealth() - proportion >= CHANGE_STEALTH_RATE / 1.0f * delta) {

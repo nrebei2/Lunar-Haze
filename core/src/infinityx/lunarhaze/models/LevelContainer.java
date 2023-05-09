@@ -287,6 +287,7 @@ public class LevelContainer {
         enemies.free(enemy);
         activeEnemies.removeValue(enemy, true);
         drawables.removeValue(enemy, true);
+        drawables.removeValue(enemy.attackHitbox, true);
         enemy.setActive(false);
         enemy.getFlashlight().setActive(false);
     }

@@ -59,7 +59,7 @@
     "bodytype": "dynamic",
     "density": 1.0,
     "friction": 0.0,
-    "restitution": 1.0,
+    "restitution": 0.2,
     "damping": 0.0,
     "health": 8,
     "attack": {
