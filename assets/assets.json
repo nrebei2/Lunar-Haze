@@ -345,6 +345,18 @@
         }
       }
     },
+    "werewolf": {
+      "file": 	"images/player/heavyattack_effect.png",
+      "wrap":  	false,
+      "sprites":	{
+        "heavy-effect" : {
+          "size" : 5,
+          "rows" : 1,
+          "cols" : 5
+        }
+      }
+    },
+
 
     "werewolf": {
       "file": 	"images/player/walk_spritesheet_left.png",
@@ -442,8 +454,6 @@
     "lycan.idle-l": "images/lycan/left_still.png",
     "lycan.idle-b": "images/lycan/back_still.png",
     "lycan.idle-f": "images/lycan/front_still.png",
-
-
     "villager":{
       "file": 	"images/villager/enemy1-walk-down.png",
       "wrap":  	false,

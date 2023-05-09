@@ -319,9 +319,9 @@
           "hitbox": {
             "name": "werewolf.attack-effect",
             "durations": [
-              0.12,
-              0.12,
-              0.12
+              0.2,
+              0.4,
+              0.2
             ]
           }
         },
