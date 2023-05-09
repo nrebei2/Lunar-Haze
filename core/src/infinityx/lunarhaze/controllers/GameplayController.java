@@ -335,8 +335,8 @@ public class GameplayController {
                 tacticalManager.update();
             }
         }
-        for (EnemyController controller: enemyControllers) {
-            controller.update(container, delta);
+        for (int i = 0; i < enemyControllers.size; i++) {
+            enemyControllers.get(i).update(container, delta);
         }
     }
 }
