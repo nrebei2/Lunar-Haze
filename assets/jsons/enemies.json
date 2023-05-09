@@ -1,7 +1,7 @@
 {
   "villager": {
     "flashlight": {
-      "color":		[0.3, 0.0, 0.9, 0.9],
+      "color":		[1.0, 1.0, 1.0, 0.7],
       "distance":		   4,
       "rays":			10,
       "soft":			false,
@@ -70,7 +70,7 @@
       "immunity": 0.5,
       "lockout": 0.8,
       "hitbox": {
-        "range": 1.75,
+        "range": 0.8,
         "width": 1.25,
         "textures": {
           "hitbox": {
@@ -90,7 +90,7 @@
   },
   "archer": {
     "flashlight": {
-      "color":		[0.3, 0.0, 0.9, 0.9],
+      "color":		[1.0, 1.0, 1.0, 0.7],
       "distance":		   4,
       "rays":			10,
       "soft":			false,
@@ -131,7 +131,7 @@
     "attack": {
       "knockback": 0.2,
       "damage": 0.3,
-      "range": 2,
+      "range": 2.5,
       "cooldown": 1,
       "length": 0.5,
       "immunity": 0.5,

@@ -376,7 +376,7 @@ public class UIRender {
         title_left = directory.getEntry("title-left", Texture.class);
         title_right = directory.getEntry("title-right", Texture.class);
         attack_pow_icon = directory.getEntry("attack-pow-icon", Texture.class);
-        attack_ran_icon = directory.getEntry("attack-ran-icon", Texture.class);
+        attack_ran_icon = directory.getEntry("bar-all-filled", Texture.class);
         ellipse = directory.getEntry("ellipse", Texture.class);
         dash_bar = directory.getEntry("bar", Texture.class);
         dash_bar_all_filled = directory.getEntry("bar-all-filled", Texture.class);
@@ -770,7 +770,7 @@ public class UIRender {
                 attack_ran_icon.getWidth() / 2, attack_ran_icon.getHeight() / 2,
                 stroke_width + SQUARE_STROKE_WIDTH * 2 + GAP_DIST,
                 canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.5f,
-                0, 1.0f, 1.0f);
+                0, 0.7f, 0.7f);
         canvas.drawText(pc.getNumRangePress() + "", UIFont_small,
                 stroke_width + SQUARE_STROKE_WIDTH * 2 + attack_pow_icon.getWidth() / 2 + GAP_DIST,
                 canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f + UIFont_small.getCapHeight());

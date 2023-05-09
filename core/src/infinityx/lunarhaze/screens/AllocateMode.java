@@ -358,7 +358,8 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
         } else if (pressStateAttackRan == 2) {
             pressStateAttackRan = 0;
             if (rangeCount < 5) {
-                playerController.allocateAttackRange();
+//                playerController.allocateAttackRange();
+                playerController.allocateDashCooldown();
                 rangeCount++;
                 playerController.setNumRangePress(rangeCount);
             }
@@ -415,7 +416,7 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
                 BUTTON_SCALE * scale, BUTTON_SCALE * scale);
 
         drawStats("Attack Power");
-        drawStats("Attack Range");
+        drawStats("Dash Cooldown");
         drawStats("Health");
         canvas.end();
     }
@@ -433,7 +434,7 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
             buttonCenterY = centerY1;
             icon = attack_pow_all;
             stat = powerCount;
-        } else if (s == "Attack Range") {
+        } else if (s == "Dash Cooldown") {
             Texture currButton = addAttackRanButton;
             buttonCenterY = centerY2;
             icon = attack_ran_all;

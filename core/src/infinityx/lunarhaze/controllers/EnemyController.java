@@ -5,6 +5,7 @@ import com.badlogic.gdx.ai.fsm.StateMachine;
 import com.badlogic.gdx.ai.steer.behaviors.Face;
 import com.badlogic.gdx.ai.steer.behaviors.FollowPath;
 import com.badlogic.gdx.ai.steer.utils.Path;
+import com.badlogic.gdx.ai.steer.utils.RayConfiguration;
 import com.badlogic.gdx.ai.steer.utils.paths.LinePath;
 import com.badlogic.gdx.ai.utils.Collision;
 import com.badlogic.gdx.ai.utils.Ray;
@@ -33,10 +34,14 @@ import infinityx.util.astar.AStarPathFinding;
  */
 public class EnemyController extends AttackHandler {
     /**
+     * Output collision cache from Box2DRaycastCollision
+     */
+    final Collision<Vector2> collCache;
+
+    /**
      * Raycast cache for target detection
      */
-    private final RaycastInfo raycast;
-    public Vector2 flank_pos;
+    final RaycastInfo raycast;
 
     /**
      * Collision detector for target detection
@@ -44,24 +49,14 @@ public class EnemyController extends AttackHandler {
     private Box2DRaycastCollision raycastCollision;
 
     /**
-     * raycast for enemy communication
+     * Collision detector for path detection
      */
-    private final RaycastInfo commRay;
+    public Box2DRaycastCollision pathCollision;
 
     /**
      * Collision detector for enemy communication
      */
     public Box2DRaycastCollision communicationCollision;
-
-    /**
-     * Cache for collision output from communicationCollision
-     */
-    Collision<Vector2> commCache = new Collision<>(new Vector2(), new Vector2());
-
-    /**
-     * Cache for collision output from raycastCollision
-     */
-    Collision<Vector2> collisionCache = new Collision<>(new Vector2(), new Vector2());
 
     /**
      * Pathfinder reference from level container
@@ -138,6 +133,8 @@ public class EnemyController extends AttackHandler {
 
     public ContextBehavior evade;
 
+    Ray<Vector2> rayCache = new Ray<>(new Vector2(), new Vector2());
+
     public Sound getAlertSound() {
         return alert_sound;
     }
@@ -161,13 +158,7 @@ public class EnemyController extends AttackHandler {
         this.combinedContext = new CombinedContext(enemy);
 
         this.raycast = new RaycastInfo(enemy);
-        raycast.addIgnores(GameObject.ObjectType.ENEMY, GameObject.ObjectType.HITBOX);
-
-        this.commRay = new RaycastInfo(enemy);
-        commRay.addIgnores(GameObject.ObjectType.WEREWOLF);
-
-        this.flank_pos = new Vector2();
-
+        this.collCache = new Collision<>(new Vector2(), new Vector2());
     }
 
     /**
@@ -175,10 +166,24 @@ public class EnemyController extends AttackHandler {
      *
      * @param container holding surrounding model objects
      */
-    public void populate(LevelContainer container) {
+    public void populate(final LevelContainer container) {
         target = container.getPlayer();
         this.raycastCollision = new Box2DRaycastCollision(container.getWorld(), raycast);
-        this.communicationCollision = new Box2DRaycastCollision(container.getWorld(), commRay);
+        raycastCollision
+                .addIgnore(GameObject.ObjectType.ENEMY)
+                .addIgnore(GameObject.ObjectType.HITBOX);
+
+        this.communicationCollision = new Box2DRaycastCollision(container.getWorld(), raycast);
+        communicationCollision
+                .addIgnore(GameObject.ObjectType.WEREWOLF)
+                .addIgnore(GameObject.ObjectType.HITBOX);
+
+        this.pathCollision = new Box2DRaycastCollision(container.getWorld(), raycast);
+        pathCollision
+                .addIgnore(GameObject.ObjectType.WEREWOLF)
+                .addIgnore(GameObject.ObjectType.ENEMY)
+                .addIgnore(GameObject.ObjectType.HITBOX);
+
         this.pathfinder = container.pathfinder;
 
         // Dummy path
@@ -187,15 +192,16 @@ public class EnemyController extends AttackHandler {
         waypoints.add(new Vector2());
         followPathSB = new FollowPath(enemy, new LinePath(waypoints), 0.05f, 0.5f);
 
+
         // Prefer directions towards target
-        attack = new ContextBehavior(enemy, true) {
+        attack = new ContextBehavior(enemy, false) {
             @Override
             protected ContextMap calculateRealMaps(ContextMap map) {
                 map.setZero();
                 if (canStartNewAttack()) {
                     Vector2 targetDir = target.getPosition().sub(enemy.getPosition()).nor();
                     for (int i = 0; i < map.getResolution(); i++) {
-                        map.interestMap[i] += Math.max(0, map.dirFromSlot(i).dot(targetDir));
+                        map.interestMap[i] = Math.max(0, map.dirFromSlot(i).dot(targetDir));
                     }
                 }
 
@@ -206,7 +212,6 @@ public class EnemyController extends AttackHandler {
         strafe = new Strafe(enemy, target, Strafe.Rotation.COUNTERCLOCKWISE);
 
         separation = new ContextBehavior(enemy, true) {
-            Ray<Vector2> rayCache = new Ray<>(new Vector2(), new Vector2());
 
             @Override
             protected ContextMap calculateRealMaps(ContextMap map) {
@@ -216,9 +221,14 @@ public class EnemyController extends AttackHandler {
                     // Ray extends two units
                     rayCache.set(enemy.getPosition(), dir.scl(1.5f).add(enemy.getPosition()));
                     //System.out.printf("Ray: (%s, %s)\n", rayCache.start, rayCache.end);
-                    communicationCollision.findCollision(commCache, rayCache);
-                    if (commRay.hit) {
-                        map.dangerMap[i] += commRay.fraction;
+                    communicationCollision.findCollision(collCache, rayCache);
+                    if (raycast.hit) {
+                        map.dangerMap[i] = 1;
+
+                        for (int j = -2; j <= 2; j++ ){
+                            map.dangerMap[(i+j+map.getResolution())%map.getResolution()] = 1;
+                        }
+
                     }
                 }
 
@@ -231,9 +241,9 @@ public class EnemyController extends AttackHandler {
             protected ContextMap calculateRealMaps(ContextMap map) {
                 map.setZero();
                 if (!canStartNewAttack() || enemy.getHealthPercentage() < 0.5) {
-                    Vector2 evade_dir = enemy.getPosition().sub(target.getPosition()).nor();
+                    Vector2 evade_dir = enemy.getPosition().sub(target.getPosition());
                     for (int i = 0; i < map.getResolution(); i++) {
-                        map.interestMap[i] +=  Math.max(0, map.dirFromSlot(i).dot(evade_dir));
+                        map.interestMap[i] = 1/evade_dir.len() * Math.max(0, map.dirFromSlot(i).dot(evade_dir.nor()));
                     }
                 }
 
@@ -245,7 +255,8 @@ public class EnemyController extends AttackHandler {
         this.combinedContext.add(separation);
         this.combinedContext.add(evade);
 
-        this.battleSB = new ContextSteering(enemy, combinedContext, 20);
+        //Resolution is set to 8 to represent the 8 directions in which enemies can move
+        this.battleSB = new ContextSteering(enemy, combinedContext, 30);
     }
 
     /**
@@ -333,7 +344,7 @@ public class EnemyController extends AttackHandler {
         if (inBattle) return Enemy.Detection.ALERT;
 
         Interpolation lerp = Interpolation.linear;
-        raycastCollision.findCollision(collisionCache, new Ray<>(enemy.getPosition(), target.getPosition()));
+        raycastCollision.findCollision(collCache, new Ray<>(enemy.getPosition(), target.getPosition()));
 
         if (!raycast.hit) {
             // For any reason...
@@ -420,11 +431,13 @@ public class EnemyController extends AttackHandler {
         return patrolTarget.set(path.getNextPatrol());
     }
 
+    /** Ray cache for find collision */
+    Ray<Vector2> collRay = new Ray<>(new Vector2(), new Vector2());
     /**
      * used to find ray collsion between this enemy and another enemy
      */
     public void findCollision(Enemy target) {
-        communicationCollision.findCollision(commCache, new Ray<>(enemy.getPosition(), target.getPosition()));
+        communicationCollision.findCollision(collCache, collRay.set(enemy.getPosition(), target.getPosition()));
     }
 
     /**
@@ -453,5 +466,15 @@ public class EnemyController extends AttackHandler {
 
     public Werewolf getTarget() {
         return target;
+    }
+
+    /**
+     * helper method for determining if an enemy is behind the player (greater than 90 degrees)
+     */
+    public boolean isBehind(Enemy enemy, Werewolf target) {
+        Vector2 target_to_enemy = enemy.getPosition().sub(target.getPosition()).nor();
+        double dot = target_to_enemy.x * Math.cos(target.getOrientation()) + target_to_enemy.y * Math.sin(target.getOrientation());
+
+        return dot < 0;
     }
 }
