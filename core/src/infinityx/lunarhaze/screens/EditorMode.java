@@ -120,7 +120,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
          * Enum specifying the type of the selected object.
          */
         public enum Type {
-            TILE, PLAYER, ENEMY, OBJECT, EXIST_ENEMY, EXIST_OBJECT, MOONLIGHT
+            TILE, PLAYER, ENEMY, OBJECT, EXIST_ENEMY, EXIST_OBJECT, MOONLIGHT, CONTROL_POINT
         }
 
         /**
@@ -247,6 +247,31 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         @Override
         public Type getType() {
             return Type.EXIST_OBJECT;
+        }
+    }
+
+    /**
+     * The user has selected a control point for an enemies  object in the scene
+     */
+    class ControlPoint extends Selected {
+        public ControlPoint(int index, Vector2 position) {
+            this.index = index;
+            this.position = position.cpy();
+        }
+
+        /**
+         * Index into patrol path
+         */
+        public int index;
+
+        /**
+         * Position when selected
+         */
+        public Vector2 position;
+
+        @Override
+        public Type getType() {
+            return Type.CONTROL_POINT;
         }
     }
 
@@ -1040,19 +1065,30 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         if (showEnemyControllerWindow.get()) {
             createEnemyControllerWindow();
             canvas.begin(GameCanvas.DrawPass.SHAPE, level.getView().x, level.getView().y);
-            canvas.shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+            canvas.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
             canvas.shapeRenderer.setColor(Color.PINK);
 
+            // Draw the path in pink, edges and vertices
             PatrolPath curPath = currEnemyControlled.getPatrolPath();
-            for(int i = 0; i < curPath.getWaypointCount() - 1; i++)
+            int i = 0;
+            while (i < curPath.getWaypointCount() - 1)
             {
-                canvas.shapeRenderer.line(
-                        curPath.getWaypointAtIndex(i).x,
-                        curPath.getWaypointAtIndex(i).y,
+                Vector2 waypoint = curPath.getWaypointAtIndex(i);
+                canvas.shapeRenderer.rectLine(
+                        waypoint.x,
+                        waypoint.y,
                         curPath.getWaypointAtIndex(i+1).x,
-                        curPath.getWaypointAtIndex(i+1).y
+                        curPath.getWaypointAtIndex(i+1).y,
+                        0.07f
                 );
+                canvas.shapeRenderer.circle(waypoint.x, waypoint.y, 0.14f, 15);
+                i++;
             }
+            canvas.shapeRenderer.circle(
+                    curPath.getWaypointAtIndex(i).x,
+                    curPath.getWaypointAtIndex(i).y,
+                    0.14f, 15
+            );
 
             canvas.shapeRenderer.end();
             canvas.end();
@@ -1175,7 +1211,20 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                     mouseWorld.x + 0.05f,
                     mouseWorld.y + 0.05f
             );
-            return true;
+
+            if (selected != null || showEnemyControllerWindow.get() == false)
+                return true;
+
+            // Check if a control point in enemy path was selected
+            float selectionThreshold = 0.14f;
+
+            for (int i = 0; i < currEnemyControlled.getPatrolPath().getWaypointCount(); i++) {
+                Vector2 waypoint = currEnemyControlled.getPatrolPath().getWaypointAtIndex(i);
+                if (mouseWorld.dst(waypoint) <= selectionThreshold) {
+                    //selectedWaypointIndex = i;
+                    break;
+                }
+            }
         }
 
         placeSelection();
@@ -2138,10 +2187,10 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 ImGui.setNextItemOpen(false, ImGuiCond.Always);
                 nodeToClose = -1;
             }
-            if (ImGui.treeNode("Location " + (i + 1))) {
+            if (ImGui.treeNode("Waypoint " + (i + 1))) {
                 if (currentNode == i) {
                     ImGui.pushItemWidth(120);
-                    ImGui.text("Edit Position Manually:");
+                    ImGui.text("Position:");
                     float[] positionX = {waypoint.x};
                     if (ImGui.dragFloat("##positionX", positionX, 0.05f, 0, board.getWorldWidth(), "X: %.01f")) {
                         waypoint.x = positionX[0];
