@@ -5,6 +5,9 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.controllers.GameplayController;
@@ -14,8 +17,11 @@ import infinityx.lunarhaze.controllers.InputController;
 import infinityx.lunarhaze.controllers.LevelParser;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.graphics.UIRender;
+import infinityx.lunarhaze.models.Dust;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.util.ScreenObservable;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -33,6 +39,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
      * Reference to GameCanvas created by the root
      */
     private final GameSetting setting;
+
     // Exit codes
     /**
      * User requested to go to menu
@@ -129,11 +136,6 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
     private boolean battle_playing = false;
 
     /**
-     * Current level of the game
-     */
-    private int current_level;
-
-    /**
      * Reference to drawing context to display graphics (VIEW CLASS)
      */
     private GameCanvas canvas;
@@ -165,13 +167,42 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
      */
     private int level;
 
+    /**
+     * Contains constants for dust particle system settings
+     */
+    private JsonValue dustInfo;
+
+    /**
+     * dustPool[p] holds the dust pool at tile p. Tile p should have collectable moonlight on it.
+     */
+    private Dust[] dustList;
+
+    /**
+     * How many dust particles can be on a tile at once
+     */
+    public static final int POOL_CAPACITY = 20;
+
     public GameMode(GameCanvas canvas, GameSetting setting) {
         this.canvas = canvas;
         this.setting = setting;
         // Create the controllers:
         inputController = InputController.getInstance();
         gameplayController = new GameplayController(setting);
-    }
+
+        dustList = new Dust[100];
+        for (int i = 0; i < 100; i++) {
+            Dust dust = new Dust();
+            dust.reset();
+            dust.setX(MathUtils.random(0, Gdx.graphics.getWidth()));
+            dust.setY(MathUtils.random(0, Gdx.graphics.getHeight()));
+            dust.setZ(Interpolation.pow3In.apply(MathUtils.random()));
+            dustList[i] = dust;
+
+        }
+
+
+        }
+
 
     public GameplayController getGameplayController() {
         return gameplayController;
@@ -204,7 +235,20 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
      */
     public void gatherAssets(AssetDirectory directory) {
         this.directory = directory;
-
+        dustInfo = directory.getEntry("dust", JsonValue.class);
+        JsonValue texInfo = dustInfo.get("texture");
+        JsonValue fade = dustInfo.get("fade-time");
+        JsonValue rps = dustInfo.get("rps");
+        JsonValue spd = dustInfo.get("speed");
+        JsonValue scl = dustInfo.get("scale");
+        for (Dust dust : dustList){
+            dust.setTexture(directory.getEntry(texInfo.getString("name"), Texture.class));
+            dust.setTextureScale(texInfo.getFloat("scale"));
+            dust.setFadeRange(fade.getFloat(0), fade.getFloat(1));
+            dust.setRPS(MathUtils.random(rps.getFloat(0), rps.getFloat(1)));
+            dust.setVelocity(MathUtils.random() * MathUtils.PI2, MathUtils.random(spd.getFloat(0), spd.getFloat(1)));
+            dust.setScale(MathUtils.random(scl.getFloat(0), scl.getFloat(1)));
+        }
         levelFormat = directory.getEntry("levels", JsonValue.class);
         displayFont = directory.getEntry("retro", BitmapFont.class);
         UIFont_large = directory.getEntry("libre-large", BitmapFont.class);
@@ -319,14 +363,17 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
         inputController.readKeyboard();
         updateMusic(delta);
 
+
         switch (gameplayController.getState()) {
             case OVER:
-                // TODO: make seperate screen
             case WIN:
                 if (inputController.didReset()) {
                     setupLevel();
                 } else {
                     play(delta);
+                }
+                for (Dust dust : dustList) {
+                    dust.update(delta);
                 }
                 break;
             case PLAY:
@@ -405,6 +452,9 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
                 Phase phase = gameplayController.getPhase();
                 uiRender.drawUI(canvas, levelContainer, phase, gameplayController, delta);
                 canvas.beginUI(GameCanvas.DrawPass.SPRITE);
+                for (Dust dust : dustList) {
+                    dust.draw(canvas);
+                }
                 Color tintPlay = (pressPauseState == 1 ? color : Color.WHITE);
                 canvas.draw(pauseButton, tintPlay, pauseButton.getWidth() / 2, pauseButton.getHeight() / 2,
                         centerXPause, centerYPause, 0, PAUSE_BUTTON_SIZE / pauseButton.getWidth(),
