@@ -1,134 +1,341 @@
 {
-  "colliders": {
-    "body": {
-      "type": "circle",
-      "radius": 0.25
+  "werewolf": {
+    "colliders": {
+      "body": {
+        "type": "circle",
+        "radius": 0.25
+      }
+    },
+    "spotlight": {
+      "color": [
+        0.65,
+        0.6,
+        0.77,
+        0.6
+      ],
+      "distance": 1,
+      "rays": 20,
+      "soft": false
+    },
+    "lockout": 0.5,
+    "bodytype": "dynamic",
+    "density": 1.0,
+    "friction": 0.0,
+    "restitution": 0.0,
+    "damping": 6.0,
+    "bullet": true,
+    "speed": {
+      "walk": 1.8,
+      "run": 2
+    },
+    "textures": {
+      "attack1-l": {
+        "name": "werewolf.attack1-l",
+        "durations": [
+          0.02,
+          0.12,
+          0.36
+        ]
+      },
+      "attack2-l": {
+        "name": "werewolf.attack2-l",
+        "durations": [
+          0.02,
+          0.12,
+          0.36
+        ]
+      },
+      "attack1-r": {
+        "name": "werewolf.attack1-r",
+        "durations": [
+          0.02,
+          0.12,
+          0.36
+        ]
+      },
+      "attack2-r": {
+        "name": "werewolf.attack2-r",
+        "durations": [
+          0.02,
+          0.12,
+          0.36
+        ]
+      },
+      "attack1-b": {
+        "name": "werewolf.attack1-b",
+        "durations": [
+          0.02,
+          0.12,
+          0.36
+        ]
+      },
+      "attack2-b": {
+        "name": "werewolf.attack2-b",
+        "durations": [
+          0.02,
+          0.12,
+          0.36
+        ]
+      },
+      "attack1-f": {
+        "name": "werewolf.attack1-f",
+        "durations": [
+          0.02,
+          0.12,
+          0.36
+        ]
+      },
+      "attack2-f": {
+        "name": "werewolf.attack2-f",
+        "durations": [
+          0.02,
+          0.12,
+          0.36
+        ]
+      },
+      "heavyattack-l": {
+        "name": "werewolf.heavyattack-l",
+        "durations": [
+          0.12,
+          0.6
+        ]
+      },
+      "heavyattack-r": {
+        "name": "werewolf.heavyattack-r",
+        "durations": [
+          0.12,
+          0.6
+        ]
+      },
+      "heavyattack-f": {
+        "name": "werewolf.heavyattack-f",
+        "durations": [
+          0.12,
+          0.6
+        ]
+      },
+      "heavyattack-b": {
+        "name": "werewolf.heavyattack-b",
+        "durations": [
+          0.12,
+          0.6
+        ]
+      },
+      "attacked-l": "werewolf.attacked-l",
+      "attacked-r": "werewolf.attacked-r",
+      "attacked-f": "werewolf.attacked-f",
+      "attacked-b": "werewolf.attacked-b",
+      "walk-l": {
+        "name": "werewolf.walk-l",
+        "durations": [
+          0.2,
+          0.12,
+          0.12,
+          0.2,
+          0.12,
+          0.12
+        ]
+      },
+      "walk-r": {
+        "name": "werewolf.walk-r",
+        "durations": [
+          0.2,
+          0.12,
+          0.12,
+          0.2,
+          0.12,
+          0.12
+        ]
+      },
+      "walk-f": {
+        "name": "werewolf.walk-f",
+        "durations": [
+          0.2,
+          0.12,
+          0.12,
+          0.12,
+          0.2,
+          0.12,
+          0.12,
+          0.12
+        ]
+      },
+      "walk-b": {
+        "name": "werewolf.walk-b",
+        "durations": [
+          0.2,
+          0.12,
+          0.12,
+          0.2,
+          0.12,
+          0.12
+        ]
+      },
+      "idle-l": "werewolf.idle-l",
+      "idle-r": "werewolf.idle-r",
+      "idle-f": "werewolf.idle-f",
+      "idle-b": "werewolf.idle-b",
+      "windup-l": "werewolf.windup-l",
+      "windup-r": "werewolf.windup-r",
+      "windup-f": "werewolf.windup-f",
+      "windup-b": "werewolf.windup-b"
+    },
+    "texture": {
+      "name": "idle-r",
+      "origin": [
+        250,
+        150
+      ],
+      "scale": 0.4
+    },
+    "health": 5,
+    "attack": {
+      "knockback": 2,
+      "damage": 1.0,
+      "cooldown": 1,
+      "length": 0.5,
+      "immunity": 0.5,
+      "lockout": 0.5,
+      "hitbox": {
+        "range": 1.5,
+        "width": 1.25,
+        "textures": {
+          "hitbox": {
+            "name": "werewolf.attack-effect",
+            "durations": [
+              0.12,
+              0.12,
+              0.12
+            ]
+          }
+        },
+        "texture": {
+          "name": "hitbox",
+          "origin": [
+            280,
+            440
+          ],
+          "scale": 0.5
+        },
+        "bullet": true,
+        "sensor": true
+      }
     }
   },
-  "spotlight": {
-    "color":		[0.65, 0.6, 0.77, 0.6],
-    "distance":		   1,
-    "rays":			20,
-    "soft":			false
-  },
-  "lockout": 0.5,
-  "bodytype": "dynamic",
-  "density": 1.0,
-  "friction": 0.0,
-  "restitution": 0.0,
-  "damping": 6.0,
-  "bullet": true,
-  "speed": {
-    "walk": 1.8,
-    "run": 2
-  },
-  "textures": {
-    "attack1-l": {
-      "name" : "werewolf.attack1-l",
-      "durations" : [0.02, 0.12, 0.36]
+
+  "lycan": {
+    "colliders": {
+      "body": {
+        "type": "circle",
+        "radius": 0.25
+      }
     },
-    "attack2-l": {
-      "name" : "werewolf.attack2-l",
-      "durations" : [0.02, 0.12, 0.36]
+    "spotlight": {
+      "color": [
+        0.65,
+        0.6,
+        0.77,
+        0.6
+      ],
+      "distance": 1,
+      "rays": 20,
+      "soft": false
     },
-    "attack1-r": {
-      "name" : "werewolf.attack1-r",
-      "durations" : [0.02, 0.12, 0.36]
-    },
-    "attack2-r": {
-      "name" : "werewolf.attack2-r",
-      "durations" : [0.02, 0.12, 0.36]
-    },
-    "attack1-b": {
-      "name" : "werewolf.attack1-b",
-      "durations" : [0.02, 0.12, 0.36]
-    },
-    "attack2-b": {
-      "name" : "werewolf.attack2-b",
-      "durations" : [0.02, 0.12, 0.36]
-    },
-    "attack1-f": {
-      "name" : "werewolf.attack1-f",
-      "durations" : [0.02, 0.12, 0.36]
-    },
-    "attack2-f": {
-      "name" : "werewolf.attack2-f",
-      "durations" : [0.02, 0.12, 0.36]
-    },
-    "heavyattack-l": {
-      "name" : "werewolf.heavyattack-l",
-      "durations" : [0.12, 0.6]
-    },
-    "heavyattack-r": {
-      "name" : "werewolf.heavyattack-r",
-      "durations" : [0.12, 0.6]
-    },
-    "heavyattack-f": {
-      "name" : "werewolf.heavyattack-f",
-      "durations" : [0.12, 0.6]
-    },
-    "heavyattack-b": {
-      "name" : "werewolf.heavyattack-b",
-      "durations" : [0.12, 0.6]
-    },
-    "attacked-l": "werewolf.attacked-l",
-    "attacked-r": "werewolf.attacked-r",
-    "attacked-f": "werewolf.attacked-f",
-    "attacked-b": "werewolf.attacked-b",
-    "walk-l": {
-      "name" : "werewolf.walk-l",
-      "durations" : [0.2, 0.12, 0.12, 0.2, 0.12, 0.12]
-    },
-    "walk-r": {
-      "name" : "werewolf.walk-r",
-      "durations" : [0.2, 0.12, 0.12, 0.2, 0.12, 0.12]
-    },
-    "walk-f": {
-      "name" : "werewolf.walk-f",
-      "durations" : [0.2, 0.12, 0.12, 0.12,  0.2, 0.12, 0.12, 0.12]
-    },
-    "walk-b": {
-      "name" : "werewolf.walk-b",
-      "durations" : [0.2, 0.12, 0.12, 0.2, 0.12, 0.12]
-    },
-    "idle-l": "werewolf.idle-l",
-    "idle-r": "werewolf.idle-r",
-    "idle-f": "werewolf.idle-f",
-    "idle-b": "werewolf.idle-b",
-    "windup-l": "werewolf.windup-l",
-    "windup-r": "werewolf.windup-r",
-    "windup-f": "werewolf.windup-f",
-    "windup-b": "werewolf.windup-b"
-  },
-  "texture": {
-    "name": "idle-r",
-    "origin" : [250, 150],
-    "scale": 0.4
-  },
-  "health": 5,
-  "attack": {
-    "knockback": 2,
-    "damage": 1.0,
-    "cooldown": 1,
-    "length": 0.5,
-    "immunity": 0.5,
     "lockout": 0.5,
-    "hitbox": {
-      "range": 1.5,
-      "width": 1.25,
-      "textures": {
-        "hitbox": {
-          "name" : "werewolf.attack-effect",
-          "durations" : [0.12 ,0.12 ,0.12]
-        }
+    "bodytype": "dynamic",
+    "density": 1.0,
+    "friction": 0.0,
+    "restitution": 0.0,
+    "damping": 6.0,
+    "bullet": true,
+    "speed": {
+      "walk": 1.6,
+      "run": 2
+    },
+    "textures": {
+      "attacked-l": "lycan.attacked-l",
+      "attacked-r": "lycan.attacked-r",
+      "attacked-f": "lycan.attacked-f",
+      "walk-l": {
+        "name": "lycan.walk-l",
+        "durations": [
+          0.3,
+          0.2,
+          0.3,
+          0.2
+        ]
       },
-      "texture": {
-        "name": "hitbox",
-        "origin": [280, 440],
-        "scale": 0.5
+      "walk-r": {
+        "name": "lycan.walk-r",
+        "durations": [
+          0.3,
+          0.2,
+          0.3,
+          0.2
+        ]
       },
-      "bullet": true,
-      "sensor": true
+      "walk-f": {
+        "name": "lycan.walk-f",
+        "durations": [
+          0.2,
+          0.3,
+          0.2,
+          0.3
+        ]
+      },
+      "walk-b": {
+        "name": "lycan.walk-b",
+        "durations": [
+          0.3,
+          0.2,
+          0.3,
+          0.2
+        ]
+      },
+      "idle-l": "lycan.idle-l",
+      "idle-r": "lycan.idle-r",
+      "idle-f": "lycan.idle-f",
+      "idle-b": "lycan.idle-b"
+    },
+    "texture": {
+      "name": "idle-r",
+      "origin": [
+        984,200
+      ],
+      "scale": 0.07
+    },
+    "health": 5,
+    "attack": {
+      "knockback": 2,
+      "damage": 1.0,
+      "cooldown": 1,
+      "length": 0.5,
+      "immunity": 0.5,
+      "lockout": 0.5,
+      "hitbox": {
+        "range": 1.5,
+        "width": 1.25,
+        "textures": {
+          "hitbox": {
+            "name": "werewolf.attack-effect",
+            "durations": [
+              0.12,
+              0.12,
+              0.12
+            ]
+          }
+        },
+        "texture": {
+          "name": "hitbox",
+          "origin": [
+            280,
+            440
+          ],
+          "scale": 0.5
+        },
+        "bullet": true,
+        "sensor": true
+      }
     }
   }
 }

@@ -232,6 +232,8 @@ public class GameplayController {
                     break;
                 case TRANSITION:
                     switchPhase(delta);
+                    player.animation.clearFrames();
+                    container.switchWolf();
                     break;
                 case ALLOCATE:
                     // TODO: Somehow pause the game before drawing allocating screen

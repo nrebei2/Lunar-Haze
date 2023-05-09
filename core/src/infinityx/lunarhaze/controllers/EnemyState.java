@@ -222,7 +222,6 @@ public enum EnemyState implements State<EnemyController> {
                 entity.pathCollision.findCollision(entity.collCache, entity.rayCache);
                 // use Astar to target if there is obstacle in the way or farther than straafe distance from target
                 if (entity.raycast.hit || enemyToTarget > entity.getEnemy().getStrafeDistance()) {
-                    System.out.println("obstacle in the way");
 //                    entity.getEnemy().setMaxLinearSpeed(1.11f);
                     entity.targetPos.set(entity.getTarget().getPosition());
                     entity.getEnemy().setSteeringBehavior(entity.followPathSB);
