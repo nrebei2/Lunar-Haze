@@ -231,27 +231,12 @@ public class GameplayController {
                         flash_timer = 0;
                         // Switch lamp status
                         for(int i = 0; i < container.getLampPos().size; i++){
-                            if (board.isLit((int) container.getLampPos().get(i).x, (int) container.getLampPos().get(i).y)){
-                                System.out.println("Lit at: " + (int) container.getLampPos().get(i).x + (int) container.getLampPos().get(i).y);
-                                board.setLit((int) container.getLampPos().get(i).x, (int) container.getLampPos().get(i).y, false);
-                                board.setLit((int) container.getLampPos().get(i).x-1, (int) container.getLampPos().get(i).y, false);
-                                board.setLit((int) container.getLampPos().get(i).x+1, (int) container.getLampPos().get(i).y, false);
-                                board.setLit((int) container.getLampPos().get(i).x, (int) container.getLampPos().get(i).y-1, false);
-                                board.setLit((int) container.getLampPos().get(i).x, (int) container.getLampPos().get(i).y+1, false);
-                                board.setLit((int) container.getLampPos().get(i).x-1, (int) container.getLampPos().get(i).y-1, false);
-                                board.setLit((int) container.getLampPos().get(i).x+1, (int) container.getLampPos().get(i).y+1, false);
-                                board.setLit((int) container.getLampPos().get(i).x+1, (int) container.getLampPos().get(i).y-1, false);
-                                board.setLit((int) container.getLampPos().get(i).x-1, (int) container.getLampPos().get(i).y+1, false);
+                            int x = (int) container.getLampPos().get(i).x;
+                            int y = (int) container.getLampPos().get(i).y;
+                            if (board.isLit(x, y)){
+                                turnLightAt(board, x, y, false);
                             } else {
-                                board.setLit((int) container.getLampPos().get(i).x, (int) container.getLampPos().get(i).y, true);
-                                board.setLit((int) container.getLampPos().get(i).x-1, (int) container.getLampPos().get(i).y, true);
-                                board.setLit((int) container.getLampPos().get(i).x+1, (int) container.getLampPos().get(i).y, true);
-                                board.setLit((int) container.getLampPos().get(i).x, (int) container.getLampPos().get(i).y-1, true);
-                                board.setLit((int) container.getLampPos().get(i).x, (int) container.getLampPos().get(i).y+1, true);
-                                board.setLit((int) container.getLampPos().get(i).x-1, (int) container.getLampPos().get(i).y-1, true);
-                                board.setLit((int) container.getLampPos().get(i).x+1, (int) container.getLampPos().get(i).y+1, true);
-                                board.setLit((int) container.getLampPos().get(i).x+1, (int) container.getLampPos().get(i).y-1, true);
-                                board.setLit((int) container.getLampPos().get(i).x-1, (int) container.getLampPos().get(i).y+1, true);
+                                turnLightAt(board, x, y, true);
                             }
                         }
                     }
@@ -299,6 +284,18 @@ public class GameplayController {
         if (Gdx.input.isKeyPressed(Input.Keys.COMMA)) {
             gameState = GameState.OVER;
         }
+    }
+
+    public void turnLightAt(Board board, int x, int y, boolean b){
+        board.setLit(x, y, b);
+        board.setLit(x - 1, y, b);
+        board.setLit(x + 1, y, b);
+        board.setLit(x, y - 1, b);
+        board.setLit(x, y + 1, b);
+        board.setLit(x - 1, y - 1, b);
+        board.setLit(x + 1, y + 1, b);
+        board.setLit(x - 1, y + 1, b);
+        board.setLit(x + 1, y - 1, b);
     }
 
     /**
