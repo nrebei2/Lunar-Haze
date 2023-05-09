@@ -10,19 +10,19 @@
     "textures": {
       "attack-l": {
         "name" : "villager.attack-l",
-        "durations" : [0.2, 0.37, 0.2]
+        "durations" : [0.25, 0.2, 0.2]
       },
       "attack-r": {
         "name" : "villager.attack-r",
-        "durations" : [0.2, 0.37, 0.2]
+        "durations" : [0.25, 0.2, 0.2]
       },
       "attack-f": {
         "name" : "villager.attack-f",
-        "durations" : [0.2, 0.37, 0.2]
+        "durations" : [0.25, 0.2, 0.2]
       },
       "attack-b": {
         "name" : "villager.attack-b",
-        "durations" : [0.2, 0.37, 0.2]
+        "durations" : [0.25, 0.2, 0.2]
       },
       "walk-l": {
         "name" : "villager.walk-l",
@@ -75,7 +75,7 @@
         "textures": {
           "hitbox": {
             "name" : "werewolf.attack-effect",
-            "durations" : [0.2, 0.4, 0.2]
+            "durations" : [0.2, 0.3, 0.2]
           }
         },
         "texture": {
