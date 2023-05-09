@@ -52,6 +52,7 @@ public enum EnemyState implements State<EnemyController> {
 
         @Override
         public void enter(EnemyController entity) {
+            entity.getEnemy().setMaxLinearSpeed(1.4f);
             entity.getEnemy().setDetection(Enemy.Detection.NOTICED);
             entity.targetPos.set(entity.target.getPosition());
 
@@ -82,6 +83,7 @@ public enum EnemyState implements State<EnemyController> {
     INDICATOR() {
         @Override
         public void enter(EnemyController entity) {
+            entity.getEnemy().setMaxLinearSpeed(1.5f);
             entity.getEnemy().setDetection(Enemy.Detection.INDICATOR);
             entity.getEnemy().setIndicatorAmount(0);
 
@@ -172,7 +174,7 @@ public enum EnemyState implements State<EnemyController> {
 
         @Override
         public void enter(EnemyController entity) {
-            entity.getEnemy().setMaxLinearSpeed(1.11f);
+            entity.getEnemy().setMaxLinearSpeed(1.73f);
             entity.getEnemy().setDetection(Enemy.Detection.ALERT);
 
             entity.targetPos.set(entity.getTarget().getPosition());
@@ -238,7 +240,7 @@ public enum EnemyState implements State<EnemyController> {
                     Vector2 dir = entity.target.getPosition().sub(entity.getEnemy().getPosition());
                     entity.getEnemy().setOrientation(AngleUtils.vectorToAngle(dir));
                     entity.getEnemy().setSteeringBehavior(entity.battleSB);
-                    entity.getEnemy().setMaxLinearSpeed(0.6f);
+                    entity.getEnemy().setMaxLinearSpeed(1.1f);
                 }
             }
 
@@ -246,7 +248,6 @@ public enum EnemyState implements State<EnemyController> {
 
         @Override
         public void exit(EnemyController entity) {
-            entity.getEnemy().setMaxLinearSpeed(0.8f);
             if (!entity.isInBattle()) {
                 MessageManager.getInstance().dispatchMessage(TacticalManager.REMOVE, entity);
             }
@@ -272,6 +273,7 @@ public enum EnemyState implements State<EnemyController> {
     PATROL() {
         @Override
         public void enter(EnemyController entity) {
+            entity.getEnemy().setMaxLinearSpeed(0.8f);
             Vector2 patrol = entity.getPatrolTarget();
             entity.targetPos.set(patrol);
             entity.updatePath();
