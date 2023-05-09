@@ -3,11 +3,13 @@ package infinityx.lunarhaze.models.entity;
 import box2dLight.PointLight;
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.controllers.InputController;
+import infinityx.lunarhaze.graphics.FilmStrip;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.models.AttackingGameObject;
 import infinityx.lunarhaze.models.LevelContainer;
@@ -85,7 +87,6 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
         return ObjectType.WEREWOLF;
     }
 
-
     public boolean isRunning() {
         return isRunning;
     }
@@ -157,6 +158,27 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
         direction = Direction.RIGHT;
     }
 
+    public void switchToWolf(AssetDirectory directory, JsonValue json, LevelContainer container){
+        JsonValue textures = json.get("textures");
+        if (textures != null) {
+            for (JsonValue tex : textures) {
+                if (tex.isObject()) {
+                    float[] durations = tex.get("durations").asFloatArray();
+                    animation.addAnimation(tex.name(), directory.getEntry(tex.getString("name"), FilmStrip.class), durations);
+                } else {
+                    // If no durations, assume it's a single texture
+                    animation.addStaticAnimation(tex.name(), directory.getEntry(tex.asString(), Texture.class));
+                }
+            }
+
+            JsonValue texInfo = json.get("texture");
+            setTexture(texInfo.get("name").asString());
+            int[] texOrigin = texInfo.get("origin").asIntArray();
+            setOrigin(texOrigin[0], texOrigin[1]);
+            textureScale = texInfo.getFloat("scale");
+        }
+    }
+
     /**
      * Begin heavy lock out for this werewolf. Should be called when attacked.
      */
@@ -216,9 +238,7 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
         spotLight.setSoft(light.getBoolean("soft"));
         activatePhysics(container.getWorld());
         setSpotLight(spotLight);
-
     }
-
 
     /**
      * Updates the animation frame and position of this werewolf.

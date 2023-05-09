@@ -22,7 +22,6 @@ import infinityx.lunarhaze.models.entity.SceneObject;
 import infinityx.lunarhaze.models.entity.Werewolf;
 import infinityx.util.Drawable;
 import infinityx.util.PatrolPath;
-import infinityx.util.PatrolRegion;
 import infinityx.util.astar.AStarMap;
 import infinityx.util.astar.AStarPathFinding;
 
@@ -94,6 +93,8 @@ public class LevelContainer {
      * Therefore, this is like a player cache.
      */
     private Werewolf player;
+
+    private Werewolf werewolf;
     /**
      * Stores Board
      */
@@ -183,7 +184,7 @@ public class LevelContainer {
         // There will always be a player
         // So it's fine to initialize now
         Werewolf player = new Werewolf();
-        player.initialize(directory, playerJson, this);
+        player.initialize(directory, playerJson.get("lycan"), this);
         setPlayer(player);
 
         board = null;
@@ -206,6 +207,11 @@ public class LevelContainer {
         this.directory = directory;
         initialize();
     }
+
+    public void switchWolf(){
+        player.switchToWolf(directory, playerJson.get("werewolf"), this);
+    }
+
 
     /**
      * "flush" all objects from this level and resets level.
@@ -578,10 +584,6 @@ public class LevelContainer {
                 getEnemyControllers().get(e).drawGizmo(canvas);
                 getEnemyControllers().get(e).drawDetection(canvas);
             }
-            canvas.end();
-
-            canvas.begin(GameCanvas.DrawPass.SPRITE, view.x, view.y);
-            player.getAttackHitbox().draw(canvas);
             canvas.end();
         }
 
