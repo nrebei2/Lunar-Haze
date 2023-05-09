@@ -57,11 +57,15 @@ public class Villager extends Enemy{
 //
 //    }
 
+    public AttackHitbox getAttackHitbox(){
+        return attackHitbox;
+    }
+
     @Override
     public void update(float delta) {
         super.update(delta);
-        this.attackHitbox.updateHitboxPosition();
-        this.attackHitbox.update(delta);
+//        this.attackHitbox.updateHitboxPosition();
+//        this.attackHitbox.update(delta);
 
     }
 

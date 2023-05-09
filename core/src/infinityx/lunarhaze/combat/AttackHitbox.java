@@ -35,6 +35,7 @@ public class AttackHitbox extends GameObject {
 
         // Important! So that rotation rotates around attacker
         setPosition(attacker.getPosition());
+
     }
 
 
@@ -122,7 +123,7 @@ public class AttackHitbox extends GameObject {
      */
     public void updateHitboxPosition() {
         // This is the logic that makes the hitbox "parented" to the entity
-        this.getBody().setTransform(attacker.getPosition(), attacker.getAngle());
+        getBody().setTransform(attacker.getPosition(), attacker.getAngle());
     }
 
 }

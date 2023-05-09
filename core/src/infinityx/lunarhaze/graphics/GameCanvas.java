@@ -1136,7 +1136,7 @@ public class GameCanvas {
     }
 
     public void drawPlayerAttackRange(Texture ellipse, Werewolf player, LevelContainer level) {
-        float attackRange = WorldToScreenX(player.attackHitbox.getHitboxRange());
+        float attackRange = WorldToScreenX(player.getAttackHitbox().getHitboxRange());
         // Attack distance in one direction
         float x = WorldToScreenX(player.getPosition().x);
         float y = WorldToScreenY(player.getPosition().y);

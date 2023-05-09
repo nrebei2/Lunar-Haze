@@ -87,6 +87,7 @@ public class PlayerAttackHandler extends AttackHandler {
 
                 if (InputController.getInstance().didAttack() && !player.isAttacking()) {
                     initiateAttack();
+
                 } else if (InputController.getInstance().didHeavyAttack() && !player.isAttacking()) {
                     initiateWindup();
                 }
