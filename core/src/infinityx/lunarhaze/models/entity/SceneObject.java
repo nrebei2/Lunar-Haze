@@ -96,11 +96,6 @@ public class SceneObject extends GameObject implements Drawable {
     @Override
     public void draw(GameCanvas canvas) {
         // ugly but it is what it is
-//        if (type == "lamp"){
-//            int screenX = (int) canvas.WorldToScreenX(getPosition().x);
-//            int screenY = (int) canvas.WorldToScreenY(getPosition().y);
-//            board.setLit(screenX, screenY, true);
-//        }
         float recX = canvas.WorldToScreenX(getPosition().x)
                 - origin.x * (flipped ? -1 : 1) * textureScale * scale
                 - (flipped ? 1 : 0) * getTextureWidth();
