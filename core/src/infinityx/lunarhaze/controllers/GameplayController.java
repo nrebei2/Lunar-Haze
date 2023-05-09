@@ -128,6 +128,10 @@ public class GameplayController {
 
     private GameSetting setting;
 
+    private float flash_timer;
+
+    private static final float FLASH_INTERVAL = 4.0f;
+
 
     /**
      * Creates a new GameplayController with no active elements.
@@ -197,6 +201,8 @@ public class GameplayController {
         win_sound = levelContainer.getDirectory().getEntry("level-passed", Sound.class);
         fail_sound = levelContainer.getDirectory().getEntry("level-fail", Sound.class);
         tacticalManager = new TacticalManager(container);
+
+        flash_timer = 0;
     }
 
     /**
@@ -219,6 +225,35 @@ public class GameplayController {
                     if (container.getBoard().getRemainingMoonlight() == 0 || phaseTimer <= 0) {
                         phase = Phase.TRANSITION;
                         lightingController.dispose();
+                    }
+                    flash_timer += delta;
+                    if (flash_timer >= FLASH_INTERVAL){
+                        flash_timer = 0;
+                        // Switch lamp status
+                        for(int i = 0; i < container.getLampPos().size; i++){
+                            if (board.isLit((int) container.getLampPos().get(i).x, (int) container.getLampPos().get(i).y)){
+                                System.out.println("Lit at: " + (int) container.getLampPos().get(i).x + (int) container.getLampPos().get(i).y);
+                                board.setLit((int) container.getLampPos().get(i).x, (int) container.getLampPos().get(i).y, false);
+                                board.setLit((int) container.getLampPos().get(i).x-1, (int) container.getLampPos().get(i).y, false);
+                                board.setLit((int) container.getLampPos().get(i).x+1, (int) container.getLampPos().get(i).y, false);
+                                board.setLit((int) container.getLampPos().get(i).x, (int) container.getLampPos().get(i).y-1, false);
+                                board.setLit((int) container.getLampPos().get(i).x, (int) container.getLampPos().get(i).y+1, false);
+                                board.setLit((int) container.getLampPos().get(i).x-1, (int) container.getLampPos().get(i).y-1, false);
+                                board.setLit((int) container.getLampPos().get(i).x+1, (int) container.getLampPos().get(i).y+1, false);
+                                board.setLit((int) container.getLampPos().get(i).x+1, (int) container.getLampPos().get(i).y-1, false);
+                                board.setLit((int) container.getLampPos().get(i).x-1, (int) container.getLampPos().get(i).y+1, false);
+                            } else {
+                                board.setLit((int) container.getLampPos().get(i).x, (int) container.getLampPos().get(i).y, true);
+                                board.setLit((int) container.getLampPos().get(i).x-1, (int) container.getLampPos().get(i).y, true);
+                                board.setLit((int) container.getLampPos().get(i).x+1, (int) container.getLampPos().get(i).y, true);
+                                board.setLit((int) container.getLampPos().get(i).x, (int) container.getLampPos().get(i).y-1, true);
+                                board.setLit((int) container.getLampPos().get(i).x, (int) container.getLampPos().get(i).y+1, true);
+                                board.setLit((int) container.getLampPos().get(i).x-1, (int) container.getLampPos().get(i).y-1, true);
+                                board.setLit((int) container.getLampPos().get(i).x+1, (int) container.getLampPos().get(i).y+1, true);
+                                board.setLit((int) container.getLampPos().get(i).x+1, (int) container.getLampPos().get(i).y-1, true);
+                                board.setLit((int) container.getLampPos().get(i).x-1, (int) container.getLampPos().get(i).y+1, true);
+                            }
+                        }
                     }
                     break;
                 case BATTLE:

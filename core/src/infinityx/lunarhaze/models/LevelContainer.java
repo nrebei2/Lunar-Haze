@@ -171,6 +171,8 @@ public class LevelContainer {
 
     private boolean debugPressed;
 
+    private Array<Vector2> lampPos;
+
     /**
      * Initialize attributes
      */
@@ -181,6 +183,7 @@ public class LevelContainer {
 
         drawables = new Array<>();
         backing = new Array<>();
+        lampPos = new Array<>();
 
         // There will always be a player
         // So it's fine to initialize now
@@ -503,6 +506,7 @@ public class LevelContainer {
         if (Objects.equals(type, "lamp")){
             int screenX = board.worldToBoardX(x);
             int screenY = board.worldToBoardY(y);
+            lampPos.add(new Vector2(screenX, screenY));
             board.setLit(screenX, screenY, true);
             board.setLit(screenX - 1, screenY, true);
             board.setLit(screenX + 1, screenY, true);
@@ -515,6 +519,10 @@ public class LevelContainer {
         }
 
         return addSceneObject(object);
+    }
+
+    public Array<Vector2> getLampPos(){
+        return lampPos;
     }
 
     public Array<SceneObject> getSceneObjects() {
