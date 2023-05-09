@@ -1,6 +1,7 @@
 package infinityx.lunarhaze.ai;
 
 import com.badlogic.gdx.ai.fsm.StateMachine;
+import com.badlogic.gdx.ai.msg.MessageDispatcher;
 import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
@@ -78,27 +79,14 @@ public class TacticalManager implements Telegraph {
 //            }
             //if behind enemy go attack
             if (control.isBehind(control.getEnemy(), target) && control.canStartNewAttack()) {
-                Vector2 flankingPosition = target.getPosition().cpy();
-                MessageManager.getInstance().dispatchMessage(null, enemy, FLANK, flankingPosition);
+                MessageManager.getInstance().dispatchMessage(null, enemy, ATTACK);
             }
-            else{
+            else if (control.canStartNewAttack() && rand.nextFloat() <= 0.1f){
                 //attacking from front
-                if (rand.nextFloat() <= 0.1f && control.canStartNewAttack()) {
-                    System.out.println("can attack from front");
-                    // Calculate angle step for evenly distributing the enemies around the target
-                    float angleStep = 360.0f / enemies.size;
-
-                    // Calculate the angle for this enemy
-                    float enemyAngle = angleStep * i;
-
-                    // Calculate a flanking position relative to the target
-                    Vector2 flankingPosition = target.getPosition().cpy().add(rotateDegreeX(enemyAngle, 1, 0), rotateDegreeY(enemyAngle, 1, 0));
-                    if (container.pathfinder.map.getNodeAtWorld(flankingPosition.x, flankingPosition.y) == null) {
-                        continue;
-                    }
-                    MessageManager.getInstance().dispatchMessage(null, enemy, FLANK, flankingPosition);
-
-                }
+                MessageManager.getInstance().dispatchMessage(null, enemy, ATTACK);
+            }
+            else {
+                MessageManager.getInstance().dispatchMessage(null, enemy, STRAFE);
             }
 
             i++;
@@ -113,7 +101,7 @@ public class TacticalManager implements Telegraph {
             EnemyController control = enemyMap.get(enemy);
             entity.findCollision(control.getEnemy());
             // FIXME: Should only call an enemy that is visible from entity.enemy
-            if (control != entity && (entity.getEnemy().getPosition()).cpy().dst(control.getEnemy().getPosition()) <= 5f
+            if (control != entity && (entity.getEnemy().getPosition()).dst(control.getEnemy().getPosition()) <= 5f
                     && entity.communicationCollision.hitObject == control.getEnemy()) {
                 System.out.println("alerting");
                 StateMachine<EnemyController, EnemyState> machine = control.getStateMachine();
@@ -133,47 +121,13 @@ public class TacticalManager implements Telegraph {
         return true;
     }
 
-    /**
-     * Rotate a vector by degree and returns the x component
-     * <p>
-     * Params:
-     * degree - degree to rotate
-     * x - x component of vector
-     * y - y component of vector
-     */
-    public float rotateDegreeX(float degree, float x, float y) {
-
-        float radians = degree * MathUtils.degreesToRadians;
-        float cos = (float) Math.cos(radians);
-        float sin = (float) Math.sin(radians);
-
-        return x * cos - y * sin;
-    }
-
-    /**
-     * Rotate a vector by degree and returns the y component
-     * <p>
-     * Params:
-     * degree - degree to rotate
-     * x - x component of vector
-     * y - y component of vector
-     */
-    public float rotateDegreeY(float degree, float x, float y) {
-
-        float radians = degree * MathUtils.degreesToRadians;
-        float cos = (float) Math.cos(radians);
-        float sin = (float) Math.sin(radians);
-
-        return x * sin + y * cos;
-
-    }
-
     public static int ADD = 100;
 
     public static int FOUND = 10;
-    public static int FLANK = 10012;
     public static int REMOVE = 100203;
 
     public static int ATTACK = 1001001;
+
+    public static int STRAFE = 1001;
 
 }

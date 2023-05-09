@@ -25,12 +25,18 @@ public class SceneObject extends GameObject implements Drawable {
     private boolean flipped;
 
     /**
+     * Whether you can see past this object
+     */
+    private boolean seeThru;
+
+    /**
      * Initialize a scene object.
      */
     public SceneObject(float x, float y, String type) {
         super(x, y);
         this.type = type;
         this.flipped = false;
+        this.seeThru = false;
     }
 
     /**
@@ -38,6 +44,14 @@ public class SceneObject extends GameObject implements Drawable {
      */
     public SceneObject(String type) {
         this(0, 0, type);
+    }
+
+    @Override
+    public void initialize(AssetDirectory directory, JsonValue json, LevelContainer container) {
+        super.initialize(directory, json, container);
+        if (json.has("overlook")) {
+            seeThru = json.getBoolean("overlook");
+        }
     }
 
     /**
@@ -73,6 +87,10 @@ public class SceneObject extends GameObject implements Drawable {
 
     public boolean isFlipped() {
         return flipped;
+    }
+
+    public boolean isSeeThru() {
+        return seeThru;
     }
 
     @Override

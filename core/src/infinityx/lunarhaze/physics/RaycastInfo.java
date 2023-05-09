@@ -7,7 +7,7 @@ import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.utils.ObjectSet;
 import infinityx.lunarhaze.models.GameObject;
 
-public class RaycastInfo implements RayCastCallback {
+public abstract class RaycastInfo implements RayCastCallback {
     /**
      * The fixture hit by ray
      */
@@ -27,12 +27,12 @@ public class RaycastInfo implements RayCastCallback {
     /**
      * The gameobject that is casting the ray
      */
-    private final GameObject requestingObject;
+    protected final GameObject requestingObject;
 
     /**
      * Game object types the ray will ignore
      */
-    private final ObjectSet<GameObject.ObjectType> ignore;
+    protected ObjectSet<GameObject.ObjectType> ignore;
 
     /**
      * The gameobject that is attached to the fixture hit
@@ -52,40 +52,11 @@ public class RaycastInfo implements RayCastCallback {
     }
 
     /**
-     * Add types The ray will ignore objects of given types
+     * The ray will ignore objects that the Box2DRaycastCollision ignores
      *
-     * @param types of game objects ignore
+     * @param raycastCollision Box2DRayCastCollision holding ignore list
      */
-    public void addIgnores(GameObject.ObjectType... types) {
-        ignore.addAll(types);
-    }
-
-    /**
-     * Call back function for raycasting
-     * <p>
-     * return -1 to filter the current intersection
-     * return 0 to terminate
-     * returning fraction to clip the ray for closest hit
-     * returning 1 to continue
-     */
-    @Override
-    public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
-        // Right now, all hit bodies are contained in GameObjects
-        GameObject objHit = (GameObject) fixture.getBody().getUserData();
-
-        if (objHit == requestingObject || ignore.contains(objHit.getType())) {
-            return 1;
-        }
-
-        this.fixture = fixture;
-//        if (outputCollision != null) {
-        outputCollision.set(point, normal);
-//        }
-        this.fraction = fraction;
-        this.hit = fraction != 0;
-        if (this.hit) {
-            this.hitObject = objHit;
-        }
-        return fraction;
+    public void pushIgnores(Box2DRaycastCollision raycastCollision) {
+        ignore = raycastCollision.getIgnore();
     }
 }

@@ -2,9 +2,12 @@ package infinityx.lunarhaze.controllers;
 
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
+import com.badlogic.gdx.ai.steer.utils.paths.LinePath;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntArray;
+import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.graphics.FilmStrip;
@@ -14,6 +17,7 @@ import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.Tile;
 import infinityx.lunarhaze.models.entity.Enemy;
 import infinityx.lunarhaze.models.entity.SceneObject;
+import infinityx.util.PatrolPath;
 import infinityx.util.PatrolRegion;
 
 /**
@@ -143,13 +147,17 @@ public class LevelParser {
 
             JsonValue enemyPos = enemyInfo.get("position");
 
-            float[] patrolInfo = enemyInfo.get("patrol").asFloatArray();
+            JsonValue patrolInfo = enemyInfo.get("patrol");
+            Array<Vector2> patrolPath = new Array<>();
+            for (JsonValue patrolPos : patrolInfo) {
+                patrolPath.add(new Vector2(patrolPos.getInt(0), patrolPos.getInt(1)));
+            }
 
             Enemy newEnemy = levelContainer.addEnemy(
                     enemyInfo.getString("type"),
                     enemyPos.getFloat(0),
                     enemyPos.getFloat(1),
-                    new PatrolRegion(patrolInfo[0], patrolInfo[1], patrolInfo[2], patrolInfo[3])
+                    new PatrolPath(patrolPath)
             );
 
             if (enemyInfo.has("scale"))

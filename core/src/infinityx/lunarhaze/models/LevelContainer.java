@@ -21,7 +21,7 @@ import infinityx.lunarhaze.models.entity.EnemyPool;
 import infinityx.lunarhaze.models.entity.SceneObject;
 import infinityx.lunarhaze.models.entity.Werewolf;
 import infinityx.util.Drawable;
-import infinityx.util.PatrolRegion;
+import infinityx.util.PatrolPath;
 import infinityx.util.astar.AStarMap;
 import infinityx.util.astar.AStarPathFinding;
 
@@ -93,6 +93,8 @@ public class LevelContainer {
      * Therefore, this is like a player cache.
      */
     private Werewolf player;
+
+    private Werewolf werewolf;
     /**
      * Stores Board
      */
@@ -182,7 +184,7 @@ public class LevelContainer {
         // There will always be a player
         // So it's fine to initialize now
         Werewolf player = new Werewolf();
-        player.initialize(directory, playerJson, this);
+        player.initialize(directory, playerJson.get("lycan"), this);
         setPlayer(player);
 
         board = null;
@@ -195,6 +197,12 @@ public class LevelContainer {
         battleSettings = new Settings();
     }
 
+    public void setEnemyDamage(float damage){
+        for (Enemy enemy: activeEnemies){
+            enemy.attackDamage = damage;
+        }
+    }
+
     /**
      * Creates a new LevelContainer with no active elements.
      */
@@ -205,6 +213,13 @@ public class LevelContainer {
         this.directory = directory;
         initialize();
     }
+
+    public void switchWolf(){
+
+        player.switchToWolf(directory, playerJson.get("werewolf"), this);
+        player.walkSpeed = 2.2f;
+    }
+
 
     /**
      * "flush" all objects from this level and resets level.
@@ -287,7 +302,7 @@ public class LevelContainer {
         Enemy enemy = enemies.obtain();
         enemy.initialize(directory, enemiesJson.get(type), this);
 
-        enemy.setPatrolPath(new PatrolRegion(0, 0, 0, 0));
+        enemy.setPatrolPath(new PatrolPath(new Array<Vector2>()));
         enemy.setPosition(x, y);
 
         enemy.setName(type);
@@ -305,7 +320,7 @@ public class LevelContainer {
      * @param patrol patrol path for this enemy
      * @return Enemy added
      */
-    public Enemy addEnemy(String type, float x, float y, PatrolRegion patrol) {
+    public Enemy addEnemy(String type, float x, float y, PatrolPath patrol) {
         Enemy enemy = enemies.obtain();
         enemy.initialize(directory, enemiesJson.get(type), this);
 
@@ -577,10 +592,6 @@ public class LevelContainer {
                 getEnemyControllers().get(e).drawGizmo(canvas);
                 getEnemyControllers().get(e).drawDetection(canvas);
             }
-            canvas.end();
-
-            canvas.begin(GameCanvas.DrawPass.SPRITE, view.x, view.y);
-            player.getAttackHitbox().draw(canvas);
             canvas.end();
         }
 

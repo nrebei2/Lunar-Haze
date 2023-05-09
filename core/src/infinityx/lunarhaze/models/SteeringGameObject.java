@@ -237,7 +237,14 @@ public abstract class SteeringGameObject extends AttackingGameObject implements 
      */
     @Override
     public float getOrientation() {
-        return body.getAngle();
+        float angle = body.getAngle();
+        angle %= (2 * Math.PI);
+        if (angle > Math.PI) {
+            angle -= 2 * Math.PI;
+        } else if (angle < -Math.PI) {
+            angle += 2 * Math.PI;
+        }
+        return angle;
     }
 
     /**
