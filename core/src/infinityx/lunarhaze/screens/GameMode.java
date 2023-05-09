@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.controllers.GameplayController;
+import infinityx.lunarhaze.controllers.GameplayController.GameState;
 import infinityx.lunarhaze.controllers.GameplayController.Phase;
 import infinityx.lunarhaze.controllers.InputController;
 import infinityx.lunarhaze.controllers.LevelParser;
@@ -42,6 +43,10 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
      * User requested to go to allocate
      */
     public final static int GO_ALLOCATE = 1;
+    /**
+     * User requested to go to allocate
+     */
+    public final static int GO_NEXT = 2;
 
     /**
      * Width and height of the pause button
@@ -78,6 +83,22 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
     private Texture pauseButton;
 
     /**
+     * For game over/win darker effect
+     */
+    private Texture filter;
+
+    /**
+     * Defeat Logo for lose screen
+     */
+    private Texture defeat;
+
+    /**
+     * Victory Logo for win screen
+     */
+    private Texture victory;
+
+
+    /**
      * Lobby and pause background music
      */
     private Music lobby_background;
@@ -106,6 +127,11 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
      * Whether battle background is set
      */
     private boolean battle_playing = false;
+
+    /**
+     * Current level of the game
+     */
+    private int current_level;
 
     /**
      * Reference to drawing context to display graphics (VIEW CLASS)
@@ -188,6 +214,9 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
         stealth_background = directory.getEntry("stealthBackground", Music.class);
         battle_background = directory.getEntry("battleBackground", Music.class);
         lobby_background = directory.getEntry("lobbyBackground", Music.class);
+        filter = directory.getEntry("filter", Texture.class);
+        victory = directory.getEntry("victory", Texture.class);
+        defeat = directory.getEntry("defeat", Texture.class);
     }
 
     /**
@@ -361,16 +390,15 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
             case WIN:
                 displayFont.setColor(Color.YELLOW);
                 canvas.beginUI(GameCanvas.DrawPass.SPRITE);
-                canvas.drawTextCentered("VICTORY!", displayFont, 0.0f);
-                displayFont.setColor(Color.BLACK);
-                canvas.drawTextCentered("Press R to Restart", displayFont, -canvas.getHeight() * 0.1f);
+                canvas.drawOverlay(filter, Color.WHITE, true);
+                canvas.draw(victory, canvas.getWidth()/2 - victory.getWidth()/2, canvas.getHeight()/2 - victory.getHeight()/2);
                 canvas.end();
                 break;
             case OVER:
                 displayFont.setColor(Color.RED);
                 canvas.beginUI(GameCanvas.DrawPass.SPRITE); // DO NOT SCALE
-                canvas.drawTextCentered("FAILURE!", displayFont, 0.0f);
-                canvas.drawTextCentered("Press R to Restart", displayFont, -canvas.getHeight() * 0.1f);
+                canvas.drawOverlay(filter, Color.WHITE, true);
+                canvas.draw(defeat, canvas.getWidth()/2 - defeat.getWidth()/2, canvas.getHeight()/2 - defeat.getHeight()/2);
                 canvas.end();
                 break;
             case PLAY:
@@ -418,6 +446,10 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
 
         if (gameplayController.getPhase() == Phase.ALLOCATE && observer != null) {
             observer.exitScreen(this, GO_ALLOCATE);
+        }
+
+        if(gameplayController.getState() == GameState.WIN && inputController.didNext() && observer != null){
+            observer.exitScreen(this, GO_NEXT);
         }
 
     }

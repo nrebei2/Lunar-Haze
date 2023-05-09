@@ -197,6 +197,12 @@ public class LevelContainer {
         battleSettings = new Settings();
     }
 
+    public void setEnemyDamage(float damage){
+        for (Enemy enemy: activeEnemies){
+            enemy.attackDamage = damage;
+        }
+    }
+
     /**
      * Creates a new LevelContainer with no active elements.
      */
@@ -209,7 +215,9 @@ public class LevelContainer {
     }
 
     public void switchWolf(){
+
         player.switchToWolf(directory, playerJson.get("werewolf"), this);
+        player.walkSpeed = 2.2f;
     }
 
 
@@ -584,10 +592,6 @@ public class LevelContainer {
                 getEnemyControllers().get(e).drawGizmo(canvas);
                 getEnemyControllers().get(e).drawDetection(canvas);
             }
-            canvas.end();
-
-            canvas.begin(GameCanvas.DrawPass.SPRITE, view.x, view.y);
-            player.getAttackHitbox().draw(canvas);
             canvas.end();
         }
 

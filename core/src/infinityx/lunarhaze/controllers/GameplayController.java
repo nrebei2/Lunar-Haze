@@ -234,6 +234,7 @@ public class GameplayController {
                     switchPhase(delta);
                     player.animation.clearFrames();
                     container.switchWolf();
+                    container.setEnemyDamage(0.5f);
                     break;
                 case ALLOCATE:
                     // TODO: Somehow pause the game before drawing allocating screen

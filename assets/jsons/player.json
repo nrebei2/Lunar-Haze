@@ -25,7 +25,7 @@
     "damping": 6.0,
     "bullet": true,
     "speed": {
-      "walk": 1.8,
+      "walk": 2.2,
       "run": 2
     },
     "textures": {
@@ -256,6 +256,7 @@
       "attacked-l": "lycan.attacked-l",
       "attacked-r": "lycan.attacked-r",
       "attacked-f": "lycan.attacked-f",
+      "attacked-b": "lycan.idle-b",
       "walk-l": {
         "name": "lycan.walk-l",
         "durations": [
@@ -302,7 +303,7 @@
       "origin": [
         984,200
       ],
-      "scale": 0.07
+      "scale": 0.065
     },
     "health": 5,
     "attack": {
@@ -319,9 +320,9 @@
           "hitbox": {
             "name": "werewolf.attack-effect",
             "durations": [
-              0.12,
-              0.12,
-              0.12
+              0.2,
+              0.4,
+              0.2
             ]
           }
         },

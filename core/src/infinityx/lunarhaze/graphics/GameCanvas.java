@@ -1199,6 +1199,23 @@ public class GameCanvas {
      * @param x bottom-left screen x
      * @param y bottom-left screen y
      */
+    public void drawBlackFilter() {
+        if (active != DrawPass.SHAPE) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
+            return;
+        }
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(0, 0, 0, 0.5f); // 设置颜色为半透明黑色（50%透明度）
+        shapeRenderer.rect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        shapeRenderer.end();
+    }
+
+    /**
+     * Draws a black filter.
+     *
+     * @param x bottom-left screen x
+     * @param y bottom-left screen y
+     */
     public void drawRecOutline(float x, float y, float width, float height, Color color) {
         if (active != DrawPass.SHAPE) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
