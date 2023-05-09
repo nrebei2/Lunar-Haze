@@ -5,16 +5,23 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.controllers.GameplayController;
+import infinityx.lunarhaze.controllers.GameplayController.GameState;
 import infinityx.lunarhaze.controllers.GameplayController.Phase;
 import infinityx.lunarhaze.controllers.InputController;
 import infinityx.lunarhaze.controllers.LevelParser;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.graphics.UIRender;
+import infinityx.lunarhaze.models.Dust;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.util.ScreenObservable;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -32,6 +39,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
      * Reference to GameCanvas created by the root
      */
     private final GameSetting setting;
+
     // Exit codes
     /**
      * User requested to go to menu
@@ -42,6 +50,10 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
      * User requested to go to allocate
      */
     public final static int GO_ALLOCATE = 1;
+    /**
+     * User requested to go to allocate
+     */
+    public final static int GO_NEXT = 2;
 
     /**
      * Width and height of the pause button
@@ -76,6 +88,22 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
      * Represents the pause button texture
      */
     private Texture pauseButton;
+
+    /**
+     * For game over/win darker effect
+     */
+    private Texture filter;
+
+    /**
+     * Defeat Logo for lose screen
+     */
+    private Texture defeat;
+
+    /**
+     * Victory Logo for win screen
+     */
+    private Texture victory;
+
 
     /**
      * Lobby and pause background music
@@ -139,13 +167,42 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
      */
     private int level;
 
+    /**
+     * Contains constants for dust particle system settings
+     */
+    private JsonValue dustInfo;
+
+    /**
+     * dustPool[p] holds the dust pool at tile p. Tile p should have collectable moonlight on it.
+     */
+    private Dust[] dustList;
+
+    /**
+     * How many dust particles can be on a tile at once
+     */
+    public static final int POOL_CAPACITY = 20;
+
     public GameMode(GameCanvas canvas, GameSetting setting) {
         this.canvas = canvas;
         this.setting = setting;
         // Create the controllers:
         inputController = InputController.getInstance();
         gameplayController = new GameplayController(setting);
-    }
+
+        dustList = new Dust[100];
+        for (int i = 0; i < 100; i++) {
+            Dust dust = new Dust();
+            dust.reset();
+            dust.setX(MathUtils.random(0, Gdx.graphics.getWidth()));
+            dust.setY(MathUtils.random(0, Gdx.graphics.getHeight()));
+            dust.setZ(Interpolation.pow3In.apply(MathUtils.random()));
+            dustList[i] = dust;
+
+        }
+
+
+        }
+
 
     public GameplayController getGameplayController() {
         return gameplayController;
@@ -178,7 +235,20 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
      */
     public void gatherAssets(AssetDirectory directory) {
         this.directory = directory;
-
+        dustInfo = directory.getEntry("dust", JsonValue.class);
+        JsonValue texInfo = dustInfo.get("texture");
+        JsonValue fade = dustInfo.get("fade-time");
+        JsonValue rps = dustInfo.get("rps");
+        JsonValue spd = dustInfo.get("speed");
+        JsonValue scl = dustInfo.get("scale");
+        for (Dust dust : dustList){
+            dust.setTexture(directory.getEntry(texInfo.getString("name"), Texture.class));
+            dust.setTextureScale(texInfo.getFloat("scale"));
+            dust.setFadeRange(fade.getFloat(0), fade.getFloat(1));
+            dust.setRPS(MathUtils.random(rps.getFloat(0), rps.getFloat(1)));
+            dust.setVelocity(MathUtils.random() * MathUtils.PI2, MathUtils.random(spd.getFloat(0), spd.getFloat(1)));
+            dust.setScale(MathUtils.random(scl.getFloat(0), scl.getFloat(1)));
+        }
         levelFormat = directory.getEntry("levels", JsonValue.class);
         displayFont = directory.getEntry("retro", BitmapFont.class);
         UIFont_large = directory.getEntry("libre-large", BitmapFont.class);
@@ -188,6 +258,9 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
         stealth_background = directory.getEntry("stealthBackground", Music.class);
         battle_background = directory.getEntry("battleBackground", Music.class);
         lobby_background = directory.getEntry("lobbyBackground", Music.class);
+        filter = directory.getEntry("filter", Texture.class);
+        victory = directory.getEntry("victory", Texture.class);
+        defeat = directory.getEntry("defeat", Texture.class);
     }
 
     /**
@@ -290,14 +363,17 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
         inputController.readKeyboard();
         updateMusic(delta);
 
+
         switch (gameplayController.getState()) {
             case OVER:
-                // TODO: make seperate screen
             case WIN:
                 if (inputController.didReset()) {
                     setupLevel();
                 } else {
                     play(delta);
+                }
+                for (Dust dust : dustList) {
+                    dust.update(delta);
                 }
                 break;
             case PLAY:
@@ -361,22 +437,24 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
             case WIN:
                 displayFont.setColor(Color.YELLOW);
                 canvas.beginUI(GameCanvas.DrawPass.SPRITE);
-                canvas.drawTextCentered("VICTORY!", displayFont, 0.0f);
-                displayFont.setColor(Color.BLACK);
-                canvas.drawTextCentered("Press R to Restart", displayFont, -canvas.getHeight() * 0.1f);
+                canvas.drawOverlay(filter, Color.WHITE, true);
+                canvas.draw(victory, canvas.getWidth()/2 - victory.getWidth()/2, canvas.getHeight()/2 - victory.getHeight()/2);
                 canvas.end();
                 break;
             case OVER:
                 displayFont.setColor(Color.RED);
                 canvas.beginUI(GameCanvas.DrawPass.SPRITE); // DO NOT SCALE
-                canvas.drawTextCentered("FAILURE!", displayFont, 0.0f);
-                canvas.drawTextCentered("Press R to Restart", displayFont, -canvas.getHeight() * 0.1f);
+                canvas.drawOverlay(filter, Color.WHITE, true);
+                canvas.draw(defeat, canvas.getWidth()/2 - defeat.getWidth()/2, canvas.getHeight()/2 - defeat.getHeight()/2);
                 canvas.end();
                 break;
             case PLAY:
                 Phase phase = gameplayController.getPhase();
                 uiRender.drawUI(canvas, levelContainer, phase, gameplayController, delta);
                 canvas.beginUI(GameCanvas.DrawPass.SPRITE);
+                for (Dust dust : dustList) {
+                    dust.draw(canvas);
+                }
                 Color tintPlay = (pressPauseState == 1 ? color : Color.WHITE);
                 canvas.draw(pauseButton, tintPlay, pauseButton.getWidth() / 2, pauseButton.getHeight() / 2,
                         centerXPause, centerYPause, 0, PAUSE_BUTTON_SIZE / pauseButton.getWidth(),
@@ -418,6 +496,10 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
 
         if (gameplayController.getPhase() == Phase.ALLOCATE && observer != null) {
             observer.exitScreen(this, GO_ALLOCATE);
+        }
+
+        if(gameplayController.getState() == GameState.WIN && inputController.didNext() && observer != null){
+            observer.exitScreen(this, GO_NEXT);
         }
 
     }

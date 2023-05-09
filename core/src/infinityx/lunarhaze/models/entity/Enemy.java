@@ -11,6 +11,7 @@ import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.SteeringGameObject;
 import infinityx.lunarhaze.physics.ConeSource;
 import infinityx.util.Direction;
+import infinityx.util.PatrolPath;
 import infinityx.util.PatrolRegion;
 
 import java.util.Random;
@@ -56,9 +57,9 @@ public abstract class Enemy extends SteeringGameObject implements Pool.Poolable 
     float indicatorAmount;
 
     /**
-     * Patrol region for this enemy
+     * Patrol path for this enemy
      */
-    private PatrolRegion patrolPath;
+    private PatrolPath patrolPath;
 
     /**
      * The light source on this enemy representing the flashlight
@@ -103,7 +104,7 @@ public abstract class Enemy extends SteeringGameObject implements Pool.Poolable 
 
     private float strafeDistance;
 
-    private Random rand = new Random();
+    public Random rand = new Random();
 
 
     /**
@@ -179,11 +180,11 @@ public abstract class Enemy extends SteeringGameObject implements Pool.Poolable 
         return this.strafeDistance;
     }
 
-    public void setPatrolPath(PatrolRegion patrolPath) {
+    public void setPatrolPath(PatrolPath patrolPath) {
         this.patrolPath = patrolPath;
     }
 
-    public PatrolRegion getPatrolPath() {
+    public PatrolPath getPatrolPath() {
         return patrolPath;
     }
 

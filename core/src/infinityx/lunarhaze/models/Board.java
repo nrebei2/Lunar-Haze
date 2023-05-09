@@ -633,8 +633,8 @@ public class Board {
      */
     public ArrayList<int[]> getMoonlightTiles() {
         ArrayList<int[]> lst = new ArrayList<>();
-        for (int x = 0; x < height; x++) {
-            for (int y = 0; y < width; y++) {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
                 if (isLit(x, y)) lst.add(new int[]{x, y});
             }
         }

@@ -1,8 +1,10 @@
 package infinityx.lunarhaze.models;
 
+import box2dLight.PointLight;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
@@ -18,11 +20,15 @@ import infinityx.lunarhaze.graphics.CameraShake;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.models.entity.*;
 import infinityx.util.Drawable;
-import infinityx.util.PatrolRegion;
+import infinityx.util.PatrolPath;
 import infinityx.util.astar.AStarMap;
 import infinityx.util.astar.AStarPathFinding;
 
+import java.awt.*;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Model class
@@ -98,6 +104,8 @@ public class LevelContainer {
      * Therefore, this is like a player cache.
      */
     private Werewolf player;
+
+    private Werewolf werewolf;
     /**
      * Stores Board
      */
@@ -173,6 +181,10 @@ public class LevelContainer {
 
     private boolean debugPressed;
 
+    private Array<Vector2> lampPos;
+
+    private HashMap<Vector2, Lamp> lamps;
+
     /**
      * Initialize attributes
      */
@@ -183,11 +195,12 @@ public class LevelContainer {
 
         drawables = new Array<>();
         backing = new Array<>();
+        lamps = new HashMap<>();
 
         // There will always be a player
         // So it's fine to initialize now
         Werewolf player = new Werewolf();
-        player.initialize(directory, playerJson, this);
+        player.initialize(directory, playerJson.get("lycan"), this);
         setPlayer(player);
 
         board = null;
@@ -202,6 +215,12 @@ public class LevelContainer {
         battleSettings = new Settings();
     }
 
+    public void setEnemyDamage(float damage){
+        for (Enemy enemy: activeEnemies){
+            enemy.attackDamage = damage;
+        }
+    }
+
     /**
      * Creates a new LevelContainer with no active elements.
      */
@@ -212,6 +231,13 @@ public class LevelContainer {
         this.directory = directory;
         initialize();
     }
+
+    public void switchWolf(){
+
+        player.switchToWolf(directory, playerJson.get("werewolf"), this);
+        player.walkSpeed = 2.2f;
+    }
+
 
     /**
      * "flush" all objects from this level and resets level.
@@ -291,6 +317,7 @@ public class LevelContainer {
 
         activeEnemies.removeValue(enemy, true);
         drawables.removeValue(enemy, true);
+        drawables.removeValue(enemy.attackHitbox, true);
         enemy.setActive(false);
         enemy.getFlashlight().setActive(false);
     }
@@ -502,13 +529,32 @@ public class LevelContainer {
         object.setName(type);
         object.setFlipped(flipped);
 
-        if (type == "lamp"){
-            int screenX = board.worldToBoardX(x);
-            int screenY = board.worldToBoardY(y);
-            board.setLit(screenX, screenY, true);
+        if (Objects.equals(type, "lamp")){
+
+            Vector2 pos = new Vector2(board.worldToBoardX(x), board.worldToBoardY(y));
+            PointLight light = new PointLight(rayHandler, 20, new Color(1, 1, 0.8f, 0.7f), 6, x, y);
+            light.setActive(true);
+
+            // HashMap stores positions of each lamp as well as the pointlight at each lamp
+            lamps.put(pos, new Lamp(light));
+
         }
 
         return addSceneObject(object);
+    }
+
+    public HashMap<Vector2, Lamp> getLamps() {
+        return lamps;
+    }
+
+    public boolean isOn (Vector2 pos) {
+        return lamps.get(pos).isOn();
+    }
+
+    public void toggleLamps() {
+        for(Map.Entry<Vector2, Lamp> entry : lamps.entrySet()) {
+            entry.getValue().toggle();
+        }
     }
 
     public Array<SceneObject> getSceneObjects() {
@@ -666,3 +712,25 @@ class DrawableCompare implements Comparator<Drawable> {
     }
 }
 
+/**
+ * Lamp class for turning PointLights on and off
+ */
+class Lamp {
+    PointLight light;
+    boolean on;
+
+    Lamp(PointLight light) {
+        this.light = light;
+        on = true;
+    }
+
+    void toggle() {
+        System.out.println("Toggled");
+        on = !on;
+        light.setActive(on);
+    }
+
+    boolean isOn() {
+        return on;
+    }
+}

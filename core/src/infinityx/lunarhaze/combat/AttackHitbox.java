@@ -95,7 +95,7 @@ public class AttackHitbox extends GameObject {
      */
     public void drawHitbox(GameCanvas canvas) {
         canvas.drawPhysics((PolygonShape) getShapeInformation("body").shape, Color.RED,
-                canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y),
+                getPosition().x, getPosition().y,
                 getAngle(), 1, 1
         );
     }

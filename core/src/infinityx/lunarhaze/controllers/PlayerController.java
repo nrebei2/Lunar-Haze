@@ -23,24 +23,14 @@ public class PlayerController {
     private static final float MOONLIGHT_COLLECT_TIME = 1.5f;
 
     /**
-     * Stealth value if the player is standing still
-     */
-    public static final float STILL_STEALTH = 0.0f;
-
-    /**
      * Stealth value if the player is walking
      */
-    public static final float WALK_STEALTH = 0.3f;
-
-    /**
-     * Stealth value if the player is running
-     */
-    public static final float RUN_STEALTH = 0.6f;
+    public static final float WALK_STEALTH = 0.35f;
 
     /**
      * Stealth value if the player is on the moonlight
      */
-    public static final float MOON_STEALTH = 1.0f;
+    public static final float MOON_STEALTH = 0.95f;
 
     /**
      * Hp increase for each moonlight allocated during phase ALLOCATE
@@ -242,9 +232,6 @@ public class PlayerController {
      * @param delta Number of seconds since last animation frame
      */
     public void resolveStealth(float delta) {
-        if ((player.getLinearVelocity().isZero() && player.isOnMoonlight == false) || player.inTallGrass) {
-            player.setTargetStealth(PlayerController.STILL_STEALTH);
-        }
         float proportion = player.getStealth();
         if (player.getTargetStealth() > proportion) {
             if (player.getTargetStealth() - proportion >= CHANGE_STEALTH_RATE / 1.0f * delta) {
@@ -289,6 +276,9 @@ public class PlayerController {
             timeOnMoonlight += delta; // Increase variable by time
             collectingMoonlight = true;
             //Fixme move collecting field moonlight to enemy
+            if (player.isOnMoonlight == false) {
+                player.setTargetStealth(player.getTargetStealth() + MOON_STEALTH);
+            }
             player.isOnMoonlight = true;
             if (board.isCollectable(px, py) && (timeOnMoonlight > MOONLIGHT_COLLECT_TIME)) {
                 collectMoonlight();
@@ -303,6 +293,9 @@ public class PlayerController {
         } else {
             timeOnMoonlight = 0;
             collectingMoonlight = false;
+            if (player.isOnMoonlight == true) {
+                player.setTargetStealth(player.getTargetStealth() - MOON_STEALTH);
+            }
             player.isOnMoonlight = false;
         }
     }

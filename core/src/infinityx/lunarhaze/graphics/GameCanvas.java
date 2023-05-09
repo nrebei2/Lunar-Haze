@@ -1135,16 +1135,6 @@ public class GameCanvas {
         font.draw(spriteBatch, layout, x, y + offset);
     }
 
-    public void drawPlayerAttackRange(Texture ellipse, Werewolf player, LevelContainer level) {
-        float attackRange = WorldToScreenX(player.getAttackHitbox().getHitboxRange());
-        // Attack distance in one direction
-        float x = WorldToScreenX(player.getPosition().x);
-        float y = WorldToScreenY(player.getPosition().y);
-
-        draw(ellipse, Color.WHITE, ellipse.getWidth() / 2, ellipse.getHeight() / 2, x, y, 0,
-                attackRange / ellipse.getWidth() * 2, attackRange / ellipse.getWidth() * 2);
-    }
-
     /**
      * Draws a shader instanced on quads with given width and height.
      *
@@ -1205,6 +1195,23 @@ public class GameCanvas {
 
     /**
      * Draws a rectangle outline affected by global transform.
+     *
+     * @param x bottom-left screen x
+     * @param y bottom-left screen y
+     */
+    public void drawBlackFilter() {
+        if (active != DrawPass.SHAPE) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
+            return;
+        }
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(0, 0, 0, 0.5f); // 设置颜色为半透明黑色（50%透明度）
+        shapeRenderer.rect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        shapeRenderer.end();
+    }
+
+    /**
+     * Draws a black filter.
      *
      * @param x bottom-left screen x
      * @param y bottom-left screen y

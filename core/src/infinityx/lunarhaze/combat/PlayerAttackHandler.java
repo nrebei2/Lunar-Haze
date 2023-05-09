@@ -22,7 +22,7 @@ public class PlayerAttackHandler extends AttackHandler {
     private static final float DASH_TIME = 0.15f;
     private float dashTimer;
     private Vector2 dashDirection;
-    private boolean isDashing;
+    public boolean isDashing;
     public static float DASH_COOLDOWN = 5.0f;
     public static final float DASH_REDUCE_AMOUNT = 0.5f;
     private float dashCooldownCounter;
@@ -175,6 +175,7 @@ public class PlayerAttackHandler extends AttackHandler {
             dashTimer = 0f;
             entity.setImmune();
             entity.setLockedOut();
+            ((Werewolf) entity).setTargetStealth( ((Werewolf)entity).getTargetStealth() + 0.2f);
         }
     }
 
@@ -189,6 +190,7 @@ public class PlayerAttackHandler extends AttackHandler {
     private void endDash() {
         dashCooldownCounter = 0f;
         isDashing = false;
+        ((Werewolf) entity).setTargetStealth( ((Werewolf)entity).getTargetStealth() - 0.2f);
     }
 
     public boolean isHeavyAttacking() {

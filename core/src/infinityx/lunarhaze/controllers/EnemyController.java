@@ -15,6 +15,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.utils.Array;
 import infinityx.lunarhaze.ai.*;
 import infinityx.lunarhaze.combat.AttackHandler;
@@ -23,10 +24,12 @@ import infinityx.lunarhaze.models.GameObject;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.entity.Archer;
 import infinityx.lunarhaze.models.entity.Enemy;
+import infinityx.lunarhaze.models.entity.SceneObject;
 import infinityx.lunarhaze.models.entity.Villager;
 import infinityx.lunarhaze.models.entity.Werewolf;
 import infinityx.lunarhaze.physics.Box2DRaycastCollision;
 import infinityx.lunarhaze.physics.RaycastInfo;
+import infinityx.util.PatrolPath;
 import infinityx.util.PatrolRegion;
 import infinityx.util.astar.AStarPathFinding;
 
@@ -40,9 +43,14 @@ public class EnemyController{
     final Collision<Vector2> collCache;
 
     /**
-     * Raycast cache for target detection
+     * Raycast cache
      */
     final RaycastInfo raycast;
+
+    /**
+     * Raycast cache for detection specifically
+     */
+    final RaycastInfo detectionCast;
 
     /**
      * Collision detector for target detection
@@ -156,7 +164,52 @@ public class EnemyController{
         this.stateMachine = new DefaultStateMachine<>(this, EnemyState.INIT, EnemyState.ANY_STATE);
         this.combinedContext = new CombinedContext(enemy);
 
-        this.raycast = new RaycastInfo(enemy);
+        this.raycast = new RaycastInfo(enemy) {
+            @Override
+            public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
+                // Right now, all hit bodies are contained in GameObjects
+                GameObject objHit = (GameObject) fixture.getBody().getUserData();
+
+                if (objHit == requestingObject || ignore.contains(objHit.getType())) {
+                    return 1;
+                }
+
+                outputCollision.set(point, normal);
+                this.fixture = fixture;
+                this.fraction = fraction;
+                this.hit = fraction != 0;
+                if (this.hit) {
+                    this.hitObject = objHit;
+                }
+                return fraction;
+            }
+        };
+
+        this.detectionCast = new RaycastInfo(enemy) {
+            @Override
+            public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
+                // Right now, all hit bodies are contained in GameObjects
+                GameObject objHit = (GameObject) fixture.getBody().getUserData();
+
+                if (objHit == requestingObject || ignore.contains(objHit.getType())) {
+                    return 1;
+                }
+
+                // Further ignore objects that can be overlooked
+                if (objHit.getType() == GameObject.ObjectType.SCENE && ((SceneObject) objHit).isSeeThru()) {
+                    return 1;
+                }
+
+                outputCollision.set(point, normal);
+                this.fixture = fixture;
+                this.fraction = fraction;
+                this.hit = fraction != 0;
+                if (this.hit) {
+                    this.hitObject = objHit;
+                }
+                return fraction;
+            }
+        };
         this.collCache = new Collision<>(new Vector2(), new Vector2());
     }
 
@@ -167,7 +220,7 @@ public class EnemyController{
      */
     public void populate(final LevelContainer container) {
         target = container.getPlayer();
-        this.raycastCollision = new Box2DRaycastCollision(container.getWorld(), raycast);
+        this.raycastCollision = new Box2DRaycastCollision(container.getWorld(), detectionCast);
         raycastCollision
                 .addIgnore(GameObject.ObjectType.ENEMY)
                 .addIgnore(GameObject.ObjectType.HITBOX);
@@ -341,21 +394,21 @@ public class EnemyController{
         // Fake range increasing for ALERT and INDICATOR
         float stealth = target.getStealth();
         if (enemy.getDetection() == Enemy.Detection.ALERT) {
-            stealth = 1;
+            stealth *= 1.5f;
         } else if (enemy.getDetection() == Enemy.Detection.INDICATOR) {
-            stealth = 0.5f;
+            stealth *= 1.2f;
         }
         if (getTarget().isOnMoonlight) {
-            stealth = 2;
+            stealth *= 2;
         }
 
         // TODO: right now there is no difference in logic between a return of ALERT and NOTICED
         if (enemy.isInBattle()) return Enemy.Detection.ALERT;
 
         Interpolation lerp = Interpolation.linear;
-        raycastCollision.findCollision(collCache, new Ray<>(enemy.getPosition(), target.getPosition()));
+        raycastCollision.findCollision(collCache, rayCache.set(enemy.getPosition(), target.getPosition()));
 
-        if (!raycast.hit) {
+        if (!detectionCast.hit) {
             // For any reason...
             return Enemy.Detection.NONE;
         }
@@ -366,7 +419,7 @@ public class EnemyController{
         // degree between enemy orientation and enemy-to-player
         double degree = Math.abs(enemy.getOrientation() - enemy.vectorToAngle(enemyToPlayer)) * MathUtils.radiansToDegrees;
 
-        if (raycast.hitObject == target) {
+        if (detectionCast.hitObject == target) {
             if (degree <= enemy.getFlashlight().getConeDegree() / 2 && dist <= lerp.apply(2.75f, 3f, stealth)) {
                 return Enemy.Detection.ALERT;
             }
@@ -376,12 +429,11 @@ public class EnemyController{
             if (degree <= 90 && dist <= lerp.apply(1.25f, 1.75f, stealth)) {
                 return Enemy.Detection.ALERT;
             }
+            if (dist <= target.getNoiseRadius()) {
+                return Enemy.Detection.NOTICED;
+            }
         }
 
-        // target may be behind object, but enemy should still be able to hear
-        if (dist <= lerp.apply(1.75f, 3.5f, stealth)) {
-            return Enemy.Detection.NOTICED;
-        }
 
         // Target is too far away
         return Enemy.Detection.NONE;
@@ -397,12 +449,12 @@ public class EnemyController{
         // Fake range increasing for ALERT and INDICATOR
         float stealth = target.getStealth();
         if (enemy.getDetection() == Enemy.Detection.ALERT) {
-            stealth = 1;
+            stealth *= 1.5f;
         } else if (enemy.getDetection() == Enemy.Detection.INDICATOR) {
-            stealth = 0.5f;
+            stealth *= 1.2f;
         }
         if (getTarget().isOnMoonlight) {
-            stealth = 2;
+            stealth *= 2;
         }
 
         Interpolation lerp = Interpolation.linear;
@@ -433,23 +485,18 @@ public class EnemyController{
     }
 
     /**
-     * @return Random point in patrol area
+     * @return A next way point to move to in patrol path
      */
     public Vector2 getPatrolTarget() {
-        PatrolRegion region = enemy.getPatrolPath();
-        return patrolTarget.set(
-                MathUtils.random(region.getBottomLeft()[0], region.getTopRight()[0]),
-                MathUtils.random(region.getBottomLeft()[1], region.getTopRight()[1])
-        );
+        PatrolPath path = enemy.getPatrolPath();
+        return patrolTarget.set(path.getNextPatrol());
     }
 
-    /** Ray cache for find collision */
-    Ray<Vector2> collRay = new Ray<>(new Vector2(), new Vector2());
     /**
      * used to find ray collsion between this enemy and another enemy
      */
     public void findCollision(Enemy target) {
-        communicationCollision.findCollision(collCache, collRay.set(enemy.getPosition(), target.getPosition()));
+        communicationCollision.findCollision(collCache, rayCache.set(enemy.getPosition(), target.getPosition()));
     }
 
     /**
