@@ -3,6 +3,7 @@ package infinityx.lunarhaze.models.entity;
 import box2dLight.PointLight;
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
@@ -181,7 +182,12 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
     }
 
 
-
+    /**
+     * @return The radius of the werewolf's noise in world length
+     */
+    public float getNoiseRadius() {
+        return Interpolation.linear.apply(1.75f, 3.5f, stealth);
+    }
 
     /**
      * Initialize the werewolf with the given data
@@ -295,5 +301,4 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
     public Location<Vector2> newLocation() {
         return new Box2dLocation(this.getPosition());
     }
-
 }
