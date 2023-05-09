@@ -7,6 +7,7 @@ import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.Settings;
 import infinityx.lunarhaze.models.entity.Archer;
 import infinityx.lunarhaze.models.entity.Enemy;
+import infinityx.lunarhaze.models.entity.Villager;
 
 /**
  * Basically a monster spawner. Used for the battle phase.
@@ -75,10 +76,10 @@ public class EnemySpawner {
         time += delta;
         if (time >= enemyAddTime) {
             Vector2 position = spawnLocations.random();
-            Archer newEnemy = container.addArcher("archer", position.x, position.y);
+            Villager newEnemy = container.addVillager("villager", position.x, position.y);
             // This spawner is only used in battle phase
-            container.getArcherControllers().get(newEnemy).setInBattle(true);
-            container.getArcherControllers().get(newEnemy).getStateMachine().changeState(EnemyState.ALERT);
+            container.getVillagerControllers().get(newEnemy).setInBattle(true);
+            container.getVillagerControllers().get(newEnemy).getStateMachine().changeState(EnemyState.ALERT);
             enemyAddTime = MathUtils.random(addMin, addMax);
             time = 0;
             count -= 1;

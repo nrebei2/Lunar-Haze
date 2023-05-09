@@ -31,7 +31,6 @@ public class AttackHitbox extends GameObject {
     public AttackHitbox(AttackingGameObject attacker) {
         super(0, 0);
         this.attacker = attacker;
-
         // Important! So that rotation rotates around attacker
         setPosition(attacker.getPosition());
 
@@ -41,8 +40,6 @@ public class AttackHitbox extends GameObject {
     @Override
     public void initialize(AssetDirectory directory, JsonValue json, LevelContainer container) {
         super.initialize(directory, json, container);
-
-
         float attackRange = json.getFloat("range");
         // width is defaulted to the entity's body diameter
         float attackWidth = json.has("width") ? json.getFloat("width") : getBoundingRadius() * 2;
@@ -123,7 +120,7 @@ public class AttackHitbox extends GameObject {
      */
     public void updateHitboxPosition() {
         // This is the logic that makes the hitbox "parented" to the entity
-        this.getBody().setTransform(attacker.getPosition(), attacker.getAngle());
+        getBody().setTransform(attacker.getPosition(), attacker.getAngle());
     }
 
 }

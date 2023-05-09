@@ -249,7 +249,7 @@ public class LevelContainer {
     public Villager addVillager(Villager villager) {
         activeEnemies.add(villager);
         addDrawables(villager);
-        addDrawables(villager.attackHitbox);
+        addDrawables(villager.getAttackHitbox());
 
         // Update enemy controller assigned to the new enemy
         getVillagerControllers().get(villager).populate(this);
@@ -478,7 +478,7 @@ public class LevelContainer {
      */
     public void setPlayer(Werewolf player) {
         drawables.add(player);
-        drawables.add(player.attackHitbox);
+        drawables.add(player.getAttackHitbox());
         this.player = player;
     }
 
@@ -650,7 +650,7 @@ public class LevelContainer {
         if (debugPressed) {
             if (player.isAttacking) {
                 canvas.begin(GameCanvas.DrawPass.SHAPE, view.x, view.y);
-                player.attackHitbox.drawHitbox(canvas);
+                player.getAttackHitbox().drawHitbox(canvas);
                 canvas.end();
             }
 
@@ -668,7 +668,7 @@ public class LevelContainer {
             canvas.end();
 
             canvas.begin(GameCanvas.DrawPass.SPRITE, view.x, view.y);
-            player.attackHitbox.draw(canvas);
+            player.getAttackHitbox().draw(canvas);
             canvas.end();
         }
 

@@ -203,7 +203,7 @@ public class EnemyController{
             @Override
             protected ContextMap calculateRealMaps(ContextMap map) {
                 map.setZero();
-                if (attackHandler.canStartNewAttack()) {
+                if (getAttackHandler().canStartNewAttack()) {
                     Vector2 targetDir = target.getPosition().sub(enemy.getPosition()).nor();
                     for (int i = 0; i < map.getResolution(); i++) {
                         map.interestMap[i] = Math.max(0, map.dirFromSlot(i).dot(targetDir));
@@ -245,7 +245,7 @@ public class EnemyController{
             @Override
             protected ContextMap calculateRealMaps(ContextMap map) {
                 map.setZero();
-                if (!attackHandler.canStartNewAttack() || enemy.getHealthPercentage() < 0.5) {
+                if (!getAttackHandler().canStartNewAttack() || enemy.getHealthPercentage() < 0.5) {
                     Vector2 evade_dir = enemy.getPosition().sub(target.getPosition());
                     for (int i = 0; i < map.getResolution(); i++) {
                         map.interestMap[i] = 1/evade_dir.len() * Math.max(0, map.dirFromSlot(i).dot(evade_dir.nor()));
@@ -262,6 +262,10 @@ public class EnemyController{
 
         //Resolution is set to 8 to represent the 8 directions in which enemies can move
         this.battleSB = new ContextSteering(enemy, combinedContext, 30);
+    }
+
+    public AttackHandler getAttackHandler(){
+        return attackHandler;
     }
 
     /**
