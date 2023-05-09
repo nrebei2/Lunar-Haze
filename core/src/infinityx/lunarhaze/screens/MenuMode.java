@@ -18,7 +18,8 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
     public static final int GO_PLAY = 1;
     public static final int GO_SETTING = 2;
     public static final int GO_ABOUT_US = 3;
-    public static final int GO_EXIT = 4;
+    public static final int GO_TUTORIAL = 4;
+    public static final int GO_EXIT = 5;
     /**
      * Background texture for start-up
      */
@@ -53,6 +54,10 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
      * About Us button
      */
     private Texture aboutUsButton;
+    /**
+     * About Us button
+     */
+    private Texture helpButton;
     /**
      * Exit button
      */
@@ -94,6 +99,10 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
      */
     private int centerYAboutUs;
     /**
+     * The y-coordinate of the center of the help button
+     */
+    private int centerYHelp;
+    /**
      * The y-coordinate of the center of the exit button
      */
     private int centerYExit;
@@ -118,6 +127,11 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
     private int pressAboutUsState;
 
     /**
+     * The current state of the about us button
+     */
+    private int pressHelpState;
+
+    /**
      * The current state of the exit button
      */
     private int pressExitState;
@@ -139,27 +153,31 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
     /**
      * Ratio of play height from bottom
      */
-    private static final float LOGO_HEIGHT_RATIO = 0.68f;
+    private static final float LOGO_HEIGHT_RATIO = 0.72f;
     /**
      * Ratio of play height from bottom
      */
-    private static final float PLAY_HEIGHT_RATIO = 0.4f;
+    private static final float PLAY_HEIGHT_RATIO = 0.43f;
     /**
      * Ratio of play height from bottom
      */
-    private static final float EDITOR_HEIGHT_RATIO = 0.33f;
+    private static final float EDITOR_HEIGHT_RATIO = 0.37f;
     /**
      * Ratio of setting height from bottom
      */
-    private static final float SETTING_HEIGHT_RATIO = 0.26f;
+    private static final float SETTING_HEIGHT_RATIO = 0.31f;
     /**
      * Ratio of about us height from bottom
      */
-    private static final float ABOUT_US_HEIGHT_RATIO = 0.19f;
+    private static final float ABOUT_US_HEIGHT_RATIO = 0.25f;
     /**
      * Ratio of about us height from bottom
      */
-    private static final float EXIT_HEIGHT_RATIO = 0.12f;
+    private static final float HELP_HEIGHT_RATIO = 0.19f;
+    /**
+     * Ratio of about us height from bottom
+     */
+    private static final float EXIT_HEIGHT_RATIO = 0.13f;
 
     /**
      * Returns true if all assets are loaded and the player is ready to go.
@@ -198,6 +216,15 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
     }
 
     /**
+     * Returns true if all assets are loaded and the player is ready to get to about us page.
+     *
+     * @return true if the player is ready to get to about us page
+     */
+    public boolean isHelpReady() {
+        return pressHelpState == 2;
+    }
+
+    /**
      * Returns true if all assets are loaded and the player is ready to quit game.
      *
      * @return true if the player is ready to quit game
@@ -232,6 +259,7 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
         settingButton = directory.getEntry("setting", Texture.class);
         exitButton = directory.getEntry("exit", Texture.class);
         aboutUsButton = directory.getEntry("about-us", Texture.class);
+        helpButton = directory.getEntry("help", Texture.class);
     }
 
     /**
@@ -275,6 +303,9 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
         Color tintAboutUs = (pressAboutUsState == 1 ? color : Color.WHITE);
         canvas.draw(aboutUsButton, tintAboutUs, aboutUsButton.getWidth() / 2, aboutUsButton.getHeight() / 2,
                 centerX, centerYAboutUs, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
+        Color tintHelp = (pressHelpState == 1 ? color : Color.WHITE);
+        canvas.draw(helpButton, tintHelp, helpButton.getWidth() / 2, helpButton.getHeight() / 2,
+                centerX, centerYHelp, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
         Color tintExit = (pressExitState == 1 ? color : Color.WHITE);
         canvas.draw(exitButton, tintExit, exitButton.getWidth() / 2, exitButton.getHeight() / 2,
                 centerX, centerYExit, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
@@ -311,6 +342,10 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
             if (isAboutUsReady() && observer != null) {
                 observer.exitScreen(this, GO_ABOUT_US);
             }
+            // About Us are ready, notify our listener
+            if (isHelpReady() && observer != null) {
+                observer.exitScreen(this, GO_TUTORIAL);
+            }
             // Exit are ready, notify our listener
             if (isExitReady() && observer != null) {
                 observer.exitScreen(this, GO_EXIT);
@@ -339,6 +374,7 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
         centerYEditor = (int) (EDITOR_HEIGHT_RATIO * height);
         centerYSetting = (int) (SETTING_HEIGHT_RATIO * height);
         centerYAboutUs = (int) (ABOUT_US_HEIGHT_RATIO * height);
+        centerYHelp = (int) (HELP_HEIGHT_RATIO * height);
         centerYExit = (int) (EXIT_HEIGHT_RATIO * height);
 
         heightY = height;
@@ -375,6 +411,7 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
         pressEditorState = 0;
         pressSettingState = 0;
         pressAboutUsState = 0;
+        pressHelpState = 0;
         pressExitState = 0;
         Gdx.input.setInputProcessor(this);
     }
@@ -468,6 +505,11 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
         if (distX < x && distYAboutUs < y) {
             pressAboutUsState = 1;
         }
+        // About Us button is a rectangle.
+        float distYHelp = Math.abs(screenY - centerYHelp);
+        if (distX < x && distYHelp < y) {
+            pressHelpState = 1;
+        }
         // Exit button is a rectangle.
         float distYExit = Math.abs(screenY - centerYExit);
         if (distX < x && distYExit < y) {
@@ -503,6 +545,10 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
         }
         if (pressAboutUsState == 1) {
             pressAboutUsState = 2;
+            return false;
+        }
+        if (pressHelpState == 1) {
+            pressHelpState = 2;
             return false;
         }
         if (pressExitState == 1) {

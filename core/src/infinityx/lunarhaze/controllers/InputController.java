@@ -57,6 +57,10 @@ public class InputController {
      */
     private static final int EXIT = Input.Keys.ESCAPE;
     /**
+     * Input key for going to the next level;
+     */
+    private static final int NEXT = Input.Keys.C;
+    /**
      * Input key for debug option;
      */
     private static final int DEBUG = Input.Keys.B;
@@ -117,6 +121,12 @@ public class InputController {
      * Whether the reset button was pressed.
      */
     private boolean exitPressed;
+
+    /**
+     * Whether the next button was pressed.
+     */
+    private boolean nextPressed;
+
 
     /**
      * Whether the debug button was pressed.
@@ -234,6 +244,14 @@ public class InputController {
     public boolean didExit() {
         return exitPressed;
     }
+    /**
+     * Returns true if the next button was pressed.
+     *
+     * @return true if the next button was pressed.
+     */
+    public boolean didNext() {
+        return nextPressed;
+    }
 
     /**
      * Returns true if the debug button was pressed.
@@ -269,6 +287,7 @@ public class InputController {
         runPressed = Gdx.input.isKeyPressed(RUN);
         resetPressed = Gdx.input.isKeyPressed(RESET);
         exitPressed = Gdx.input.isKeyPressed(EXIT);
+        nextPressed = Gdx.input.isKeyPressed(NEXT);
         debugPressed = Gdx.input.isKeyJustPressed(DEBUG);
 
         horizontal = 0.0f;
