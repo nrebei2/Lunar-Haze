@@ -1201,7 +1201,11 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             // mouse is on different tile now
             mouseBoard.set(boardX, boardY);
         }
-        if (selected == null || selected.getType() == Selected.Type.EXIST_OBJECT || selected.getType() == Selected.Type.EXIST_ENEMY) {
+        if (selected == null
+                || selected.getType() == Selected.Type.EXIST_OBJECT
+                || selected.getType() == Selected.Type.EXIST_ENEMY
+                || selected.getType() == Selected.Type.CONTROL_POINT
+        ) {
             removeSelection();
             // select object
             level.getWorld().QueryAABB(
@@ -1222,6 +1226,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 Vector2 waypoint = currEnemyControlled.getPatrolPath().getWaypointAtIndex(i);
                 if (mouseWorld.dst(waypoint) <= selectionThreshold) {
                     //selectedWaypointIndex = i;
+                    selected = new ControlPoint(i, waypoint);
                     break;
                 }
             }
@@ -1250,6 +1255,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         }
 
         switch (selected.getType()) {
+            case CONTROL_POINT:
+                currEnemyControlled.getPatrolPath().getWaypointAtIndex(((ControlPoint) selected).index).set(mouseWorld);
+                break;
             case EXIST_OBJECT:
                 ((ExistingObject) selected).object.setPosition(mouseWorld.x, mouseWorld.y);
                 break;

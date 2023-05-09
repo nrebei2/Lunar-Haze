@@ -40,6 +40,10 @@ public class PatrolPath {
         Vector2 next = path.get(currentWayPoint);
         currentWayPoint++;
         if (currentWayPoint > path.size - 1) {
+            if (path.size == 1) {
+                currentWayPoint = 0;
+                return next;
+            }
             path.reverse();
             currentWayPoint = 1;
         }

@@ -153,6 +153,7 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
         isWindingUp = false;
         heavyLockoutTime = 0.4f; // this can be changed later
         inTallGrass = false;
+        direction = Direction.RIGHT;
     }
 
     /**

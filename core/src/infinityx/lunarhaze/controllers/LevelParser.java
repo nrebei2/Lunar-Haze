@@ -148,7 +148,6 @@ public class LevelParser {
             JsonValue enemyPos = enemyInfo.get("position");
 
             JsonValue patrolInfo = enemyInfo.get("patrol");
-
             Array<Vector2> patrolPath = new Array<>();
             for (JsonValue patrolPos : patrolInfo) {
                 patrolPath.add(new Vector2(patrolPos.getInt(0), patrolPos.getInt(1)));

@@ -68,7 +68,7 @@
 				"type": "villager",
 				"scale": 1.0,
 				"position": [ 11.684473037719727, 14.532249450683594 ],
-				"patrol": [ 8.494000434875488, 10.5, 12.977999687194824, 15.809000015258789 ]
+				"patrol": [[ 11.684473037719727, 14.532249450683594 ]]
 			}
 		],
 		"objects": [
@@ -918,7 +918,7 @@
 				"type": "villager",
 				"scale": 1.0,
 				"position": [ 11.684473037719727, 14.532249450683594 ],
-				"patrol": [ 8.494000434875488, 10.5, 12.977999687194824, 15.809000015258789 ]
+				"patrol": [[ 11.684473037719727, 14.532249450683594 ]]
 			}
 		],
 		"objects": [
@@ -1515,13 +1515,13 @@
 				"type": "villager",
 				"scale": 1.0,
 				"position": [ 10.312503814697266, 14.166659355163574 ],
-				"patrol": [ 9.949000358581543, 13.696999549865723, 12.017000198364258, 15.892999649047852 ]
+				"patrol": [[ 9.949000358581543, 13.696999549865723 ]]
 			},
 			{
 				"type": "villager",
 				"scale": 1.0,
 				"position": [ 2.880228042602539, 18.40970802307129 ],
-				"patrol": [ 2.4549999237060547, 13.954999923706055, 5.684999942779541, 19.124000549316406 ]
+				"patrol": [[ 2.4549999237060547, 13.954999923706055 ]]
 			}
 		],
 		"objects": [
@@ -2198,25 +2198,25 @@
 				"type": "villager",
 				"scale": 1.0,
 				"position": [ 4.320344924926758, 19.59372901916504 ],
-				"patrol": [ 3.320344924926758, 18.59372901916504, 9.555999755859375, 20.59372901916504 ]
+				"patrol": [[ 3.320344924926758, 18.59372901916504 ]]
 			},
 			{
 				"type": "villager",
 				"scale": 1.0,
 				"position": [ 8.343769073486328, 23.656217575073242 ],
-				"patrol": [ 7.343769073486328, 18.656999588012695, 9.343769073486328, 24.725000381469727 ]
+				"patrol": [[ 7.343769073486328, 18.656999588012695 ]]
 			},
 			{
 				"type": "villager",
 				"scale": 1.0,
 				"position": [ 21.546846389770508, 17.61457061767578 ],
-				"patrol": [ 20.546846389770508, 16.61457061767578, 24.270000457763672, 19.7189998626709 ]
+				"patrol": [[ 20.546846389770508, 16.61457061767578]]
 			},
 			{
 				"type": "villager",
 				"scale": 1.0,
 				"position": [ 13.5, 13.291668891906738 ],
-				"patrol": [ 12.437999725341797, 8.645999908447266, 15.017000198364258, 19.416000366210938 ]
+				"patrol": [[ 12.437999725341797, 8.645999908447266 ]]
 			}
 		],
 		"objects": [
@@ -3006,22 +3006,22 @@
 			{
 				"type": "villager",
 				"position": [ 8.0, 3.0 ],
-				"patrol": [ 8.0, 1.0, 10.0, 5.0 ]
+				"patrol": [[ 8.0, 1.0 ]]
 			},
 			{
 				"type": "villager",
 				"position": [ 12.0, 9.0 ],
-				"patrol": [ 11.0, 8.0, 14.0, 10.0 ]
+				"patrol": [[ 11.0, 8.0 ]]
 			},
 			{
 				"type": "villager",
 				"position": [ 2.0, 7.0 ],
-				"patrol": [ 2.0, 7.0, 5.0, 10.0 ]
+				"patrol": [[ 2.0, 7.0 ]]
 			},
 			{
 				"type": "villager",
 				"position": [ 7.0, 12.0 ],
-				"patrol": [ 7.0, 12.0, 8.0, 15.0 ]
+				"patrol": [[ 7.0, 12.0 ]]
 			}
 		],
 		"objects": [
@@ -4172,5 +4172,849 @@
 			}
 		]
 	}
-}
+},
+	"15": {
+		"settings": {
+			"transition": 4,
+			"phaseLength": 50000,
+			"enemy-spawner": {
+				"count": 0,
+				"add-tick": [ 0.0, 0.0 ],
+				"delay": 0.0,
+				"spawn-locations": []
+			}
+		},
+		"ambient": {
+			"stealth-color": [ 0.7720071077346802, 0.7055973410606384, 0.9494163393974304, 1.0 ],
+			"battle-color": [ 1.0, 1.0, 1.0, 1.0 ],
+			"gamma": true,
+			"diffuse": true,
+			"blur": 5
+		},
+		"tiles": {
+			"layout": [
+				[ 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 9, 9, 9, 9, 9, 9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1 ],
+				[ 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 9, 9, 9, 9, 9, 9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1 ],
+				[ 9, 9, 9, 1, 1, 1, 1, 1, 9, 9, 9, 9, 9, 9, 9, 1, 1, 1, 9, 9, 9, 9, 9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
+				[ 9, 9, 9, 1, 1, 1, 1, 1, 9, 9, 1, 1, 1, 1, 9, 1, 1, 1, 9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
+				[ 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 1, 1, 1, 1, 9, 1, 1, 1, 9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
+				[ 9, 9, 9, 1, 1, 1, 1, 1, 9, 9, 1, 1, 1, 1, 9, 9, 9, 9, 9, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
+				[ 9, 9, 9, 1, 1, 1, 1, 1, 9, 9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
+				[ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
+				[ 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
+				[ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ]
+			],
+			"moonlight": {
+				"positions": [
+					[ 6, 1 ],
+					[ 6, 5 ]
+				],
+				"lighting": {
+					"color": [ 1.0, 1.0, 1.0, 0.20000000298023224 ],
+					"distance": 2.5,
+					"rays": 40,
+					"soft": true
+				}
+			}
+		},
+		"scene": {
+			"player": [ 1.7578125, 5.208333492279053 ],
+			"enemies": [
+				{
+					"type": "villager",
+					"scale": 1.0,
+					"position": [ 12.9453125, 3.7291667461395264 ],
+					"patrol": [ [12.583999633789062, 3.1459999084472656 ] ]
+				},
+				{
+					"type": "villager",
+					"scale": 1.0,
+					"position": [ 15.9921875, 7.59375 ],
+					"patrol": [ [15.729999542236328, 7.4720001220703125 ] ]
+				},
+				{
+					"type": "villager",
+					"scale": 1.0,
+					"position": [ 19.7265625, 5.458333492279053 ],
+					"patrol": [ [19.572999954223633, 5.385000228881836 ] ]
+				},
+				{
+					"type": "villager",
+					"scale": 1.0,
+					"position": [ 24.4140625, 3.3854167461395264 ],
+					"patrol": [ [24.167999267578125, 3.049999952316284 ] ]
+				},
+				{
+					"type": "villager",
+					"scale": 1.0,
+					"position": [ 27.109375, 1.2604166269302368 ],
+					"patrol": [ [26.982999801635742, 1.0169999599456787 ] ]
+				}
+			],
+			"objects": [
+				{
+					"type": "fence1",
+					"scale": 1.0,
+					"flip": true,
+					"position": [ 1.0, 10.0 ]
+				},
+				{
+					"type": "fence1",
+					"scale": 1.0,
+					"flip": true,
+					"position": [ 3.0, 10.0 ]
+				},
+				{
+					"type": "fence1",
+					"scale": 1.0,
+					"flip": true,
+					"position": [ 5.0, 10.0 ]
+				},
+				{
+					"type": "fencey",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 0.0, 10.0 ]
+				},
+				{
+					"type": "fencey",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 0.0, 9.0 ]
+				},
+				{
+					"type": "fencey",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 0.0, 8.0 ]
+				},
+				{
+					"type": "fencey",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 0.0, 8.0 ]
+				},
+				{
+					"type": "fencey",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 0.0, 7.0 ]
+				},
+				{
+					"type": "fencey",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 0.0, 7.0 ]
+				},
+				{
+					"type": "fencey",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 0.0, 6.0 ]
+				},
+				{
+					"type": "fencey",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 0.0, 6.0 ]
+				},
+				{
+					"type": "fencey",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 0.0, 5.0 ]
+				},
+				{
+					"type": "fencey",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 0.0, 5.0 ]
+				},
+				{
+					"type": "fencey",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 0.0, 4.0 ]
+				},
+				{
+					"type": "fencey",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 0.0, 3.0 ]
+				},
+				{
+					"type": "fencey",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 0.0, 3.0 ]
+				},
+				{
+					"type": "fencey",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 0.0, 2.0 ]
+				},
+				{
+					"type": "fencey",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 0.0, 1.0 ]
+				},
+				{
+					"type": "fencey",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 0.0, 1.0 ]
+				},
+				{
+					"type": "fence1",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 1.0, 0.0 ]
+				},
+				{
+					"type": "fence1",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 3.0, 0.0 ]
+				},
+				{
+					"type": "fence1",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 5.0, 0.0 ]
+				},
+				{
+					"type": "fence5",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 6.0, 10.0 ]
+				},
+				{
+					"type": "fence5",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 6.0, 9.0 ]
+				},
+				{
+					"type": "fence5",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 6.0, 8.0 ]
+				},
+				{
+					"type": "fence5",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 6.0, 1.0 ]
+				},
+				{
+					"type": "fence5",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 6.0, 2.0 ]
+				},
+				{
+					"type": "fence5",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 6.0, 3.0 ]
+				},
+				{
+					"type": "fence5",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 6.0, 4.0 ]
+				},
+				{
+					"type": "fence5",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 6.0, 7.0 ]
+				},
+				{
+					"type": "fence3",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 7.0, 4.0 ]
+				},
+				{
+					"type": "fence3",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 7.0, 6.0 ]
+				},
+				{
+					"type": "fencey",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 8.0, 7.0 ]
+				},
+				{
+					"type": "fencey",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 8.0, 8.0 ]
+				},
+				{
+					"type": "fencey",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 8.0, 9.0 ]
+				},
+				{
+					"type": "fencey",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 8.0, 10.0 ]
+				},
+				{
+					"type": "fencey",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 8.0, 4.0 ]
+				},
+				{
+					"type": "fencey",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 8.0, 3.0 ]
+				},
+				{
+					"type": "fencey",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 8.0, 2.0 ]
+				},
+				{
+					"type": "fencey",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 8.0, 1.0 ]
+				},
+				{
+					"type": "fencex",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 9.0, 0.0 ]
+				},
+				{
+					"type": "fence3",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 11.0, 0.0 ]
+				},
+				{
+					"type": "fence3",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 9.0, 10.0 ]
+				},
+				{
+					"type": "fence3",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 11.0, 10.0 ]
+				},
+				{
+					"type": "fence5",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 12.0, 10.0 ]
+				},
+				{
+					"type": "fence5",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 12.0, 9.0 ]
+				},
+				{
+					"type": "fence5",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 12.0, 1.0 ]
+				},
+				{
+					"type": "fence5",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 12.0, 2.0 ]
+				},
+				{
+					"type": "fence5",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 12.0, 3.0 ]
+				},
+				{
+					"type": "fence3",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 13.0, 3.0 ]
+				},
+				{
+					"type": "fence3",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 13.0, 8.0 ]
+				},
+				{
+					"type": "fence3",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 15.0, 8.0 ]
+				},
+				{
+					"type": "fence3",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 17.0, 8.0 ]
+				},
+				{
+					"type": "fence3",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 19.0, 8.0 ]
+				},
+				{
+					"type": "fence3",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 21.0, 8.0 ]
+				},
+				{
+					"type": "fencey",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 19.0703125, 5.791666507720947 ]
+				},
+				{
+					"type": "fencey",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 19.0703125, 6.4375 ]
+				},
+				{
+					"type": "fencex",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 19.9453125, 6.395833492279053 ]
+				},
+				{
+					"type": "fence5",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 20.921875, 6.40625 ]
+				},
+				{
+					"type": "fence5",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 20.8984375, 5.864583492279053 ]
+				},
+				{
+					"type": "forest",
+					"scale": 1.1999999284744263,
+					"flip": false,
+					"position": [ 7.109375, 8.0 ]
+				},
+				{
+					"type": "stone",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 6.84375, 2.875 ]
+				},
+				{
+					"type": "tree4",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 12.796875, 9.104166984558105 ]
+				},
+				{
+					"type": "tree10",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 14.25, 9.354166984558105 ]
+				},
+				{
+					"type": "tree9",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 15.765625, 9.239583015441895 ]
+				},
+				{
+					"type": "tree6",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 17.21875, 9.25 ]
+				},
+				{
+					"type": "tree9",
+					"scale": 1.0,
+					"flip": true,
+					"position": [ 19.1953125, 9.260416984558105 ]
+				},
+				{
+					"type": "tree5",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 20.7734375, 9.3125 ]
+				},
+				{
+					"type": "stone",
+					"scale": 0.5799998641014099,
+					"flip": false,
+					"position": [ 15.1484375, 7.864583492279053 ]
+				},
+				{
+					"type": "stone",
+					"scale": 0.5799998641014099,
+					"flip": false,
+					"position": [ 15.1484375, 7.614583492279053 ]
+				},
+				{
+					"type": "stone",
+					"scale": 0.5799998641014099,
+					"flip": true,
+					"position": [ 15.1640625, 7.395833492279053 ]
+				},
+				{
+					"type": "stone",
+					"scale": 0.5799998641014099,
+					"flip": true,
+					"position": [ 15.1640625, 7.177083492279053 ]
+				},
+				{
+					"type": "stone",
+					"scale": 0.5799998641014099,
+					"flip": false,
+					"position": [ 15.15625, 7.0625 ]
+				},
+				{
+					"type": "stone",
+					"scale": 0.5799998641014099,
+					"flip": true,
+					"position": [ 15.15625, 6.84375 ]
+				},
+				{
+					"type": "stone",
+					"scale": 0.5799998641014099,
+					"flip": false,
+					"position": [ 15.8125, 6.822916507720947 ]
+				},
+				{
+					"type": "stone",
+					"scale": 0.5799998641014099,
+					"flip": true,
+					"position": [ 16.46875, 6.833333492279053 ]
+				},
+				{
+					"type": "stone",
+					"scale": 0.5799998641014099,
+					"flip": true,
+					"position": [ 16.7265625, 7.958333492279053 ]
+				},
+				{
+					"type": "stone",
+					"scale": 0.5799998641014099,
+					"flip": false,
+					"position": [ 16.7109375, 7.708333492279053 ]
+				},
+				{
+					"type": "stone",
+					"scale": 0.5799998641014099,
+					"flip": true,
+					"position": [ 16.7421875, 7.427083492279053 ]
+				},
+				{
+					"type": "stone",
+					"scale": 0.5799998641014099,
+					"flip": false,
+					"position": [ 16.7421875, 7.239583492279053 ]
+				},
+				{
+					"type": "stone",
+					"scale": 0.5799998641014099,
+					"flip": true,
+					"position": [ 16.7734375, 6.9375 ]
+				},
+				{
+					"type": "stone",
+					"scale": 0.5799998641014099,
+					"flip": true,
+					"position": [ 16.171875, 6.84375 ]
+				},
+				{
+					"type": "stone",
+					"scale": 0.5799998641014099,
+					"flip": false,
+					"position": [ 15.46875, 6.864583492279053 ]
+				},
+				{
+					"type": "fence5",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 14.0, 4.0 ]
+				},
+				{
+					"type": "fencex",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 20.0, 5.0 ]
+				},
+				{
+					"type": "fence5",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 19.0, 5.0 ]
+				},
+				{
+					"type": "fence3",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 18.0, 4.0 ]
+				},
+				{
+					"type": "fence3",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 16.0, 4.0 ]
+				},
+				{
+					"type": "fence3",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 15.0, 4.0 ]
+				},
+				{
+					"type": "fence1",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 21.0078125, 6.458333492279053 ]
+				},
+				{
+					"type": "fence1",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 23.0, 10.0 ]
+				},
+				{
+					"type": "fence1",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 25.0, 10.0 ]
+				},
+				{
+					"type": "fence1",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 27.0, 10.0 ]
+				},
+				{
+					"type": "fence1",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 23.0, 0.0 ]
+				},
+				{
+					"type": "fence1",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 25.0, 0.0 ]
+				},
+				{
+					"type": "fence1",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 27.0, 0.0 ]
+				},
+				{
+					"type": "fencey",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 22.0, 10.0 ]
+				},
+				{
+					"type": "fencey",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 22.0, 9.0 ]
+				},
+				{
+					"type": "fencey",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 22.0, 6.0 ]
+				},
+				{
+					"type": "fencey",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 22.0, 5.0 ]
+				},
+				{
+					"type": "fencey",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 22.0, 4.0 ]
+				},
+				{
+					"type": "fencey",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 22.0, 3.0 ]
+				},
+				{
+					"type": "fencey",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 22.0, 2.0 ]
+				},
+				{
+					"type": "fencey",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 22.0, 1.0 ]
+				},
+				{
+					"type": "fence3",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 22.2265625, 6.510416507720947 ]
+				},
+				{
+					"type": "fence5",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 23.1796875, 7.5 ]
+				},
+				{
+					"type": "fencex",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 24.0, 8.0 ]
+				},
+				{
+					"type": "fence5",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 23.1953125, 8.25 ]
+				},
+				{
+					"type": "fence3",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 26.0, 8.0 ]
+				},
+				{
+					"type": "fence3",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 27.0, 8.0 ]
+				},
+				{
+					"type": "stone",
+					"scale": 0.6000001430511475,
+					"flip": false,
+					"position": [ 15.140625, 7.6875 ]
+				},
+				{
+					"type": "stone",
+					"scale": 0.6000001430511475,
+					"flip": false,
+					"position": [ 15.1015625, 7.458333492279053 ]
+				},
+				{
+					"type": "stone",
+					"scale": 0.6000001430511475,
+					"flip": false,
+					"position": [ 15.125, 7.052083492279053 ]
+				},
+				{
+					"type": "stone",
+					"scale": 0.6000001430511475,
+					"flip": false,
+					"position": [ 15.46875, 6.854166507720947 ]
+				},
+				{
+					"type": "stone",
+					"scale": 0.6000001430511475,
+					"flip": false,
+					"position": [ 15.265625, 6.833333492279053 ]
+				},
+				{
+					"type": "stone",
+					"scale": 0.6000001430511475,
+					"flip": false,
+					"position": [ 15.734375, 6.895833492279053 ]
+				},
+				{
+					"type": "stone",
+					"scale": 0.6000001430511475,
+					"flip": false,
+					"position": [ 16.4296875, 6.916666507720947 ]
+				},
+				{
+					"type": "stone",
+					"scale": 0.5400000214576721,
+					"flip": true,
+					"position": [ 16.2578125, 6.791666507720947 ]
+				},
+				{
+					"type": "fence5",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 28.0, 1.0 ]
+				},
+				{
+					"type": "fence5",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 28.0, 1.0 ]
+				},
+				{
+					"type": "fence5",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 28.0, 2.0 ]
+				},
+				{
+					"type": "fence5",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 28.0, 3.0 ]
+				},
+				{
+					"type": "fence5",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 28.0, 4.0 ]
+				},
+				{
+					"type": "fence5",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 28.0, 5.0 ]
+				},
+				{
+					"type": "fence5",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 28.0, 6.0 ]
+				},
+				{
+					"type": "fence5",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 28.0, 7.0 ]
+				},
+				{
+					"type": "fence5",
+					"scale": 1.0,
+					"flip": false,
+					"position": [ 28.0, 8.0 ]
+				}
+			]
+		}
+	}
 }

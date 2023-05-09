@@ -274,9 +274,6 @@ public enum EnemyState implements State<EnemyController> {
         @Override
         public void enter(EnemyController entity) {
             Vector2 patrol = entity.getPatrolTarget();
-            while (entity.pathfinder.map.getNodeAtWorld(patrol.x, patrol.y).isObstacle) {
-                patrol = entity.getPatrolTarget();
-            }
             entity.targetPos.set(patrol);
             entity.updatePath();
             entity.getEnemy().setSteeringBehavior(entity.followPathSB);
