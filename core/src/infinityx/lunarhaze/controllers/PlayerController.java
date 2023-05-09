@@ -242,7 +242,7 @@ public class PlayerController {
      * @param delta Number of seconds since last animation frame
      */
     public void resolveStealth(float delta) {
-        if ((player.getLinearVelocity().isZero() && player.isOnMoonlight == false) || player.inTallGrass) {
+        if (player.inTallGrass) {
             player.setTargetStealth(PlayerController.STILL_STEALTH);
         }
         float proportion = player.getStealth();
@@ -289,6 +289,9 @@ public class PlayerController {
             timeOnMoonlight += delta; // Increase variable by time
             collectingMoonlight = true;
             //Fixme move collecting field moonlight to enemy
+            if (player.isOnMoonlight == false) {
+                player.setTargetStealth(player.getTargetStealth() + MOON_STEALTH);
+            }
             player.isOnMoonlight = true;
             if (board.isCollectable(px, py) && (timeOnMoonlight > MOONLIGHT_COLLECT_TIME)) {
                 collectMoonlight();
@@ -303,6 +306,9 @@ public class PlayerController {
         } else {
             timeOnMoonlight = 0;
             collectingMoonlight = false;
+            if (player.isOnMoonlight == true) {
+                player.setTargetStealth(player.getTargetStealth() - MOON_STEALTH);
+            }
             player.isOnMoonlight = false;
         }
     }
