@@ -56,6 +56,10 @@ public class GDXRoot extends Game implements ScreenObserver {
      */
     private AboutUsMode aboutUs;
     /**
+     * Tutorial Screen
+     */
+    private TutorialMode tutorial;
+    /**
      * Pause Screen
      */
     private PauseMode pause;
@@ -102,6 +106,7 @@ public class GDXRoot extends Game implements ScreenObserver {
         selection = new LevelSelectionMode(canvas);
         setting = new SettingMode(canvas, this, setting_preference);
         aboutUs = new AboutUsMode(canvas);
+        tutorial = new TutorialMode(canvas);
         pause = new PauseMode(canvas);
         allocate = new AllocateMode(canvas, game);
         editor = new EditorMode(canvas);
@@ -113,6 +118,7 @@ public class GDXRoot extends Game implements ScreenObserver {
         selection.setObserver(this);
         setting.setObserver(this);
         aboutUs.setObserver(this);
+        tutorial.setObserver(this);
         pause.setObserver(this);
         allocate.setObserver(this);
         editor.setObserver(this);
@@ -134,6 +140,7 @@ public class GDXRoot extends Game implements ScreenObserver {
         selection.dispose();
         setting.dispose();
         aboutUs.dispose();
+        tutorial.dispose();
         pause.dispose();
 
         canvas.dispose();
@@ -179,6 +186,7 @@ public class GDXRoot extends Game implements ScreenObserver {
             selection.gatherAssets(directory);
             setting.gatherAssets(directory);
             aboutUs.gatherAssets(directory);
+            tutorial.gatherAssets(directory);
             pause.gatherAssets(directory);
             allocate.gatherAssets(directory);
             game.gatherAssets(directory);
@@ -210,6 +218,9 @@ public class GDXRoot extends Game implements ScreenObserver {
                 case MenuMode.GO_ABOUT_US:
                     setScreen(aboutUs);
                     break;
+                case MenuMode.GO_TUTORIAL:
+                    setScreen(tutorial);
+                    break;
                 case MenuMode.GO_EXIT:
                     Gdx.app.exit();
                     break;
@@ -240,7 +251,14 @@ public class GDXRoot extends Game implements ScreenObserver {
                     setScreen(menu);
                     break;
             }
-        } else if (screen == game) {
+        } else if (screen == tutorial){
+            switch (exitCode) {
+                case TutorialMode.GO_MENU:
+                    setScreen(menu);
+                    break;
+            }
+        }
+        else if (screen == game) {
             switch (exitCode) {
                 case GameMode.GO_PAUSE:
                     setScreen(pause);
