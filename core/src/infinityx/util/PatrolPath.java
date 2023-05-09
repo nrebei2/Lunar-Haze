@@ -91,4 +91,12 @@ public class PatrolPath {
         path.add(new Vector2(x, y));
         return this;
     }
+
+    /**
+     * Adds a new vertex to the path at (x, y) at a specific index
+     */
+    public PatrolPath addWaypointAt(float x, float y, int index) {
+        path.insert(index, new Vector2(x, y));
+        return this;
+    }
 }

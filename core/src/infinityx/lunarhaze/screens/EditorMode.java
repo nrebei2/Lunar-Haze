@@ -96,11 +96,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     private boolean showCannotSaveError;
 
     /**
-     * Whether to display the Enemy->Enemy X popup to select patrol path, etc
-     */
-    private ImBoolean showEnemyControllerWindow = new ImBoolean();
-
-    /**
      * Whether the player has been placed on the board
      */
     private boolean playerPlaced;
@@ -120,7 +115,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
          * Enum specifying the type of the selected object.
          */
         public enum Type {
-            TILE, PLAYER, ENEMY, OBJECT, EXIST_ENEMY, EXIST_OBJECT, MOONLIGHT, CONTROL_POINT
+            TILE, PLAYER, ENEMY, OBJECT, EXIST_ENEMY, EXIST_OBJECT, MOONLIGHT
         }
 
         /**
@@ -251,31 +246,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     }
 
     /**
-     * The user has selected a control point for an enemies  object in the scene
-     */
-    class ControlPoint extends Selected {
-        public ControlPoint(int index, Vector2 position) {
-            this.index = index;
-            this.position = position.cpy();
-        }
-
-        /**
-         * Index into patrol path
-         */
-        public int index;
-
-        /**
-         * Position when selected
-         */
-        public Vector2 position;
-
-        @Override
-        public Type getType() {
-            return Type.CONTROL_POINT;
-        }
-    }
-
-    /**
      * Represents an action that the editor has done.
      */
     abstract static class Action {
@@ -285,7 +255,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         public enum Type {
             MOONLIGHT,
             ADD_OBJECT,
-            REMOVE_OBJECT
+            REMOVE_OBJECT,
+            ADD_POINT,
+            REMOVE_POINT
         }
 
         /**
@@ -337,6 +309,53 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         @Override
         public Type getType() {
             return Type.REMOVE_OBJECT;
+        }
+    }
+
+    /**
+     * Represents an action for adding a point to a patrol path.
+     */
+    public static class AddPoint extends Action {
+
+        public Enemy enemy;
+        public Vector2 pos;
+
+        /**
+         * @param pos position of point
+         * @param enemy which enemy this point patrol path was from
+         */
+        public AddPoint(Vector2 pos, Enemy enemy) {
+            this.pos = pos;
+            this.enemy = enemy;
+        }
+        @Override
+        public Type getType() {
+            return Type.ADD_POINT;
+        }
+    }
+
+    /**
+     * Represents an action for removing an object.
+     */
+    public static class RemovePoint extends Action {
+        public Enemy enemy;
+        public int index;
+        public Vector2 pos;
+
+        /**
+         * @param pos position of point
+         * @param index index into patrol path it was removed from
+         * @param enemy which enemy this point patrol path was from
+         */
+        public RemovePoint(Vector2 pos, int index, Enemy enemy) {
+            this.pos = pos;
+            this.index = index;
+            this.enemy = enemy;
+        }
+
+        @Override
+        public Type getType() {
+            return Type.REMOVE_POINT;
         }
     }
 
@@ -505,6 +524,11 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     private boolean showSaveLevelPopup = false;
 
+    /**
+     * Current index into enemy patrol path the user is moving around
+     */
+    private int selectedWaypointIndex;
+
     public EditorMode(GameCanvas canvas) {
         this.canvas = canvas;
         objectSelections = new Array<>();
@@ -605,7 +629,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 Enemy newEnemy = placeEnemy();
 
                 currEnemyControlled = newEnemy;
-                showEnemyControllerWindow.set(true);
 
                 // Perform action
                 doneActions.add(new PlaceObject(newEnemy));
@@ -702,7 +725,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             case EXIST_ENEMY:
                 ((ExistingEnemy) selected).enemy.setTint(Color.WHITE);
                 currEnemyControlled = null;
-                showEnemyControllerWindow.set(false);
+                selectedWaypointIndex = -1;
                 break;
             case EXIST_OBJECT:
                 ((ExistingObject) selected).object.setTint(Color.WHITE);
@@ -760,6 +783,23 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                             break;
                     }
                     break;
+                case ADD_POINT:
+                    if (currEnemyControlled != ((AddPoint) lastAction).enemy) {
+                        undo();
+                        return;
+                    }
+                    PatrolPath path = currEnemyControlled.getPatrolPath();
+                    path.removeWaypoint(path.getWaypointCount() - 1);
+                    break;
+                case REMOVE_POINT:
+                    if (currEnemyControlled != ((RemovePoint) lastAction).enemy) {
+                        undo();
+                        return;
+                    }
+                    RemovePoint removePoint = (RemovePoint) lastAction;
+                    PatrolPath patrolPath = currEnemyControlled.getPatrolPath();
+                    patrolPath.addWaypointAt(removePoint.pos.x, removePoint.pos.y, removePoint.index);
+                    break;
             }
             undoneActions.add(lastAction);
         }
@@ -797,6 +837,23 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                             level.removeSceneObject((infinityx.lunarhaze.models.entity.SceneObject) removedObj);
                             break;
                     }
+                    break;
+                case ADD_POINT:
+                    AddPoint addPoint = (AddPoint) lastUndoneAction;
+                    if (currEnemyControlled != addPoint.enemy) {
+                        redo();
+                        return;
+                    }
+                    PatrolPath path = currEnemyControlled.getPatrolPath();
+                    path.addWaypoint(addPoint.pos.x, addPoint.pos.y);
+                    break;
+                case REMOVE_POINT:
+                    if (currEnemyControlled != ((RemovePoint) lastUndoneAction).enemy) {
+                        redo();
+                        return;
+                    }
+                    PatrolPath patrolPath = currEnemyControlled.getPatrolPath();
+                    patrolPath.removeWaypoint(((RemovePoint) lastUndoneAction).index);
                     break;
             }
             doneActions.add(lastUndoneAction);
@@ -904,7 +961,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                     selected = new ExistingEnemy((Enemy) hit);
                     // Open controller for selected enemy
                     currEnemyControlled = (Enemy) hit;
-                    showEnemyControllerWindow.set(true);
                     break;
                 case WEREWOLF:
                     selected = new Player();
@@ -1062,33 +1118,35 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         if (showCannotSaveError) {
             cannotSaveWindow();
         }
-        if (showEnemyControllerWindow.get()) {
-            createEnemyControllerWindow();
+        if (currEnemyControlled != null) {
             canvas.begin(GameCanvas.DrawPass.SHAPE, level.getView().x, level.getView().y);
             canvas.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-            canvas.shapeRenderer.setColor(Color.PINK);
 
             // Draw the path in pink, edges and vertices
             PatrolPath curPath = currEnemyControlled.getPatrolPath();
-            int i = 0;
-            while (i < curPath.getWaypointCount() - 1)
-            {
+            for (int i = 0; i < curPath.getWaypointCount(); i++) {
+                canvas.shapeRenderer.setColor(Color.PINK);
                 Vector2 waypoint = curPath.getWaypointAtIndex(i);
-                canvas.shapeRenderer.rectLine(
+                if (i < curPath.getWaypointCount() - 1) {
+                    canvas.shapeRenderer.rectLine(
+                            waypoint.x,
+                            waypoint.y,
+                            curPath.getWaypointAtIndex(i+1).x,
+                            curPath.getWaypointAtIndex(i+1).y,
+                            0.07f
+                    );
+                    if (i == selectedWaypointIndex)
+                        canvas.shapeRenderer.setColor(Color.OLIVE);
+                    canvas.shapeRenderer.circle(waypoint.x, waypoint.y, 0.14f, 15);
+                }
+                if (i == selectedWaypointIndex)
+                    canvas.shapeRenderer.setColor(Color.OLIVE);
+                canvas.shapeRenderer.circle(
                         waypoint.x,
                         waypoint.y,
-                        curPath.getWaypointAtIndex(i+1).x,
-                        curPath.getWaypointAtIndex(i+1).y,
-                        0.07f
+                        0.14f, 15
                 );
-                canvas.shapeRenderer.circle(waypoint.x, waypoint.y, 0.14f, 15);
-                i++;
             }
-            canvas.shapeRenderer.circle(
-                    curPath.getWaypointAtIndex(i).x,
-                    curPath.getWaypointAtIndex(i).y,
-                    0.14f, 15
-            );
 
             canvas.shapeRenderer.end();
             canvas.end();
@@ -1122,10 +1180,10 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         if (board != null)
             showCannotSaveError = false;
 
-        showEnemyControllerWindow.set(false);
         showBattleLighting = false;
         showSaveLevelPopup = false;
         showOverwritePrompt = false;
+        selectedWaypointIndex = -1;
 
         Gdx.input.setInputProcessor(this);
         RayHandler.setGammaCorrection(true);
@@ -1204,8 +1262,41 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         if (selected == null
                 || selected.getType() == Selected.Type.EXIST_OBJECT
                 || selected.getType() == Selected.Type.EXIST_ENEMY
-                || selected.getType() == Selected.Type.CONTROL_POINT
         ) {
+
+            if (currEnemyControlled != null) {
+                // Check if a control point in enemy path was selected
+                float selectionThreshold = 0.14f;
+
+                for (int i = 0; i < currEnemyControlled.getPatrolPath().getWaypointCount(); i++) {
+                    Vector2 waypoint = currEnemyControlled.getPatrolPath().getWaypointAtIndex(i);
+                    if (mouseWorld.dst(waypoint) <= selectionThreshold) {
+                        if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
+                            currEnemyControlled.getPatrolPath().removeWaypoint(i);
+                            // Perform action
+                            doneActions.add(new RemovePoint(waypoint, i, currEnemyControlled));
+                            undoneActions.clear();
+                            return true;
+                        }
+                        selectedWaypointIndex = i;
+                        return true;
+                    }
+                }
+                // de-select
+                if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
+                    PatrolPath patrolPath = currEnemyControlled.getPatrolPath();
+                    patrolPath.addWaypoint(
+                            MathUtils.clamp(mouseWorld.x, 0, board.getWorldWidth()),
+                            MathUtils.clamp(mouseWorld.y, 0, board.getWorldHeight())
+                    );
+                    // Perform action
+                    doneActions.add(new AddPoint(patrolPath.getWaypointAtIndex(patrolPath.getWaypointCount() - 1), currEnemyControlled));
+                    undoneActions.clear();
+                    return true;
+                }
+                selectedWaypointIndex = -1;
+            }
+
             removeSelection();
             // select object
             level.getWorld().QueryAABB(
@@ -1216,20 +1307,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                     mouseWorld.y + 0.05f
             );
 
-            if (selected != null || showEnemyControllerWindow.get() == false)
-                return true;
-
-            // Check if a control point in enemy path was selected
-            float selectionThreshold = 0.14f;
-
-            for (int i = 0; i < currEnemyControlled.getPatrolPath().getWaypointCount(); i++) {
-                Vector2 waypoint = currEnemyControlled.getPatrolPath().getWaypointAtIndex(i);
-                if (mouseWorld.dst(waypoint) <= selectionThreshold) {
-                    //selectedWaypointIndex = i;
-                    selected = new ControlPoint(i, waypoint);
-                    break;
-                }
-            }
+            return true;
         }
 
         placeSelection();
@@ -1250,14 +1328,20 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         mouseWorld.set(canvas.ScreenToWorldX(Gdx.input.getX(), level.getView()), canvas.ScreenToWorldY(Gdx.input.getY(), level.getView()));
         if (ImGui.getIO().getWantCaptureMouse()) return false;
 
+        if (selectedWaypointIndex != -1 && currEnemyControlled != null) {
+            currEnemyControlled.getPatrolPath().getWaypointAtIndex(selectedWaypointIndex).set(
+                    MathUtils.clamp(mouseWorld.x, 0, board.getWorldWidth()),
+                    MathUtils.clamp(mouseWorld.y, 0, board.getWorldHeight())
+            );
+            return true;
+        }
+
         if (selected == null) {
             return false;
         }
 
+
         switch (selected.getType()) {
-            case CONTROL_POINT:
-                currEnemyControlled.getPatrolPath().getWaypointAtIndex(((ControlPoint) selected).index).set(mouseWorld);
-                break;
             case EXIST_OBJECT:
                 ((ExistingObject) selected).object.setPosition(mouseWorld.x, mouseWorld.y);
                 break;
@@ -1508,7 +1592,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                             // Remove the controller window if its controlling the removed enemy
                             if (currEnemyControlled == enemy) {
                                 currEnemyControlled = null;
-                                showEnemyControllerWindow.set(false);
+                                selectedWaypointIndex = -1;
                             }
                         }
 
@@ -1776,6 +1860,11 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 ImGui.text("Left-Ctrl");
                 ImGui.tableNextColumn();
                 ImGui.text("Snap scene selection to board");
+
+                ImGui.tableNextColumn();
+                ImGui.text("Ctrl-Click");
+                ImGui.tableNextColumn();
+                ImGui.text("Add/Remove patrol waypoints");
 
                 ImGui.tableNextColumn();
                 ImGui.text("Escape");
@@ -2167,71 +2256,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         if (ImGui.inputInt("##Delay", level.getSettings().delay)) {
             level.getSettings().delay.set(Math.max(0, level.getSettings().delay.get()));
         }
-    }
-
-
-    /**
-     * Popup window for controlling enemy and setting patrols
-     */
-    private void createEnemyControllerWindow() {
-        ImGui.setNextWindowSize(600, 160, ImGuiCond.FirstUseEver);
-
-        ImGui.begin("Enemy Controller", showEnemyControllerWindow);
-        ImGui.text("Patrol paths:");
-
-        if (ImGui.isItemHovered()) {
-            ImGui.beginTooltip();
-            ImGui.text("Add vertices to define a polygonal chain. Note order matters");
-            ImGui.endTooltip();
-        }
-
-        for (int i = 0; i < currEnemyControlled.getPatrolPath().getWaypointCount(); i++) {
-            Vector2 waypoint = currEnemyControlled.getPatrolPath().getWaypointAtIndex(i);
-
-            ImGui.pushID(i);
-
-            // Close the node if needed
-            if (nodeToClose == i) {
-                ImGui.setNextItemOpen(false, ImGuiCond.Always);
-                nodeToClose = -1;
-            }
-            if (ImGui.treeNode("Waypoint " + (i + 1))) {
-                if (currentNode == i) {
-                    ImGui.pushItemWidth(120);
-                    ImGui.text("Position:");
-                    float[] positionX = {waypoint.x};
-                    if (ImGui.dragFloat("##positionX", positionX, 0.05f, 0, board.getWorldWidth(), "X: %.01f")) {
-                        waypoint.x = positionX[0];
-                    }
-
-                    ImGui.sameLine();
-                    float[] positionY = {waypoint.y};
-                    if (ImGui.dragFloat("##positionY", positionY, 0.05f, 0, board.getWorldHeight(), "Y: %.01f")) {
-                        waypoint.y = positionY[0];
-                    }
-                    ImGui.popItemWidth();
-
-                    if (ImGui.button("Remove Location")) {
-                        currEnemyControlled.getPatrolPath().removeWaypoint(i);
-                    }
-                } else {
-                    nodeToClose = currentNode;
-                    currentNode = i;
-                }
-
-                ImGui.treePop();
-            }
-            ImGui.popID();
-        }
-
-        if (ImGui.button("Add Location")) {
-            currEnemyControlled.getPatrolPath().addWaypoint(0, 0);
-        }
-
-        if (ImGui.button("Close")) {
-            showEnemyControllerWindow.set(false);
-        }
-        ImGui.end();
     }
 
     /**
