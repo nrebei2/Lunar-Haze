@@ -25,7 +25,7 @@
     "damping": 6.0,
     "bullet": true,
     "speed": {
-      "walk": 1.8,
+      "walk": 2.2,
       "run": 2
     },
     "textures": {
@@ -256,6 +256,7 @@
       "attacked-l": "lycan.attacked-l",
       "attacked-r": "lycan.attacked-r",
       "attacked-f": "lycan.attacked-f",
+      "attacked-b": "lycan.idle-b",
       "walk-l": {
         "name": "lycan.walk-l",
         "durations": [
