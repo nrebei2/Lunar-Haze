@@ -70,8 +70,8 @@
       "immunity": 0.5,
       "lockout": 0.8,
       "hitbox": {
-        "range": 0.8,
-        "width": 1.25,
+        "range": 1.5,
+        "width": 1.5,
         "textures": {
           "hitbox": {
             "name" : "werewolf.attack-effect",
