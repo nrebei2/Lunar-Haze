@@ -585,10 +585,6 @@ public class LevelContainer {
                 getEnemyControllers().get(e).drawDetection(canvas);
             }
             canvas.end();
-
-            canvas.begin(GameCanvas.DrawPass.SPRITE, view.x, view.y);
-            player.getAttackHitbox().draw(canvas);
-            canvas.end();
         }
 
     }
