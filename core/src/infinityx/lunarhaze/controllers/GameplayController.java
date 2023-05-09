@@ -5,7 +5,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ObjectMap;
 import infinityx.lunarhaze.ai.TacticalManager;
 import infinityx.lunarhaze.models.Board;
 import infinityx.lunarhaze.models.GameObject;
@@ -79,11 +78,9 @@ public class GameplayController {
     public Board board;
 
     /**
-     * Reference of enemy model-controller map from container
+     * Reference of active enemy controllers from container
      */
-    private ObjectMap<Villager, EnemyController> villagerControls;
-
-    private ObjectMap<Archer, EnemyController> archerControls;
+    private Array<EnemyController> enemyControllers;
 
     /**
      * Owns the lighting controller
@@ -196,8 +193,7 @@ public class GameplayController {
         ambientLightTransitionTimer = 0;
 
         enemies = levelContainer.getEnemies();
-        villagerControls = levelContainer.getVillagerControllers();
-        archerControls= levelContainer.getArcherControllers();
+        enemyControllers = levelContainer.getActiveControllers();
         battleTicks = 0;
 
         win_sound = levelContainer.getDirectory().getEntry("level-passed", Sound.class);
@@ -297,13 +293,8 @@ public class GameplayController {
         updateAmbientLight(delta);
         if (ambientLightTransitionTimer >= container.getSettings().getTransition()) {
             phase = Phase.ALLOCATE;
-            for (int i = 0; i < enemies.size; i++) {
-                if (enemies.get(i).getType() == GameObject.ObjectType.VILLAGER) {
-                    villagerControls.get((Villager) enemies.get(i)).setInBattle(true);
-                }
-                else{
-                    archerControls.get((Archer) enemies.get(i)).setInBattle(true);
-                }
+            for (Enemy enemy : enemies) {
+                enemy.setInBattle(true);
             }
         }
     }
@@ -344,13 +335,8 @@ public class GameplayController {
                 tacticalManager.update();
             }
         }
-        for (int i = 0; i < enemies.size; i++) {
-            if (enemies.get(i).getType() == GameObject.ObjectType.VILLAGER) {
-                villagerControls.get((Villager) enemies.get(i)).update(container, delta);
-            }
-            else{
-                archerControls.get((Archer) enemies.get(i)).update(container, delta);
-            }
+        for (EnemyController controller: enemyControllers) {
+            controller.update(container, delta);
         }
     }
 }

@@ -19,6 +19,13 @@ import java.util.Random;
  * Model class representing an enemy.
  */
 public abstract class Enemy extends SteeringGameObject implements Pool.Poolable {
+
+    /** Types of enemies */
+    public enum EnemyType {
+        VILLAGER,
+        ARCHER
+    }
+
     public enum Detection {
         /**
          * The enemy is alerted (Exclamation point!)
@@ -68,6 +75,12 @@ public abstract class Enemy extends SteeringGameObject implements Pool.Poolable 
      */
     private Sound alert_sound;
 
+
+    /**
+     * Whether the enemy is in battle mode
+     */
+    private boolean inBattle;
+
     /**
      * Returns the type of this object.
      * <p>
@@ -78,6 +91,11 @@ public abstract class Enemy extends SteeringGameObject implements Pool.Poolable 
     public ObjectType getType() {
         return ObjectType.ENEMY;
     }
+
+    /**
+     * Returns the specific enemy type of this object
+     */
+    public abstract EnemyType getEnemyType();
 
     public ConeSource getFlashlight() {
         return flashlight;
@@ -94,6 +112,7 @@ public abstract class Enemy extends SteeringGameObject implements Pool.Poolable 
     public Enemy() {
         super(false);
         detection = Detection.NONE;
+        inBattle = false;
 
         // TODO
 //        setMaxLinearAcceleration(0.61f);
@@ -113,6 +132,14 @@ public abstract class Enemy extends SteeringGameObject implements Pool.Poolable 
         detection = Detection.NONE;
         tint.set(Color.WHITE);
         setScale(1);
+    }
+
+    public void setInBattle(boolean inBattle) {
+        this.inBattle = inBattle;
+    }
+
+    public boolean isInBattle() {
+        return inBattle;
     }
 
     /**

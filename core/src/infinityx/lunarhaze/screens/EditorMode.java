@@ -344,7 +344,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * Holds the necessary information to display the enemy button
      */
     class EnemyButton {
-        public EnemyButton(Texture texture, String type) {
+        public EnemyButton(Texture texture, Enemy.EnemyType type) {
             this.type = type;
             this.texture = texture;
         }
@@ -352,7 +352,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         /**
          * type of Enemy
          */
-        public String type;
+        public Enemy.EnemyType type;
 
         /**
          * Texture for button
@@ -521,7 +521,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                                     enemy.get("textures").getString(
                                             enemy.get("texture").getString("name")
                                     ), Texture.class
-                            ), enemy.name
+                            ), enemy.name.equals("villager") ? Enemy.EnemyType.VILLAGER : Enemy.EnemyType.ARCHER
                     )
             );
         }
@@ -605,14 +605,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 mouseWorld.x + 1, mouseWorld.y + 1
         );
         Enemy newEnemy;
-        if (enemySelection.enemy.getName().equals("villager")) {
-            newEnemy = level.addVillager(enemySelection.enemy.getName(), mouseWorld.x, mouseWorld.y, initialRegion);
-            newEnemy.setScale(enemySelection.enemy.getScale());
-        }
-        else {
-            newEnemy = level.addArcher(enemySelection.enemy.getName(), mouseWorld.x, mouseWorld.y, initialRegion);
-            newEnemy.setScale(enemySelection.enemy.getScale());
-        }
+        newEnemy = level.addEnemy(enemySelection.enemy.getEnemyType(), mouseWorld.x, mouseWorld.y, initialRegion);
+        newEnemy.setScale(enemySelection.enemy.getScale());
         return newEnemy;
     }
 
@@ -691,12 +685,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 ((ExistingObject) selected).object.setTint(Color.WHITE);
                 break;
             case ENEMY:
-                if (((EnemySelection)selected).enemy.getName().equals("villager")) {
-                    level.removeVillager((Villager) ((EnemySelection) selected).enemy);
-                }
-                else{
-                    level.removeArcher((Archer) ((EnemySelection) selected).enemy);
-                }
+                level.removeEnemy(((EnemySelection) selected).enemy);
                 break;
             case OBJECT:
                 level.removeSceneObject(((ObjectSelection) selected).object);
@@ -730,12 +719,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                     GameObject obj = ((PlaceObject) lastAction).gameObject;
                     switch (obj.getType()) {
                         case ENEMY:
-                            if (obj.getName().equals("villager")) {
-                                level.removeVillager((Villager) obj);
-                            }
-                            else{
-                                level.removeArcher((Archer) obj);
-                            }
+                            level.removeEnemy((Enemy) obj);
                             break;
                         case SCENE:
                             level.removeSceneObject((infinityx.lunarhaze.models.entity.SceneObject) obj);
@@ -746,12 +730,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                     GameObject removedObj = ((RemoveObject) lastAction).gameObject;
                     switch (removedObj.getType()) {
                         case ENEMY:
-                            if (removedObj.getName().equals("villager")) {
-                                level.removeVillager((Villager) removedObj);
-                            }
-                            else{
-                                level.removeArcher((Archer) removedObj);
-                            }
+                            level.removeEnemy((Enemy) removedObj);
                             break;
                         case SCENE:
                             level.addSceneObject((infinityx.lunarhaze.models.entity.SceneObject) removedObj);
@@ -778,12 +757,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                     GameObject obj = ((PlaceObject) lastUndoneAction).gameObject;
                     switch (obj.getType()) {
                         case ENEMY:
-                            if (obj.getName().equals("villager")) {
-                                level.removeVillager((Villager) obj);
-                            }
-                            else{
-                                level.removeArcher((Archer) obj);
-                            }
+                            level.removeEnemy((Enemy) obj);
                             break;
                         case SCENE:
                             level.addSceneObject((infinityx.lunarhaze.models.entity.SceneObject) obj);
@@ -794,13 +768,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                     GameObject removedObj = ((RemoveObject) lastUndoneAction).gameObject;
                     switch (removedObj.getType()) {
                         case ENEMY:
-                            if (removedObj.getName().equals("villager")) {
-                                level.removeVillager((Villager) removedObj);
-                            }
-                            else{
-                                level.removeArcher((Archer) removedObj);
-
-                            }
+                            level.removeEnemy((Enemy) removedObj);
                             break;
                         case SCENE:
                             level.removeSceneObject((infinityx.lunarhaze.models.entity.SceneObject) removedObj);
@@ -1473,12 +1441,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                                 // As this will mess with the free list
                                 removeSelection();
                             }
-                            if (enemy.getName().equals("villager")){
-                                level.removeVillager((Villager) enemy);
-                            }
-                            else{
-                                level.removeArcher((Archer) enemy);
-                            }
+                            level.removeEnemy(enemy);
                             doneActions.add(new RemoveObject(enemy));
                             undoneActions.clear();
                             selected = null;
@@ -2239,21 +2202,11 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                     enemy.texture.getTextureObjectHandle(),
                     100, 100 * enemy.texture.getHeight() / enemy.texture.getWidth()
             )) {
-                Enemy newEnemy;
-                if (enemy.type.equals("villager")) {
-                    newEnemy = level.addVillager(
+                Enemy newEnemy = level.addEnemy(
                             enemy.type,
                             mouseWorld.x, mouseWorld.y,
                             new PatrolRegion(0, 0, 0, 0)
-                    );
-                }
-                else{
-                    newEnemy = level.addArcher(
-                            enemy.type,
-                            mouseWorld.x, mouseWorld.y,
-                            new PatrolRegion(0, 0, 0, 0)
-                    );
-                }
+                );
                 removeSelection();
                 selected = new EnemySelection(newEnemy);
 
@@ -2262,7 +2215,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
             if (ImGui.isItemHovered()) {
                 ImGui.beginTooltip();
-                ImGui.text(enemy.type.substring(0, 1).toUpperCase() + enemy.type.substring(1));
+                String name = enemy.type.toString().toLowerCase();
+                ImGui.text(name.substring(0, 1).toUpperCase() + name.substring(1));
                 ImGui.endTooltip();
             }
         }

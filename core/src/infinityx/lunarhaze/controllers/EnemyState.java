@@ -179,7 +179,7 @@ public enum EnemyState implements State<EnemyController> {
             entity.updatePath();
             entity.getEnemy().setSteeringBehavior(entity.followPathSB);
             if (!(entity.getStateMachine().getPreviousState() == ATTACK)
-                    && entity.isInBattle()) {
+                    && entity.getEnemy().isInBattle()) {
                 MessageManager.getInstance().dispatchMessage(TacticalManager.ADD, entity);
             }
             entity.time = 0;
@@ -201,7 +201,7 @@ public enum EnemyState implements State<EnemyController> {
             float enemyToTarget = entity.target.getPosition().dst(entity.getEnemy().getPosition());
 
             //if in stealth just walk towards target and attack if close enough
-            if (!entity.isInBattle()) {
+            if (!entity.getEnemy().isInBattle()) {
                 if (enemyToTarget <= entity.getEnemy().getAttackRange() && entity.attackHandler.canStartNewAttack()) {
                     entity.getStateMachine().changeState(ATTACK);
                 }
@@ -247,7 +247,7 @@ public enum EnemyState implements State<EnemyController> {
         @Override
         public void exit(EnemyController entity) {
             entity.getEnemy().setMaxLinearSpeed(0.8f);
-            if (!entity.isInBattle()) {
+            if (!entity.getEnemy().isInBattle()) {
                 MessageManager.getInstance().dispatchMessage(TacticalManager.REMOVE, entity);
             }
         }

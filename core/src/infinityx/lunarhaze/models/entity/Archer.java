@@ -16,18 +16,6 @@ public class Archer extends Enemy implements Pool.Poolable {
     private Arrow arrow;
 
     /**
-     * Distance (number of tiles) at which archer's arrow can hit player
-     */
-    private int shoot_dist;
-
-    /**
-     * Set shoot distance for the archer type
-     */
-    public void setShootDist(int shoot_dist) {
-        this.shoot_dist = shoot_dist;
-    }
-
-    /**
      * Parse and initialize specific enemy  attributes.
      *
      * @param json      Json tree holding enemy information
@@ -65,15 +53,8 @@ public class Archer extends Enemy implements Pool.Poolable {
 //
 //    }
 
-    /**
-     * Returns the type of this object.
-     * <p>
-     * We use this instead of runtime-typing for performance reasons.
-     *
-     * @return the type of this object.
-     */
-    public ObjectType getType() {
-        return ObjectType.ARCHER;
+    public EnemyType getEnemyType() {
+        return EnemyType.ARCHER;
     }
 
     /**

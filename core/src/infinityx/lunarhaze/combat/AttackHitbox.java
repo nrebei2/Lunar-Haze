@@ -31,17 +31,16 @@ public class AttackHitbox extends GameObject {
     public AttackHitbox(AttackingGameObject attacker) {
         super(0, 0);
         this.attacker = attacker;
+        setLoop(false);
 
         // Important! So that rotation rotates around attacker
         setPosition(attacker.getPosition());
-
     }
 
 
     @Override
     public void initialize(AssetDirectory directory, JsonValue json, LevelContainer container) {
         super.initialize(directory, json, container);
-
 
         float attackRange = json.getFloat("range");
         // width is defaulted to the entity's body diameter
@@ -95,8 +94,8 @@ public class AttackHitbox extends GameObject {
      */
     public void drawHitbox(GameCanvas canvas) {
         canvas.drawPhysics((PolygonShape) getShapeInformation("body").shape, Color.RED,
-                getPosition().x, getPosition().y,
-                getAngle(), canvas.WorldToScreenX(1), canvas.WorldToScreenY(1)
+                canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y),
+                getAngle(), 1, 1
         );
     }
 

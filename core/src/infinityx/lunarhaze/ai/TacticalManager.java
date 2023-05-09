@@ -34,16 +34,9 @@ public class TacticalManager implements Telegraph {
     Random rand = new Random();
 
     /**
-     * The list of current active enemies
+     * Reference of active controllers from container
      */
-    private final Array<Enemy> activeEnemies;
-
-    /**
-     * A map of enemies to their corresponding controllers
-     */
-    private final ObjectMap<Villager, EnemyController> villagerMap;
-
-    private final ObjectMap<Archer, EnemyController> archerMap;
+    private final Array<EnemyController> controllers;
 
     private final LevelContainer container;
 
@@ -55,9 +48,7 @@ public class TacticalManager implements Telegraph {
 
     public TacticalManager(LevelContainer container) {
         target = container.getPlayer();
-        activeEnemies = container.getEnemies();
-        villagerMap = container.getVillagerControllers();
-        archerMap = container.getArcherControllers();
+        controllers = container.getActiveControllers();
         this.container = container;
         MessageManager.getInstance().addListener(this, ADD);
         MessageManager.getInstance().addListener(this, REMOVE);
@@ -103,14 +94,7 @@ public class TacticalManager implements Telegraph {
      * Alert nearby allies that target is spotted
      */
     public void alertAllies(EnemyController entity) {
-        for (Enemy enemy : activeEnemies) {
-            EnemyController control;
-            if (enemy.getType() == GameObject.ObjectType.VILLAGER){
-                control = villagerMap.get((Villager) enemy);
-            }
-            else{
-                control = archerMap.get((Archer) enemy);
-            }
+        for (EnemyController control : controllers) {
             entity.findCollision(control.getEnemy());
             // FIXME: Should only call an enemy that is visible from entity.enemy
             if (control != entity && (entity.getEnemy().getPosition()).dst(control.getEnemy().getPosition()) <= 5f

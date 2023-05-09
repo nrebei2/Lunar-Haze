@@ -65,11 +65,6 @@ public class EnemyController{
     public AStarPathFinding pathfinder;
 
     /**
-     * Whether the game is in BATTLE phase
-     */
-    private boolean inBattle;
-
-    /**
      * The enemy being controlled by this AIController
      */
     private final Enemy enemy;
@@ -158,7 +153,6 @@ public class EnemyController{
         patrolTarget = new Vector2();
         this.targetPos = new Vector2();
         this.enemy = enemy;
-        this.inBattle = false;
         this.stateMachine = new DefaultStateMachine<>(this, EnemyState.INIT, EnemyState.ANY_STATE);
         this.combinedContext = new CombinedContext(enemy);
 
@@ -311,13 +305,11 @@ public class EnemyController{
     public void update(LevelContainer container, float delta) {
         attackHandler.update(delta);
         if (enemy.hp <= 0) {
-            if (enemy.getType() == GameObject.ObjectType.VILLAGER) {
-                container.removeVillager((Villager) enemy);
-            }
-            else{
-                container.removeArcher((Archer) enemy);
+            container.removeEnemy(enemy);
+        }
 
-            }
+        if (enemy.isInBattle() && stateMachine.getCurrentState() != EnemyState.ALERT) {
+            stateMachine.changeState(EnemyState.ALERT);
         }
 
         // Process the FSM
@@ -354,7 +346,7 @@ public class EnemyController{
         }
 
         // TODO: right now there is no difference in logic between a return of ALERT and NOTICED
-        if (inBattle) return Enemy.Detection.ALERT;
+        if (enemy.isInBattle()) return Enemy.Detection.ALERT;
 
         Interpolation lerp = Interpolation.linear;
         raycastCollision.findCollision(collCache, new Ray<>(enemy.getPosition(), target.getPosition()));
@@ -462,14 +454,6 @@ public class EnemyController{
     public void updatePath() {
         Path path = pathfinder.findPath(enemy.getPosition(), targetPos);
         followPathSB.setPath(path);
-    }
-
-    public void setInBattle(boolean inBattle) {
-        this.inBattle = inBattle;
-    }
-
-    public boolean isInBattle() {
-        return inBattle;
     }
 
     public StateMachine<EnemyController, EnemyState> getStateMachine() {

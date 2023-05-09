@@ -66,7 +66,7 @@ public class Villager extends Enemy{
     }
 
     @Override
-    public ObjectType getType() {
-        return ObjectType.VILLAGER;
+    public EnemyType getEnemyType() {
+        return EnemyType.VILLAGER;
     }
 }

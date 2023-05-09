@@ -82,6 +82,12 @@ public class LevelContainer {
      * List of active enemies
      */
     private Array<Enemy> activeEnemies;
+
+    /**
+     * List of active enemy controllers
+     */
+    private Array<EnemyController> activeControllers;
+
     /**
      * Stores SceneObjects
      */
@@ -190,6 +196,7 @@ public class LevelContainer {
         villagers = new EnemyPool<>(20, Villager.class);
         archers = new EnemyPool<>(20, Archer.class);
         activeEnemies = new Array<>(10);
+        activeControllers = new Array<>(10);
         sceneObjects = new Array<>(true, 5);
 
         battleSettings = new Settings();
@@ -243,114 +250,66 @@ public class LevelContainer {
     }
 
     /**
-     * @param villager Villager to append to enemy list
-     * @return Villager added with updated id
+     * @param enemy enemy to append to enemy list
+     * @param enemyController controller of that enemy
+     * @return enemy added
      */
-    public Villager addVillager(Villager villager) {
-        activeEnemies.add(villager);
-        addDrawables(villager);
-        addDrawables(villager.attackHitbox);
+    public Enemy addEnemy(Enemy enemy, EnemyController enemyController) {
+        activeEnemies.add(enemy);
+        activeControllers.add(enemyController);
+        addDrawables(enemy);
+        if (enemy.getEnemyType() == Enemy.EnemyType.VILLAGER)
+            addDrawables(((Villager) enemy).attackHitbox);
 
         // Update enemy controller assigned to the new enemy
-        getVillagerControllers().get(villager).populate(this);
+        enemyController.populate(this);
         alert_sound = this.getDirectory().getEntry("alerted", Sound.class);
-        getVillagerControllers().get(villager).setAlertSound(alert_sound);
+        enemyController.setAlertSound(alert_sound);
 
-        villager.setActive(true);
-        villager.getFlashlight().setActive(true);
+        enemy.setActive(true);
+        enemy.getFlashlight().setActive(true);
 
-        return villager;
+        return enemy;
     }
 
     /**
-     * @param archer archer to append to enemy list
-     * @return Archer added with updated id
-     */
-    public Archer addArcher(Archer archer) {
-        activeEnemies.add(archer);
-        addDrawables(archer);
-
-        // Update enemy controller assigned to the new enemy
-        getArcherControllers().get(archer).populate(this);
-        alert_sound = this.getDirectory().getEntry("alerted", Sound.class);
-        getArcherControllers().get(archer).setAlertSound(alert_sound);
-
-        archer.setActive(true);
-        archer.getFlashlight().setActive(true);
-
-        return archer;
-    }
-
-    /**
-     * Removes villager from the level.
+     * Removes enemy from the level.
      *
-     * @param villager villager to remove
+     * @param enemy enemy to remove
      */
-    public void removeVillager(Villager villager) {
-        villagers.free(villager);
-        activeEnemies.removeValue(villager, true);
-        drawables.removeValue(villager, true);
-        villager.setActive(false);
-        villager.getFlashlight().setActive(false);
-    }
+    public void removeEnemy(Enemy enemy) {
+        switch (enemy.getEnemyType()) {
+            case ARCHER:
+                archers.free((Archer) enemy);
+                activeControllers.removeValue(archers.controls.get((Archer) enemy), true);
+                break;
+            case VILLAGER:
+                villagers.free((Villager) enemy);
+                activeControllers.removeValue(villagers.controls.get((Villager) enemy), true);
+                drawables.removeValue(((Villager) enemy).attackHitbox, true);
+        }
 
-
-    /**
-     * Removes archer from the level.
-     *
-     * @param archer villager to remove
-     */
-    public void removeArcher(Archer archer) {
-        archers.free(archer);
-        activeEnemies.removeValue(archer, true);
-        drawables.removeValue(archer, true);
-        archer.setActive(false);
-        archer.getFlashlight().setActive(false);
+        activeEnemies.removeValue(enemy, true);
+        drawables.removeValue(enemy, true);
+        enemy.setActive(false);
+        enemy.getFlashlight().setActive(false);
     }
 
     /**
-     * Adds an villager to the level with no patrol region.
-     *
-     * @param type type of enemy to append to enemy list (e.g. villager)
-     * @param x    world x-position
-     * @param y    world y-position
-     * @return Enemy added
-     */
-    public Villager addVillager(String type, float x, float y) {
-        Villager villager = villagers.obtain();
-        villager.initialize(directory, enemiesJson.get(type), this);
-
-        villager.setPatrolPath(new PatrolRegion(0, 0, 0, 0));
-        villager.setPosition(x, y);
-
-        villager.setName(type);
-
-        return addVillager(villager);
-    }
-
-    /**
-     * Adds an archer to the level with no patrol region.
+     * Adds an enemy to the level with no patrol region.
      *
      * @param type type of enemy to append to enemy list (e.g. archer)
      * @param x    world x-position
      * @param y    world y-position
      * @return Enemy added
      */
-    public Archer addArcher(String type, float x, float y) {
-        Archer archer = archers.obtain();
-        archer.initialize(directory, enemiesJson.get(type), this);
-
-        archer.setPatrolPath(new PatrolRegion(0, 0, 0, 0));
-        archer.setPosition(x, y);
-
-        archer.setName(type);
-
-        return addArcher(archer);
+    public Enemy addEnemy(Enemy.EnemyType type, float x, float y) {
+        return addEnemy(type, x, y, new PatrolRegion(0, 0, 0, 0));
     }
 
 
     /**
-     * Adds an villager to the level
+     * Adds an enemy to the level
      *
      * @param type   type of Enemy to append to enemy list (e.g. villager)
      * @param x      world x-position
@@ -358,51 +317,29 @@ public class LevelContainer {
      * @param patrol patrol path for this enemy
      * @return Enemy added
      */
-    public Villager addVillager(String type, float x, float y, PatrolRegion patrol) {
-        Villager villager = villagers.obtain();
-        villager.initialize(directory, enemiesJson.get(type), this);
+    public Enemy addEnemy(Enemy.EnemyType type, float x, float y, PatrolRegion patrol) {
+        Enemy enemy = null;
+        EnemyController controller = null;
+        switch (type) {
+            case VILLAGER:
+                enemy = villagers.obtain();
+                controller = villagers.controls.get((Villager) enemy);
+                enemy.initialize(directory, enemiesJson.get("villager"), this);
+                break;
+            case ARCHER:
+                enemy = archers.obtain();
+                controller = archers.controls.get((Archer) enemy);
+                enemy.initialize(directory, enemiesJson.get("archer"), this);
+                break;
+        }
+        enemy.setPatrolPath(patrol);
+        enemy.setPosition(x, y);
 
-        villager.setPatrolPath(patrol);
-        villager.setPosition(x, y);
-        villager.setName(type);
-
-        return addVillager(villager);
+        return addEnemy(enemy, controller);
     }
 
-    /**
-     * Adds an archer to the level
-     *
-     * @param type   type of Enemy to append to enemy list (e.g. archer)
-     * @param x      world x-position
-     * @param y      world y-position
-     * @param patrol patrol path for this enemy
-     * @return Enemy added
-     */
-    public Archer addArcher(String type, float x, float y, PatrolRegion patrol) {
-        Archer archer = archers.obtain();
-        archer.initialize(directory, enemiesJson.get(type), this);
-
-        archer.setPatrolPath(patrol);
-        archer.setPosition(x, y);
-        archer.setName(type);
-
-        return addArcher(archer);
-    }
-
-
-
-    /**
-     * @return Mapping of all enemies (dead too) with their controllers
-     */
-    public ObjectMap<Villager, EnemyController> getVillagerControllers() {
-        return villagers.controls;
-    }
-
-    /**
-     * @return Mapping of all enemies (dead too) with their controllers
-     */
-    public ObjectMap<Archer, EnemyController> getArcherControllers() {
-        return archers.controls;
+    public Array<EnemyController> getActiveControllers() {
+        return activeControllers;
     }
 
     /**
@@ -655,20 +592,10 @@ public class LevelContainer {
             }
 
             canvas.begin(GameCanvas.DrawPass.SHAPE, view.x, view.y);
-            for (Enemy e : activeEnemies) {
-                if (e instanceof Villager) {
-                    getVillagerControllers().get((Villager) e).drawGizmo(canvas);
-                    getVillagerControllers().get((Villager)e).drawDetection(canvas);
-                }
-                else if (e instanceof Archer){
-                    getArcherControllers().get((Archer) e).drawGizmo(canvas);
-                    getArcherControllers().get((Archer) e).drawDetection(canvas);
-                }
+            for (EnemyController e : getActiveControllers()) {
+                e.drawGizmo(canvas);
+                e.drawDetection(canvas);
             }
-            canvas.end();
-
-            canvas.begin(GameCanvas.DrawPass.SPRITE, view.x, view.y);
-            player.attackHitbox.draw(canvas);
             canvas.end();
         }
 

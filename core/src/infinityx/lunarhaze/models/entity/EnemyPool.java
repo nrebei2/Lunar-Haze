@@ -41,7 +41,6 @@ public class EnemyPool<T extends Enemy> extends Pool<T> {
         super(capacity);
         assert capacity > 0;
         controls = new ObjectMap<>(capacity);
-
         // Preallocate objects
         enemies = new Array<>();
         for (int ii = 0; ii < capacity; ii++) {
@@ -53,7 +52,6 @@ public class EnemyPool<T extends Enemy> extends Pool<T> {
                 throw new RuntimeException("Failed to create enemy instance of type " + enemyType.getSimpleName(), ex);
             }
         }
-
         next = 0;
     }
 
