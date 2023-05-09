@@ -24,6 +24,14 @@ public class PatrolPath {
     }
 
     /**
+     * Creates a new PatrolPath instance with an empty path.
+     *
+     */
+    public PatrolPath() {
+        this.path = new Array<>();
+    }
+
+    /**
      * Returns the next waypoint in the patrol path.
      *
      * @return the next waypoint in the patrol path
@@ -70,5 +78,13 @@ public class PatrolPath {
 
     public Array<Vector2> getPath() {
         return path;
+    }
+
+    /**
+     * Appends a new vertex to the path at (x, y)
+     */
+    public PatrolPath addWaypoint(float x, float y) {
+        path.add(new Vector2(x, y));
+        return this;
     }
 }
