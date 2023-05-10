@@ -207,7 +207,7 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
      * @return The radius of the werewolf's noise in world length
      */
     public float getNoiseRadius() {
-        return Interpolation.linear.apply(0, 4.0f, inTallGrass != null ? 0 : stealth);
+        return Interpolation.linear.apply(0, 3.7f, inTallGrass != null ? 0 : stealth);
     }
 
     /**

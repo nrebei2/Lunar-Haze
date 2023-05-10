@@ -1,9 +1,11 @@
 package infinityx.lunarhaze.controllers;
 
+import box2dLight.PointLight;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 import infinityx.lunarhaze.ai.TacticalManager;
@@ -12,6 +14,10 @@ import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.entity.Enemy;
 import infinityx.lunarhaze.models.entity.Werewolf;
 import infinityx.lunarhaze.screens.GameSetting;
+
+import java.util.Map;
+
+import static infinityx.lunarhaze.controllers.GameplayController.Phase.BATTLE;
 
 /**
  * Controller to handle gameplay interactions.
@@ -128,6 +134,10 @@ public class GameplayController {
 
     private GameSetting setting;
 
+    private float flash_timer;
+
+    private static final float FLASH_INTERVAL = 4.0f;
+
 
     /**
      * Creates a new GameplayController with no active elements.
@@ -197,6 +207,8 @@ public class GameplayController {
         win_sound = levelContainer.getDirectory().getEntry("level-passed", Sound.class);
         fail_sound = levelContainer.getDirectory().getEntry("level-fail", Sound.class);
         tacticalManager = new TacticalManager(container);
+
+        flash_timer = 0;
     }
 
     /**
@@ -220,6 +232,33 @@ public class GameplayController {
                         phase = Phase.TRANSITION;
                         lightingController.dispose();
                     }
+                    flash_timer += delta;
+                    if (flash_timer >= FLASH_INTERVAL) {
+                        flash_timer = 0;
+                        // Switch lamp PointLight status
+                        container.toggleLamps();
+                    }
+
+                    // Check if player is within range of a lamp
+                    for (Vector2 pos : container.getLamps().keySet()) {
+
+                        float player_x = board.worldToBoardX(player.getPosition().x);
+                        float player_y = board.worldToBoardY(player.getPosition().y);
+
+                        float lamp_x = board.worldToBoardX(pos.x);
+                        float lamp_y = board.worldToBoardY(pos.y);
+
+                        float distance = (float) Math.sqrt(Math.pow(player_x - lamp_x, 2) + Math.pow(player_y - lamp_y, 2));
+
+                        // TODO: Fix this to change player stealth
+                        if (distance <= 3 && container.isOn(pos)) {
+                            // Should probably set player to be in range of lamp in model class, should modify player's stealth
+                            System.out.println("Player is in range of lamp");
+                        } else {
+                            System.out.println("Player is out of range of lamp");
+                        }
+
+                    }
                     break;
                 case BATTLE:
                     battleTicks += 1;
@@ -239,7 +278,7 @@ public class GameplayController {
                 case ALLOCATE:
                     // TODO: Somehow pause the game before drawing allocating screen
                     if (playerController.getAllocateReady()) {
-                        phase = Phase.BATTLE;
+                        phase = BATTLE;
                     }
                     break;
             }
@@ -264,6 +303,18 @@ public class GameplayController {
         if (Gdx.input.isKeyPressed(Input.Keys.COMMA)) {
             gameState = GameState.OVER;
         }
+    }
+
+    public void turnLightAt(Board board, int x, int y, boolean b){
+        board.setLit(x, y, b);
+        board.setLit(x - 1, y, b);
+        board.setLit(x + 1, y, b);
+        board.setLit(x, y - 1, b);
+        board.setLit(x, y + 1, b);
+        board.setLit(x - 1, y - 1, b);
+        board.setLit(x + 1, y + 1, b);
+        board.setLit(x - 1, y + 1, b);
+        board.setLit(x + 1, y - 1, b);
     }
 
     /**
@@ -330,7 +381,7 @@ public class GameplayController {
      */
     public void resolveEnemies(float delta) {
         // add enemies during battle stage and in play
-        if (getPhase() == Phase.BATTLE && gameState == GameState.PLAY) {
+        if (getPhase() == BATTLE && gameState == GameState.PLAY) {
             container.getEnemySpawner().update(delta);
             if (battleTicks % 60 == 0) {
                 tacticalManager.update();

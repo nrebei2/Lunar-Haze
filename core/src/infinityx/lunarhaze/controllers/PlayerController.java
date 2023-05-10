@@ -23,24 +23,14 @@ public class PlayerController {
     private static final float MOONLIGHT_COLLECT_TIME = 1.5f;
 
     /**
-     * Stealth value if the player is standing still
-     */
-    public static final float STILL_STEALTH = 0.0f;
-
-    /**
      * Stealth value if the player is walking
      */
-    public static final float WALK_STEALTH = 0.3f;
-
-    /**
-     * Stealth value if the player is running
-     */
-    public static final float RUN_STEALTH = 0.6f;
+    public static final float WALK_STEALTH = 0.35f;
 
     /**
      * Stealth value if the player is on the moonlight
      */
-    public static final float MOON_STEALTH = 1.0f;
+    public static final float MOON_STEALTH = 0.95f;
 
     /**
      * Hp increase for each moonlight allocated during phase ALLOCATE
