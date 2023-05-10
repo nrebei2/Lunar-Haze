@@ -151,7 +151,7 @@ public class LevelParser {
 
             Enemy newEnemy;
             newEnemy = levelContainer.addEnemy(
-                    enemyInfo.getString("type").equals("villager") ? Enemy.EnemyType.Villager : Enemy.EnemyType.Archer,
+                    Enemy.EnemyType.fromString(enemyInfo.getString("type")),
                     enemyPos.getFloat(0),
                     enemyPos.getFloat(1),
                     new PatrolPath(patrolPath)

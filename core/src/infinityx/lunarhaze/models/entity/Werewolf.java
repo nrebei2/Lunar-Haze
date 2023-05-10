@@ -295,6 +295,10 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
                 heavyLockedOut = false;
         }
 
+        if (isAttacking) {
+            attackHitbox.update(delta);
+        }
+
         // get the current velocity of the player's Box2D body
         if (canMove) {
             Vector2 velocity = body.getLinearVelocity();

@@ -57,7 +57,6 @@ public class AttackHitbox extends GameObject {
 
         this.activatePhysics(container.getWorld());
         this.setActive(false);
-
     }
 
 
@@ -106,9 +105,8 @@ public class AttackHitbox extends GameObject {
 
     @Override
     public void draw(GameCanvas canvas) {
-        // This is an OK solution
         // Could remove/add from container but how many colliders are there going to be at a single time anyway?
-        if (!isActive()) {
+        if (!attacker.isAttacking()) {
             return;
         }
         // Add 90 degrees since sprite is facing down
@@ -118,11 +116,16 @@ public class AttackHitbox extends GameObject {
     }
 
     /**
-     * Adjusts hitbox based on {@link #} transform
+     * Adjusts hitbox based on {@link #attacker} transform
      */
-    public void updateHitboxPosition() {
+     private void updateHitboxPosition() {
         // This is the logic that makes the hitbox "parented" to the entity
         getBody().setTransform(attacker.getPosition(), attacker.getAngle());
     }
 
+    @Override
+    public void update(float delta) {
+        super.update(delta);
+        updateHitboxPosition();
+    }
 }

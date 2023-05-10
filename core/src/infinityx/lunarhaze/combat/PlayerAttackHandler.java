@@ -111,16 +111,6 @@ public class PlayerAttackHandler extends AttackHandler {
 
     }
 
-    @Override
-    public void processAttack(float delta) {
-        attackCounter += delta;
-        ((Werewolf) entity).getAttackHitbox().updateHitboxPosition();
-        if (attackCounter >= entity.attackLength) {
-            endAttack();
-        }
-        ((Werewolf) entity).getAttackHitbox().update(delta);
-    }
-
     public void initiateAttack() {
         // movement component
         entity.getBody().applyLinearImpulse(entity.getLinearVelocity().nor(), entity.getBody().getWorldCenter(), true);

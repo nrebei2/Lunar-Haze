@@ -134,7 +134,8 @@ public class EnemyController {
      */
     public ContextBehavior evade;
 
-    public AttackHandler attackHandler;
+    /** Attack handler for the attached enemy */
+    private AttackHandler attackHandler;
 
     Ray<Vector2> rayCache = new Ray<>(new Vector2(), new Vector2());
 
@@ -147,11 +148,11 @@ public class EnemyController {
     }
 
     /**
-     * Creates an EnemyController for the enemy with the given id.
+     * Creates an EnemyController for the given enemy.
      *
      * @param enemy The enemy being controlled by this AIController
      */
-    public EnemyController(final Enemy enemy) {
+    public EnemyController(Enemy enemy) {
         this.attackHandler = new AttackHandler(enemy);
         patrolTarget = new Vector2();
         this.targetPos = new Vector2();
