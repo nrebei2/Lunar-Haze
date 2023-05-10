@@ -10,11 +10,10 @@ import infinityx.lunarhaze.controllers.PlayerState;
 import infinityx.lunarhaze.models.entity.Werewolf;
 
 /**
- * Handles all attacking for the player by extending the base
- * model class AttackHandler. Compared to AttackHandler, the
- * player has a three-part combo attack system.
+ * Handles all attacking for the player.
+ * The player additionally has a three-part combo attack system.
  */
-public class PlayerAttackHandler extends AttackHandler {
+public class PlayerAttackHandler extends MeleeHandler {
 
     /**
      * Dash variables
@@ -34,14 +33,11 @@ public class PlayerAttackHandler extends AttackHandler {
 
     private boolean useRightHand;
 
-    private StateMachine<PlayerController, PlayerState> stateMachine;
-
     /**
      * Creates a specialized attack system for the given player
      */
-    public PlayerAttackHandler(Werewolf player, StateMachine<PlayerController, PlayerState> stateMachine) {
-        super(player);
-        this.stateMachine = stateMachine;
+    public PlayerAttackHandler(Werewolf player, AttackHitbox hitbox) {
+        super(player, hitbox);
         dashDirection = new Vector2();
         isDashing = false;
         dashCooldownCounter = DASH_COOLDOWN;

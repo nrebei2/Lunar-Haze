@@ -118,14 +118,8 @@ public class AttackHitbox extends GameObject {
     /**
      * Adjusts hitbox based on {@link #attacker} transform
      */
-     private void updateHitboxPosition() {
+     public void updateHitboxPosition() {
         // This is the logic that makes the hitbox "parented" to the entity
         getBody().setTransform(attacker.getPosition(), attacker.getAngle());
-    }
-
-    @Override
-    public void update(float delta) {
-        super.update(delta);
-        updateHitboxPosition();
     }
 }

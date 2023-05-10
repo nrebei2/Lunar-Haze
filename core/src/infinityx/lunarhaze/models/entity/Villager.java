@@ -13,6 +13,7 @@ public class Villager extends Enemy {
 
     public Villager() {
         super();
+        attackHitbox = new AttackHitbox(this);
     }
 
     @Override
@@ -23,7 +24,6 @@ public class Villager extends Enemy {
         JsonValue hitboxInfo = attack.get("hitbox");
 
         // Create the hitbox
-        attackHitbox = new AttackHitbox(this);
         attackHitbox.initialize(directory, hitboxInfo, container);
         updateStrafeDistance();
     }
@@ -47,16 +47,6 @@ public class Villager extends Enemy {
      */
     public void setAttacking(boolean value) {
         isAttacking = value;
-        attackHitbox.setActive(value);
-        attackHitbox.getTexture().setFrame(0);
-    }
-
-    @Override
-    public void update(float delta) {
-        super.update(delta);
-        if (isAttacking) {
-            attackHitbox.update(delta);
-        }
     }
 
     @Override

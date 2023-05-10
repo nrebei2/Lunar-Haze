@@ -169,8 +169,6 @@ public abstract class AttackingGameObject extends GameObject {
      */
     abstract public void setAttacking(boolean value);
 
-//    abstract public void updateAttack(delta);
-
     public boolean isAttacking() {
         return isAttacking;
     }

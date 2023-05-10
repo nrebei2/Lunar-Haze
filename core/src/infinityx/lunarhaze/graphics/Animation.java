@@ -185,6 +185,11 @@ public class Animation {
         this.playMode = playMode;
     }
 
+    /** Reset the current playing animation back to the beginning */
+    public void reset() {
+        this.elapsedTime = 0;
+    }
+
     /**
      * Returns the key frame of the current FilmStrip based on the elapsed time.
      *

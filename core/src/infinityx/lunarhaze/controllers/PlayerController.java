@@ -193,7 +193,7 @@ public class PlayerController {
         dash_sound = levelContainer.getDirectory().getEntry("dash", Sound.class);
         walk_sound = levelContainer.getDirectory().getEntry("walking-on-soil", Sound.class);
         stateMachine = new DefaultStateMachine<>(this, PlayerState.IDLE);
-        attackHandler = new PlayerAttackHandler(player, stateMachine);
+        attackHandler = new PlayerAttackHandler(player, player.getAttackHitbox());
         allocateReady = false;
         isWalkGrassPlaying = false;
         this.setting = setting;
