@@ -1,8 +1,11 @@
 package infinityx.lunarhaze.models.entity;
 
+import com.badlogic.gdx.ai.steer.Proximity;
+import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Pool;
 import infinityx.assets.AssetDirectory;
@@ -19,7 +22,8 @@ import java.util.Random;
 /**
  * Model class representing an enemy.
  */
-public class Enemy extends SteeringGameObject implements Pool.Poolable {
+public class Enemy extends SteeringGameObject implements Pool.Poolable{
+
     public enum Detection {
         /**
          * The enemy is alerted (Exclamation point!)
@@ -147,7 +151,7 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable {
 
     public void updateStrafeDistance() {
         // set strafe distance randomly between attack range*2 and attackrange*2 + 2
-        this.strafeDistance = rand.nextFloat() * 3 + getAttackRange() * 2;
+        this.strafeDistance = rand.nextInt() * 3 + getAttackRange() * 2;
     }
 
     public float getStrafeDistance() {

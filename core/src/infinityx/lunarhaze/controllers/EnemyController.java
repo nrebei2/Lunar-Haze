@@ -2,8 +2,9 @@ package infinityx.lunarhaze.controllers;
 
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.fsm.StateMachine;
-import com.badlogic.gdx.ai.steer.behaviors.Face;
-import com.badlogic.gdx.ai.steer.behaviors.FollowPath;
+import com.badlogic.gdx.ai.steer.Proximity;
+import com.badlogic.gdx.ai.steer.Steerable;
+import com.badlogic.gdx.ai.steer.behaviors.*;
 import com.badlogic.gdx.ai.steer.utils.Path;
 import com.badlogic.gdx.ai.steer.utils.RayConfiguration;
 import com.badlogic.gdx.ai.steer.utils.paths.LinePath;
@@ -100,7 +101,6 @@ public class EnemyController extends AttackHandler {
      */
     public FollowPath followPathSB;
 
-
     /**
      * Current target position for pathfinding. You should almost always use {@link Vector2#set(Vector2)} to update this.
      */
@@ -140,6 +140,10 @@ public class EnemyController extends AttackHandler {
 
     public ContextBehavior evade;
 
+    public ContextSteering avoidSB;
+
+    public PrioritySteering<Vector2> followPathAvoid;
+
     Ray<Vector2> rayCache = new Ray<>(new Vector2(), new Vector2());
 
     public Sound getAlertSound() {
@@ -149,6 +153,7 @@ public class EnemyController extends AttackHandler {
     public void setAlertSound(Sound s) {
         alert_sound = s;
     }
+
 
     /**
      * Creates an EnemyController for the enemy with the given id.
@@ -244,6 +249,12 @@ public class EnemyController extends AttackHandler {
         waypoints.add(new Vector2());
         followPathSB = new FollowPath(enemy, new LinePath(waypoints), 0.05f, 0.5f);
 
+//        Separation<Vector2> avoid = new Separation<>(enemy, (Proximity<Vector2>) container.getEnemies());
+
+
+
+
+
 
         // Prefer directions towards target
         attack = new ContextBehavior(enemy, false) {
@@ -292,7 +303,7 @@ public class EnemyController extends AttackHandler {
             @Override
             protected ContextMap calculateRealMaps(ContextMap map) {
                 map.setZero();
-                if (!canStartNewAttack() || enemy.getHealthPercentage() < 0.5) {
+                if (!canStartNewAttack()) {
                     Vector2 evade_dir = enemy.getPosition().sub(target.getPosition());
                     for (int i = 0; i < map.getResolution(); i++) {
                         map.interestMap[i] = 1/evade_dir.len() * Math.max(0, map.dirFromSlot(i).dot(evade_dir.nor()));
@@ -306,6 +317,12 @@ public class EnemyController extends AttackHandler {
         this.combinedContext.add(strafe);
         this.combinedContext.add(separation);
         this.combinedContext.add(evade);
+
+        avoidSB = new ContextSteering(enemy, separation, 30);
+
+        followPathAvoid = new PrioritySteering<>(enemy);
+        followPathAvoid.add(avoidSB);
+        followPathAvoid.add(followPathSB);
 
         //Resolution is set to 8 to represent the 8 directions in which enemies can move
         this.battleSB = new ContextSteering(enemy, combinedContext, 30);
