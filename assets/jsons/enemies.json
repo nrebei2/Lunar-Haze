@@ -98,46 +98,46 @@
     },
     "textures": {
       "attack-l": {
-        "name" : "villager.attack-l",
+        "name" : "archer.attack-l",
         "durations" : [0.2, 0.37, 0.2]
       },
       "attack-r": {
-        "name" : "villager.attack-r",
+        "name" : "archer.attack-r",
         "durations" : [0.2, 0.37, 0.2]
       },
       "attack-f": {
-        "name" : "villager.attack-f",
+        "name" : "archer.attack-f",
         "durations" : [0.2, 0.37, 0.2]
       },
       "attack-b": {
-        "name" : "villager.attack-b",
+        "name" : "archer.attack-b",
         "durations" : [0.2, 0.37, 0.2]
       },
       "walk-l": {
-        "name" : "villager.walk-l",
-        "durations" : [0.12, 0.12, 0.2, 0.12,  0.12, 0.12, 0.2, 0.12]
+        "name" : "archer.walk-l",
+        "durations" : [0.12, 0.12, 0.2, 0.12]
       },
       "walk-r": {
-        "name" : "villager.walk-r",
-        "durations" : [0.12, 0.12, 0.2, 0.12,  0.12, 0.12, 0.2, 0.12]
+        "name" : "archer.walk-r",
+        "durations" : [0.12, 0.12, 0.2, 0.12]
       },
       "walk-f": {
-        "name" : "villager.walk-f",
+        "name" : "archer.walk-f",
         "durations" : [0.12, 0.2, 0.12, 0.2]
       },
       "walk-b": {
-        "name" : "villager.walk-b",
+        "name" : "archer.walk-b",
         "durations" : [0.12, 0.2, 0.12, 0.2]
       },
-      "idle-l": "villager.idle-l",
-      "idle-r": "villager.idle-r",
-      "idle-f": "villager.idle-f",
-      "idle-b": "villager.idle-b"
+      "idle-l": "archer.idle-l",
+      "idle-r": "archer.idle-r",
+      "idle-f": "archer.idle-f",
+      "idle-b": "archer.idle-b"
     },
     "texture": {
       "name": "idle-r",
-      "origin" : [243, 137],
-      "scale": 0.4
+      "origin" : [1052, 480],
+      "scale": 0.06
     },
     "colliders": {
       "body": {
