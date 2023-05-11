@@ -17,14 +17,16 @@ public class Arrow extends GameObject {
     /**
      * Initialize an arrow
      */
-    public Arrow(float x, float y) {
+    public Arrow(float x, float y, Archer archer) {
         super(x, y);
+        this.archer = archer;
+        setLoop(false);
     }
 
     /**
      * Initialize arrow with dummy position
      */
-    public Arrow() {
-        this(0, 0);
+    public Arrow(Archer archer) {
+        this(0, 0, archer);
     }
 }

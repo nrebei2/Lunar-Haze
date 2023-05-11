@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
@@ -20,7 +19,8 @@ import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.entity.Enemy;
 import infinityx.lunarhaze.models.entity.Werewolf;
 
-import static infinityx.lunarhaze.combat.PlayerAttackHandler.*;
+import static infinityx.lunarhaze.combat.PlayerAttackHandler.DASH_COOLDOWN_BATTLE;
+import static infinityx.lunarhaze.combat.PlayerAttackHandler.DASH_COOLDOWN_STEALTH;
 
 /**
  * This is a class used for drawing player and enemies' game UI state: HP, Stealth, MoonLight
@@ -413,7 +413,8 @@ public class UIRender {
                 float scale = level.getPlayer().getNoiseRadius() * 0.63f;
                 Color color = Color.WHITE;
 
-                outer: for (Enemy enemy: level.getEnemies()) {
+                outer:
+                for (Enemy enemy : level.getEnemies()) {
                     switch (enemy.getDetection()) {
                         case INDICATOR:
                         case NOTICED:
@@ -542,11 +543,10 @@ public class UIRender {
         canvas.draw(dash_icon, alphaTint, BAR_HEIGHT * 2, canvas.getHeight() / 2, ICON_SIZE, ICON_SIZE);
         PlayerAttackHandler pah = gc.getPlayerController().getAttackHandler();
         float percentage;
-        if (gc.phase == Phase.STEALTH){
-            percentage = pah.getDashCooldownCounter() /DASH_COOLDOWN_STEALTH ;
-        }
-        else{
-            percentage = pah.getDashCooldownCounter() /DASH_COOLDOWN_BATTLE ;
+        if (gc.phase == Phase.STEALTH) {
+            percentage = pah.getDashCooldownCounter() / DASH_COOLDOWN_STEALTH;
+        } else {
+            percentage = pah.getDashCooldownCounter() / DASH_COOLDOWN_BATTLE;
         }
 
         float height = DASH_ICON_SIZE / dash_bar.getWidth() * dash_bar.getHeight();

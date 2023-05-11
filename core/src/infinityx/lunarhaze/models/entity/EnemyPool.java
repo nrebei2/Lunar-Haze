@@ -5,6 +5,8 @@ import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.Pool;
 import infinityx.lunarhaze.controllers.EnemyController;
 
+import java.lang.reflect.InvocationTargetException;
+
 
 /**
  * Pre-allocated pool of enemy objects.
@@ -14,16 +16,16 @@ import infinityx.lunarhaze.controllers.EnemyController;
  * Note there is no limit on the number of enemies you can obtain, but dead enemies should be freed
  * for later reuse.
  */
-public class EnemyPool extends Pool<Enemy> {
+public class EnemyPool<T extends Enemy> extends Pool<T> {
     /**
      * The pre-allocated arraylist of enemies. All instantiated enemies must be from this list.
      */
-    private final Array<Enemy> enemies;
+    private final Array<T> enemies;
 
     /**
      * controls[e] is the controller for enemy e. The domain of this map is enemies.
      */
-    public ObjectMap<Enemy, EnemyController> controls;
+    public ObjectMap<T, EnemyController> controls;
 
     /**
      * The next object in the array available for allocation
@@ -35,19 +37,22 @@ public class EnemyPool extends Pool<Enemy> {
      *
      * @param capacity The number of particles to preallocate
      */
-    public EnemyPool(int capacity) {
+    public EnemyPool(int capacity, Class<T> enemyType) {
         super(capacity);
         assert capacity > 0;
         controls = new ObjectMap<>(capacity);
-
         // Preallocate objects
         enemies = new Array<>();
         for (int ii = 0; ii < capacity; ii++) {
-            Enemy e = new Enemy();
-            enemies.add(e);
-            controls.put(e, new EnemyController(e));
+            try {
+                T e = enemyType.getDeclaredConstructor().newInstance();
+                enemies.add(e);
+                controls.put(e, new EnemyController(e));
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                     NoSuchMethodException ex) {
+                throw new RuntimeException("Failed to create enemy instance of type " + enemyType.getSimpleName(), ex);
+            }
         }
-
         next = 0;
     }
 
@@ -56,14 +61,19 @@ public class EnemyPool extends Pool<Enemy> {
      *
      * @return A new enemy
      */
-    protected Enemy newObject() {
+    protected T newObject() {
         // Add if we are outside the array
         // This will only happen if the number of enemies on the screen is higher than capacity set during init
         if (next == enemies.size) {
-            Enemy enemy = new Enemy();
-            enemies.add(enemy);
-            controls.put(enemy, new EnemyController(enemy));
-            return enemy;
+            try {
+                T enemy = (T) enemies.first().getClass().getDeclaredConstructor().newInstance();
+                enemies.add(enemy);
+                controls.put(enemy, new EnemyController(enemy));
+                return enemy;
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                     NoSuchMethodException ex) {
+                throw new RuntimeException("Failed to create enemy instance of type " + enemies.first().getClass().getSimpleName(), ex);
+            }
         }
         // Otherwise, take from main list of enemies
         next++;

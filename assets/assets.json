@@ -466,6 +466,7 @@
     "lycan.idle-l": "images/lycan/left_still.png",
     "lycan.idle-b": "images/lycan/back_still.png",
     "lycan.idle-f": "images/lycan/front_still.png",
+    
     "villager":{
       "file": 	"images/villager/enemy1-walk-down.png",
       "wrap":  	false,
@@ -557,8 +558,112 @@
     "villager.idle-f": "images/villager/enemy1-idle-down.png",
     "villager.idle-b": "images/villager/enemy1-idle-up.png",
     "villager.idle-l": "images/villager/enemy1-idle-left.png",
-    "villager.idle-r": "images/villager/enemy1-idle-right.png"
-},
+    "villager.idle-r": "images/villager/enemy1-idle-right.png",
+
+    "archer":{
+      "file": 	"images/archer/Forest2_Down_Walking.png",
+      "wrap":  	false,
+      "sprites":	{
+        "walk-f" : {
+          "size" : 4,
+          "rows" : 1,
+          "cols" : 4
+        }
+      }
+    },
+    "archer":{
+      "file": 	"images/archer/Forest2_Up_Walking.png",
+      "wrap":  	false,
+      "sprites":	{
+        "walk-b" : {
+          "size" : 4,
+          "rows" : 1,
+          "cols" : 4
+        }
+      }
+    },
+    "archer":{
+      "file": 	"images/archer/Forest2_Left_Walking.png",
+      "wrap":  	false,
+      "sprites":	{
+        "walk-l" : {
+          "size" : 4,
+          "rows" : 1,
+          "cols" : 4
+        }
+      }
+    },
+    "archer":{
+      "file": 	"images/archer/Forest2_Right_Walking.png",
+      "wrap":  	false,
+      "sprites":	{
+        "walk-r" : {
+          "size" : 4,
+          "rows" : 1,
+          "cols" : 4
+        }
+      }
+    },
+    "archer":{
+      "file": 	"images/archer/Forest2_Down_Attacking.png",
+      "wrap":  	false,
+      "sprites":	{
+        "attack-f" : {
+          "size" : 3,
+          "rows" : 1,
+          "cols" : 3
+        }
+      }
+    },
+    "archer":{
+      "file": 	"images/archer/Forest2_Up_Attacking.png",
+      "wrap":  	false,
+      "sprites":	{
+        "attack-b" : {
+          "size" : 3,
+          "rows" : 1,
+          "cols" : 3
+        }
+      }
+    },
+    "archer":{
+      "file": 	"images/archer/Forest2_Left_Attacking.png",
+      "wrap":  	false,
+      "sprites":	{
+        "attack-l" : {
+          "size" : 3,
+          "rows" : 1,
+          "cols" : 3
+        }
+      }
+    },
+    "archer":{
+      "file": 	"images/archer/Forest2_Right_Attacking.png",
+      "wrap":  	false,
+      "sprites":	{
+        "attack-r" : {
+          "size" : 3,
+          "rows" : 1,
+          "cols" : 3
+        }
+      }
+    },
+    "archer.idle-f": "images/archer/Archer_Idle_Down.png",
+    "archer.idle-b": "images/archer/Archer_Idle_Up.png",
+    "archer.idle-l": "images/archer/Archer_Idle_Down.png",
+    "archer.idle-r": "images/archer/Archer_Idle_Up.png",
+    "archer":{
+      "file": 	"images/archer/arrow.png",
+      "wrap":  	false,
+      "sprites":	{
+        "arrow" : {
+          "size" : 4,
+          "rows" : 1,
+          "cols" : 4
+        }
+      }
+    }
+  },
   "shaders": {
     "meter": {
       "vert": "shaders/meter.vert",

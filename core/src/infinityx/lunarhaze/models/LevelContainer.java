@@ -11,27 +11,19 @@ import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.ObjectMap;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.controllers.EnemyController;
 import infinityx.lunarhaze.controllers.EnemySpawner;
 import infinityx.lunarhaze.controllers.InputController;
 import infinityx.lunarhaze.graphics.CameraShake;
 import infinityx.lunarhaze.graphics.GameCanvas;
-import infinityx.lunarhaze.models.entity.Enemy;
-import infinityx.lunarhaze.models.entity.EnemyPool;
-import infinityx.lunarhaze.models.entity.SceneObject;
-import infinityx.lunarhaze.models.entity.Werewolf;
+import infinityx.lunarhaze.models.entity.*;
 import infinityx.util.Drawable;
 import infinityx.util.PatrolPath;
 import infinityx.util.astar.AStarMap;
 import infinityx.util.astar.AStarPathFinding;
 
-import java.awt.*;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 
 /**
  * Model class
@@ -84,11 +76,19 @@ public class LevelContainer {
     /**
      * Memory pool for efficient storage of Enemies
      */
-    private EnemyPool enemies;
+    private EnemyPool<Villager> villagers;
+
+    private EnemyPool<Archer> archers;
     /**
      * List of active enemies
      */
     private Array<Enemy> activeEnemies;
+
+    /**
+     * List of active enemy controllers
+     */
+    private Array<EnemyController> activeControllers;
+
     /**
      * Stores SceneObjects
      */
@@ -100,7 +100,6 @@ public class LevelContainer {
      */
     private Werewolf player;
 
-    private Werewolf werewolf;
     /**
      * Stores Board
      */
@@ -148,11 +147,6 @@ public class LevelContainer {
     private int totalMoonlight;
 
     /**
-     * the length of a stealth cycle
-     */
-    private float phaseLength;
-
-    /**
      * Settings for this level
      */
     private Settings battleSettings;
@@ -176,9 +170,10 @@ public class LevelContainer {
 
     private boolean debugPressed;
 
-    private Array<Vector2> lampPos;
-
-    private HashMap<Vector2, Lamp> lamps;
+    /**
+     * Lights attached to lamp scene objects
+     */
+    private Array<PointLight> lampLights;
 
     /**
      * Initialize attributes
@@ -190,26 +185,28 @@ public class LevelContainer {
 
         drawables = new Array<>();
         backing = new Array<>();
-        lamps = new HashMap<>();
+        lampLights = new Array<>();
 
         // There will always be a player
         // So it's fine to initialize now
         Werewolf player = new Werewolf();
-        player.initialize(directory, playerJson.get("lycan"), this);
+        player.initialize(directory, playerJson, this);
         setPlayer(player);
 
         board = null;
         pathfinder = null;
         enemySpawner = new EnemySpawner(this);
-        enemies = new EnemyPool(20);
+        villagers = new EnemyPool<>(20, Villager.class);
+        archers = new EnemyPool<>(20, Archer.class);
         activeEnemies = new Array<>(10);
+        activeControllers = new Array<>(10);
         sceneObjects = new Array<>(true, 5);
 
         battleSettings = new Settings();
     }
 
-    public void setEnemyDamage(float damage){
-        for (Enemy enemy: activeEnemies){
+    public void setEnemyDamage(float damage) {
+        for (Enemy enemy : activeEnemies) {
             enemy.attackDamage = damage;
         }
     }
@@ -223,12 +220,6 @@ public class LevelContainer {
         this.playerJson = playerJson;
         this.directory = directory;
         initialize();
-    }
-
-    public void switchWolf(){
-
-        player.switchToWolf(directory, playerJson.get("werewolf"), this);
-        player.walkSpeed = 2.2f;
     }
 
 
@@ -255,13 +246,6 @@ public class LevelContainer {
     }
 
     /**
-     * @return Remaining number of enemies.
-     */
-    public int getEnemySize() {
-        return activeEnemies.size;
-    }
-
-    /**
      * @return the total amount of collectable moonlight on the board at initialization
      */
     public float getTotalMoonlight() {
@@ -269,18 +253,21 @@ public class LevelContainer {
     }
 
     /**
-     * @param enemy Enemy to append to enemy list
-     * @return Enemy added with updated id
+     * @param enemy           enemy to append to enemy list
+     * @param enemyController controller of that enemy
+     * @return enemy added
      */
-    public Enemy addEnemy(Enemy enemy) {
+    public Enemy addEnemy(Enemy enemy, EnemyController enemyController) {
         activeEnemies.add(enemy);
+        activeControllers.add(enemyController);
         addDrawables(enemy);
-        addDrawables(enemy.getAttackHitbox());
+        if (enemy.getEnemyType() == Enemy.EnemyType.Villager)
+            addDrawables(((Villager) enemy).attackHitbox);
 
         // Update enemy controller assigned to the new enemy
-        getEnemyControllers().get(enemy).populate(this);
+        enemyController.populate(this);
         alert_sound = this.getDirectory().getEntry("alerted", Sound.class);
-        getEnemyControllers().get(enemy).setAlertSound(alert_sound);
+        enemyController.setAlertSound(alert_sound);
 
         enemy.setActive(true);
         enemy.getFlashlight().setActive(true);
@@ -294,32 +281,33 @@ public class LevelContainer {
      * @param enemy enemy to remove
      */
     public void removeEnemy(Enemy enemy) {
-        enemies.free(enemy);
+        switch (enemy.getEnemyType()) {
+            case Archer:
+                archers.free((Archer) enemy);
+                activeControllers.removeValue(archers.controls.get((Archer) enemy), true);
+                break;
+            case Villager:
+                villagers.free((Villager) enemy);
+                activeControllers.removeValue(villagers.controls.get((Villager) enemy), true);
+                drawables.removeValue(((Villager) enemy).attackHitbox, true);
+        }
+
         activeEnemies.removeValue(enemy, true);
         drawables.removeValue(enemy, true);
-        drawables.removeValue(enemy.attackHitbox, true);
         enemy.setActive(false);
         enemy.getFlashlight().setActive(false);
     }
 
     /**
-     * Adds an enemy to the level with no patrol region.
+     * Adds an enemy to the level with no patrol path.
      *
-     * @param type type of Enemy to append to enemy list (e.g. villager)
+     * @param type type of enemy to append to enemy list (e.g. archer)
      * @param x    world x-position
      * @param y    world y-position
      * @return Enemy added
      */
-    public Enemy addEnemy(String type, float x, float y) {
-        Enemy enemy = enemies.obtain();
-        enemy.initialize(directory, enemiesJson.get(type), this);
-
-        enemy.setPatrolPath(new PatrolPath(new Array<Vector2>()));
-        enemy.setPosition(x, y);
-
-        enemy.setName(type);
-
-        return addEnemy(enemy);
+    public Enemy addEnemy(Enemy.EnemyType type, float x, float y) {
+        return addEnemy(type, x, y, new PatrolPath().addWaypoint(x, y));
     }
 
 
@@ -332,22 +320,28 @@ public class LevelContainer {
      * @param patrol patrol path for this enemy
      * @return Enemy added
      */
-    public Enemy addEnemy(String type, float x, float y, PatrolPath patrol) {
-        Enemy enemy = enemies.obtain();
-        enemy.initialize(directory, enemiesJson.get(type), this);
-
+    public Enemy addEnemy(Enemy.EnemyType type, float x, float y, PatrolPath patrol) {
+        Enemy enemy = null;
+        EnemyController controller = null;
+        switch (type) {
+            case Villager:
+                enemy = villagers.obtain();
+                controller = villagers.controls.get((Villager) enemy);
+                break;
+            case Archer:
+                enemy = archers.obtain();
+                controller = archers.controls.get((Archer) enemy);
+                break;
+        }
+        enemy.initialize(directory, enemiesJson.get(type.toString()), this);
         enemy.setPatrolPath(patrol);
         enemy.setPosition(x, y);
-        enemy.setName(type);
 
-        return addEnemy(enemy);
+        return addEnemy(enemy, controller);
     }
 
-    /**
-     * @return Mapping of all enemies (dead too) with their controllers
-     */
-    public ObjectMap<Enemy, EnemyController> getEnemyControllers() {
-        return enemies.controls;
+    public Array<EnemyController> getActiveControllers() {
+        return activeControllers;
     }
 
     /**
@@ -423,7 +417,7 @@ public class LevelContainer {
      */
     public void setPlayer(Werewolf player) {
         drawables.add(player);
-        drawables.add(player.getAttackHitbox());
+        drawables.add(player.attackHitbox);
         this.player = player;
     }
 
@@ -493,11 +487,11 @@ public class LevelContainer {
     }
 
     /**
-     * @param type  type of scene object to add (e.g. house)
-     * @param x     world x-position
-     * @param y     world y-position
-     * @param scale scale of object
-     * @param flipped {@link SceneObject#isFlipped()}
+     * @param type    type of scene object to add (e.g. house)
+     * @param x       world x-position
+     * @param y       world y-position
+     * @param scale   scale of object
+     * @param flipped sets {@link SceneObject#isFlipped()}
      * @return scene object added
      */
     public SceneObject addSceneObject(String type, float x, float y, float scale, boolean flipped) {
@@ -510,32 +504,18 @@ public class LevelContainer {
         object.setName(type);
         object.setFlipped(flipped);
 
-        if (Objects.equals(type, "lamp")){
-
-            Vector2 pos = new Vector2(board.worldToBoardX(x), board.worldToBoardY(y));
-            PointLight light = new PointLight(rayHandler, 20, new Color(1, 1, 0.8f, 0.7f), 4, x, y);
+        if (type.equalsIgnoreCase("lamp")) {
+            PointLight light = new PointLight(rayHandler, 20, new Color(1, 1, 0.8f, 0.7f), 5, x, y);
             light.setActive(true);
 
-            // HashMap stores positions of each lamp as well as the pointlight at each lamp
-            lamps.put(pos, new Lamp(light));
-
+            lampLights.add(light);
         }
 
         return addSceneObject(object);
     }
 
-    public HashMap<Vector2, Lamp> getLamps() {
-        return lamps;
-    }
-
-    public boolean isOn (Vector2 pos) {
-        return lamps.get(pos).isOn();
-    }
-
-    public void toggleLamps() {
-        for(Map.Entry<Vector2, Lamp> entry : lamps.entrySet()) {
-            entry.getValue().toggle();
-        }
+    public Array<PointLight> getLampLights() {
+        return lampLights;
     }
 
     public Array<SceneObject> getSceneObjects() {
@@ -584,9 +564,8 @@ public class LevelContainer {
             translateView(CameraShake.getShakeOffset().x, CameraShake.getShakeOffset().y);
         }
 
+        // Render order: Board tiles -> (players, enemies, scene objects) sorted by depth (y coordinate) -> Lights
         canvas.begin(GameCanvas.DrawPass.SPRITE, view.x, view.y);
-
-        // Render order: Board tiles -> (players, enemies, scene objects) sorted by depth (y coordinate)
         board.draw(canvas);
 
         // Uses timsort, so O(n) if already sorted, which is nice since it usually will be
@@ -614,18 +593,17 @@ public class LevelContainer {
         if (debugPressed) {
             if (player.isAttacking) {
                 canvas.begin(GameCanvas.DrawPass.SHAPE, view.x, view.y);
-                player.getAttackHitbox().drawHitbox(canvas);
+                player.attackHitbox.drawHitbox(canvas);
                 canvas.end();
             }
 
             canvas.begin(GameCanvas.DrawPass.SHAPE, view.x, view.y);
-            for (Enemy e : activeEnemies) {
-                getEnemyControllers().get(e).drawGizmo(canvas);
-                getEnemyControllers().get(e).drawDetection(canvas);
+            for (EnemyController e : getActiveControllers()) {
+                e.drawGizmo(canvas);
+                e.drawDetection(canvas);
             }
             canvas.end();
         }
-
     }
 
     /**
@@ -646,6 +624,7 @@ public class LevelContainer {
         backing.clear();
     }
 
+    // used in pathfinder obstacle callback
     private boolean scene;
 
     /**
@@ -690,28 +669,5 @@ class DrawableCompare implements Comparator<Drawable> {
     @Override
     public int compare(Drawable d1, Drawable d2) {
         return (int) Math.signum(d2.getDepth() - d1.getDepth());
-    }
-}
-
-/**
- * Lamp class for turning PointLights on and off
- */
-class Lamp {
-    PointLight light;
-    boolean on;
-
-    Lamp(PointLight light) {
-        this.light = light;
-        on = true;
-    }
-
-    void toggle() {
-        System.out.println("Toggled");
-        on = !on;
-        light.setActive(on);
-    }
-
-    boolean isOn() {
-        return on;
     }
 }

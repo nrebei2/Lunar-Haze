@@ -95,25 +95,29 @@ public class SceneObject extends GameObject implements Drawable {
 
     @Override
     public void draw(GameCanvas canvas) {
-        // ugly but it is what it is
-        float recX = canvas.WorldToScreenX(getPosition().x)
-                - origin.x * (flipped ? -1 : 1) * textureScale * scale
-                - (flipped ? 1 : 0) * getTextureWidth();
-        float recY = canvas.WorldToScreenY(getPosition().y) - origin.y * textureScale * scale;
-        float width = getTextureWidth();
-        float height = getTextureHeight();
 
-        boolean playerInside =
-                recX <= canvas.playerCoords.x
-                        && recX + width >= canvas.playerCoords.x
-                        && recY <= canvas.playerCoords.y
-                        && recY + height >= canvas.playerCoords.y;
+        if (!canvas.playerCoords.epsilonEquals(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY)) {
+            // ugly but it is what it is
+            float recX = canvas.WorldToScreenX(getPosition().x)
+                    - origin.x * (flipped ? -1 : 1) * textureScale * scale
+                    - (flipped ? 1 : 0) * getTextureWidth();
+            float recY = canvas.WorldToScreenY(getPosition().y) - origin.y * textureScale * scale;
+            float width = getTextureWidth();
+            float height = getTextureHeight();
 
-        if (playerInside) {
-            tint.a = Math.max(0.65f, tint.a - 0.01f);
-        } else {
-            tint.a = Math.min(1f, tint.a + 0.01f);
+            boolean playerInside =
+                    recX <= canvas.playerCoords.x
+                            && recX + width >= canvas.playerCoords.x
+                            && recY <= canvas.playerCoords.y
+                            && recY + height >= canvas.playerCoords.y;
+
+            if (playerInside) {
+                tint.a = Math.max(0.65f, tint.a - 0.01f);
+            } else {
+                tint.a = Math.min(1f, tint.a + 0.01f);
+            }
         }
+
         canvas.draw(filmstrip, tint, origin.x, origin.y,
                 canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y), 0.0f,
                 (flipped ? -1 : 1) * textureScale * scale, textureScale * scale);

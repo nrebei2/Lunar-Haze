@@ -1,20 +1,16 @@
 package infinityx.lunarhaze.combat;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.ai.fsm.StateMachine;
 import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.controllers.GameplayController;
 import infinityx.lunarhaze.controllers.InputController;
-import infinityx.lunarhaze.controllers.PlayerController;
-import infinityx.lunarhaze.controllers.PlayerState;
 import infinityx.lunarhaze.models.entity.Werewolf;
 
 /**
- * Handles all attacking for the player by extending the base
- * model class AttackHandler. Compared to AttackHandler, the
- * player has a three-part combo attack system.
+ * Handles all attacking for the player.
+ * The player additionally has a three-part combo attack system.
  */
-public class PlayerAttackHandler extends AttackHandler {
+public class PlayerAttackHandler extends MeleeHandler {
 
     /**
      * Dash variables
@@ -36,14 +32,11 @@ public class PlayerAttackHandler extends AttackHandler {
 
     private boolean useRightHand;
 
-    private StateMachine<PlayerController, PlayerState> stateMachine;
-
     /**
      * Creates a specialized attack system for the given player
      */
-    public PlayerAttackHandler(Werewolf player, StateMachine<PlayerController, PlayerState> stateMachine) {
-        super(player);
-        this.stateMachine = stateMachine;
+    public PlayerAttackHandler(Werewolf player, AttackHitbox hitbox) {
+        super(player, hitbox);
         dashDirection = new Vector2();
         isDashing = false;
         dashCooldownCounter = DASH_COOLDOWN_STEALTH;
@@ -69,6 +62,10 @@ public class PlayerAttackHandler extends AttackHandler {
         Werewolf player = (Werewolf) entity;
         if (phase == GameplayController.Phase.BATTLE) {
             super.update(delta);
+            //update hitbox
+            if (player.isAttacking()) {
+                processAttack(delta);
+            }
 
             // Winding up logic
             if (windingUpHeavyAttack) {
@@ -85,6 +82,7 @@ public class PlayerAttackHandler extends AttackHandler {
 
                 if (InputController.getInstance().didAttack() && !player.isAttacking()) {
                     initiateAttack();
+
                 } else if (InputController.getInstance().didHeavyAttack() && !player.isAttacking()) {
                     initiateWindup();
                 }
@@ -124,9 +122,10 @@ public class PlayerAttackHandler extends AttackHandler {
     }
 
     public void initiateHeavyAttack() {
-        entity.attackDamage *= 2;
-        entity.attackKnockback *= 2;
-        entity.getAttackHitbox().setHitboxRange(entity.getAttackHitbox().getHitboxRange() * 1.5f);
+        Werewolf player = (Werewolf) entity;
+        player.attackDamage *= 2;
+        player.attackKnockback *= 2;
+        player.getAttackHitbox().setHitboxRange(player.getAttackHitbox().getHitboxRange() * 1.5f);
         heavyAttacking = true;
 
         initiateAttack();
@@ -135,15 +134,14 @@ public class PlayerAttackHandler extends AttackHandler {
     @Override
     protected void endAttack() {
         super.endAttack();
-
+        Werewolf player = (Werewolf) entity;
         if (heavyAttacking) {
             // Reset damage and knockback to their original values
-            entity.attackDamage /= 2;
-            entity.attackKnockback /= 2;
-            entity.getAttackHitbox().setHitboxRange(entity.getAttackHitbox().getHitboxRange() / 1.5f);
+            player.attackDamage /= 2;
+            player.attackKnockback /= 2;
+            player.getAttackHitbox().setHitboxRange(player.getAttackHitbox().getHitboxRange() / 1.5f);
 
             // Lock the player out after a heavy attack
-            Werewolf player = (Werewolf) entity;
             player.setHeavyLockedOut();
 
             heavyAttacking = false;
@@ -163,7 +161,7 @@ public class PlayerAttackHandler extends AttackHandler {
             dashTimer = 0f;
             entity.setImmune();
             entity.setLockedOut();
-            ((Werewolf) entity).setTargetStealth( ((Werewolf)entity).getTargetStealth() + 0.2f);
+            ((Werewolf) entity).setTargetStealth(((Werewolf) entity).getTargetStealth() + 0.2f);
         }
     }
 
@@ -178,7 +176,7 @@ public class PlayerAttackHandler extends AttackHandler {
     private void endDash() {
         dashCooldownCounter = 0f;
         isDashing = false;
-        ((Werewolf) entity).setTargetStealth( ((Werewolf)entity).getTargetStealth() - 0.2f);
+        ((Werewolf) entity).setTargetStealth(((Werewolf) entity).getTargetStealth() - 0.2f);
     }
 
     public boolean isHeavyAttacking() {

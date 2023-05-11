@@ -5,7 +5,7 @@ import infinityx.lunarhaze.models.AttackingGameObject;
 /**
  * Base model class for all attack/combat systems.
  */
-public abstract class AttackHandler {
+public class AttackHandler {
 
     /**
      * Counter for attacking (used to determine when to set attacking to false)
@@ -27,7 +27,7 @@ public abstract class AttackHandler {
     /**
      * @param entity attacking entity this class is controlling
      */
-    protected AttackHandler(AttackingGameObject entity) {
+    public AttackHandler(AttackingGameObject entity) {
         attackCounter = 0f;
         attackCooldownCounter = entity.attackCooldown;
         this.entity = entity;
@@ -67,13 +67,11 @@ public abstract class AttackHandler {
     /**
      * Processes an attack, called every frame while attacking.
      */
-    protected void processAttack(float delta) {
+    public void processAttack(float delta) {
         attackCounter += delta;
-        updateHitboxPosition();
         if (attackCounter >= entity.attackLength) {
             endAttack();
         }
-        entity.getAttackHitbox().update(delta);
     }
 
     /**
@@ -84,16 +82,4 @@ public abstract class AttackHandler {
         attackCounter = 0f;
     }
 
-    /**
-     * Adjusts hitbox based on {@link #entity} transform
-     */
-    protected void updateHitboxPosition() {
-        // This is the logic that makes the hitbox "parented" to the entity
-        entity.getAttackHitbox()
-                .getBody()
-                .setTransform(
-                        entity.getPosition(),
-                        entity.getAngle()
-                );
-    }
 }

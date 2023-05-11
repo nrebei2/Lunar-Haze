@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.controllers.GameplayController;
@@ -20,8 +19,6 @@ import infinityx.lunarhaze.graphics.UIRender;
 import infinityx.lunarhaze.models.Dust;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.util.ScreenObservable;
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**
@@ -187,8 +184,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
         // Create the controllers:
         inputController = InputController.getInstance();
         gameplayController = new GameplayController(setting);
-
-        }
+    }
 
 
     public GameplayController getGameplayController() {
@@ -346,8 +342,8 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
                 } else {
                     play(delta);
                 }
-                for (int i =0; i<20; i++) {
-                    for (int j =0; j<20; j++) {
+                for (int i = 0; i < 20; i++) {
+                    for (int j = 0; j < 20; j++) {
                         dustList[i][j].update(delta);
                     }
                 }
@@ -414,19 +410,19 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
                 displayFont.setColor(Color.YELLOW);
                 canvas.beginUI(GameCanvas.DrawPass.SPRITE);
                 canvas.drawOverlay(filter, Color.WHITE, true);
-                for (int i =0; i<20; i++) {
-                    for (int j =0; j < 20; j++)
+                for (int i = 0; i < 20; i++) {
+                    for (int j = 0; j < 20; j++)
                         dustList[i][j].draw(canvas);
                 }
-                canvas.draw(victory, Color.WHITE, victory.getWidth()/2, victory.getHeight()/2, canvas.getWidth()/2,
-                        canvas.getHeight()/2.5f, 0, 1.5f, 1.5f);
+                canvas.draw(victory, Color.WHITE, victory.getWidth() / 2, victory.getHeight() / 2, canvas.getWidth() / 2,
+                        canvas.getHeight() / 2.5f, 0, 1.5f, 1.5f);
                 canvas.end();
                 break;
             case OVER:
                 displayFont.setColor(Color.RED);
                 canvas.beginUI(GameCanvas.DrawPass.SPRITE); // DO NOT SCALE
                 canvas.drawOverlay(filter, Color.WHITE, true);
-                canvas.draw(defeat, canvas.getWidth()/2 - defeat.getWidth()/2, canvas.getHeight()/2 - defeat.getHeight()/2);
+                canvas.draw(defeat, canvas.getWidth() / 2 - defeat.getWidth() / 2, canvas.getHeight() / 2 - defeat.getHeight() / 2);
                 canvas.end();
                 break;
             case PLAY:
@@ -450,7 +446,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
         Gdx.input.setInputProcessor(this);
         dustList = new Dust[20][20];
         for (int i = 0; i < 20; i++) {
-            for (int j = 0; j <20; j++) {
+            for (int j = 0; j < 20; j++) {
                 Dust dust = new Dust();
                 dust.reset();
                 dustInfo = directory.getEntry("dust", JsonValue.class);
@@ -459,8 +455,8 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
                 JsonValue rps = dustInfo.get("rps");
                 JsonValue spd = dustInfo.get("speed");
                 JsonValue scl = dustInfo.get("scale");
-                dust.setX((float) Math.random()* 15f);
-                dust.setY((float) Math.random()* 15f);
+                dust.setX((float) Math.random() * 15f);
+                dust.setY((float) Math.random() * 15f);
                 dust.setZ(Interpolation.pow3In.apply(MathUtils.random()));
                 dust.setTexture(directory.getEntry(texInfo.getString("name"), Texture.class));
                 dust.setTextureScale(texInfo.getFloat("scale"));
@@ -500,7 +496,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
             observer.exitScreen(this, GO_ALLOCATE);
         }
 
-        if(gameplayController.getState() == GameState.WIN && inputController.didNext() && observer != null){
+        if (gameplayController.getState() == GameState.WIN && inputController.didNext() && observer != null) {
             observer.exitScreen(this, GO_NEXT);
         }
 

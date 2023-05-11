@@ -27,7 +27,6 @@ import imgui.type.ImBoolean;
 import imgui.type.ImInt;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.controllers.LevelParser;
-import infinityx.lunarhaze.controllers.LevelSerializer;
 import infinityx.lunarhaze.graphics.FilmStrip;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.graphics.ImGuiImplGLES2;
@@ -37,7 +36,6 @@ import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.entity.Enemy;
 import infinityx.lunarhaze.models.entity.SceneObject;
 import infinityx.util.PatrolPath;
-import infinityx.util.PatrolRegion;
 import infinityx.util.ScreenObservable;
 
 import static infinityx.lunarhaze.controllers.LevelSerializer.saveLevel;
@@ -321,13 +319,14 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         public Vector2 pos;
 
         /**
-         * @param pos position of point
+         * @param pos   position of point
          * @param enemy which enemy this point patrol path was from
          */
         public AddPoint(Vector2 pos, Enemy enemy) {
             this.pos = pos;
             this.enemy = enemy;
         }
+
         @Override
         public Type getType() {
             return Type.ADD_POINT;
@@ -343,7 +342,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         public Vector2 pos;
 
         /**
-         * @param pos position of point
+         * @param pos   position of point
          * @param index index into patrol path it was removed from
          * @param enemy which enemy this point patrol path was from
          */
@@ -387,7 +386,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * Holds the necessary information to display the enemy button
      */
     class EnemyButton {
-        public EnemyButton(Texture texture, String type) {
+        public EnemyButton(Texture texture, Enemy.EnemyType type) {
             this.type = type;
             this.texture = texture;
         }
@@ -395,7 +394,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         /**
          * type of Enemy
          */
-        public String type;
+        public Enemy.EnemyType type;
 
         /**
          * Texture for button
@@ -512,7 +511,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     /**
      * Current level to save to
      */
-    private ImInt saveLevel = new ImInt(1);
+    private ImInt saveTo = new ImInt(1);
 
     /**
      * Whether to show the "Overwrite level" prompt
@@ -569,7 +568,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                                     enemy.get("textures").getString(
                                             enemy.get("texture").getString("name")
                                     ), Texture.class
-                            ), enemy.name
+                            ), Enemy.EnemyType.fromString(enemy.name)
                     )
             );
         }
@@ -648,7 +647,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         EnemySelection enemySelection = (EnemySelection) selected;
         // Initial waypoint as enemy position
         Enemy newEnemy = level.addEnemy(
-                enemySelection.enemy.getName(),
+                enemySelection.enemy.getEnemyType(),
                 mouseWorld.x, mouseWorld.y,
                 enemySelection.enemy.getPatrolPath().addWaypoint(mouseWorld.x, mouseWorld.y)
         );
@@ -765,7 +764,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                     GameObject obj = ((PlaceObject) lastAction).gameObject;
                     switch (obj.getType()) {
                         case ENEMY:
-                            level.removeEnemy((infinityx.lunarhaze.models.entity.Enemy) obj);
+                            level.removeEnemy((Enemy) obj);
                             break;
                         case SCENE:
                             level.removeSceneObject((infinityx.lunarhaze.models.entity.SceneObject) obj);
@@ -776,7 +775,11 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                     GameObject removedObj = ((RemoveObject) lastAction).gameObject;
                     switch (removedObj.getType()) {
                         case ENEMY:
-                            level.addEnemy((infinityx.lunarhaze.models.entity.Enemy) removedObj);
+                            level.removeEnemy((Enemy) removedObj);
+                            if (currEnemyControlled == removedObj) {
+                                currEnemyControlled = null;
+                                selectedWaypointIndex = -1;
+                            }
                             break;
                         case SCENE:
                             level.addSceneObject((infinityx.lunarhaze.models.entity.SceneObject) removedObj);
@@ -820,7 +823,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                     GameObject obj = ((PlaceObject) lastUndoneAction).gameObject;
                     switch (obj.getType()) {
                         case ENEMY:
-                            level.addEnemy((infinityx.lunarhaze.models.entity.Enemy) obj);
+                            level.removeEnemy((Enemy) obj);
                             break;
                         case SCENE:
                             level.addSceneObject((infinityx.lunarhaze.models.entity.SceneObject) obj);
@@ -831,7 +834,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                     GameObject removedObj = ((RemoveObject) lastUndoneAction).gameObject;
                     switch (removedObj.getType()) {
                         case ENEMY:
-                            level.removeEnemy((infinityx.lunarhaze.models.entity.Enemy) removedObj);
+                            level.removeEnemy((Enemy) removedObj);
                             break;
                         case SCENE:
                             level.removeSceneObject((infinityx.lunarhaze.models.entity.SceneObject) removedObj);
@@ -1131,8 +1134,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                     canvas.shapeRenderer.rectLine(
                             waypoint.x,
                             waypoint.y,
-                            curPath.getWaypointAtIndex(i+1).x,
-                            curPath.getWaypointAtIndex(i+1).y,
+                            curPath.getWaypointAtIndex(i + 1).x,
+                            curPath.getWaypointAtIndex(i + 1).y,
                             0.07f
                     );
                     if (i == selectedWaypointIndex)
@@ -1340,7 +1343,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             return false;
         }
 
-
         switch (selected.getType()) {
             case EXIST_OBJECT:
                 ((ExistingObject) selected).object.setPosition(mouseWorld.x, mouseWorld.y);
@@ -1409,8 +1411,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
                     mouseBoard.set(boardX, boardY);
                     ((ObjectSelection) selected).object.setPosition(mouseBoard);
-                }
-                else
+                } else
                     ((ObjectSelection) selected).object.setPosition(mouseWorld);
                 break;
         }
@@ -1589,7 +1590,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                             doneActions.add(new RemoveObject(enemy));
                             undoneActions.clear();
                             selected = null;
-                            // Remove the controller window if its controlling the removed enemy
+                            // Remove the controller window if it's controlling the removed enemy
                             if (currEnemyControlled == enemy) {
                                 currEnemyControlled = null;
                                 selectedWaypointIndex = -1;
@@ -1651,7 +1652,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
                         ImBoolean flip = new ImBoolean(object.isFlipped());
                         if (ImGui.checkbox("Flip", flip)) {
-                           object.setFlipped(flip.get());
+                            object.setFlipped(flip.get());
                         }
 
                         // Remove button
@@ -1894,12 +1895,12 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         }
         if (ImGui.beginPopup("Save Level")) {
             ImGui.text("Enter the level to save to (1-15):");
-            if (ImGui.inputInt("Level", saveLevel)) {
-                saveLevel.set(MathUtils.clamp(saveLevel.get(), 1, 15));
+            if (ImGui.inputInt("Level", saveTo)) {
+                saveTo.set(MathUtils.clamp(saveTo.get(), 1, 15));
             }
 
             if (ImGui.button("Save")) {
-                boolean success = saveLevel(level, directory, saveLevel.get(), false);
+                boolean success = saveLevel(level, directory, saveTo.get(), false);
                 if (!success) {
                     showOverwritePrompt = true;
                 }
@@ -1929,7 +1930,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             ImGui.text("Level already exists! Overwrite?");
             if (ImGui.button("Yes")) {
                 removeSelection();
-                saveLevel(level, directory, saveLevel.get(), true);
+                saveLevel(level, directory, saveTo.get(), true);
                 showOverwritePrompt = false;
                 ImGui.closeCurrentPopup();
             }
@@ -1970,7 +1971,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             if (ImGui.menuItem("Test")) {
                 if (canSave()) {
                     removeSelection();
-                    LevelSerializer.saveLevel(level, directory, 0, true);
+                    saveLevel(level, directory, 0, true);
                     observer.exitScreen(this, GO_PLAY);
                 } else {
                     // Cannot save!
@@ -2315,7 +2316,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
             if (ImGui.isItemHovered()) {
                 ImGui.beginTooltip();
-                ImGui.text(enemy.type.substring(0, 1).toUpperCase() + enemy.type.substring(1));
+                String name = enemy.type.toString().toLowerCase();
+                ImGui.text(name.substring(0, 1).toUpperCase() + name.substring(1));
                 ImGui.endTooltip();
             }
         }

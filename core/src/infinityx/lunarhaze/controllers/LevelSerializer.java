@@ -11,7 +11,6 @@ import infinityx.lunarhaze.models.Board;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.entity.Enemy;
 import infinityx.lunarhaze.models.entity.SceneObject;
-import infinityx.util.PatrolPath;
 
 import java.util.ArrayList;
 
@@ -233,7 +232,7 @@ public class LevelSerializer {
         JsonValue enemy = new JsonValue(JsonValue.ValueType.array);
         for (Enemy e : level.getEnemies()) {
             JsonValue currEnemy = new JsonValue(JsonValue.ValueType.object);
-            currEnemy.addChild("type", new JsonValue(e.getName()));
+            currEnemy.addChild("type", new JsonValue(e.getEnemyType().toString()));
 
             currEnemy.addChild("scale", new JsonValue(e.getScale()));
             JsonValue pos = new JsonValue(JsonValue.ValueType.array);

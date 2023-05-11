@@ -101,23 +101,47 @@
       "degrees": 30
     },
     "textures": {
-      "attack-l": "villager.attack-l",
-      "attack-r": "villager.attack-r",
-      "attack-f": "villager.attack-f",
-      "attack-b": "villager.attack-b",
-      "walk-l": "villager.walk-l",
-      "walk-r": "villager.walk-r",
-      "walk-f": "villager.walk-f",
-      "walk-b": "villager.walk-b",
-      "idle-l": "villager.idle-l",
-      "idle-r": "villager.idle-r",
-      "idle-f": "villager.idle-f",
-      "idle-b": "villager.idle-b"
+      "attack-l": {
+        "name" : "archer.attack-l",
+        "durations" : [0.2, 0.37, 0.2]
+      },
+      "attack-r": {
+        "name" : "archer.attack-r",
+        "durations" : [0.2, 0.37, 0.2]
+      },
+      "attack-f": {
+        "name" : "archer.attack-f",
+        "durations" : [0.2, 0.37, 0.2]
+      },
+      "attack-b": {
+        "name" : "archer.attack-b",
+        "durations" : [0.2, 0.37, 0.2]
+      },
+      "walk-l": {
+        "name" : "archer.walk-l",
+        "durations" : [0.12, 0.12, 0.2, 0.12]
+      },
+      "walk-r": {
+        "name" : "archer.walk-r",
+        "durations" : [0.12, 0.12, 0.2, 0.12]
+      },
+      "walk-f": {
+        "name" : "archer.walk-f",
+        "durations" : [0.12, 0.2, 0.12, 0.2]
+      },
+      "walk-b": {
+        "name" : "archer.walk-b",
+        "durations" : [0.12, 0.2, 0.12, 0.2]
+      },
+      "idle-l": "archer.idle-l",
+      "idle-r": "archer.idle-r",
+      "idle-f": "archer.idle-f",
+      "idle-b": "archer.idle-b"
     },
     "texture": {
       "name": "idle-r",
-      "origin" : [243, 137],
-      "scale": 0.4
+      "origin" : [1052, 480],
+      "scale": 0.06
     },
     "colliders": {
       "body": {
@@ -135,12 +159,38 @@
     "attack": {
       "knockback": 0.2,
       "damage": 0.3,
-      "range": 2.5,
+      "range": 4,
       "cooldown": 1,
       "length": 0.5,
       "immunity": 0.5,
       "lockout": 0.8,
       "shootdist": 4
+    },
+    "arrow": {
+      "bodytype": "dynamic",
+      "density": 1.0,
+      "friction": 0.0,
+      "restitution": 0.2,
+      "damping": 0.0,
+      "textures": {
+        "body": {
+          "name" : "archer.arrow",
+          "durations" : [0.2, 0.3, 0.2, 0.1]
+        }
+      },
+      "texture": {
+        "name": "body",
+        "origin": [700, 1342],
+        "scale": 0.3
+      },
+      "colliders": {
+        "body": {
+          "type": "box",
+          "width": 0.5,
+          "height": 0.1
+        }
+      },
+      "bullet": true
     }
   }
 }

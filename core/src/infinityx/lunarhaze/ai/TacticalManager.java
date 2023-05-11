@@ -1,19 +1,14 @@
 package infinityx.lunarhaze.ai;
 
 import com.badlogic.gdx.ai.fsm.StateMachine;
-import com.badlogic.gdx.ai.msg.MessageDispatcher;
 import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.OrderedSet;
 import infinityx.lunarhaze.controllers.EnemyController;
 import infinityx.lunarhaze.controllers.EnemyState;
 import infinityx.lunarhaze.models.LevelContainer;
-import infinityx.lunarhaze.models.entity.Enemy;
 import infinityx.lunarhaze.models.entity.Werewolf;
 
 import java.util.Random;
@@ -31,14 +26,9 @@ public class TacticalManager implements Telegraph {
     Random rand = new Random();
 
     /**
-     * The list of current active enemies
+     * Reference of active controllers from container
      */
-    private final Array<Enemy> activeEnemies;
-
-    /**
-     * A map of enemies to their corresponding controllers
-     */
-    private final ObjectMap<Enemy, EnemyController> enemyMap;
+    private final Array<EnemyController> controllers;
 
     private final LevelContainer container;
 
@@ -50,8 +40,7 @@ public class TacticalManager implements Telegraph {
 
     public TacticalManager(LevelContainer container) {
         target = container.getPlayer();
-        activeEnemies = container.getEnemies();
-        enemyMap = container.getEnemyControllers();
+        controllers = container.getActiveControllers();
         this.container = container;
         MessageManager.getInstance().addListener(this, ADD);
         MessageManager.getInstance().addListener(this, REMOVE);
@@ -78,14 +67,12 @@ public class TacticalManager implements Telegraph {
 //                control.getEnemy().updateStrafeDistance();
 //            }
             //if behind enemy go attack
-            if (control.isBehind(control.getEnemy(), target) && control.canStartNewAttack()) {
+            if (control.isBehind(control.getEnemy(), target) && control.getAttackHandler().canStartNewAttack()) {
                 MessageManager.getInstance().dispatchMessage(null, enemy, ATTACK);
-            }
-            else if (control.canStartNewAttack() && rand.nextFloat() <= 0.1f){
+            } else if (control.getAttackHandler().canStartNewAttack() && rand.nextFloat() <= 0.1f) {
                 //attacking from front
                 MessageManager.getInstance().dispatchMessage(null, enemy, ATTACK);
-            }
-            else {
+            } else {
                 MessageManager.getInstance().dispatchMessage(null, enemy, STRAFE);
             }
 
@@ -97,8 +84,7 @@ public class TacticalManager implements Telegraph {
      * Alert nearby allies that target is spotted
      */
     public void alertAllies(EnemyController entity) {
-        for (Enemy enemy : activeEnemies) {
-            EnemyController control = enemyMap.get(enemy);
+        for (EnemyController control : controllers) {
             entity.findCollision(control.getEnemy());
             // FIXME: Should only call an enemy that is visible from entity.enemy
             if (control != entity && (entity.getEnemy().getPosition()).dst(control.getEnemy().getPosition()) <= 5f

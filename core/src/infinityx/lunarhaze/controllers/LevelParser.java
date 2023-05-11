@@ -2,12 +2,10 @@ package infinityx.lunarhaze.controllers;
 
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
-import com.badlogic.gdx.ai.steer.utils.paths.LinePath;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntArray;
-import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.graphics.FilmStrip;
@@ -16,9 +14,7 @@ import infinityx.lunarhaze.models.Board;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.Tile;
 import infinityx.lunarhaze.models.entity.Enemy;
-import infinityx.lunarhaze.models.entity.SceneObject;
 import infinityx.util.PatrolPath;
-import infinityx.util.PatrolRegion;
 
 /**
  * This class is responsible for parsing JSON objects representing a level's configuration,
@@ -153,8 +149,9 @@ public class LevelParser {
                 patrolPath.add(new Vector2(patrolPos.getInt(0), patrolPos.getInt(1)));
             }
 
-            Enemy newEnemy = levelContainer.addEnemy(
-                    enemyInfo.getString("type"),
+            Enemy newEnemy;
+            newEnemy = levelContainer.addEnemy(
+                    Enemy.EnemyType.fromString(enemyInfo.getString("type")),
                     enemyPos.getFloat(0),
                     enemyPos.getFloat(1),
                     new PatrolPath(patrolPath)

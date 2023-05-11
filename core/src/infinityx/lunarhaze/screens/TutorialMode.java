@@ -1,8 +1,6 @@
 package infinityx.lunarhaze.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
@@ -159,13 +157,14 @@ public class TutorialMode extends ScreenObservable implements Screen, InputProce
     public boolean isReadyRight() {
         return pressRightState == 2;
     }
+
     /**
      * Returns true if all assets are loaded and the player is ready to go.
      *
      * @return true if the player is ready to go
      */
     public boolean isReadyLeft() {
-        return pressLeftState == 2 ;
+        return pressLeftState == 2;
     }
 
 
@@ -197,13 +196,13 @@ public class TutorialMode extends ScreenObservable implements Screen, InputProce
         Color tintBack = (pressBackState == 1 ? color : Color.WHITE);
         canvas.draw(backButton, tintBack, backButton.getWidth() / 2, backButton.getHeight() / 2,
                 centerX, centerY, 0, BUTTON_SCALE * scale, BUTTON_SCALE * scale);
-        if(page_number != 1) {
+        if (page_number != 1) {
             Color tintLeft = (pressLeftState == 1 ? color : Color.WHITE);
             canvas.draw(leftButton, tintLeft, leftButton.getWidth() / 2, leftButton.getHeight() / 2,
                     centerXLeft, centerYArrow, 0, ARROW_BUTTON_SCALE * scale,
                     ARROW_BUTTON_SCALE * scale);
         }
-        if(page_number != 5) {
+        if (page_number != 5) {
             Color tintRight = (pressRightState == 1 ? color : Color.WHITE);
             canvas.draw(rightButton, tintRight, rightButton.getWidth() / 2,
                     rightButton.getHeight() / 2,
@@ -217,48 +216,47 @@ public class TutorialMode extends ScreenObservable implements Screen, InputProce
      * Update the status of this menu.
      */
     private void update(float delta) {
-        if (page_number == 1){
+        if (page_number == 1) {
             page = page1;
-            if (isReadyRight()){
+            if (isReadyRight()) {
                 pressRightState = 0;
                 page_number = 2;
             }
         } else if (page_number == 2) {
             page = page2;
-            if (isReadyRight()){
+            if (isReadyRight()) {
                 pressRightState = 0;
                 page_number = 3;
-            }else if (isReadyLeft()){
+            } else if (isReadyLeft()) {
                 pressLeftState = 0;
                 page_number = 1;
             }
-        }else if (page_number == 3) {
+        } else if (page_number == 3) {
             page = page3;
-            if (isReadyRight()){
+            if (isReadyRight()) {
                 pressRightState = 0;
                 page_number = 4;
-            }else if (isReadyLeft()){
+            } else if (isReadyLeft()) {
                 pressLeftState = 0;
                 page_number = 2;
             }
-        }else if (page_number == 4) {
+        } else if (page_number == 4) {
             page = page4;
-            if (isReadyRight()){
+            if (isReadyRight()) {
                 pressRightState = 0;
                 page_number = 5;
-            }else if (isReadyLeft()){
+            } else if (isReadyLeft()) {
                 pressLeftState = 0;
                 page_number = 3;
             }
-        }else  {
+        } else {
             page = page5;
-            if (isReadyLeft()){
+            if (isReadyLeft()) {
                 pressLeftState = 0;
                 page_number = 4;
             }
 
         }
-
 
 
     }
@@ -365,12 +363,9 @@ public class TutorialMode extends ScreenObservable implements Screen, InputProce
         float distXRight = Math.abs(screenX - centerXRight);
         float yRight = ARROW_BUTTON_SCALE * scale * rightButton.getHeight() / 2;
         float distYRight = Math.abs(screenY - centerYArrow);
-        if ( distXRight < xRight && distYRight < yRight && page_number != 5 ) {
+        if (distXRight < xRight && distYRight < yRight && page_number != 5) {
             pressRightState = 1;
         }
-
-
-
 
 
         return false;

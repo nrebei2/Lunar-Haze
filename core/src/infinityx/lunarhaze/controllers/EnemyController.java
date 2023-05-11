@@ -2,11 +2,9 @@ package infinityx.lunarhaze.controllers;
 
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.fsm.StateMachine;
-import com.badlogic.gdx.ai.steer.Proximity;
-import com.badlogic.gdx.ai.steer.Steerable;
-import com.badlogic.gdx.ai.steer.behaviors.*;
+import com.badlogic.gdx.ai.steer.behaviors.FollowPath;
+import com.badlogic.gdx.ai.steer.behaviors.PrioritySteering;
 import com.badlogic.gdx.ai.steer.utils.Path;
-import com.badlogic.gdx.ai.steer.utils.RayConfiguration;
 import com.badlogic.gdx.ai.steer.utils.paths.LinePath;
 import com.badlogic.gdx.ai.utils.Collision;
 import com.badlogic.gdx.ai.utils.Ray;
@@ -20,22 +18,23 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.utils.Array;
 import infinityx.lunarhaze.ai.*;
 import infinityx.lunarhaze.combat.AttackHandler;
+import infinityx.lunarhaze.combat.MeleeHandler;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.models.GameObject;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.entity.Enemy;
 import infinityx.lunarhaze.models.entity.SceneObject;
+import infinityx.lunarhaze.models.entity.Villager;
 import infinityx.lunarhaze.models.entity.Werewolf;
 import infinityx.lunarhaze.physics.Box2DRaycastCollision;
 import infinityx.lunarhaze.physics.RaycastInfo;
 import infinityx.util.PatrolPath;
-import infinityx.util.PatrolRegion;
 import infinityx.util.astar.AStarPathFinding;
 
 /**
  * Controller class, handles logic for a single enemy
  */
-public class EnemyController extends AttackHandler {
+public class EnemyController {
     /**
      * Output collision cache from Box2DRaycastCollision
      */
@@ -70,11 +69,6 @@ public class EnemyController extends AttackHandler {
      * Pathfinder reference from level container
      */
     public AStarPathFinding pathfinder;
-
-    /**
-     * Whether the game is in BATTLE phase
-     */
-    private boolean inBattle;
 
     /**
      * The enemy being controlled by this AIController
@@ -137,12 +131,19 @@ public class EnemyController extends AttackHandler {
      * Steering behavior for attacking
      */
     public ContextBehavior attack;
-
+    /**
+     * Steering behavior for evading
+     */
     public ContextBehavior evade;
 
     public ContextSteering avoidSB;
 
     public PrioritySteering<Vector2> followPathAvoid;
+
+    /**
+     * Attack handler for the attached enemy
+     */
+    private AttackHandler attackHandler;
 
     Ray<Vector2> rayCache = new Ray<>(new Vector2(), new Vector2());
 
@@ -156,16 +157,23 @@ public class EnemyController extends AttackHandler {
 
 
     /**
-     * Creates an EnemyController for the enemy with the given id.
+     * Creates an EnemyController for the given enemy.
      *
      * @param enemy The enemy being controlled by this AIController
      */
-    public EnemyController(final Enemy enemy) {
-        super(enemy);
+    public EnemyController(Enemy enemy) {
+        switch (enemy.getEnemyType()) {
+            case Villager:
+                this.attackHandler = new MeleeHandler(enemy, ((Villager) enemy).attackHitbox);
+                break;
+            case Archer:
+                this.attackHandler = new AttackHandler(enemy);
+                break;
+        }
+
         patrolTarget = new Vector2();
         this.targetPos = new Vector2();
         this.enemy = enemy;
-        this.inBattle = false;
         this.stateMachine = new DefaultStateMachine<>(this, EnemyState.INIT, EnemyState.ANY_STATE);
         this.combinedContext = new CombinedContext(enemy);
 
@@ -252,16 +260,12 @@ public class EnemyController extends AttackHandler {
 //        Separation<Vector2> avoid = new Separation<>(enemy, (Proximity<Vector2>) container.getEnemies());
 
 
-
-
-
-
         // Prefer directions towards target
         attack = new ContextBehavior(enemy, false) {
             @Override
             protected ContextMap calculateRealMaps(ContextMap map) {
                 map.setZero();
-                if (canStartNewAttack()) {
+                if (getAttackHandler().canStartNewAttack()) {
                     Vector2 targetDir = target.getPosition().sub(enemy.getPosition()).nor();
                     for (int i = 0; i < map.getResolution(); i++) {
                         map.interestMap[i] = Math.max(0, map.dirFromSlot(i).dot(targetDir));
@@ -288,8 +292,8 @@ public class EnemyController extends AttackHandler {
                     if (raycast.hit) {
                         map.dangerMap[i] = 1;
 
-                        for (int j = -2; j <= 2; j++ ){
-                            map.dangerMap[(i+j+map.getResolution())%map.getResolution()] = 1;
+                        for (int j = -2; j <= 2; j++) {
+                            map.dangerMap[(i + j + map.getResolution()) % map.getResolution()] = 1;
                         }
 
                     }
@@ -303,10 +307,10 @@ public class EnemyController extends AttackHandler {
             @Override
             protected ContextMap calculateRealMaps(ContextMap map) {
                 map.setZero();
-                if (!canStartNewAttack()) {
+                if (!getAttackHandler().canStartNewAttack() || enemy.getHealthPercentage() < 0.5) {
                     Vector2 evade_dir = enemy.getPosition().sub(target.getPosition());
                     for (int i = 0; i < map.getResolution(); i++) {
-                        map.interestMap[i] = 1/evade_dir.len() * Math.max(0, map.dirFromSlot(i).dot(evade_dir.nor()));
+                        map.interestMap[i] = 1 / evade_dir.len() * Math.max(0, map.dirFromSlot(i).dot(evade_dir.nor()));
                     }
                 }
 
@@ -326,6 +330,10 @@ public class EnemyController extends AttackHandler {
 
         //Resolution is set to 8 to represent the 8 directions in which enemies can move
         this.battleSB = new ContextSteering(enemy, combinedContext, 30);
+    }
+
+    public AttackHandler getAttackHandler() {
+        return attackHandler;
     }
 
     /**
@@ -373,8 +381,14 @@ public class EnemyController extends AttackHandler {
      * @param delta time between last frame in seconds
      */
     public void update(LevelContainer container, float delta) {
-        super.update(delta);
-        if (enemy.hp <= 0) container.removeEnemy(enemy);
+        attackHandler.update(delta);
+        if (enemy.hp <= 0) {
+            container.removeEnemy(enemy);
+        }
+
+        if (enemy.isInBattle() && stateMachine.getCurrentState() != EnemyState.ALERT) {
+            stateMachine.changeState(EnemyState.ALERT);
+        }
 
         // Process the FSM
         enemy.update(delta);
@@ -410,7 +424,7 @@ public class EnemyController extends AttackHandler {
         }
 
         // TODO: right now there is no difference in logic between a return of ALERT and NOTICED
-        if (inBattle) return Enemy.Detection.ALERT;
+        if (enemy.isInBattle()) return Enemy.Detection.ALERT;
 
         Interpolation lerp = Interpolation.linear;
         raycastCollision.findCollision(collCache, rayCache.set(enemy.getPosition(), target.getPosition()));
@@ -512,14 +526,6 @@ public class EnemyController extends AttackHandler {
     public void updatePath() {
         Path path = pathfinder.findPath(enemy.getPosition(), targetPos);
         followPathSB.setPath(path);
-    }
-
-    public void setInBattle(boolean inBattle) {
-        this.inBattle = inBattle;
-    }
-
-    public boolean isInBattle() {
-        return inBattle;
     }
 
     public StateMachine<EnemyController, EnemyState> getStateMachine() {

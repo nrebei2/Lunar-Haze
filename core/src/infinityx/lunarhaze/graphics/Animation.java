@@ -186,6 +186,13 @@ public class Animation {
     }
 
     /**
+     * Reset the current playing animation back to the beginning
+     */
+    public void reset() {
+        this.elapsedTime = 0;
+    }
+
+    /**
      * Returns the key frame of the current FilmStrip based on the elapsed time.
      *
      * @param deltaTime The time in seconds since the last frame.
@@ -246,7 +253,7 @@ public class Animation {
         return 0;
     }
 
-    public void clearFrames(){
+    public void clearFrames() {
         animations.clear();
     }
 }

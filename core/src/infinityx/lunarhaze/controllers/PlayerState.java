@@ -27,8 +27,6 @@ public enum PlayerState implements State<PlayerController> {
                 entity.getStateMachine().changeState(PlayerState.ATTACKED);
             } else if (entity.isCollectingMoonlight()) {
                 entity.getStateMachine().changeState(PlayerState.COLLECT);
-            } else if (entity.player.isRunning()) {
-                entity.getStateMachine().changeState(PlayerState.RUN);
             } else if (!entity.player.getLinearVelocity().isZero()) {
                 entity.getStateMachine().changeState(PlayerState.WALK);
             }
@@ -75,8 +73,6 @@ public enum PlayerState implements State<PlayerController> {
                 entity.getStateMachine().changeState(PlayerState.ATTACKED);
             } else if (entity.player.getLinearVelocity().isZero()) {
                 entity.getStateMachine().changeState(PlayerState.IDLE);
-            } else if (entity.player.isRunning()) {
-                entity.getStateMachine().changeState(PlayerState.RUN);
             }
 
 
@@ -89,39 +85,6 @@ public enum PlayerState implements State<PlayerController> {
         @Override
         public void exit(PlayerController entity) {
             entity.player.setTargetStealth(entity.player.getTargetStealth() - PlayerController.WALK_STEALTH);
-        }
-    },
-
-    RUN() {
-        /** Cache of player direction. Required so the filmstrip is only updated when direction changes. */
-        Direction direction;
-
-        @Override
-        public void enter(PlayerController entity) {
-            direction = entity.player.direction;
-            setTexture(entity, "walk");
-            // texture update should be proportional to speed
-        }
-
-        @Override
-        public void update(PlayerController entity) {
-            // Handle state transitions
-            if (entity.isWindingUp()) {
-                entity.getStateMachine().changeState(PlayerState.HEAVY_ATTACK_WINDUP);
-            } else if (entity.isAttacking()) {
-                entity.getStateMachine().changeState(PlayerState.ATTACK);
-            } else if (entity.isAttacked()) {
-                entity.getStateMachine().changeState(PlayerState.ATTACKED);
-            } else if (entity.player.getLinearVelocity().isZero()) {
-                entity.getStateMachine().changeState(PlayerState.IDLE);
-            } else if (!InputController.getInstance().didDash()) {
-                entity.getStateMachine().changeState(PlayerState.WALK);
-            }
-
-            // Animations
-            if (entity.player.direction == direction) return;
-            setTexture(entity, "walk");
-            direction = entity.player.direction;
         }
     },
 

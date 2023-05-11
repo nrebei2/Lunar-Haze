@@ -1,9 +1,7 @@
 package infinityx.lunarhaze.models;
 
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
-import infinityx.lunarhaze.combat.AttackHitbox;
 
 /**
  * A game object that can and can be attack
@@ -60,11 +58,6 @@ public abstract class AttackingGameObject extends GameObject {
      * Current time duration for attacked frames
      */
     protected float attackedTime;
-
-    /**
-     * Hitbox parented to the entity. Only active when {@link #isAttacking}
-     */
-    protected AttackHitbox attackHitbox;
 
     /**
      * Impulse applied to entity hit
@@ -132,16 +125,6 @@ public abstract class AttackingGameObject extends GameObject {
         isAttackedLength = attack.getFloat("lockout");
         lockout = attack.getFloat("lockout");
 
-        JsonValue hitboxInfo = attack.get("hitbox");
-        float attackRange = hitboxInfo.getFloat("range");
-        // width is defaulted to the entity's body diameter
-        float attackWidth = hitboxInfo.has("width") ? hitboxInfo.getFloat("width") : getBoundingRadius() * 2;
-
-        // Create the hitbox
-        attackHitbox = new AttackHitbox(new Vector2(attackRange, attackWidth), this);
-        attackHitbox.initialize(directory, hitboxInfo, container);
-        attackHitbox.activatePhysics(container.getWorld());
-        attackHitbox.setActive(false);
     }
 
     /**
@@ -172,26 +155,20 @@ public abstract class AttackingGameObject extends GameObject {
     /**
      * @return reach of attack hitbox in world length
      */
-    public float getAttackRange() {
-        return attackHitbox.getHitboxRange();
-    }
+    abstract public float getAttackRange();
 
     /**
      * Updates the reach of the entity's attack hitbox
      *
      * @param attackRange new range in world length
      */
-    public void setAttackRange(float attackRange) {
-        attackHitbox.setHitboxRange(attackRange);
-    }
+    abstract public void setAttackRange(float attackRange);
 
     /**
      * Set whether the entity is currently attacking
      */
     public void setAttacking(boolean value) {
         isAttacking = value;
-        attackHitbox.setActive(value);
-        attackHitbox.getTexture().setFrame(0);
     }
 
     public boolean isAttacking() {
@@ -208,10 +185,6 @@ public abstract class AttackingGameObject extends GameObject {
 
     public boolean isAttacked() {
         return isAttacked;
-    }
-
-    public AttackHitbox getAttackHitbox() {
-        return attackHitbox;
     }
 
     @Override

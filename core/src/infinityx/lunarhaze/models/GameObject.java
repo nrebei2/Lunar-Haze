@@ -50,7 +50,8 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
         SCENE,
         HITBOX,
         ARCHER,
-        ARROW
+        ARROW,
+        VILLAGER
     }
 
     // Attributes for all game objects

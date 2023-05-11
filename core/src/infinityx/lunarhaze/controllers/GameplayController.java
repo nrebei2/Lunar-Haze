@@ -1,21 +1,16 @@
 package infinityx.lunarhaze.controllers;
 
-import box2dLight.PointLight;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Interpolation;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ObjectMap;
 import infinityx.lunarhaze.ai.TacticalManager;
 import infinityx.lunarhaze.models.Board;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.entity.Enemy;
 import infinityx.lunarhaze.models.entity.Werewolf;
 import infinityx.lunarhaze.screens.GameSetting;
-
-import java.util.Map;
 
 import static infinityx.lunarhaze.controllers.GameplayController.Phase.BATTLE;
 
@@ -82,9 +77,9 @@ public class GameplayController {
     public Board board;
 
     /**
-     * Reference of enemy model-controller map from container
+     * Reference of active enemy controllers from container
      */
-    private ObjectMap<Enemy, EnemyController> controls;
+    private Array<EnemyController> enemyControllers;
 
     /**
      * Owns the lighting controller
@@ -133,11 +128,6 @@ public class GameplayController {
     private Sound fail_sound;
 
     private GameSetting setting;
-
-    private float flash_timer;
-
-    private static final float FLASH_INTERVAL = 4.0f;
-
 
     /**
      * Creates a new GameplayController with no active elements.
@@ -201,14 +191,12 @@ public class GameplayController {
         ambientLightTransitionTimer = 0;
 
         enemies = levelContainer.getEnemies();
-        controls = levelContainer.getEnemyControllers();
+        enemyControllers = levelContainer.getActiveControllers();
         battleTicks = 0;
 
         win_sound = levelContainer.getDirectory().getEntry("level-passed", Sound.class);
         fail_sound = levelContainer.getDirectory().getEntry("level-fail", Sound.class);
         tacticalManager = new TacticalManager(container);
-
-        flash_timer = 0;
     }
 
     /**
@@ -226,38 +214,12 @@ public class GameplayController {
             playerController.update(phase, lightingController);
             switch (phase) {
                 case STEALTH:
-                    lightingController.updateDust(delta);
+                    lightingController.update(delta);
                     phaseTimer -= delta;
                     if (container.getBoard().getRemainingMoonlight() == 0 || phaseTimer <= 0) {
                         phase = Phase.TRANSITION;
                         lightingController.dispose();
-                    }
-                    flash_timer += delta;
-                    if (flash_timer >= FLASH_INTERVAL) {
-                        flash_timer = 0;
-                        // Switch lamp PointLight status
-                        container.toggleLamps();
-                    }
-
-                    player.isOnLamp = false;
-                    // Check if player is within range of a lamp
-                    for (Vector2 pos : container.getLamps().keySet()) {
-
-                        float player_x = board.worldToBoardX(player.getPosition().x);
-                        float player_y = board.worldToBoardY(player.getPosition().y);
-
-                        float lamp_x = board.worldToBoardX(pos.x);
-                        float lamp_y = board.worldToBoardY(pos.y);
-
-                        float distance = (float) Math.sqrt(Math.pow(player_x - lamp_x, 2) + Math.pow(player_y - lamp_y, 2));
-
-                        // TODO: Fix this to change player stealth
-                        if (distance <= 2 && container.isOn(pos)) {
-                            // Should probably set player to be in range of lamp in model class, should modify player's stealth
-                            System.out.println("is on lamp");
-                            player.isOnLamp = true;
-                            break;
-                        }
+                        player.switchToWolf();
                     }
                     //System.out.println("player is on lamp: " + player.isOnLamp);
                     break;
@@ -272,8 +234,6 @@ public class GameplayController {
                     break;
                 case TRANSITION:
                     switchPhase(delta);
-                    player.animation.clearFrames();
-                    container.switchWolf();
                     container.setEnemyDamage(0.5f);
                     break;
                 case ALLOCATE:
@@ -283,7 +243,7 @@ public class GameplayController {
                     }
                     break;
             }
-            if (player.hp <= 0){
+            if (player.hp <= 0) {
                 gameState = GameState.OVER;
                 if (setting.isSoundEnabled()) {
                     fail_sound.play();
@@ -295,7 +255,6 @@ public class GameplayController {
             resolveEnemies(delta);
         }
 
-
         // TODO: for convenience, remove later
         if (Gdx.input.isKeyPressed(Input.Keys.PERIOD)) {
             gameState = GameState.WIN;
@@ -304,18 +263,6 @@ public class GameplayController {
         if (Gdx.input.isKeyPressed(Input.Keys.COMMA)) {
             gameState = GameState.OVER;
         }
-    }
-
-    public void turnLightAt(Board board, int x, int y, boolean b){
-        board.setLit(x, y, b);
-        board.setLit(x - 1, y, b);
-        board.setLit(x + 1, y, b);
-        board.setLit(x, y - 1, b);
-        board.setLit(x, y + 1, b);
-        board.setLit(x - 1, y - 1, b);
-        board.setLit(x + 1, y + 1, b);
-        board.setLit(x - 1, y + 1, b);
-        board.setLit(x + 1, y - 1, b);
     }
 
     /**
@@ -346,8 +293,8 @@ public class GameplayController {
         updateAmbientLight(delta);
         if (ambientLightTransitionTimer >= container.getSettings().getTransition()) {
             phase = Phase.ALLOCATE;
-            for (int i = 0; i < enemies.size; i++) {
-                controls.get(enemies.get(i)).setInBattle(true);
+            for (Enemy enemy : enemies) {
+                enemy.setInBattle(true);
             }
         }
     }
@@ -388,8 +335,8 @@ public class GameplayController {
                 tacticalManager.update();
             }
         }
-        for (int i = 0; i < enemies.size; i++) {
-            controls.get(enemies.get(i)).update(container, delta);
+        for (int i = 0; i < enemyControllers.size; i++) {
+            enemyControllers.get(i).update(container, delta);
         }
     }
 }

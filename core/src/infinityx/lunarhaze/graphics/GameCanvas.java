@@ -17,9 +17,6 @@ import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
-import infinityx.lunarhaze.models.LevelContainer;
-import infinityx.lunarhaze.models.entity.Enemy;
-import infinityx.lunarhaze.models.entity.Werewolf;
 
 /**
  * Primary view class for the game, abstracting the basic graphics calls.

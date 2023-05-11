@@ -244,6 +244,7 @@ public class InputController {
     public boolean didExit() {
         return exitPressed;
     }
+
     /**
      * Returns true if the next button was pressed.
      *

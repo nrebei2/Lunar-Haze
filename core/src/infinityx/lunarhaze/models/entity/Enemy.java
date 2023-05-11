@@ -1,11 +1,8 @@
 package infinityx.lunarhaze.models.entity;
 
-import com.badlogic.gdx.ai.steer.Proximity;
-import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Pool;
 import infinityx.assets.AssetDirectory;
@@ -15,14 +12,30 @@ import infinityx.lunarhaze.models.SteeringGameObject;
 import infinityx.lunarhaze.physics.ConeSource;
 import infinityx.util.Direction;
 import infinityx.util.PatrolPath;
-import infinityx.util.PatrolRegion;
 
 import java.util.Random;
 
 /**
  * Model class representing an enemy.
  */
-public class Enemy extends SteeringGameObject implements Pool.Poolable{
+public abstract class Enemy extends SteeringGameObject implements Pool.Poolable {
+
+    /**
+     * Types of enemies
+     */
+    public enum EnemyType {
+        Villager,
+        Archer;
+
+        /**
+         * Inverse of to string
+         */
+        public static EnemyType fromString(String string) {
+            if (string.equalsIgnoreCase("villager"))
+                return Villager;
+            return Archer;
+        }
+    }
 
     public enum Detection {
         /**
@@ -73,6 +86,12 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable{
      */
     private Sound alert_sound;
 
+
+    /**
+     * Whether the enemy is in battle mode
+     */
+    private boolean inBattle;
+
     /**
      * Returns the type of this object.
      * <p>
@@ -83,6 +102,11 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable{
     public ObjectType getType() {
         return ObjectType.ENEMY;
     }
+
+    /**
+     * Returns the specific enemy type of this object
+     */
+    public abstract EnemyType getEnemyType();
 
     public ConeSource getFlashlight() {
         return flashlight;
@@ -99,6 +123,7 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable{
     public Enemy() {
         super(false);
         detection = Detection.NONE;
+        inBattle = false;
 
         // TODO
 //        setMaxLinearAcceleration(0.61f);
@@ -118,6 +143,14 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable{
         detection = Detection.NONE;
         tint.set(Color.WHITE);
         setScale(1);
+    }
+
+    public void setInBattle(boolean inBattle) {
+        this.inBattle = inBattle;
+    }
+
+    public boolean isInBattle() {
+        return inBattle;
     }
 
     /**
@@ -146,7 +179,6 @@ public class Enemy extends SteeringGameObject implements Pool.Poolable{
         if (body == null) activatePhysics(container.getWorld());
         setFlashlight(flashLight);
         setFlashlightOn(true);
-        updateStrafeDistance();
     }
 
     public void updateStrafeDistance() {

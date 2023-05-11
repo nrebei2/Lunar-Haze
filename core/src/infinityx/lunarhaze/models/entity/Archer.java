@@ -1,32 +1,13 @@
 package infinityx.lunarhaze.models.entity;
 
 import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.Pool;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.models.LevelContainer;
 
 /**
- * Model class representing an enemy.
+ * Model class representing an enemy archer.
  */
-public class Archer extends Enemy implements Pool.Poolable {
-    public enum Detection {
-        /**
-         * The enemy is alerted (Exclamation point!)
-         */
-        ALERT,
-        /**
-         * The enemy has noticed sometime amiss (Question mark?)
-         */
-        NOTICED,
-        /**
-         * The enemy indicator is increasing
-         */
-        INDICATOR,
-        /**
-         * Neither heard nor seen anything
-         */
-        NONE
-    }
+public class Archer extends Enemy {
 
     /**
      * Arrow the archer holds
@@ -34,16 +15,9 @@ public class Archer extends Enemy implements Pool.Poolable {
     private Arrow arrow;
 
     /**
-     * Distance (number of tiles) at which archer's arrow can hit player
+     * At what distance to attack from
      */
-    private int shoot_dist;
-
-    /**
-     * Set shoot distance for the archer type
-     */
-    public void setShootDist(int shoot_dist) {
-        this.shoot_dist = shoot_dist;
-    }
+    private float attackRange;
 
     /**
      * Parse and initialize specific enemy  attributes.
@@ -54,24 +28,22 @@ public class Archer extends Enemy implements Pool.Poolable {
     public void initialize(AssetDirectory directory, JsonValue json, LevelContainer container) {
         super.initialize(directory, json, container);
 
-        // TODO: initialize shoot_dist from JSON
-        // TODO: reinitialize hp, attack damage knockback
-        // FIXME FIXME FIXME FIXME
-        JsonValue archerJson = json.get("archer");
-        JsonValue attack = archerJson.get("attack");
-        maxHp = archerJson.getFloat("hp");
-        setShootDist(attack.getInt("shootdist"));
+        arrow = new Arrow(this);
+        arrow.initialize(directory, json.get("arrow"), container);
     }
 
-    /**
-     * Returns the type of this object.
-     * <p>
-     * We use this instead of runtime-typing for performance reasons.
-     *
-     * @return the type of this object.
-     */
-    public ObjectType getType() {
-        return ObjectType.ARCHER;
+    @Override
+    public float getAttackRange() {
+        return attackRange;
+    }
+
+    @Override
+    public void setAttackRange(float attackRange) {
+        this.attackRange = attackRange;
+    }
+
+    public EnemyType getEnemyType() {
+        return EnemyType.Archer;
     }
 
     /**
