@@ -1225,7 +1225,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     @Override
     public void hide() {
         // Reset zoom
-        canvas.setZoom(1);
+        canvas.resize();
         music.stop();
     }
 

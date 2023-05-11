@@ -104,7 +104,6 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
      */
     private Texture victory;
 
-
     /**
      * Lobby and pause background music
      */
@@ -175,7 +174,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
     /**
      * dustPool[p] holds the dust pool at tile p. Tile p should have collectable moonlight on it.
      */
-    private Dust[] dustList;
+    private Dust[][] dustList;
 
     /**
      * How many dust particles can be on a tile at once
@@ -188,18 +187,6 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
         // Create the controllers:
         inputController = InputController.getInstance();
         gameplayController = new GameplayController(setting);
-
-        dustList = new Dust[100];
-        for (int i = 0; i < 100; i++) {
-            Dust dust = new Dust();
-            dust.reset();
-            dust.setX(MathUtils.random(0, Gdx.graphics.getWidth()));
-            dust.setY(MathUtils.random(0, Gdx.graphics.getHeight()));
-            dust.setZ(Interpolation.pow3In.apply(MathUtils.random()));
-            dustList[i] = dust;
-
-        }
-
 
         }
 
@@ -236,19 +223,6 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
     public void gatherAssets(AssetDirectory directory) {
         this.directory = directory;
         dustInfo = directory.getEntry("dust", JsonValue.class);
-        JsonValue texInfo = dustInfo.get("texture");
-        JsonValue fade = dustInfo.get("fade-time");
-        JsonValue rps = dustInfo.get("rps");
-        JsonValue spd = dustInfo.get("speed");
-        JsonValue scl = dustInfo.get("scale");
-        for (Dust dust : dustList){
-            dust.setTexture(directory.getEntry(texInfo.getString("name"), Texture.class));
-            dust.setTextureScale(texInfo.getFloat("scale"));
-            dust.setFadeRange(fade.getFloat(0), fade.getFloat(1));
-            dust.setRPS(MathUtils.random(rps.getFloat(0), rps.getFloat(1)));
-            dust.setVelocity(MathUtils.random() * MathUtils.PI2, MathUtils.random(spd.getFloat(0), spd.getFloat(1)));
-            dust.setScale(MathUtils.random(scl.getFloat(0), scl.getFloat(1)));
-        }
         levelFormat = directory.getEntry("levels", JsonValue.class);
         displayFont = directory.getEntry("retro", BitmapFont.class);
         UIFont_large = directory.getEntry("libre-large", BitmapFont.class);
@@ -372,8 +346,10 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
                 } else {
                     play(delta);
                 }
-                for (Dust dust : dustList) {
-                    dust.update(delta);
+                for (int i =0; i<20; i++) {
+                    for (int j =0; j<20; j++) {
+                        dustList[i][j].update(delta);
+                    }
                 }
                 break;
             case PLAY:
@@ -438,7 +414,12 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
                 displayFont.setColor(Color.YELLOW);
                 canvas.beginUI(GameCanvas.DrawPass.SPRITE);
                 canvas.drawOverlay(filter, Color.WHITE, true);
-                canvas.draw(victory, canvas.getWidth()/2 - victory.getWidth()/2, canvas.getHeight()/2 - victory.getHeight()/2);
+                for (int i =0; i<20; i++) {
+                    for (int j =0; j < 20; j++)
+                        dustList[i][j].draw(canvas);
+                }
+                canvas.draw(victory, Color.WHITE, victory.getWidth()/2, victory.getHeight()/2, canvas.getWidth()/2,
+                        canvas.getHeight()/2.5f, 0, 1.5f, 1.5f);
                 canvas.end();
                 break;
             case OVER:
@@ -452,9 +433,6 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
                 Phase phase = gameplayController.getPhase();
                 uiRender.drawUI(canvas, levelContainer, phase, gameplayController, delta);
                 canvas.beginUI(GameCanvas.DrawPass.SPRITE);
-                for (Dust dust : dustList) {
-                    dust.draw(canvas);
-                }
                 Color tintPlay = (pressPauseState == 1 ? color : Color.WHITE);
                 canvas.draw(pauseButton, tintPlay, pauseButton.getWidth() / 2, pauseButton.getHeight() / 2,
                         centerXPause, centerYPause, 0, PAUSE_BUTTON_SIZE / pauseButton.getWidth(),
@@ -470,6 +448,30 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
     public void show() {
         pressPauseState = 0;
         Gdx.input.setInputProcessor(this);
+        dustList = new Dust[20][20];
+        for (int i = 0; i < 20; i++) {
+            for (int j = 0; j <20; j++) {
+                Dust dust = new Dust();
+                dust.reset();
+                dustInfo = directory.getEntry("dust", JsonValue.class);
+                JsonValue texInfo = dustInfo.get("texture");
+                JsonValue fade = dustInfo.get("fade-time");
+                JsonValue rps = dustInfo.get("rps");
+                JsonValue spd = dustInfo.get("speed");
+                JsonValue scl = dustInfo.get("scale");
+                dust.setX((float) Math.random()* 15f);
+                dust.setY((float) Math.random()* 15f);
+                dust.setZ(Interpolation.pow3In.apply(MathUtils.random()));
+                dust.setTexture(directory.getEntry(texInfo.getString("name"), Texture.class));
+                dust.setTextureScale(texInfo.getFloat("scale"));
+                dust.setFadeRange(fade.getFloat(0), fade.getFloat(1));
+                dust.setRPS(MathUtils.random(rps.getFloat(0), rps.getFloat(1)));
+                dust.setVelocity(MathUtils.random() * MathUtils.PI2,
+                        MathUtils.random(spd.getFloat(0), spd.getFloat(1)));
+                dust.setScale(MathUtils.random(scl.getFloat(0), scl.getFloat(1)));
+                dustList[i][j] = dust;
+            }
+        }
     }
 
     /**
