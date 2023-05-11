@@ -13,28 +13,28 @@ public class InputController {
     /**
      * Input key for moving up
      */
-    private static final int UP = Input.Keys.W;
+    private static final int UP = Input.Keys.UP;
     /**
      * Input key for moving down
      */
-    private static final int DOWN = Input.Keys.S;
+    private static final int DOWN = Input.Keys.DOWN;
     /**
      * Input key for moving left
      */
-    private static final int LEFT = Input.Keys.A;
+    private static final int LEFT = Input.Keys.LEFT;
     /**
      * Input key for moving right
      */
-    private static final int RIGHT = Input.Keys.D;
+    private static final int RIGHT = Input.Keys.RIGHT;
     /**
      * Input key for attacking
      */
-    private static final int ATTACK = Input.Keys.SPACE;
+    private static final int ATTACK = Input.Keys.Z;
 
     /**
      * Input key for heavy attacking
      */
-    private static final int HEAVY_ATTACK = Input.Keys.H;
+    private static final int HEAVY_ATTACK = Input.Keys.X;
 
     /**
      * Input key for collecting resource
