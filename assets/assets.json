@@ -648,11 +648,22 @@
         }
       }
     },
-    "archer.idle-f": "images/placeholder.png",
-    "archer.idle-b": "images/placeholder.png",
-    "archer.idle-l": "images/placeholder.png",
-    "archer.idle-r": "images/placeholder.png"
-},
+    "archer.idle-f": "images/archer/Archer_Idle_Down.png",
+    "archer.idle-b": "images/archer/Archer_Idle_Up.png",
+    "archer.idle-l": "images/archer/Archer_Idle_Down.png",
+    "archer.idle-r": "images/archer/Archer_Idle_Up.png",
+    "archer":{
+      "file": 	"images/archer/arrow.png",
+      "wrap":  	false,
+      "sprites":	{
+        "arrow" : {
+          "size" : 4,
+          "rows" : 1,
+          "cols" : 4
+        }
+      }
+    }
+  },
   "shaders": {
     "meter": {
       "vert": "shaders/meter.vert",

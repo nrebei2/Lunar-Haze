@@ -161,6 +161,32 @@
       "immunity": 0.5,
       "lockout": 0.8,
       "shootdist": 4
+    },
+    "arrow": {
+      "bodytype": "dynamic",
+      "density": 1.0,
+      "friction": 0.0,
+      "restitution": 0.2,
+      "damping": 0.0,
+      "textures": {
+        "body": {
+          "name" : "archer.arrow",
+          "durations" : [0.2, 0.3, 0.2, 0.1]
+        }
+      },
+      "texture": {
+        "name": "body",
+        "origin": [700, 1342],
+        "scale": 0.3
+      },
+      "colliders": {
+        "body": {
+          "type": "box",
+          "width": 0.5,
+          "height": 0.1
+        }
+      },
+      "bullet": true
     }
   }
 }

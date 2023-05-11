@@ -167,7 +167,9 @@ public abstract class AttackingGameObject extends GameObject {
     /**
      * Set whether the entity is currently attacking
      */
-    abstract public void setAttacking(boolean value);
+    public void setAttacking(boolean value) {
+        isAttacking = value;
+    }
 
     public boolean isAttacking() {
         return isAttacking;

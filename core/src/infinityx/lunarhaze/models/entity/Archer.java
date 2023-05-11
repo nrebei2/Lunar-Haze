@@ -6,14 +6,16 @@ import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.models.LevelContainer;
 
 /**
- * Model class representing an enemy.
+ * Model class representing an enemy archer.
  */
-public class Archer extends Enemy implements Pool.Poolable {
+public class Archer extends Enemy {
 
     /**
      * Arrow the archer holds
      */
     private Arrow arrow;
+
+    private float attackRange;
 
     /**
      * Parse and initialize specific enemy  attributes.
@@ -24,34 +26,19 @@ public class Archer extends Enemy implements Pool.Poolable {
     public void initialize(AssetDirectory directory, JsonValue json, LevelContainer container) {
         super.initialize(directory, json, container);
 
-        // TODO: initialize shoot_dist from JSON
-        // TODO: reinitialize hp, attack damage knockback
-        // FIXME FIXME FIXME FIXME
-//        JsonValue archerJson = json.get("archer");
-//        JsonValue attack = archerJson.get("attack");
-//        maxHp = archerJson.getFloat("hp");
-//        setShootDist(attack.getInt("shootdist"));
+        arrow = new Arrow();
+        arrow.initialize(directory, json.get("arrow"), container);
     }
 
     @Override
     public float getAttackRange() {
-        return 0;
+        return attackRange;
     }
 
     @Override
     public void setAttackRange(float attackRange) {
-
+        this.attackRange = attackRange;
     }
-
-    @Override
-    public void setAttacking(boolean value) {
-
-    }
-
-//    @Override
-//    public void updateAttack(float delta) {
-//
-//    }
 
     public EnemyType getEnemyType() {
         return EnemyType.Archer;
