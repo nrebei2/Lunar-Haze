@@ -30,6 +30,8 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
 
     public boolean isOnMoonlight;
 
+    public boolean isOnLamp;
+
     /**
      * Number of moonlight tiles collected
      **/
@@ -155,6 +157,7 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
         isWindingUp = false;
         heavyLockoutTime = 0.4f; // this can be changed later
         direction = Direction.RIGHT;
+        isOnLamp = false;
     }
 
     public void switchToWolf(AssetDirectory directory, JsonValue json, LevelContainer container){
@@ -207,7 +210,7 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
      * @return The radius of the werewolf's noise in world length
      */
     public float getNoiseRadius() {
-        return Interpolation.linear.apply(0, 4.0f, inTallGrass != null ? 0 : stealth);
+        return Interpolation.linear.apply(0, 3.7f, inTallGrass != null ? 0 : stealth);
     }
 
     /**

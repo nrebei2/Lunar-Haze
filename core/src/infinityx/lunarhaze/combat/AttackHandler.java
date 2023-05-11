@@ -38,7 +38,7 @@ public abstract class AttackHandler {
      * @return whether a new attack can be started
      */
     public boolean canStartNewAttack() {
-        return attackCooldownCounter >= entity.attackCooldown;
+        return attackCooldownCounter >= entity.attackCooldown && !entity.isLockedOut();
     }
 
 

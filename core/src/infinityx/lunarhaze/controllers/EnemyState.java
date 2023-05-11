@@ -88,7 +88,7 @@ public enum EnemyState implements State<EnemyController> {
             entity.getEnemy().setIndicatorAmount(0);
 
             entity.updatePath();
-            entity.getEnemy().setSteeringBehavior(entity.followPathSB);
+            entity.getEnemy().setSteeringBehavior(entity.followPathAvoid);
         }
 
         @Override
@@ -179,7 +179,7 @@ public enum EnemyState implements State<EnemyController> {
 
             entity.targetPos.set(entity.getTarget().getPosition());
             entity.updatePath();
-            entity.getEnemy().setSteeringBehavior(entity.followPathSB);
+            entity.getEnemy().setSteeringBehavior(entity.followPathAvoid);
             if (!(entity.getStateMachine().getPreviousState() == ATTACK)
                     && entity.isInBattle()) {
                 MessageManager.getInstance().dispatchMessage(TacticalManager.ADD, entity);
@@ -209,7 +209,7 @@ public enum EnemyState implements State<EnemyController> {
                 }
                 entity.getEnemy().setIndependentFacing(false);
                 entity.targetPos.set(entity.getTarget().getPosition());
-                entity.getEnemy().setSteeringBehavior(entity.followPathSB);
+                entity.getEnemy().setSteeringBehavior(entity.followPathAvoid);
                 // Update path every 0.1 seconds
                 if (entity.time >= 0.1) {
                     entity.updatePath();
@@ -224,9 +224,9 @@ public enum EnemyState implements State<EnemyController> {
                 entity.pathCollision.findCollision(entity.collCache, entity.rayCache);
                 // use Astar to target if there is obstacle in the way or farther than straafe distance from target
                 if (entity.raycast.hit || enemyToTarget > entity.getEnemy().getStrafeDistance()) {
-//                    entity.getEnemy().setMaxLinearSpeed(1.11f);
+                    entity.getEnemy().setMaxLinearSpeed(1.11f);
                     entity.targetPos.set(entity.getTarget().getPosition());
-                    entity.getEnemy().setSteeringBehavior(entity.followPathSB);
+                    entity.getEnemy().setSteeringBehavior(entity.followPathAvoid);
                     // Update path every 0.1 seconds
                     if (entity.time >= 0.1) {
                         entity.updatePath();
@@ -277,7 +277,7 @@ public enum EnemyState implements State<EnemyController> {
             Vector2 patrol = entity.getPatrolTarget();
             entity.targetPos.set(patrol);
             entity.updatePath();
-            entity.getEnemy().setSteeringBehavior(entity.followPathSB);
+            entity.getEnemy().setSteeringBehavior(entity.followPathAvoid);
             entity.getEnemy().setDetection(Enemy.Detection.NONE);
         }
 

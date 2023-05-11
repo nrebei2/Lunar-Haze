@@ -13,28 +13,28 @@ public class InputController {
     /**
      * Input key for moving up
      */
-    private static final int UP = Input.Keys.W;
+    private static final int UP = Input.Keys.UP;
     /**
      * Input key for moving down
      */
-    private static final int DOWN = Input.Keys.S;
+    private static final int DOWN = Input.Keys.DOWN;
     /**
      * Input key for moving left
      */
-    private static final int LEFT = Input.Keys.A;
+    private static final int LEFT = Input.Keys.LEFT;
     /**
      * Input key for moving right
      */
-    private static final int RIGHT = Input.Keys.D;
+    private static final int RIGHT = Input.Keys.RIGHT;
     /**
      * Input key for attacking
      */
-    private static final int ATTACK = Input.Keys.SPACE;
+    private static final int ATTACK = Input.Keys.Z;
 
     /**
      * Input key for heavy attacking
      */
-    private static final int HEAVY_ATTACK = Input.Keys.H;
+    private static final int HEAVY_ATTACK = Input.Keys.X;
 
     /**
      * Input key for collecting resource
@@ -45,9 +45,9 @@ public class InputController {
      */
     private static final int USE = Input.Keys.F;
     /**
-     * Input key for running
+     * Input key for dashing
      */
-    private static final int RUN = Input.Keys.SHIFT_LEFT;
+    private static final int DASH = Input.Keys.SHIFT_LEFT;
     /**
      * Input key for resetting the current level
      */
@@ -108,9 +108,9 @@ public class InputController {
     private boolean usePressed;
 
     /**
-     * Whether the run button was pressed.
+     * Whether the dash button was pressed.
      */
-    private boolean runPressed;
+    private boolean dashPressed;
 
     /**
      * Whether the reset button was pressed.
@@ -223,8 +223,8 @@ public class InputController {
      *
      * @return true if the run button was pressed.
      */
-    public boolean didRun() {
-        return runPressed;
+    public boolean didDash() {
+        return dashPressed;
     }
 
     /**
@@ -284,7 +284,7 @@ public class InputController {
         heavyAttackPressed = Gdx.input.isKeyJustPressed(HEAVY_ATTACK);
         collectPressed = Gdx.input.isKeyPressed(COLLECT);
         usePressed = Gdx.input.isKeyPressed(USE);
-        runPressed = Gdx.input.isKeyPressed(RUN);
+        dashPressed = Gdx.input.isKeyPressed(DASH);
         resetPressed = Gdx.input.isKeyPressed(RESET);
         exitPressed = Gdx.input.isKeyPressed(EXIT);
         nextPressed = Gdx.input.isKeyPressed(NEXT);
