@@ -103,7 +103,6 @@ public class LevelContainer {
      */
     private Werewolf player;
 
-    private Werewolf werewolf;
     /**
      * Stores Board
      */
@@ -151,11 +150,6 @@ public class LevelContainer {
     private int totalMoonlight;
 
     /**
-     * the length of a stealth cycle
-     */
-    private float phaseLength;
-
-    /**
      * Settings for this level
      */
     private Settings battleSettings;
@@ -179,9 +173,8 @@ public class LevelContainer {
 
     private boolean debugPressed;
 
-    private Array<Vector2> lampPos;
-
-    private HashMap<Vector2, Lamp> lamps;
+    /** Lights attached to lamp scene objects */
+    private Array<PointLight> lampLights;
 
     /**
      * Initialize attributes
@@ -193,7 +186,7 @@ public class LevelContainer {
 
         drawables = new Array<>();
         backing = new Array<>();
-        lamps = new HashMap<>();
+        lampLights = new Array<>();
 
         // There will always be a player
         // So it's fine to initialize now
@@ -251,13 +244,6 @@ public class LevelContainer {
      */
     public Array<Enemy> getEnemies() {
         return activeEnemies;
-    }
-
-    /**
-     * @return Remaining number of enemies.
-     */
-    public int getEnemySize() {
-        return activeEnemies.size;
     }
 
     /**
@@ -506,7 +492,7 @@ public class LevelContainer {
      * @param x       world x-position
      * @param y       world y-position
      * @param scale   scale of object
-     * @param flipped {@link SceneObject#isFlipped()}
+     * @param flipped sets {@link SceneObject#isFlipped()}
      * @return scene object added
      */
     public SceneObject addSceneObject(String type, float x, float y, float scale, boolean flipped) {
@@ -519,32 +505,18 @@ public class LevelContainer {
         object.setName(type);
         object.setFlipped(flipped);
 
-        if (Objects.equals(type, "lamp")) {
-
-            Vector2 pos = new Vector2(board.worldToBoardX(x), board.worldToBoardY(y));
-            PointLight light = new PointLight(rayHandler, 20, new Color(1, 1, 0.8f, 0.7f), 6, x, y);
+        if (type.equalsIgnoreCase("lamp")) {
+            PointLight light = new PointLight(rayHandler, 20, new Color(1, 1, 0.8f, 0.7f), 5, x, y);
             light.setActive(true);
 
-            // HashMap stores positions of each lamp as well as the pointlight at each lamp
-            lamps.put(pos, new Lamp(light));
-
+            lampLights.add(light);
         }
 
         return addSceneObject(object);
     }
 
-    public HashMap<Vector2, Lamp> getLamps() {
-        return lamps;
-    }
-
-    public boolean isOn(Vector2 pos) {
-        return lamps.get(pos).isOn();
-    }
-
-    public void toggleLamps() {
-        for (Map.Entry<Vector2, Lamp> entry : lamps.entrySet()) {
-            entry.getValue().toggle();
-        }
+    public Array<PointLight> getLampLights() {
+        return lampLights;
     }
 
     public Array<SceneObject> getSceneObjects() {
@@ -593,9 +565,8 @@ public class LevelContainer {
             translateView(CameraShake.getShakeOffset().x, CameraShake.getShakeOffset().y);
         }
 
+        // Render order: Board tiles -> (players, enemies, scene objects) sorted by depth (y coordinate) -> Lights
         canvas.begin(GameCanvas.DrawPass.SPRITE, view.x, view.y);
-
-        // Render order: Board tiles -> (players, enemies, scene objects) sorted by depth (y coordinate)
         board.draw(canvas);
 
         // Uses timsort, so O(n) if already sorted, which is nice since it usually will be
@@ -634,7 +605,6 @@ public class LevelContainer {
             }
             canvas.end();
         }
-
     }
 
     /**
@@ -655,6 +625,7 @@ public class LevelContainer {
         backing.clear();
     }
 
+    // used in pathfinder obstacle callback
     private boolean scene;
 
     /**
@@ -699,28 +670,5 @@ class DrawableCompare implements Comparator<Drawable> {
     @Override
     public int compare(Drawable d1, Drawable d2) {
         return (int) Math.signum(d2.getDepth() - d1.getDepth());
-    }
-}
-
-/**
- * Lamp class for turning PointLights on and off
- */
-class Lamp {
-    PointLight light;
-    boolean on;
-
-    Lamp(PointLight light) {
-        this.light = light;
-        on = true;
-    }
-
-    void toggle() {
-        System.out.println("Toggled");
-        on = !on;
-        light.setActive(on);
-    }
-
-    boolean isOn() {
-        return on;
     }
 }

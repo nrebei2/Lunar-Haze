@@ -1,8 +1,10 @@
 package infinityx.lunarhaze.controllers;
 
+import box2dLight.PointLight;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.lunarhaze.models.Board;
@@ -22,6 +24,9 @@ public class LightingController {
      */
     private final JsonValue dustInfo;
 
+    /** Reference of lamp lights from container */
+    private final Array<PointLight> lampLights;
+
     /**
      * dustPool[p] holds the dust pool at tile p. Tile p should have collectable moonlight on it.
      */
@@ -32,6 +37,12 @@ public class LightingController {
      */
     public static final int POOL_CAPACITY = 20;
 
+    /** How long (in seconds) each lamp light is turned on or off */
+    private static final float FLASH_INTERVAL = 4.0f;
+
+    /** For use with {@link #FLASH_INTERVAL} */
+    private float flash_timer;
+
     /**
      * TODO: This is a controller class, so it should handle interactions between lights and objects
      * Maybe the light should update throughout the lifetime of the level??
@@ -40,6 +51,7 @@ public class LightingController {
      */
     public LightingController(LevelContainer container) {
         this.board = container.getBoard();
+        this.lampLights = container.getLampLights();
 
         dustInfo = container.getDirectory().getEntry("dust", JsonValue.class);
         JsonValue texInfo = dustInfo.get("texture");
@@ -70,6 +82,21 @@ public class LightingController {
                 }
             }
         }
+
+        this.flash_timer = 0;
+    }
+
+    /** Update dust and lamp lights */
+    public void update(float delta) {
+        flash_timer += delta;
+        if (flash_timer >= FLASH_INTERVAL) {
+            flash_timer = 0;
+            // Toggle active for all lamp lights
+            for (PointLight lamp: lampLights) {
+                lamp.setActive(!lamp.isActive());
+            }
+        }
+        updateDust(delta);
     }
 
     /**
@@ -143,5 +170,9 @@ public class LightingController {
             for (Dust dust : pool) dust.setDestroyed(true);
         }
         dustPools = null;
+    }
+
+    public Array<PointLight> getLampLights() {
+        return lampLights;
     }
 }

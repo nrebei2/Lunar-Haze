@@ -1,9 +1,11 @@
 package infinityx.lunarhaze.controllers;
 
+import box2dLight.PointLight;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.fsm.StateMachine;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.combat.PlayerAttackHandler;
 import infinityx.lunarhaze.controllers.GameplayController.Phase;
 import infinityx.lunarhaze.models.Board;
@@ -269,17 +271,23 @@ public class PlayerController {
      * @param lightingController lighting controller to update moonlight particles
      */
     public void resolveMoonlight(float delta, LightingController lightingController) {
+        boolean isOn = false;
+
+        // Check if player is within range of a lamp
+        for (PointLight light : lightingController.getLampLights()) {
+            if (!light.isActive()) continue;
+            if (player.getPosition().dst(light.getPosition()) <= (light.getDistance() / 2.5f)) {
+                isOn = true;
+            }
+        }
+
         int px = board.worldToBoardX(player.getPosition().x);
         int py = board.worldToBoardY(player.getPosition().y);
-
         if (board.isLit(px, py)) {
             timeOnMoonlight += delta; // Increase variable by time
             collectingMoonlight = true;
-            //Fixme move collecting field moonlight to enemy
-            if (player.isOnMoonlight == false) {
-                player.setTargetStealth(player.getTargetStealth() + MOON_STEALTH);
-            }
-            player.isOnMoonlight = true;
+            isOn = true;
+
             if (board.isCollectable(px, py) && (timeOnMoonlight > MOONLIGHT_COLLECT_TIME)) {
                 collectMoonlight();
                 collectingMoonlight = false;
@@ -293,11 +301,16 @@ public class PlayerController {
         } else {
             timeOnMoonlight = 0;
             collectingMoonlight = false;
-            if (player.isOnMoonlight == true) {
-                player.setTargetStealth(player.getTargetStealth() - MOON_STEALTH);
-            }
-            player.isOnMoonlight = false;
         }
+
+        setOnMoonlight(isOn);
+    }
+
+    /** Set whether the player is on moonlight or not */
+    private void setOnMoonlight(boolean isOn) {
+        if (player.isOnMoonlight == isOn) return;
+        player.setTargetStealth(player.getTargetStealth() + (isOn ? 1 : -1) * MOON_STEALTH);
+        player.isOnMoonlight = isOn;
     }
 
     /**

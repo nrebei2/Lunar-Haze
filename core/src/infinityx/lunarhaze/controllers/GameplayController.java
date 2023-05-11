@@ -130,11 +130,6 @@ public class GameplayController {
 
     private GameSetting setting;
 
-    private float flash_timer;
-
-    private static final float FLASH_INTERVAL = 4.0f;
-
-
     /**
      * Creates a new GameplayController with no active elements.
      */
@@ -203,8 +198,6 @@ public class GameplayController {
         win_sound = levelContainer.getDirectory().getEntry("level-passed", Sound.class);
         fail_sound = levelContainer.getDirectory().getEntry("level-fail", Sound.class);
         tacticalManager = new TacticalManager(container);
-
-        flash_timer = 0;
     }
 
     /**
@@ -222,39 +215,12 @@ public class GameplayController {
             playerController.update(phase, lightingController);
             switch (phase) {
                 case STEALTH:
-                    lightingController.updateDust(delta);
+                    lightingController.update(delta);
                     phaseTimer -= delta;
                     if (container.getBoard().getRemainingMoonlight() == 0 || phaseTimer <= 0) {
                         phase = Phase.TRANSITION;
                         lightingController.dispose();
                         player.switchToWolf();
-                    }
-                    flash_timer += delta;
-                    if (flash_timer >= FLASH_INTERVAL) {
-                        flash_timer = 0;
-                        // Switch lamp PointLight status
-                        container.toggleLamps();
-                    }
-
-                    // Check if player is within range of a lamp
-                    for (Vector2 pos : container.getLamps().keySet()) {
-
-                        float player_x = board.worldToBoardX(player.getPosition().x);
-                        float player_y = board.worldToBoardY(player.getPosition().y);
-
-                        float lamp_x = board.worldToBoardX(pos.x);
-                        float lamp_y = board.worldToBoardY(pos.y);
-
-                        float distance = (float) Math.sqrt(Math.pow(player_x - lamp_x, 2) + Math.pow(player_y - lamp_y, 2));
-
-                        // TODO: Fix this to change player stealth
-                        if (distance <= 3 && container.isOn(pos)) {
-                            // Should probably set player to be in range of lamp in model class, should modify player's stealth
-                            System.out.println("Player is in range of lamp");
-                        } else {
-                            System.out.println("Player is out of range of lamp");
-                        }
-
                     }
                     break;
                 case BATTLE:
@@ -297,18 +263,6 @@ public class GameplayController {
         if (Gdx.input.isKeyPressed(Input.Keys.COMMA)) {
             gameState = GameState.OVER;
         }
-    }
-
-    public void turnLightAt(Board board, int x, int y, boolean b) {
-        board.setLit(x, y, b);
-        board.setLit(x - 1, y, b);
-        board.setLit(x + 1, y, b);
-        board.setLit(x, y - 1, b);
-        board.setLit(x, y + 1, b);
-        board.setLit(x - 1, y - 1, b);
-        board.setLit(x + 1, y + 1, b);
-        board.setLit(x - 1, y + 1, b);
-        board.setLit(x + 1, y - 1, b);
     }
 
     /**
