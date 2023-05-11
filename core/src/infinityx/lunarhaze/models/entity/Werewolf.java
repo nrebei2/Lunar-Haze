@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.combat.AttackHitbox;
 import infinityx.lunarhaze.controllers.InputController;
+import infinityx.lunarhaze.graphics.Animation;
 import infinityx.lunarhaze.graphics.FilmStrip;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.models.AttackingGameObject;
@@ -53,11 +54,6 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
     private PointLight spotLight;
 
     /**
-     * Whether the werewolf is in sprint
-     */
-    private boolean isRunning;
-
-    /**
      * The direction the werewolf is facing
      */
     public Direction direction;
@@ -81,6 +77,16 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
 
     public AttackHitbox attackHitbox;
 
+    /** Required information to switch to werewolf */
+    private class WerewolfInfo {
+        /** Animation frames for the werewolf */
+        public Animation werewolfAnimation;
+        public Vector2 texOrigin;
+
+        public float textureScale;
+    }
+
+    private WerewolfInfo werewolfInfo;
 
     /**
      * Returns the type of this object.
@@ -91,14 +97,6 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
      */
     public ObjectType getType() {
         return ObjectType.WEREWOLF;
-    }
-
-    public boolean isRunning() {
-        return isRunning;
-    }
-
-    public void setRunning(boolean running) {
-        isRunning = running;
     }
 
     public boolean isMoving() {
@@ -161,27 +159,16 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
         isWindingUp = false;
         heavyLockoutTime = 0.4f; // this can be changed later
         direction = Direction.RIGHT;
+        werewolfInfo = new WerewolfInfo();
     }
 
-    public void switchToWolf(AssetDirectory directory, JsonValue json, LevelContainer container) {
-        JsonValue textures = json.get("textures");
-        if (textures != null) {
-            for (JsonValue tex : textures) {
-                if (tex.isObject()) {
-                    float[] durations = tex.get("durations").asFloatArray();
-                    animation.addAnimation(tex.name(), directory.getEntry(tex.getString("name"), FilmStrip.class), durations);
-                } else {
-                    // If no durations, assume it's a single texture
-                    animation.addStaticAnimation(tex.name(), directory.getEntry(tex.asString(), Texture.class));
-                }
-            }
-
-            JsonValue texInfo = json.get("texture");
-            setTexture(texInfo.get("name").asString());
-            int[] texOrigin = texInfo.get("origin").asIntArray();
-            setOrigin(texOrigin[0], texOrigin[1]);
-            textureScale = texInfo.getFloat("scale");
-        }
+    /** Performs all necessary operations to switch from human to wolf  */
+    public void switchToWolf() {
+        this.animation = werewolfInfo.werewolfAnimation;
+        setOrigin((int)werewolfInfo.texOrigin.x, (int)werewolfInfo.texOrigin.y);
+        setTexture("idle-r");
+        textureScale = werewolfInfo.textureScale;
+        walkSpeed = 2.2f;
     }
 
     /**
@@ -222,15 +209,16 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
      * @param container LevelContainer which this player is placed in
      */
     public void initialize(AssetDirectory directory, JsonValue json, LevelContainer container) {
-        super.initialize(directory, json, container);
+        JsonValue lycan = json.get("lycan");
+        super.initialize(directory, lycan, container);
 
-        JsonValue light = json.get("spotlight");
+        JsonValue light = lycan.get("spotlight");
         float[] color = light.get("color").asFloatArray();
         float dist = light.getFloat("distance");
         int rays = light.getInt("rays");
 
 
-        JsonValue speedInfo = json.get("speed");
+        JsonValue speedInfo = lycan.get("speed");
         walkSpeed = speedInfo.getFloat("walk");
         windupSpeed = walkSpeed / 3f;
         setFixedRotation(true);
@@ -245,9 +233,29 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
         setSpotLight(spotLight);
 
         // Create the hitbox
-        JsonValue hitboxInfo = json.get("attack").get("hitbox");
+        JsonValue hitboxInfo = lycan.get("attack").get("hitbox");
         attackHitbox = new AttackHitbox(this);
         attackHitbox.initialize(directory, hitboxInfo, container);
+
+        // Create werewolf info
+        JsonValue wolf = json.get("werewolf");
+        JsonValue textures = wolf.get("textures");
+        werewolfInfo.werewolfAnimation = new Animation();
+        for (JsonValue tex : textures) {
+            if (tex.isObject()) {
+                float[] durations = tex.get("durations").asFloatArray();
+                werewolfInfo.werewolfAnimation.addAnimation(tex.name(), directory.getEntry(tex.getString("name"), FilmStrip.class), durations);
+            } else {
+                // If no durations, assume it's a single texture
+                werewolfInfo.werewolfAnimation.addStaticAnimation(tex.name(), directory.getEntry(tex.asString(), Texture.class));
+            }
+        }
+
+        JsonValue texInfo = wolf.get("texture");
+        setTexture(texInfo.get("name").asString());
+        int[] texOrigin = texInfo.get("origin").asIntArray();
+        werewolfInfo.texOrigin = new Vector2(texOrigin[0], texOrigin[1]);
+        werewolfInfo.textureScale = texInfo.getFloat("scale");
     }
 
     @Override
@@ -260,22 +268,9 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
         attackHitbox.setHitboxRange(attackRange);
     }
 
-    /**
-     * Set whether the entity is currently attacking
-     */
-    public void setAttacking(boolean value) {
-        isAttacking = value;
-    }
-
-//    @Override
-//    public void updateAttack(float delta) {
-//
-//    }
-
     public AttackHitbox getAttackHitbox() {
         return this.attackHitbox;
     }
-
 
     /**
      * Updates the animation frame and position of this werewolf.

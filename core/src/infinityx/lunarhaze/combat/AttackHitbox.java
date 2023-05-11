@@ -34,7 +34,6 @@ public class AttackHitbox extends GameObject {
 
         // Important! So that rotation rotates around attacker
         setPosition(attacker.getPosition());
-
     }
 
 
@@ -110,8 +109,9 @@ public class AttackHitbox extends GameObject {
             return;
         }
         // Add 90 degrees since sprite is facing down
+        // Fake height
         canvas.draw(filmstrip, tint, origin.x, origin.y,
-                canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y), getAngle() + MathUtils.PI / 2,
+                canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y + 0.5f), getAngle() + MathUtils.PI / 2,
                 textureScale * scale, textureScale * scale);
     }
 

@@ -1,33 +1,5 @@
 {
   "werewolf": {
-    "colliders": {
-      "body": {
-        "type": "circle",
-        "radius": 0.25
-      }
-    },
-    "spotlight": {
-      "color": [
-        0.65,
-        0.6,
-        0.77,
-        0.6
-      ],
-      "distance": 1,
-      "rays": 20,
-      "soft": false
-    },
-    "lockout": 0.5,
-    "bodytype": "dynamic",
-    "density": 1.0,
-    "friction": 0.0,
-    "restitution": 0.0,
-    "damping": 6.0,
-    "bullet": true,
-    "speed": {
-      "walk": 2.2,
-      "run": 2
-    },
     "textures": {
       "attack1-l": {
         "name": "werewolf.attack1-l",
@@ -187,39 +159,6 @@
         150
       ],
       "scale": 0.4
-    },
-    "health": 5,
-    "attack": {
-      "knockback": 2,
-      "damage": 1.0,
-      "cooldown": 1,
-      "length": 0.5,
-      "immunity": 0.5,
-      "lockout": 0.5,
-      "hitbox": {
-        "range": 1.6,
-        "width": 1.5,
-        "textures": {
-          "hitbox": {
-            "name": "werewolf.attack-effect",
-            "durations": [
-              0.12,
-              0.12,
-              0.12
-            ]
-          }
-        },
-        "texture": {
-          "name": "hitbox",
-          "origin": [
-            280,
-            440
-          ],
-          "scale": 0.5
-        },
-        "bullet": true,
-        "sensor": true
-      }
     }
   },
 
@@ -330,7 +269,7 @@
           "name": "hitbox",
           "origin": [
             280,
-            440
+            420
           ],
           "scale": 0.5
         },

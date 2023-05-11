@@ -227,6 +227,7 @@ public class GameplayController {
                     if (container.getBoard().getRemainingMoonlight() == 0 || phaseTimer <= 0) {
                         phase = Phase.TRANSITION;
                         lightingController.dispose();
+                        player.switchToWolf();
                     }
                     flash_timer += delta;
                     if (flash_timer >= FLASH_INTERVAL) {
@@ -267,8 +268,6 @@ public class GameplayController {
                     break;
                 case TRANSITION:
                     switchPhase(delta);
-                    player.animation.clearFrames();
-                    container.switchWolf();
                     container.setEnemyDamage(0.5f);
                     break;
                 case ALLOCATE:

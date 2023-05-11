@@ -198,7 +198,7 @@ public class LevelContainer {
         // There will always be a player
         // So it's fine to initialize now
         Werewolf player = new Werewolf();
-        player.initialize(directory, playerJson.get("lycan"), this);
+        player.initialize(directory, playerJson, this);
         setPlayer(player);
 
         board = null;
@@ -228,12 +228,6 @@ public class LevelContainer {
         this.playerJson = playerJson;
         this.directory = directory;
         initialize();
-    }
-
-    public void switchWolf() {
-
-        player.switchToWolf(directory, playerJson.get("werewolf"), this);
-        player.walkSpeed = 2.2f;
     }
 
 

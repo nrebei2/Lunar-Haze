@@ -15,6 +15,7 @@ public class Archer extends Enemy {
      */
     private Arrow arrow;
 
+    /** At what distance to attack from */
     private float attackRange;
 
     /**
@@ -26,7 +27,7 @@ public class Archer extends Enemy {
     public void initialize(AssetDirectory directory, JsonValue json, LevelContainer container) {
         super.initialize(directory, json, container);
 
-        arrow = new Arrow();
+        arrow = new Arrow(this);
         arrow.initialize(directory, json.get("arrow"), container);
     }
 
