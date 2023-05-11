@@ -239,6 +239,7 @@ public class GameplayController {
                         container.toggleLamps();
                     }
 
+                    player.isOnLamp = false;
                     // Check if player is within range of a lamp
                     for (Vector2 pos : container.getLamps().keySet()) {
 
@@ -251,14 +252,13 @@ public class GameplayController {
                         float distance = (float) Math.sqrt(Math.pow(player_x - lamp_x, 2) + Math.pow(player_y - lamp_y, 2));
 
                         // TODO: Fix this to change player stealth
-                        if (distance <= 3 && container.isOn(pos)) {
+                        if (distance <= 2 && container.isOn(pos)) {
                             // Should probably set player to be in range of lamp in model class, should modify player's stealth
-                            System.out.println("Player is in range of lamp");
-                        } else {
-                            System.out.println("Player is out of range of lamp");
+                            player.isOnLamp = true;
+                            break;
                         }
-
                     }
+                    //System.out.println("player is on lamp: " + player.isOnLamp);
                     break;
                 case BATTLE:
                     battleTicks += 1;

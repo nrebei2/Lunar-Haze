@@ -513,7 +513,7 @@ public class LevelContainer {
         if (Objects.equals(type, "lamp")){
 
             Vector2 pos = new Vector2(board.worldToBoardX(x), board.worldToBoardY(y));
-            PointLight light = new PointLight(rayHandler, 20, new Color(1, 1, 0.8f, 0.7f), 6, x, y);
+            PointLight light = new PointLight(rayHandler, 20, new Color(1, 1, 0.8f, 0.7f), 4, x, y);
             light.setActive(true);
 
             // HashMap stores positions of each lamp as well as the pointlight at each lamp
