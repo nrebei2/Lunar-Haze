@@ -2,13 +2,10 @@
 ## Game Control Lists:
 | Action                              | Key |
 |-------------------------------------| ---- | 
-| (From Main Menu) Go to Level Editor |       L |
-| Move Up                             |              W |
-| Move Down                           |       S |
-| Move Left                           |        A |
-| Move Right                          |         D |
-| Dash                                |          Left_Shift |
-| Attack                              |           Space |
+| Move                             |        Arrow Keys       |
+| Dash                                |          Left Shift |
+| Light Attack                              |           Z |
+| Heavy Attack                              |           X |
 | Pause                               |            ESC |
 
 ## Rules for the game:
