@@ -92,15 +92,16 @@ public class PlayerAttackHandler extends AttackHandler {
         }
 
         // Dash logic
+        float dashCooldown = (phase == GameplayController.Phase.BATTLE ? DASH_COOLDOWN : DASH_COOLDOWN * 2);
 
         if (isDashing) {
             processDash(dashDirection);
         }
-        if (dashCooldownCounter < (phase == GameplayController.Phase.BATTLE ? DASH_COOLDOWN : DASH_COOLDOWN * 2)) {
+        if (dashCooldownCounter < dashCooldown) {
             dashCooldownCounter += delta;
         }
         // Initiate dash based on input
-        if (InputController.getInstance().didRun() && !player.isAttacking() && dashCooldownCounter >= DASH_COOLDOWN) {
+        if (InputController.getInstance().didDash() && !player.isAttacking() && dashCooldownCounter >= dashCooldown) {
             initiateDash(InputController.getInstance());
         }
 
@@ -108,7 +109,7 @@ public class PlayerAttackHandler extends AttackHandler {
 
     public void initiateAttack() {
         // movement component
-        entity.getBody().applyLinearImpulse(entity.getLinearVelocity().nor(), entity.getBody().getWorldCenter(), true);
+//        entity.getBody().applyLinearImpulse(entity.getLinearVelocity().nor(), entity.getBody().getWorldCenter(), true);
         super.initiateAttack();
     }
 

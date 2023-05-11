@@ -210,7 +210,7 @@ public class PlayerController {
         player.update(delta);
 
         if (setting.isMusicEnabled()) {
-            if (player.isMoving() && inputController.didRun()) {
+            if (player.isMoving() && inputController.didDash()) {
                 dash_sound.play();
             } else if (getStateMachine().isInState(PlayerState.WALK) && !isWalkGrassPlaying) {
                 long soundId = walk_sound.loop();
