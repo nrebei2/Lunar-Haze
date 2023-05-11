@@ -20,7 +20,7 @@ import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.entity.Enemy;
 import infinityx.lunarhaze.models.entity.Werewolf;
 
-import static infinityx.lunarhaze.combat.PlayerAttackHandler.DASH_COOLDOWN;
+import static infinityx.lunarhaze.combat.PlayerAttackHandler.*;
 
 /**
  * This is a class used for drawing player and enemies' game UI state: HP, Stealth, MoonLight
@@ -541,7 +541,14 @@ public class UIRender {
     public void drawDashCooldown(GameCanvas canvas, GameplayController gc) {
         canvas.draw(dash_icon, alphaTint, BAR_HEIGHT * 2, canvas.getHeight() / 2, ICON_SIZE, ICON_SIZE);
         PlayerAttackHandler pah = gc.getPlayerController().getAttackHandler();
-        float percentage = pah.getDashCooldownCounter() / DASH_COOLDOWN;
+        float percentage;
+        if (gc.phase == Phase.STEALTH){
+            percentage = pah.getDashCooldownCounter() /DASH_COOLDOWN_STEALTH ;
+        }
+        else{
+            percentage = pah.getDashCooldownCounter() /DASH_COOLDOWN_BATTLE ;
+        }
+
         float height = DASH_ICON_SIZE / dash_bar.getWidth() * dash_bar.getHeight();
 
         if (percentage > 0.99) {

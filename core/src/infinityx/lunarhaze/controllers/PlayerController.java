@@ -338,7 +338,7 @@ public class PlayerController {
      */
     public void allocateDashCooldown() {
         player.reduceMoonlightCollected();
-        attackHandler.DASH_COOLDOWN = attackHandler.DASH_COOLDOWN - attackHandler.DASH_REDUCE_AMOUNT;
+        attackHandler.DASH_COOLDOWN_BATTLE = attackHandler.DASH_COOLDOWN_BATTLE - attackHandler.DASH_REDUCE_AMOUNT;
     }
 
     /**

@@ -195,7 +195,7 @@
       "cooldown": 0.08,
       "length": 0.3,
       "immunity": 0.3,
-      "lockout": 0.05,
+      "lockout": 0.5,
       "hitbox": {
         "range": 1.6,
         "width": 1.5,
@@ -312,7 +312,7 @@
       "cooldown": 0.08,
       "length": 0.3,
       "immunity": 0.3,
-      "lockout": 0.05,
+      "lockout": 0.5,
       "hitbox": {
         "range": 1.6,
         "width": 1.5,

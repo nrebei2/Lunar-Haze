@@ -254,6 +254,7 @@ public class GameplayController {
                         // TODO: Fix this to change player stealth
                         if (distance <= 2 && container.isOn(pos)) {
                             // Should probably set player to be in range of lamp in model class, should modify player's stealth
+                            System.out.println("is on lamp");
                             player.isOnLamp = true;
                             break;
                         }
