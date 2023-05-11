@@ -344,7 +344,10 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
                 }
                 for (int i = 0; i < 20; i++) {
                     for (int j = 0; j < 20; j++) {
-                        dustList[i][j].update(delta);
+                        Dust dust = dustList[i][j];
+                        dust.update(delta);
+                        dust.setX(((dust.getX() % canvas.getWidth()) + canvas.getWidth()) % canvas.getWidth());
+                        dust.setY(((dust.getY() % canvas.getHeight()) + canvas.getHeight()) % canvas.getHeight());
                     }
                 }
                 break;
@@ -373,6 +376,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
             Gdx.app.exit();
         }
         levelContainer = ps.loadLevel(directory, levelData);
+        canvas.resize();
         gameplayController.start(levelContainer);
     }
 
@@ -445,26 +449,26 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
         pressPauseState = 0;
         Gdx.input.setInputProcessor(this);
         dustList = new Dust[20][20];
+        dustInfo = directory.getEntry("dust", JsonValue.class);
+        JsonValue texInfo = dustInfo.get("texture");
+        JsonValue fade = dustInfo.get("fade-time");
+        JsonValue rps = dustInfo.get("rps");
+        JsonValue spd = dustInfo.get("speed");
+        JsonValue scl = dustInfo.get("scale");
         for (int i = 0; i < 20; i++) {
             for (int j = 0; j < 20; j++) {
                 Dust dust = new Dust();
                 dust.reset();
-                dustInfo = directory.getEntry("dust", JsonValue.class);
-                JsonValue texInfo = dustInfo.get("texture");
-                JsonValue fade = dustInfo.get("fade-time");
-                JsonValue rps = dustInfo.get("rps");
-                JsonValue spd = dustInfo.get("speed");
-                JsonValue scl = dustInfo.get("scale");
-                dust.setX((float) Math.random() * 15f);
-                dust.setY((float) Math.random() * 15f);
-                dust.setZ(Interpolation.pow3In.apply(MathUtils.random()));
+                dust.setX((float) Math.random() * canvas.getWidth());
+                dust.setY((float) Math.random() * canvas.getHeight());
                 dust.setTexture(directory.getEntry(texInfo.getString("name"), Texture.class));
                 dust.setTextureScale(texInfo.getFloat("scale"));
                 dust.setFadeRange(fade.getFloat(0), fade.getFloat(1));
                 dust.setRPS(MathUtils.random(rps.getFloat(0), rps.getFloat(1)));
                 dust.setVelocity(MathUtils.random() * MathUtils.PI2,
-                        MathUtils.random(spd.getFloat(0), spd.getFloat(1)));
+                        MathUtils.random(spd.getFloat(0), spd.getFloat(1)) * 150);
                 dust.setScale(MathUtils.random(scl.getFloat(0), scl.getFloat(1)));
+                dust.forUI = true;
                 dustList[i][j] = dust;
             }
         }

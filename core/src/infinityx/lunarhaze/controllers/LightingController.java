@@ -50,8 +50,7 @@ public class LightingController {
     private float flash_timer;
 
     /**
-     * TODO: This is a controller class, so it should handle interactions between lights and objects
-     * Maybe the light should update throughout the lifetime of the level??
+     * TODO: Maybe the light should update throughout the lifetime of the level??
      *
      * @param container level
      */
@@ -131,7 +130,6 @@ public class LightingController {
                 }
             }
             // Remove from iterator if all destroyed
-            // TODO: maybe add dust to some free list if moonlight updates
             if (allDestroyed) {
                 iterator.remove();
             }

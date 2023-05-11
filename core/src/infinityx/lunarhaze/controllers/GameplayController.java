@@ -221,7 +221,6 @@ public class GameplayController {
                         lightingController.dispose();
                         player.switchToWolf();
                     }
-                    //System.out.println("player is on lamp: " + player.isOnLamp);
                     break;
                 case BATTLE:
                     battleTicks += 1;
@@ -237,7 +236,6 @@ public class GameplayController {
                     container.setEnemyDamage(0.5f);
                     break;
                 case ALLOCATE:
-                    // TODO: Somehow pause the game before drawing allocating screen
                     if (playerController.getAllocateReady()) {
                         phase = BATTLE;
                     }

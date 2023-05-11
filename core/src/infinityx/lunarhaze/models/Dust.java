@@ -103,6 +103,11 @@ public class Dust implements Drawable {
     private boolean destroyed;
 
     /**
+     * Whether this dust particle is used for UI
+     */
+    public boolean forUI;
+
+    /**
      * Returns the position of this particle.
      * <p>
      * The object returned is a reference to the position vector.  Therefore,
@@ -280,6 +285,7 @@ public class Dust implements Drawable {
                             break;
                         case CONTINUE:
                             this.state = DustState.APPEARING;
+                            this.elapsed = 0;
                             this.fadeTime = MathUtils.random(fadeMin, fadeMax);
                             break;
                     }
@@ -322,9 +328,15 @@ public class Dust implements Drawable {
      */
     @Override
     public void draw(GameCanvas canvas) {
-        canvas.draw(texture, alpha, texture.getWidth() / 2, texture.getHeight() / 2,
-                canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y + getPosition().z * 3 / 4), textureRot,
-                textureScale * scale, textureScale * scale);
+        if (forUI) {
+            canvas.draw(texture, alpha, texture.getWidth() / 2, texture.getHeight() / 2,
+                    getPosition().x, getPosition().y + getPosition().z * 3 / 4, textureRot,
+                    textureScale * scale, textureScale * scale);
+        } else {
+            canvas.draw(texture, alpha, texture.getWidth() / 2, texture.getHeight() / 2,
+                    canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y + getPosition().z * 3 / 4), textureRot,
+                    textureScale * scale, textureScale * scale);
+        }
     }
 
     /**
