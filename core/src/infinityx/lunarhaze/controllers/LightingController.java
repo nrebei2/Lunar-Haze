@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import infinityx.lunarhaze.models.Board;
 import infinityx.lunarhaze.models.Dust;
 import infinityx.lunarhaze.models.LevelContainer;
+import infinityx.lunarhaze.models.entity.Werewolf;
 
 import java.util.Iterator;
 
@@ -18,6 +19,11 @@ public class LightingController {
      * Reference of board from container
      */
     private final Board board;
+
+    /**
+     * Reference of player from container
+     */
+    private final Werewolf player;
 
     /**
      * Contains constants for dust particle system settings
@@ -56,6 +62,7 @@ public class LightingController {
      */
     public LightingController(LevelContainer container) {
         this.board = container.getBoard();
+        this.player = container.getPlayer();
         this.lampLights = container.getLampLights();
 
         dustInfo = container.getDirectory().getEntry("dust", JsonValue.class);
@@ -111,20 +118,38 @@ public class LightingController {
      * Reinitialize all dust particles set to destroy.
      */
     public void updateDust(float delta) {
+        boolean collecting = false;
+        int bx = 0, by = 0;
+        if (player.isCollecting) {
+            bx = board.worldToBoardX(player.getPosition().x);
+            by = board.worldToBoardY(player.getPosition().y);
+            collecting = true;
+        }
+
         Iterator<IntMap.Entry<Dust[]>> iterator = dustPools.iterator();
         while (iterator.hasNext()) {
             IntMap.Entry<Dust[]> entry = iterator.next();
             int x = entry.key % board.getWidth();
             int y = (entry.key - x) / board.getWidth();
+            boolean collectable = board.isCollectable(x, y);
 
             boolean allDestroyed = true;
             for (Dust dust : entry.value) {
                 dust.update(delta);
-                if (!board.isCollectable(x, y)) {
+                if (!collectable) {
                     dust.beginDestruction();
                 }
                 if (!dust.isDestroyed()) allDestroyed = false;
                 if (dust.inDestruction()) continue;
+
+                if (collecting && bx == x && by == y) {
+                    dust.setVelocity(
+                            player.getX() - dust.getX(),
+                            player.getY() - dust.getY(),
+                            0
+                    ).scl(MathUtils.random(0.5f, 0.6f));
+                }
+
                 if (!board.inBoundsTileX(x, dust.getX()) || !board.inBoundsTileY(y, dust.getY())) {
                     dust.beginReset();
                 }
@@ -150,7 +175,7 @@ public class LightingController {
         dust.reset();
         dust.setX(board.boardToWorldX(x) + MathUtils.random() * board.getTileWorldDim().x);
         dust.setY(board.boardToWorldY(y) + MathUtils.random() * board.getTileWorldDim().y);
-        dust.setZ(Interpolation.pow3In.apply(MathUtils.random()));
+        dust.setZ(Interpolation.pow3In.apply(MathUtils.random()) * 2f);
 
         JsonValue rps = dustInfo.get("rps");
         JsonValue spd = dustInfo.get("speed");

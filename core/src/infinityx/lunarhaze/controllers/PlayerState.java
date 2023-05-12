@@ -3,6 +3,8 @@ package infinityx.lunarhaze.controllers;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Interpolation;
 import infinityx.lunarhaze.models.GameObject;
 import infinityx.util.Direction;
 
@@ -133,6 +135,12 @@ public enum PlayerState implements State<PlayerController> {
         public void update(PlayerController entity) {
             entity.timeOnMoonlight += Gdx.graphics.getDeltaTime();
 
+            Color tint = entity.player.getTint();
+            tint.r = Interpolation.circleIn.apply(Color.WHITE.r, Color.GOLD.r, entity.getTimeOnMoonlightPercentage() / 1.1f);
+            tint.g = Interpolation.circleIn.apply(Color.WHITE.g, Color.GOLD.g, entity.getTimeOnMoonlightPercentage() / 1.1f);
+            tint.b = Interpolation.circleIn.apply(Color.WHITE.b, Color.GOLD.b, entity.getTimeOnMoonlightPercentage() / 1.1f);
+            tint.a = Interpolation.circleIn.apply(Color.WHITE.a, Color.GOLD.a, entity.getTimeOnMoonlightPercentage() / 1.1f);
+
             if (entity.timeOnMoonlight > PlayerController.MOONLIGHT_COLLECT_TIME) {
                 entity.collectMoonlight();
                 entity.getStateMachine().changeState(IDLE);
@@ -153,6 +161,7 @@ public enum PlayerState implements State<PlayerController> {
         @Override
         public void exit(PlayerController entity) {
             entity.player.isCollecting = false;
+            entity.player.setTint(Color.WHITE);
         }
     },
 

@@ -208,6 +208,10 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
         this.tint.set(tint);
     }
 
+    public Color getTint() {
+        return tint;
+    }
+
     /**
      * Sets the filmstrip texture of this game object.
      *
