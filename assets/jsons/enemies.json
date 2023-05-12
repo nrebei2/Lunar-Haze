@@ -2,10 +2,10 @@
   "villager": {
     "flashlight": {
       "color":		[1.0, 1.0, 1.0, 0.7],
-      "distance":		   4,
+      "distance":		   4.4,
       "rays":			10,
       "soft":			false,
-      "degrees": 30
+      "degrees": 25
     },
     "textures": {
       "attack-l": {
@@ -95,10 +95,10 @@
   "archer": {
     "flashlight": {
       "color":		[1.0, 1.0, 1.0, 0.7],
-      "distance":		   4,
+      "distance":		   4.4,
       "rays":			10,
       "soft":			false,
-      "degrees": 30
+      "degrees": 25
     },
     "textures": {
       "attack-l": {

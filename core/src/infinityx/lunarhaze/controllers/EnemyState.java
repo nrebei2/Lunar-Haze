@@ -49,9 +49,7 @@ public enum EnemyState implements State<EnemyController> {
     NOTICED() {
         @Override
         public void enter(EnemyController entity) {
-            entity.getEnemy().setMaxLinearSpeed(1.3f);
             entity.getEnemy().setDetection(Enemy.Detection.NOTICED);
-            entity.targetPos.set(entity.target.getPosition());
 
             // Again steering behaviors are ass
             entity.getEnemy().setSteeringBehavior(null);
@@ -59,6 +57,9 @@ public enum EnemyState implements State<EnemyController> {
 
         @Override
         public void update(EnemyController entity) {
+            entity.getEnemy().setLinearVelocity(Vector2.Zero);
+            entity.targetPos.set(entity.target.getPosition());
+
             // Check if we faced target
             Vector2 toTarget = entity.getEnemy().getPosition().sub(entity.targetPos).scl(-1, -1);
             float orientation = entity.getEnemy().vectorToAngle(toTarget);

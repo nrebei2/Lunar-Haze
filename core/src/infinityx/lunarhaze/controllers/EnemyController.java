@@ -2,7 +2,6 @@ package infinityx.lunarhaze.controllers;
 
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.fsm.StateMachine;
-import com.badlogic.gdx.ai.steer.behaviors.FollowPath;
 import com.badlogic.gdx.ai.steer.behaviors.PrioritySteering;
 import com.badlogic.gdx.ai.steer.utils.Path;
 import com.badlogic.gdx.ai.steer.utils.paths.LinePath;
@@ -35,6 +34,15 @@ import infinityx.util.astar.AStarPathFinding;
  * Controller class, handles logic for a single enemy
  */
 public class EnemyController {
+
+    // Constants for vision cone lengths
+    private static float FOCUSED_MIN = 3.0f;
+    private static float FOCUSED_MAX = 3.7f;
+    private static float SHORT_MIN = 2.25f;
+    private static float SHORT_MAX = 3.2f;
+    private static float PERIPHERAL_MIN = 1.9f;
+    private static float PERIPHERAL_MAX = 2.5f;
+
     /**
      * Output collision cache from Box2DRaycastCollision
      */
@@ -441,20 +449,19 @@ public class EnemyController {
         double degree = Math.abs(enemy.getOrientation() - enemy.vectorToAngle(enemyToPlayer)) * MathUtils.radiansToDegrees;
 
         if (detectionCast.hitObject == target) {
-            if (degree <= enemy.getFlashlight().getConeDegree() / 2 && dist <= lerp.apply(2.75f, 3f, stealth)) {
+            if (degree <= enemy.getFlashlight().getConeDegree() / 2 && dist <= lerp.apply(FOCUSED_MIN, FOCUSED_MAX, stealth)) {
                 return Enemy.Detection.ALERT;
             }
-            if (degree <= 50 && dist <= lerp.apply(1.75f, 2f, stealth)) {
+            if (degree <= 50 && dist <= lerp.apply(SHORT_MIN, SHORT_MAX, stealth)) {
                 return Enemy.Detection.ALERT;
             }
-            if (degree <= 90 && dist <= lerp.apply(1.25f, 1.75f, stealth)) {
+            if (degree <= 90 && dist <= lerp.apply(PERIPHERAL_MIN, PERIPHERAL_MAX, stealth)) {
                 return Enemy.Detection.ALERT;
             }
             if (dist <= target.getNoiseRadius()) {
                 return Enemy.Detection.NOTICED;
             }
         }
-
 
         // Target is too far away
         return Enemy.Detection.NONE;
@@ -483,21 +490,21 @@ public class EnemyController {
         canvas.shapeRenderer.arc(
                 enemy.getX(),
                 enemy.getY(),
-                lerp.apply(2.75f, 3f, stealth),
+                lerp.apply(FOCUSED_MIN, FOCUSED_MAX, stealth),
                 enemy.getOrientation() * MathUtils.radiansToDegrees - enemy.getFlashlight().getConeDegree() / 2,
                 enemy.getFlashlight().getConeDegree(), 20
         );
         canvas.shapeRenderer.arc(
                 enemy.getX(),
                 enemy.getY(),
-                lerp.apply(1.75f, 2f, stealth),
+                lerp.apply(SHORT_MIN, SHORT_MAX, stealth),
                 enemy.getOrientation() * MathUtils.radiansToDegrees - 50,
                 100, 20
         );
         canvas.shapeRenderer.arc(
                 enemy.getX(),
                 enemy.getY(),
-                lerp.apply(1.25f, 1.75f, stealth),
+                lerp.apply(PERIPHERAL_MIN, PERIPHERAL_MAX, stealth),
                 enemy.getOrientation() * MathUtils.radiansToDegrees - 90,
                 180, 20
         );

@@ -70,6 +70,38 @@ public abstract class SteeringGameObject extends AttackingGameObject implements 
     }
 
     /**
+     * Align the vectors direction with the nearest cardinal direction (up, down, left, or right),
+     * but only if the original direction deviates from the cardinal direction by more than a specified angle.
+     *
+     * @param vector        The vector whose direction is to be clamped. This vector is modified in place.
+     * @param epsilonDegree The maximum allowable deviation from a cardinal direction, in degrees.
+     */
+    public void clampToCardinal(Vector2 vector, float epsilonDegree) {
+        float angle = vector.angleDeg();
+        float nearest = 0f;
+        float minDiff = 180f;
+
+        for (int cardinal = 0; cardinal < 360; cardinal += 90) {
+            float diff = Math.abs(cardinal - angle);
+            diff = diff > 180f ? 360f - diff : diff;
+
+            if (diff < minDiff) {
+                minDiff = diff;
+                nearest = cardinal;
+            }
+        }
+
+        if (minDiff > epsilonDegree) {
+            if (angle - nearest > 0 && 180 > angle - nearest) {
+                vector.setAngleDeg(nearest + epsilonDegree);
+            } else {
+                vector.setAngleDeg(nearest - epsilonDegree);
+            }
+        }
+    }
+
+
+    /**
      * Calculates and applies the appropriate linear and angular acceleration using the current steering behavior.
      * Taken from https://github.com/libgdx/gdx-ai/blob/master/tests/src/com/badlogic/gdx/ai/tests/steer/box2d/Box2dSteeringEntity.java.
      */
@@ -79,12 +111,10 @@ public abstract class SteeringGameObject extends AttackingGameObject implements 
         boolean anyAccelerations = false;
         // Update position and linear velocity.
         if (!steeringOutput.linear.isZero()) {
-            // this method internally scales the force by deltaTime
+            clampToCardinal(steeringOutput.linear, 25);
 
-            body.applyForceToCenter(steeringOutput.linear, true);
-            //using velocity
-//            body.setLinearVelocity(steeringOutput.linear.x, steeringOutput.linear.y);
-
+             //body.applyForceToCenter(steeringOutput.linear, true);
+            body.setLinearVelocity(steeringOutput.linear.x, steeringOutput.linear.y);
             anyAccelerations = true;
         }
 
