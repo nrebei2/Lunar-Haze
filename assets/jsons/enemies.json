@@ -10,27 +10,27 @@
     "textures": {
       "attack-l": {
         "name" : "villager.attack-l",
-        "durations" : [ 0.0001, 0.1, 0.2]
+        "durations" : [ 0.0001, 0.1, 0.2, 0.2]
       },
       "attack-r": {
         "name" : "villager.attack-r",
-        "durations" : [ 0.0001, 0.1, 0.2]
+        "durations" : [ 0.0001, 0.1, 0.2, 0.2]
       },
       "attack-f": {
         "name" : "villager.attack-f",
-        "durations" : [ 0.0001, 0.1, 0.2]
+        "durations" : [ 0.0001, 0.1, 0.2, 0.2]
       },
       "attack-b": {
         "name" : "villager.attack-b",
-        "durations" : [ 0.0001, 0.1, 0.2]
+        "durations" : [ 0.0001, 0.1, 0.2, 0.2]
       },
       "walk-l": {
         "name" : "villager.walk-l",
-        "durations" : [0.12, 0.12, 0.2, 0.12,  0.12, 0.12, 0.2, 0.12]
+        "durations" : [0.12, 0.12, 0.2, 0.12]
       },
       "walk-r": {
         "name" : "villager.walk-r",
-        "durations" : [0.12, 0.12, 0.2, 0.12,  0.12, 0.12, 0.2, 0.12]
+        "durations" : [0.12, 0.12, 0.2, 0.12]
       },
       "walk-f": {
         "name" : "villager.walk-f",
@@ -47,8 +47,8 @@
     },
     "texture": {
       "name": "idle-r",
-      "origin" : [243, 137],
-      "scale": 0.4
+      "origin" : [2050, 190],
+      "scale": 0.06
     },
     "colliders": {
       "body": {
@@ -72,21 +72,21 @@
       "hitbox": {
         "range": 1.5,
         "width": 1.5,
-        "textures": {
-          "hitbox": {
-            "name" : "werewolf.attack-effect",
-            "durations" :[
-              0.1,
-              0.15,
-              0.05
-            ]
-          }
-        },
-        "texture": {
-          "name": "hitbox",
-          "origin": [280, 440],
-          "scale": 0.5
-        },
+//        "textures": {
+//          "hitbox": {
+//            "name" : "werewolf.attack-effect",
+//            "durations" :[
+//              0.1,
+//              0.15,
+//              0.05
+//            ]
+//          }
+//        },
+//        "texture": {
+//          "name": "hitbox",
+//          "origin": [280, 440],
+//          "scale": 0.06
+//        },
         "bullet": true,
         "sensor": true
       }

@@ -469,7 +469,7 @@
     "lycan.collect": "images/lycan/lycan_collect.png",
 
     "villager":{
-      "file": 	"images/villager/enemy1-walk-down.png",
+      "file": 	"images/villager/Village1_Down_Walking.png",
       "wrap":  	false,
       "sprites":	{
         "walk-f" : {
@@ -480,7 +480,7 @@
       }
     },
     "villager":{
-      "file": 	"images/villager/enemy1-walk-up.png",
+      "file": 	"images/villager/Village1_Up_Walking.png",
       "wrap":  	false,
       "sprites":	{
         "walk-b" : {
@@ -491,75 +491,75 @@
       }
     },
     "villager":{
-      "file": 	"images/villager/enemy1-walk-left.png",
+      "file": 	"images/villager/Village1_Left_Walking.png",
       "wrap":  	false,
       "sprites":	{
         "walk-l" : {
-          "size" : 8,
+          "size" : 4,
           "rows" : 1,
-          "cols" : 8
+          "cols" : 4
         }
       }
     },
     "villager":{
-      "file": 	"images/villager/enemy1-walk-right.png",
+      "file": 	"images/villager/Village1_Right_Walking.png",
       "wrap":  	false,
       "sprites":	{
         "walk-r" : {
-          "size" : 8,
+          "size" : 4,
           "rows" : 1,
-          "cols" : 8
+          "cols" : 4
         }
       }
     },
     "villager":{
-      "file": 	"images/villager/enemy1-attack-down.png",
+      "file": 	"images/villager/Village1_Down_Attack.png",
       "wrap":  	false,
       "sprites":	{
         "attack-f" : {
-          "size" : 3,
+          "size" : 4,
           "rows" : 1,
-          "cols" : 3
+          "cols" : 4
         }
       }
     },
     "villager":{
-      "file": 	"images/villager/enemy1-attack-up.png",
+      "file": 	"images/villager/Village1_Up_Attacking.png",
       "wrap":  	false,
       "sprites":	{
         "attack-b" : {
-          "size" : 3,
+          "size" : 4,
           "rows" : 1,
-          "cols" : 3
+          "cols" : 4
         }
       }
     },
     "villager":{
-      "file": 	"images/villager/enemy1-attack-left.png",
+      "file": 	"images/villager/Village1_Left_Attacking.png",
       "wrap":  	false,
       "sprites":	{
         "attack-l" : {
-          "size" : 3,
+          "size" : 4,
           "rows" : 1,
-          "cols" : 3
+          "cols" : 4
         }
       }
     },
     "villager":{
-      "file": 	"images/villager/enemy1-attack-right.png",
+      "file": 	"images/villager/Village1_Right_Attacking.png",
       "wrap":  	false,
       "sprites":	{
         "attack-r" : {
-          "size" : 3,
+          "size" : 4,
           "rows" : 1,
-          "cols" : 3
+          "cols" : 4
         }
       }
     },
-    "villager.idle-f": "images/villager/enemy1-idle-down.png",
-    "villager.idle-b": "images/villager/enemy1-idle-up.png",
-    "villager.idle-l": "images/villager/enemy1-idle-left.png",
-    "villager.idle-r": "images/villager/enemy1-idle-right.png",
+    "villager.idle-f": "images/villager/idle-f.png",
+    "villager.idle-b": "images/villager/idle-b.png",
+    "villager.idle-l": "images/villager/idle-f.png",
+    "villager.idle-r": "images/villager/idle-b.png",
 
     "archer":{
       "file": 	"images/archer/Forest2_Down_Walking.png",

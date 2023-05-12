@@ -263,8 +263,8 @@ public class LevelContainer {
         activeEnemies.add(enemy);
         activeControllers.add(enemyController);
         addDrawables(enemy);
-        if (enemy.getEnemyType() == Enemy.EnemyType.Villager)
-            addDrawables(((Villager) enemy).attackHitbox);
+        //if (enemy.getEnemyType() == Enemy.EnemyType.Villager)
+        //    addDrawables(((Villager) enemy).attackHitbox);
 
         // Update enemy controller assigned to the new enemy
         enemyController.populate(this);
@@ -284,9 +284,6 @@ public class LevelContainer {
     public Enemy addEnemy(Enemy enemy) {
         activeEnemies.add(enemy);
         addDrawables(enemy);
-        if (enemy.getEnemyType() == Enemy.EnemyType.Villager)
-            addDrawables(((Villager) enemy).attackHitbox);
-
         enemy.setActive(true);
         enemy.getFlashlight().setActive(true);
 
@@ -307,7 +304,7 @@ public class LevelContainer {
             case Villager:
                 villagers.free((Villager) enemy);
                 activeControllers.removeValue(villagers.controls.get((Villager) enemy), true);
-                drawables.removeValue(((Villager) enemy).attackHitbox, true);
+                //drawables.removeValue(((Villager) enemy).attackHitbox, true);
         }
 
         activeEnemies.removeValue(enemy, true);
@@ -651,10 +648,10 @@ public class LevelContainer {
      *
      * @param gridSize width and height of each grid in world size
      */
-    public void createPathFinder(float gridSize) {
+    public void createPathFinder(Vector2 gridSize) {
         // fill board space
-        int width = (int) (board.getWidth() * board.getTileWorldDim().x / gridSize);
-        int height = (int) (board.getHeight() * board.getTileWorldDim().y / gridSize);
+        int width = (int) (board.getWidth() * board.getTileWorldDim().x / gridSize.x);
+        int height = (int) (board.getHeight() * board.getTileWorldDim().y / gridSize.y);
         AStarMap aStarMap = new AStarMap(width, height, gridSize);
 
         QueryCallback queryCallback = new QueryCallback() {
@@ -673,7 +670,13 @@ public class LevelContainer {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 scene = false;
-                world.QueryAABB(queryCallback, x * gridSize, y * gridSize, (x + 1) * gridSize, (y + 1) * gridSize);
+                world.QueryAABB(
+                        queryCallback,
+                        x * gridSize.x,
+                        y * gridSize.y,
+                        (x + 1) * gridSize.x,
+                        (y + 1) * gridSize.y
+                );
                 if (scene) {
                     aStarMap.getNodeAt(x, y).isObstacle = true;
                 }

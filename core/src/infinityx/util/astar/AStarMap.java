@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector;
+import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.graphics.GameCanvas;
 
 /**
@@ -26,7 +27,7 @@ public class AStarMap {
      * Map height in grids
      */
     private final int height;
-    private final float gridSize;
+    private final Vector2 gridSize;
 
     /**
      * Creates a new tiled map of the given size
@@ -35,7 +36,7 @@ public class AStarMap {
      * @param height   Map height in grids
      * @param gridSize width and height of each grid in world size
      */
-    public AStarMap(int width, int height, float gridSize) {
+    public AStarMap(int width, int height, Vector2 gridSize) {
         this.width = width;
         this.height = height;
         this.gridSize = gridSize;
@@ -43,8 +44,8 @@ public class AStarMap {
         map = new Node[width][height];
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                float wx = (float) ((x + 0.5) * gridSize);
-                float wy = (float) ((y + 0.5) * gridSize);
+                float wx = (float) ((x + 0.5) * gridSize.x);
+                float wy = (float) ((y + 0.5) * gridSize.y);
                 map[x][y] = new Node(this, x, y, wx, wy);
             }
         }
@@ -55,14 +56,14 @@ public class AStarMap {
      * @return the map grid cell x-index for a world x-position
      */
     public int worldToGridX(float x) {
-        return (int) (x / gridSize);
+        return (int) (x / gridSize.x);
     }
 
     /**
      * @return the map grid cell y-index for a world y-position
      */
     public int worldToGridY(float y) {
-        return (int) (y / gridSize);
+        return (int) (y / gridSize.y);
     }
 
 
@@ -99,9 +100,9 @@ public class AStarMap {
             for (Node node: row) {
                 canvas.shapeRenderer.setColor(node.isObstacle ? Color.RED : Color.BLUE);
                 canvas.shapeRenderer.rect(
-                        node.position.x - gridSize / 2,
-                        node.position.y - gridSize / 2,
-                        gridSize, gridSize
+                        node.position.x - gridSize.x / 2,
+                        node.position.y - gridSize.y / 2,
+                        gridSize.x, gridSize.y
                 );
                 canvas.shapeRenderer.setColor(Color.WHITE);
                 for (Connection conn: node.getConnections()) {

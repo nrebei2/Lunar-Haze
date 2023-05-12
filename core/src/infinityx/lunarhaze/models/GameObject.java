@@ -268,6 +268,7 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
      * @param delta Number of seconds since last animation frame
      */
     public void update(float delta) {
+        if (filmstrip == null) return;
         filmstrip = animation.getKeyFrame(delta);
     }
 
