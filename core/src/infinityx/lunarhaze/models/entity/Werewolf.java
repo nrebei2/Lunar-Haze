@@ -30,9 +30,11 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
 
     public float windupSpeed;
 
+    /** Whether the player is currently above moonlight */
     public boolean isOnMoonlight;
 
-    public boolean isOnLamp;
+    /** Whether the player is currently collecting moonlight */
+    public boolean isCollecting;
 
     /**
      * Number of moonlight tiles collected

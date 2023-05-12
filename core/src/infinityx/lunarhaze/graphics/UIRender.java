@@ -389,19 +389,19 @@ public class UIRender {
      *
      * @param canvas drawing canvas
      * @param level  container holding all models
-     * @param phase  current phase of the game
      */
-    public void drawUI(GameCanvas canvas, LevelContainer level, Phase phase,
+    public void drawUI(GameCanvas canvas, LevelContainer level,
                        GameplayController gameplayController, float delta) {
+        Phase phase = gameplayController.getPhase();
         if (gameplayController.getState() == GameState.PLAY) {
             setFontColor(Color.WHITE);
 
             // Draw with view transform considered
             canvas.begin(GameCanvas.DrawPass.SPRITE, level.getView().x, level.getView().y);
 
-            if (gameplayController.getCollectingMoonlight() && phase == Phase.STEALTH) {
+            if (level.getPlayer().isCollecting && phase == Phase.STEALTH) {
                 drawCollectLightBar(canvas, BAR_WIDTH / 2, BAR_HEIGHT,
-                        gameplayController.getTimeOnMoonlightPercentage(), level.getPlayer());
+                        gameplayController.getPlayerController().getTimeOnMoonlightPercentage(), level.getPlayer());
             }
             canvas.end();
 

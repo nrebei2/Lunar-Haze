@@ -39,7 +39,7 @@ public class InputController {
     /**
      * Input key for collecting resource
      */
-    private static final int COLLECT = Input.Keys.E;
+    private static final int COLLECT = Input.Keys.SPACE;
     /**
      * Input key for using resource
      */

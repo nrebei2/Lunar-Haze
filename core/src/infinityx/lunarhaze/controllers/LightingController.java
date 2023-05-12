@@ -120,6 +120,9 @@ public class LightingController {
             boolean allDestroyed = true;
             for (Dust dust : entry.value) {
                 dust.update(delta);
+                if (!board.isCollectable(x, y)) {
+                    dust.beginDestruction();
+                }
                 if (!dust.isDestroyed()) allDestroyed = false;
                 if (dust.inDestruction()) continue;
                 if (!board.inBoundsTileX(x, dust.getX()) || !board.inBoundsTileY(y, dust.getY())) {
@@ -156,16 +159,6 @@ public class LightingController {
         dust.setRPS(MathUtils.random(rps.getFloat(0), rps.getFloat(1)));
         dust.setVelocity(MathUtils.random() * MathUtils.PI2, MathUtils.random(spd.getFloat(0), spd.getFloat(1)));
         dust.setScale(MathUtils.random(scl.getFloat(0), scl.getFloat(1)));
-    }
-
-    /**
-     * Begin removal of all dust particles on given board tile
-     *
-     * @param x board x-position
-     * @param y board y-position
-     */
-    public void removeDust(int x, int y) {
-        for (Dust dust : dustPools.get(x + y * board.getWidth())) dust.beginDestruction();
     }
 
     /**

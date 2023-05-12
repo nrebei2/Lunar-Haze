@@ -1,12 +1,13 @@
 # Lunar-Haze
 ## Game Control Lists:
-| Action                              | Key |
-|-------------------------------------| ---- | 
-| Move                             |        Arrow Keys       |
-| Dash                                |          Left Shift |
-| Light Attack                              |           Z |
-| Heavy Attack                              |           X |
-| Pause                               |            ESC |
+| Action            | Key        |
+|-------------------|------------| 
+| Move              | Arrow Keys |
+| Collect Moonlight | Space      |
+| Dash              | Left Shift |
+| Light Attack      | Z          |
+| Heavy Attack      | X          |
+| Pause             | ESC        |
 
 ## Rules for the game:
 

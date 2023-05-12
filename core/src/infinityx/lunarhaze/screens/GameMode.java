@@ -376,7 +376,6 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
             Gdx.app.exit();
         }
         levelContainer = ps.loadLevel(directory, levelData);
-        canvas.resize();
         gameplayController.start(levelContainer);
     }
 
@@ -431,7 +430,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
                 break;
             case PLAY:
                 Phase phase = gameplayController.getPhase();
-                uiRender.drawUI(canvas, levelContainer, phase, gameplayController, delta);
+                uiRender.drawUI(canvas, levelContainer, gameplayController, delta);
                 canvas.beginUI(GameCanvas.DrawPass.SPRITE);
                 Color tintPlay = (pressPauseState == 1 ? color : Color.WHITE);
                 canvas.draw(pauseButton, tintPlay, pauseButton.getWidth() / 2, pauseButton.getHeight() / 2,

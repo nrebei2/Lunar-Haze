@@ -147,14 +147,6 @@ public class GameplayController {
         gameState = s;
     }
 
-    public float getTimeOnMoonlightPercentage() {
-        return playerController.getTimeOnMoonlightPercentage();
-    }
-
-    public boolean getCollectingMoonlight() {
-        return playerController.isCollectingMoonlight();
-    }
-
     /**
      * @return the current phase of the game
      */

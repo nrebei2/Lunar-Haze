@@ -1189,8 +1189,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         selectedWaypointIndex = -1;
 
         Gdx.input.setInputProcessor(this);
-        RayHandler.setGammaCorrection(true);
-        RayHandler.useDiffuseLight(true);
 
         doneActions = new Array<>();
         undoneActions = new Array<>();

@@ -196,6 +196,7 @@
       "attacked-r": "lycan.attacked-r",
       "attacked-f": "lycan.attacked-f",
       "attacked-b": "lycan.idle-b",
+      "collect": "lycan.collect",
       "walk-l": {
         "name": "lycan.walk-l",
         "durations": [

@@ -182,6 +182,8 @@ public class LevelContainer {
         world = new World(new Vector2(0, 0), true);
         rayHandler = new RayHandler(world, Gdx.graphics.getWidth(), Gdx.graphics.getWidth());
         rayHandler.setAmbientLight(1);
+        RayHandler.setGammaCorrection(true);
+        RayHandler.useDiffuseLight(true);
 
         drawables = new Array<>();
         backing = new Array<>();

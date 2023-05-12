@@ -21,7 +21,7 @@ public class PlayerController {
     /**
      * The time required to collect moonlight
      */
-    private static final float MOONLIGHT_COLLECT_TIME = 1.5f;
+    public static final float MOONLIGHT_COLLECT_TIME = 1.5f;
 
     /**
      * Stealth value if the player is walking
@@ -66,17 +66,7 @@ public class PlayerController {
     /**
      * Time on current lit tile
      */
-    private float timeOnMoonlight;
-
-    /**
-     * LevelContainer that contains moonlight information
-     */
-    private LevelContainer levelContainer;
-
-    /**
-     * If the player is collecting moonlight then true, false otherwise
-     */
-    public boolean collectingMoonlight;
+    public float timeOnMoonlight;
 
     /**
      * Number of times power is allocated
@@ -187,8 +177,6 @@ public class PlayerController {
     public PlayerController(LevelContainer levelContainer, GameSetting setting) {
         this.player = levelContainer.getPlayer();
         this.board = levelContainer.getBoard();
-        this.levelContainer = levelContainer;
-        collectingMoonlight = false;
         collect_sound = levelContainer.getDirectory().getEntry("collect", Sound.class);
         attack_sound = levelContainer.getDirectory().getEntry("whip", Sound.class);
         dash_sound = levelContainer.getDirectory().getEntry("dash", Sound.class);
@@ -255,8 +243,11 @@ public class PlayerController {
      * <p>
      */
     public void collectMoonlight() {
-        collectingMoonlight = false;
+        int bx = board.worldToBoardX(player.getPosition().x);
+        int by = board.worldToBoardY(player.getPosition().y);
+        board.setCollected(bx, by);
         player.addMoonlightCollected();
+
         if (setting.isSoundEnabled()) {
             collect_sound.play(0.8f);
         }
@@ -270,6 +261,7 @@ public class PlayerController {
      * @param lightingController lighting controller to update moonlight particles
      */
     public void resolveMoonlight(float delta, LightingController lightingController) {
+        if (player.isCollecting) return;
         boolean isOn = false;
 
         // Check if player is within range of a lamp
@@ -283,23 +275,10 @@ public class PlayerController {
         int px = board.worldToBoardX(player.getPosition().x);
         int py = board.worldToBoardY(player.getPosition().y);
         if (board.isLit(px, py)) {
-            timeOnMoonlight += delta; // Increase variable by time
-            collectingMoonlight = true;
             isOn = true;
-
-            if (board.isCollectable(px, py) && (timeOnMoonlight > MOONLIGHT_COLLECT_TIME)) {
-                collectMoonlight();
-                collectingMoonlight = false;
-                timeOnMoonlight = 0;
-                board.setCollected(px, py);
-                lightingController.removeDust(px, py);
-            }
-            if (!board.isCollectable(px, py)) {
-                collectingMoonlight = false;
-            }
-        } else {
-            timeOnMoonlight = 0;
-            collectingMoonlight = false;
+        }
+        if (board.isCollectable(px, py) && InputController.getInstance().didCollect()) {
+            stateMachine.changeState(PlayerState.COLLECT);
         }
 
         setOnMoonlight(isOn);
@@ -312,14 +291,6 @@ public class PlayerController {
         if (player.isOnMoonlight == isOn) return;
         player.setTargetStealth(player.getTargetStealth() + (isOn ? 1 : -1) * MOON_STEALTH);
         player.isOnMoonlight = isOn;
-    }
-
-    /**
-     * Whether the player is currently collecting moonlight
-     * (Need to stand on a moonlight tile and in IDLE state)
-     */
-    public boolean isCollectingMoonlight() {
-        return collectingMoonlight;
     }
 
     /**

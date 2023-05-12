@@ -1,5 +1,6 @@
 package infinityx.lunarhaze.controllers;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
 import infinityx.lunarhaze.models.GameObject;
@@ -25,8 +26,6 @@ public enum PlayerState implements State<PlayerController> {
                 entity.getStateMachine().changeState(PlayerState.ATTACK);
             } else if (entity.isAttacked()) {
                 entity.getStateMachine().changeState(PlayerState.ATTACKED);
-            } else if (entity.isCollectingMoonlight()) {
-                entity.getStateMachine().changeState(PlayerState.COLLECT);
             } else if (!entity.player.getLinearVelocity().isZero()) {
                 entity.getStateMachine().changeState(PlayerState.WALK);
             }
@@ -125,11 +124,20 @@ public enum PlayerState implements State<PlayerController> {
     COLLECT() {
         @Override
         public void enter(PlayerController entity) {
-            entity.player.setTargetStealth(PlayerController.MOON_STEALTH);
+            entity.player.setTexture("collect");
+            entity.timeOnMoonlight = 0;
+            entity.player.isCollecting = true;
         }
 
         @Override
         public void update(PlayerController entity) {
+            entity.timeOnMoonlight += Gdx.graphics.getDeltaTime();
+
+            if (entity.timeOnMoonlight > PlayerController.MOONLIGHT_COLLECT_TIME) {
+                entity.collectMoonlight();
+                entity.getStateMachine().changeState(IDLE);
+            }
+
             // Handle state transitions
             if (entity.isWindingUp()) {
                 entity.getStateMachine().changeState(PlayerState.HEAVY_ATTACK_WINDUP);
@@ -137,14 +145,14 @@ public enum PlayerState implements State<PlayerController> {
                 entity.getStateMachine().changeState(PlayerState.ATTACK);
             } else if (entity.isAttacked()) {
                 entity.getStateMachine().changeState(PlayerState.ATTACKED);
-            } else if (!entity.isCollectingMoonlight()) {
+            } else if (!InputController.getInstance().didCollect()) {
                 entity.getStateMachine().changeState(PlayerState.IDLE);
             }
         }
 
         @Override
         public void exit(PlayerController entity) {
-//            entity.getCollectSound().play();
+            entity.player.isCollecting = false;
         }
     },
 
