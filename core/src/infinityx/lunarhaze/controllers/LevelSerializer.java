@@ -338,7 +338,8 @@ public class LevelSerializer {
         levels.size = updatedLevels.size;
 
         // Write back to levels.json
-        FileHandle outputFile = Gdx.files.internal("jsons/levels.json");
+        FileHandle outputFile = Gdx.files.local("save-data/levels.json");
+        System.out.println(outputFile.file().getAbsolutePath());
         try {
             outputFile.writeString(levels.prettyPrint(JsonWriter.OutputType.json, 10), false);
         } catch (Exception e) {

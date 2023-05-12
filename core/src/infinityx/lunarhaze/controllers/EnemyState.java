@@ -66,7 +66,7 @@ public enum EnemyState implements State<EnemyController> {
             float rotation = ArithmeticUtils.wrapAngleAroundZero(orientation - entity.getEnemy().getOrientation());
 
             // Mimic face steering behavior
-            entity.getEnemy().setAngularVelocity(rotation < 0 ? -1.2f : 1.2f);
+            entity.getEnemy().setAngularVelocity(rotation < 0 ? -1.6f : 1.6f);
 
             float rotationSize = rotation < 0f ? -rotation : rotation;
             if (rotationSize <= MathUtils.degreesToRadians * 10) {
@@ -167,8 +167,6 @@ public enum EnemyState implements State<EnemyController> {
      * Enemy knows where player is (!) and is actively moving towards player
      */
     ALERT() {
-        /** Tick count */
-        int tick;
 
         @Override
         public void enter(EnemyController entity) {
@@ -274,7 +272,7 @@ public enum EnemyState implements State<EnemyController> {
             Vector2 patrol = entity.getPatrolTarget();
             entity.targetPos.set(patrol);
             entity.updatePath();
-            entity.getEnemy().setSteeringBehavior(entity.followPathAvoid);
+            entity.getEnemy().setSteeringBehavior(entity.followPathSB);
             entity.getEnemy().setDetection(Enemy.Detection.NONE);
         }
 
@@ -284,7 +282,7 @@ public enum EnemyState implements State<EnemyController> {
             // Check if have arrived to patrol position
             float dist = entity.getEnemy().getPosition().dst(entity.targetPos);
             if (dist <= 0.3f) {
-                if (entity.getEnemy().rand.nextFloat() <= 0.5f) {
+                if (entity.getEnemy().rand.nextFloat() <= 0.3f) {
                     entity.getStateMachine().changeState(LOOK_AROUND);
                 } else {
                     Vector2 patrol = entity.getPatrolTarget();

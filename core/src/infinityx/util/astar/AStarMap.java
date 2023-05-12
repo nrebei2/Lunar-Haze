@@ -1,6 +1,11 @@
 package infinityx.util.astar;
 
+import com.badlogic.gdx.ai.pfa.Connection;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector;
+import infinityx.lunarhaze.graphics.GameCanvas;
 
 /**
  * Grid (tiled) map
@@ -85,6 +90,26 @@ public class AStarMap {
      */
     public Node getNodeAtWorld(float x, float y) {
         return map[MathUtils.clamp(worldToGridX(x), 0, width - 1)][MathUtils.clamp(worldToGridY(y), 0, height - 1)];
+    }
+
+    /** DEBUG. Draws each node in the map, red if obstructed, blue otherwise. */
+    public void drawMap(GameCanvas canvas) {
+        canvas.shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        for (Node[] row: map) {
+            for (Node node: row) {
+                canvas.shapeRenderer.setColor(node.isObstacle ? Color.RED : Color.BLUE);
+                canvas.shapeRenderer.rect(
+                        node.position.x - gridSize / 2,
+                        node.position.y - gridSize / 2,
+                        gridSize, gridSize
+                );
+                canvas.shapeRenderer.setColor(Color.WHITE);
+                for (Connection conn: node.getConnections()) {
+                    canvas.shapeRenderer.line(node.position, ((Node)conn.getToNode()).position);
+                }
+            }
+        }
+        canvas.shapeRenderer.end();
     }
 
     @Override

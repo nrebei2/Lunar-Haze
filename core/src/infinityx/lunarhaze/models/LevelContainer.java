@@ -604,6 +604,7 @@ public class LevelContainer {
                 e.drawGizmo(canvas);
                 e.drawDetection(canvas);
             }
+            pathfinder.map.drawMap(canvas);
             canvas.end();
         }
     }
@@ -643,8 +644,12 @@ public class LevelContainer {
         QueryCallback queryCallback = new QueryCallback() {
             @Override
             public boolean reportFixture(Fixture fixture) {
-                scene = ((GameObject) fixture.getUserData()).getType() == GameObject.ObjectType.SCENE;
-                return false; // stop finding other fixtures in the query area
+                GameObject hitObj = (GameObject) fixture.getUserData();
+                if (hitObj.getType() == GameObject.ObjectType.SCENE && !hitObj.isSensor()) {
+                    scene = true;
+                    return false; // stop finding other fixtures in the query area
+                }
+                return true;
             }
         };
 
@@ -660,7 +665,7 @@ public class LevelContainer {
         }
 
         //System.out.println(aStarMap);
-        pathfinder = new AStarPathFinding(aStarMap, world);
+        pathfinder = new AStarPathFinding(aStarMap);
     }
 }
 

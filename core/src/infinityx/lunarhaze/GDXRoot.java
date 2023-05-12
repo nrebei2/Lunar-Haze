@@ -3,8 +3,12 @@ package infinityx.lunarhaze;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
+import infinityx.assets.JsonValueLoader;
+import infinityx.assets.JsonValueParser;
 import infinityx.lunarhaze.controllers.InputController;
 import infinityx.lunarhaze.controllers.LevelParser;
 import infinityx.lunarhaze.controllers.LevelSerializer;
@@ -182,6 +186,17 @@ public class GDXRoot extends Game implements ScreenObserver {
         if (screen == loading) {
             // All assets are now loaded
             directory = loading.getAssets();
+
+            // Update the level data if there is a newer saved version
+            FileHandle handle = Gdx.files.local("save-data/levels.json");
+            if (handle.exists()) {
+                JsonReader reader = new JsonReader();
+                JsonValue savedLevelData = reader.parse(handle);
+                JsonValue levelData = directory.getEntry("levels", JsonValue.class);
+                levelData.child = savedLevelData.child;
+                levelData.size = savedLevelData.size;
+            }
+
             menu.gatherAssets(directory);
             selection.gatherAssets(directory);
             setting.gatherAssets(directory);

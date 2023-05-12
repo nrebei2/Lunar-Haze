@@ -104,6 +104,11 @@ public class EnemyController {
     public FollowPath followPathSB;
 
     /**
+     * Source position used for pathfinding
+     */
+    private Vector2 sourcePos;
+
+    /**
      * Current target position for pathfinding. You should almost always use {@link Vector2#set(Vector2)} to update this.
      */
     public Vector2 targetPos;
@@ -181,6 +186,7 @@ public class EnemyController {
 
         patrolTarget = new Vector2();
         this.targetPos = new Vector2();
+        this.sourcePos = new Vector2();
         this.enemy = enemy;
         this.stateMachine = new DefaultStateMachine<>(this, EnemyState.INIT, EnemyState.ANY_STATE);
         this.combinedContext = new CombinedContext(enemy);
@@ -531,7 +537,7 @@ public class EnemyController {
      * Updates path for pathfinding. Source is the enemy position and target is {@link #targetPos}
      */
     public void updatePath() {
-        Path path = pathfinder.findPath(enemy.getPosition(), targetPos);
+        Path path = pathfinder.findPath(sourcePos.set(enemy.getPosition()), targetPos);
         followPathSB.setPath(path);
     }
 

@@ -41,9 +41,8 @@ public class AStarPathFinding {
 
     /**
      * @param map   Map pathfinding will be perform on
-     * @param world Box2D world
      */
-    public AStarPathFinding(AStarMap map, World world) {
+    public AStarPathFinding(AStarMap map) {
         this.map = map;
         this.pathfinder = new IndexedAStarPathFinder(createGraph(map));
         this.connectionPath = new SmoothGraphPath();
@@ -68,23 +67,23 @@ public class AStarPathFinding {
         if (sourceNode.isObstacle) {
             for (Connection<Node> neighbor : sourceNode.getConnections()) {
                 Node next = neighbor.getToNode();
-                if (!next.isObstacle) sourceNode = map.getNodeAtWorld(next.x, next.y);
+                float dot = target.dot(next.position) - target.dot(source) - source.dot(next.position) + source.len2();
+                if (!next.isObstacle && dot < 0) sourceNode = next;
             }
         }
+        if (sourceNode.isObstacle) System.out.println("ASKDKASDAKSHDA");
 
         Node targetNode = map.getNodeAtWorld(target.x, target.y);
         if (targetNode.isObstacle) {
             for (Connection<Node> neighbor : targetNode.getConnections()) {
                 Node next = neighbor.getToNode();
-                if (!next.isObstacle) targetNode = map.getNodeAtWorld(next.x, next.y);
+                float dot = source.dot(next.position) - source.dot(target) - target.dot(next.position) + target.len2();
+                if (!next.isObstacle && dot < 0) targetNode = next;
             }
         }
 
-        if (sourceNode == null || targetNode == null) {
-            System.out.printf("source : %s, target: %s\n", source, target);
-            System.out.println(map);
-            Gdx.app.error("AStarPathFinding", "Source or target is outside pathfinding range!", new IllegalStateException());
-        }
+
+        if (targetNode.isObstacle) System.out.println("ASKDKASDAKSHDA");
 
         connectionPath.clear();
         pathfinder.searchNodePath(sourceNode, targetNode, heuristic, connectionPath);
