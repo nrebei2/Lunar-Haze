@@ -80,7 +80,7 @@ public class PlayerAttackHandler extends MeleeHandler {
             // Do not attack when locked out
             else if (!player.isLockedOut() && !player.isHeavyLockedOut()) {
 
-                if (InputController.getInstance().didAttack() && !player.isAttacking()) {
+                if (InputController.getInstance().didAttack() && !player.isAttacking() && canStartNewAttack()) {
                     initiateAttack();
 
                 } else if (InputController.getInstance().didHeavyAttack() && !player.isAttacking()) {
