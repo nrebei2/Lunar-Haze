@@ -278,6 +278,22 @@ public class LevelContainer {
     }
 
     /**
+     * @param enemy           enemy to append to enemy list
+     * @return enemy added
+     */
+    public Enemy addEnemy(Enemy enemy) {
+        activeEnemies.add(enemy);
+        addDrawables(enemy);
+        if (enemy.getEnemyType() == Enemy.EnemyType.Villager)
+            addDrawables(((Villager) enemy).attackHitbox);
+
+        enemy.setActive(true);
+        enemy.getFlashlight().setActive(true);
+
+        return enemy;
+    }
+
+    /**
      * Removes enemy from the level.
      *
      * @param enemy enemy to remove

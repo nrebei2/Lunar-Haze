@@ -102,4 +102,9 @@ public class PatrolPath {
         path.insert(index, new Vector2(x, y));
         return this;
     }
+
+    @Override
+    public PatrolPath clone() {
+        return new PatrolPath(new Array<>(this.path));
+    }
 }

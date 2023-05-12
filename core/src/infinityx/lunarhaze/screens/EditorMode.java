@@ -649,7 +649,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         Enemy newEnemy = level.addEnemy(
                 enemySelection.enemy.getEnemyType(),
                 mouseWorld.x, mouseWorld.y,
-                enemySelection.enemy.getPatrolPath().addWaypoint(mouseWorld.x, mouseWorld.y)
+                enemySelection.enemy.getPatrolPath().clone().addWaypoint(mouseWorld.x, mouseWorld.y)
         );
         newEnemy.setScale(enemySelection.enemy.getScale());
         return newEnemy;
@@ -765,6 +765,11 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                     switch (obj.getType()) {
                         case ENEMY:
                             level.removeEnemy((Enemy) obj);
+                            // Remove the controller window if it's controlling the removed enemy
+                            if (currEnemyControlled == obj) {
+                                currEnemyControlled = null;
+                                selectedWaypointIndex = -1;
+                            }
                             break;
                         case SCENE:
                             level.removeSceneObject((infinityx.lunarhaze.models.entity.SceneObject) obj);
@@ -775,11 +780,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                     GameObject removedObj = ((RemoveObject) lastAction).gameObject;
                     switch (removedObj.getType()) {
                         case ENEMY:
-                            level.removeEnemy((Enemy) removedObj);
-                            if (currEnemyControlled == removedObj) {
-                                currEnemyControlled = null;
-                                selectedWaypointIndex = -1;
-                            }
+                            level.addEnemy((Enemy) removedObj);
+                            currEnemyControlled = (Enemy) removedObj;
                             break;
                         case SCENE:
                             level.addSceneObject((infinityx.lunarhaze.models.entity.SceneObject) removedObj);
@@ -823,7 +825,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                     GameObject obj = ((PlaceObject) lastUndoneAction).gameObject;
                     switch (obj.getType()) {
                         case ENEMY:
-                            level.removeEnemy((Enemy) obj);
+                            level.addEnemy((Enemy) obj);
+                            currEnemyControlled = (Enemy) obj;
                             break;
                         case SCENE:
                             level.addSceneObject((infinityx.lunarhaze.models.entity.SceneObject) obj);
@@ -835,6 +838,11 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                     switch (removedObj.getType()) {
                         case ENEMY:
                             level.removeEnemy((Enemy) removedObj);
+                            // Remove the controller window if it's controlling the removed enemy
+                            if (currEnemyControlled == removedObj) {
+                                currEnemyControlled = null;
+                                selectedWaypointIndex = -1;
+                            }
                             break;
                         case SCENE:
                             level.removeSceneObject((infinityx.lunarhaze.models.entity.SceneObject) removedObj);

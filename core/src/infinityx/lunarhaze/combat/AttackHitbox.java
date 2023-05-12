@@ -54,7 +54,7 @@ public class AttackHitbox extends GameObject {
                 0
         );
 
-        this.activatePhysics(container.getWorld());
+        if (body == null) activatePhysics(container.getWorld());
         this.setActive(false);
     }
 
