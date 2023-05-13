@@ -406,7 +406,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
         );
 
         // Draw the level
-        levelContainer.drawLevel(canvas);
+        levelContainer.drawLevel(delta, canvas);
 
         switch (gameplayController.getState()) {
             case WIN:

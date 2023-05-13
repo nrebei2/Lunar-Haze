@@ -669,6 +669,10 @@
     "meter": {
       "vert": "shaders/meter.vert",
       "frag": "shaders/meter.frag"
+    },
+    "light": {
+      "vert": "shaders/light.vert",
+      "frag": "shaders/light.frag"
     }
   },
   "jsons": {

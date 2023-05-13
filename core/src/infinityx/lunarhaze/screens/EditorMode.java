@@ -1091,7 +1091,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             return;
         }
 
-        level.drawLevel(canvas);
+        level.drawLevel(delta, canvas);
 
         canvas.begin(GameCanvas.DrawPass.SHAPE, level.getView().x, level.getView().y);
         board.drawOutline(canvas);

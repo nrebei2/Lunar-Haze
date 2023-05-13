@@ -94,7 +94,6 @@ public class LevelSerializer {
      * "battle-color": [float, float, float, float],
      * "gamma": boolean,
      * "diffuse": boolean,
-     * "blur": int
      * }
      */
     private static JsonValue createAmbient(LevelContainer level) {
@@ -118,7 +117,6 @@ public class LevelSerializer {
 
         ambient.addChild("gamma", new JsonValue(true));
         ambient.addChild("diffuse", new JsonValue(true));
-        ambient.addChild("blur", new JsonValue(5));
         return ambient;
     }
 

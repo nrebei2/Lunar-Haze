@@ -6,12 +6,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.TimeUtils;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.controllers.EnemyController;
 import infinityx.lunarhaze.controllers.EnemySpawner;
@@ -169,20 +171,25 @@ public class LevelContainer {
      */
     private float[] moonlightColor;
 
-    private boolean debugPressed;
-
     /**
      * Lights attached to lamp scene objects
      */
     private Array<PointLight> lampLights;
 
+    private boolean debugPressed;
+
+    private final ShaderProgram lightShader;
+    private float totalTime;
+
     /**
      * Initialize attributes
      */
     private void initialize() {
+        totalTime = 0;
         world = new World(new Vector2(0, 0), true);
         rayHandler = new RayHandler(world, Gdx.graphics.getWidth(), Gdx.graphics.getWidth());
         rayHandler.setAmbientLight(1);
+        rayHandler.setLightShader(lightShader);
         RayHandler.setGammaCorrection(true);
         RayHandler.useDiffuseLight(true);
 
@@ -222,6 +229,8 @@ public class LevelContainer {
         this.objectJson = objectJson;
         this.playerJson = playerJson;
         this.directory = directory;
+        this.lightShader = directory.get("light", ShaderProgram.class);
+        System.out.println(lightShader.getLog());
         initialize();
     }
 
@@ -571,7 +580,8 @@ public class LevelContainer {
      *
      * @param canvas The drawing context
      */
-    public void drawLevel(GameCanvas canvas) {
+    public void drawLevel(float delta, GameCanvas canvas) {
+        totalTime += delta;
         garbageCollect();
 
         //Camera shake logic
@@ -599,10 +609,12 @@ public class LevelContainer {
         canvas.end();
 
         canvas.begin(GameCanvas.DrawPass.LIGHT, view.x, view.y);
+        lightShader.bind();
+        lightShader.setUniformf("iTime", totalTime);
         canvas.drawLights(rayHandler);
         canvas.end();
 
-//         ----------------------- DEBUG --------------------------
+        // ------------------------ DEBUG --------------------------
         if (InputController.getInstance().didDebug()) {
             debugPressed = !debugPressed;
         }

@@ -266,10 +266,6 @@ public class LevelParser {
         rayhandler.setAmbientLight(stealth[0], stealth[1], stealth[2], stealth[3]);
         levelContainer.setStealthAmbience(stealth);
         levelContainer.setBattleAmbience(battle);
-
-        int blur = light.getInt("blur");
-        rayhandler.setBlur(blur > 0);
-        rayhandler.setBlurNum(blur);
     }
 
     /**

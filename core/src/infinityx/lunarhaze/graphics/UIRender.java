@@ -381,7 +381,6 @@ public class UIRender {
         // shaders
         this.meter = directory.get("meter", ShaderProgram.class);
         this.meterUniform = new ShaderUniform("u_amount");
-
     }
 
     /**
