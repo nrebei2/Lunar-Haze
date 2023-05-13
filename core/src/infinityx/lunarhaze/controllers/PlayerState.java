@@ -5,6 +5,7 @@ import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.models.GameObject;
 import infinityx.util.Direction;
 
@@ -129,6 +130,7 @@ public enum PlayerState implements State<PlayerController> {
             entity.player.setTexture("collect");
             entity.timeOnMoonlight = 0;
             entity.player.isCollecting = true;
+            entity.player.setLinearVelocity(Vector2.Zero);
         }
 
         @Override

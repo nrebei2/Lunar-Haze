@@ -88,7 +88,7 @@ public class TacticalManager implements Telegraph {
             entity.findCollision(control.getEnemy());
             // FIXME: Should only call an enemy that is visible from entity.enemy
             if (control != entity && (entity.getEnemy().getPosition()).dst(control.getEnemy().getPosition()) <= 5f
-                    && entity.communicationCollision.hitObject == control.getEnemy()) {
+                    && entity.communicationCollision.hitObject == control.getEnemy() && !control.getEnemy().isAttacking()) {
                 System.out.println("alerting");
                 StateMachine<EnemyController, EnemyState> machine = control.getStateMachine();
                 machine.changeState(EnemyState.ALERT);

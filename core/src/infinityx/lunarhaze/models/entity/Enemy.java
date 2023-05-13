@@ -1,8 +1,10 @@
 package infinityx.lunarhaze.models.entity;
 
+import com.badlogic.gdx.ai.steer.SteeringBehavior;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Pool;
 import infinityx.assets.AssetDirectory;
@@ -61,6 +63,9 @@ public abstract class Enemy extends SteeringGameObject implements Pool.Poolable 
      */
     private Detection detection;
 
+    /** How long (in seconds) this enemy was in the current detection */
+    public float detectionTime;
+
     /**
      * How much the indicator has been filled, in [0, 1]
      */
@@ -86,11 +91,19 @@ public abstract class Enemy extends SteeringGameObject implements Pool.Poolable 
      */
     private Sound alert_sound;
 
+    /**
+     * Current filmstrip directions prefix
+     */
+    private String name = "idle";
 
     /**
      * Whether the enemy is in battle mode
      */
     private boolean inBattle;
+
+    /** Used to update the direction sprite only once per interval */
+    private float timeSinceLastDirChange = 0f;
+    private static final float DIR_CHANGE_INTERVAL = 0.5f;
 
     /**
      * Returns the type of this object.
@@ -124,6 +137,9 @@ public abstract class Enemy extends SteeringGameObject implements Pool.Poolable 
         super(false);
         detection = Detection.NONE;
         inBattle = false;
+        direction = Direction.RIGHT;
+        detectionTime = 0;
+
 
         // TODO
 //        setMaxLinearAcceleration(0.61f);
@@ -199,6 +215,8 @@ public abstract class Enemy extends SteeringGameObject implements Pool.Poolable 
     }
 
     public void setDetection(Detection detection) {
+        if (detection == this.detection) return;
+        this.detectionTime = 0;
         this.detection = detection;
     }
 
@@ -219,8 +237,20 @@ public abstract class Enemy extends SteeringGameObject implements Pool.Poolable 
      */
     public void setFlashlight(ConeSource cone) {
         flashlight = cone;
-        flashlight.attachToBody(getBody(), 0.5f, 0, flashlight.getDirection());
+        attachFlashlight(true);
         flashlight.setActive(false);
+    }
+
+    /**
+     *
+     * @param attach Whether to attach or detach
+     */
+    public void attachFlashlight(boolean attach) {
+        if (attach) {
+            flashlight.attachToBody(getBody(), 0.5f, 0, 0);
+        } else {
+            flashlight.attachToBody(null);
+        }
     }
 
     /**
@@ -236,11 +266,6 @@ public abstract class Enemy extends SteeringGameObject implements Pool.Poolable 
     public float getHealthPercentage() {
         return hp / maxHp;
     }
-
-    /**
-     * Current filmstrip directions prefix
-     */
-    private String name = "idle";
 
     /**
      * Sets the filmstrip animation of the enemy. Assumes there exists filmstrips for each cardinal direction with suffixes "-b", "-f", "-l", "-r".
@@ -277,25 +302,28 @@ public abstract class Enemy extends SteeringGameObject implements Pool.Poolable 
     @Override
     public void update(float delta) {
         super.update(delta);
+        detectionTime += delta;
 
-        float orientation = getOrientation();
-        // Set the direction given velocity
-        // The up and down directions each have 120 degrees
-        // While the left and right each have 60
-        Direction newDirection;
-        if (MathUtils.isEqual(orientation, 0, MathUtils.PI / 6)) {
-            newDirection = Direction.RIGHT;
-        } else if (MathUtils.isEqual(orientation, MathUtils.PI / 2, MathUtils.PI / 3)) {
-            newDirection = Direction.UP;
-        } else if (MathUtils.isEqual(orientation, -MathUtils.PI / 2, MathUtils.PI / 3)) {
-            newDirection = Direction.DOWN;
-        } else {
-            newDirection = Direction.LEFT;
-        }
+        timeSinceLastDirChange += delta;
+        if (timeSinceLastDirChange >= DIR_CHANGE_INTERVAL) {
+            float orientation = getOrientation();
+            Direction newDirection;
 
-        if (newDirection != direction) {
-            setTexDir(newDirection);
+            if (MathUtils.isEqual(orientation, 0, MathUtils.PI / 6)) {
+                newDirection = Direction.RIGHT;
+            } else if (MathUtils.isEqual(orientation, MathUtils.PI / 2, MathUtils.PI / 3)) {
+                newDirection = Direction.UP;
+            } else if (MathUtils.isEqual(orientation, -MathUtils.PI / 2, MathUtils.PI / 3)) {
+                newDirection = Direction.DOWN;
+            } else {
+                newDirection = Direction.LEFT;
+            }
+
+            if (newDirection != direction) {
+                setTexDir(newDirection);
+                timeSinceLastDirChange = 0;
+            }
+            direction = newDirection;
         }
-        direction = newDirection;
     }
 }

@@ -19,15 +19,12 @@ public enum EnemyState implements State<EnemyController> {
     ANY_STATE() {
         @Override
         public void update(EnemyController entity) {
-            // FIXME: dont call setFilmstripPrefix every frame
             // All states other than attack use walk/idle animations
             if (!entity.getStateMachine().isInState(ATTACK)) {
                 if (entity.getEnemy().getLinearVelocity().isZero(0.01f)) {
                     entity.getEnemy().setFilmstripPrefix("idle");
                 } else {
                     entity.getEnemy().setFilmstripPrefix("walk");
-                    // Texture update is proportional to velocity
-//                    entity.getEnemy().texUpdate = 1 / (entity.getEnemy().getLinearVelocity().len() * 5);
                 }
             }
         }
@@ -129,6 +126,7 @@ public enum EnemyState implements State<EnemyController> {
 
         @Override
         public void exit(EnemyController entity) {
+
         }
     },
 
@@ -137,30 +135,25 @@ public enum EnemyState implements State<EnemyController> {
         public void enter(EnemyController entity) {
             //entity.getAttackSound().play();
             entity.getEnemy().setFilmstripPrefix("attack");
-            entity.getEnemy().setIndependentFacing(true);
             entity.getAttackHandler().initiateAttack();
+            entity.getEnemy().setSteeringBehavior(null);
+
+            // Face towards target and don't move
+            entity.getEnemy().setOrientation(AngleUtils.vectorToAngle(entity.target.getPosition().sub(entity.getEnemy().getPosition())));
+            entity.getEnemy().setLinearVelocity(Vector2.Zero);
+            entity.getEnemy().setAngularVelocity(0);
         }
 
         @Override
         public void update(EnemyController entity) {
-            Vector2 enemyToTarget = entity.target.getPosition().sub(entity.getEnemy().getPosition());
-            entity.getEnemy().setOrientation(AngleUtils.vectorToAngle(enemyToTarget));
-
-            if (entity.getEnemy().isAttacking()) {
-                entity.getEnemy().setLinearVelocity(Vector2.Zero);
-            }
-
             // Handle state transitions
             if (!entity.getEnemy().isAttacking()) {
-                // Go back to whatever it was doing before. It may always be ALERT.
                 entity.getStateMachine().changeState(ALERT);
             }
         }
 
         @Override
-        public void exit(EnemyController entity) {
-            entity.getEnemy().setIndependentFacing(false);
-        }
+        public void exit(EnemyController entity) {}
     },
 
     /**
@@ -180,21 +173,16 @@ public enum EnemyState implements State<EnemyController> {
                     && entity.getEnemy().isInBattle()) {
                 MessageManager.getInstance().dispatchMessage(TacticalManager.ADD, entity);
             }
-            entity.time = 0;
         }
 
         @Override
         public void update(EnemyController entity) {
-            // Check if have arrived to target
-            //float dist = entity.getEnemy().getPosition().dst(entity.arriveSB.getTarget().getPosition());
-            //if (dist <= entity.arriveSB.getArrivalTolerance()) entity.getStateMachine().changeState(ATTACK);
             switch (entity.getDetection()) {
                 case NONE:
                     entity.targetPos.set(entity.target.getPosition());
                     entity.getStateMachine().changeState(INDICATOR);
                     break;
             }
-            entity.time += Gdx.graphics.getDeltaTime();
 
             float enemyToTarget = entity.target.getPosition().dst(entity.getEnemy().getPosition());
 
@@ -202,6 +190,7 @@ public enum EnemyState implements State<EnemyController> {
             if (!entity.getEnemy().isInBattle()) {
                 if (enemyToTarget <= entity.getEnemy().getAttackRange() && entity.getAttackHandler().canStartNewAttack()) {
                     entity.getStateMachine().changeState(ATTACK);
+                    return;
                 }
                 entity.getEnemy().setIndependentFacing(false);
                 entity.targetPos.set(entity.getTarget().getPosition());
@@ -214,11 +203,12 @@ public enum EnemyState implements State<EnemyController> {
             } else {
                 if (enemyToTarget <= entity.getEnemy().getAttackRange() && entity.getAttackHandler().canStartNewAttack()) {
                     entity.getStateMachine().changeState(ATTACK);
+                    return;
                 }
                 entity.rayCache.set(entity.getEnemy().getPosition(), entity.getTarget().getPosition());
 
                 entity.pathCollision.findCollision(entity.collCache, entity.rayCache);
-                // use Astar to target if there is obstacle in the way or farther than straafe distance from target
+                // use Astar to target if there is obstacle in the way or farther than strafe distance from target
                 if (entity.raycast.hit || enemyToTarget > entity.getEnemy().getStrafeDistance()) {
                     entity.getEnemy().setMaxLinearSpeed(1.11f);
                     entity.targetPos.set(entity.getTarget().getPosition());
@@ -333,8 +323,6 @@ public enum EnemyState implements State<EnemyController> {
             } else {
                 entity.getStateMachine().changeState(PATROL);
             }
-
-            entity.time += Gdx.graphics.getDeltaTime();
         }
     };
 

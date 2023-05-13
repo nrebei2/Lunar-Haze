@@ -210,7 +210,7 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
      * @return The radius of the werewolf's noise in world length
      */
     public float getNoiseRadius() {
-        return Interpolation.linear.apply(0, 3.7f, inTallGrass != null ? 0 : stealth);
+        return Interpolation.linear.apply(0.72f, 3.7f, inTallGrass != null ? 0 : stealth);
     }
 
     /**
@@ -289,7 +289,7 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
      */
     public void update(float delta) {
         super.update(delta);
-        canMove = canMove && !heavyLockedOut;
+        canMove = canMove && !heavyLockedOut && !isCollecting;
 
         if (heavyLockedOut) {
             // TODO: Change frame to show that the werewolf is locked out? If needed

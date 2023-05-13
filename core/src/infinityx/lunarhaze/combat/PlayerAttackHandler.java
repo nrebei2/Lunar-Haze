@@ -95,7 +95,7 @@ public class PlayerAttackHandler extends MeleeHandler {
         float dashCD = (phase == GameplayController.Phase.BATTLE ? DASH_COOLDOWN_BATTLE : DASH_COOLDOWN_STEALTH);
 
         if (isDashing) {
-            processDash(dashDirection);
+            processDash(dashDirection, delta);
         }
         if (dashCooldownCounter < dashCD) {
             dashCooldownCounter += delta;
@@ -165,9 +165,9 @@ public class PlayerAttackHandler extends MeleeHandler {
         }
     }
 
-    private void processDash(Vector2 direction) {
+    private void processDash(Vector2 direction, float delta) {
         entity.getBody().applyLinearImpulse(direction.x, direction.y, entity.getX(), entity.getY(), true);
-        dashTimer += Gdx.graphics.getDeltaTime();
+        dashTimer += delta;
         if (dashTimer >= DASH_TIME) {
             endDash();
         }

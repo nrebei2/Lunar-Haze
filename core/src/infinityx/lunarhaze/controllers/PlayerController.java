@@ -257,10 +257,9 @@ public class PlayerController {
      * Process the player's interaction with moonlight tile.
      * <p>
      *
-     * @param delta              Number of seconds since last animation frame
      * @param lightingController lighting controller to update moonlight particles
      */
-    public void resolveMoonlight(float delta, LightingController lightingController) {
+    public void resolveMoonlight(LightingController lightingController) {
         if (player.isCollecting) return;
         boolean isOn = false;
 
@@ -346,14 +345,14 @@ public class PlayerController {
      * @param currPhase          Current phase of the game
      * @param lightingController lighting controller to update moonlight particles
      */
-    public void update(Phase currPhase, LightingController lightingController) {
-        attackHandler.update(Gdx.graphics.getDeltaTime(), currPhase);
-        resolvePlayer(Gdx.graphics.getDeltaTime());
+    public void update(float delta, Phase currPhase, LightingController lightingController) {
+        attackHandler.update(delta, currPhase);
+        resolvePlayer(delta);
         if (currPhase == Phase.STEALTH) {
-            resolveStealth(Gdx.graphics.getDeltaTime());
+            resolveStealth(delta);
         }
         if (currPhase == GameplayController.Phase.STEALTH) {
-            resolveMoonlight(Gdx.graphics.getDeltaTime(), lightingController);
+            resolveMoonlight(lightingController);
         }
 
         // Process the FSM

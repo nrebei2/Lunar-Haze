@@ -4,7 +4,10 @@ import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
 import com.badlogic.gdx.ai.utils.Location;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
+import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.util.AngleUtils;
 
 
@@ -37,7 +40,10 @@ public abstract class SteeringGameObject extends AttackingGameObject implements 
     /**
      * The current behavior that defines the movement of this object.
      */
-    protected SteeringBehavior<Vector2> steeringBehavior;
+    public SteeringBehavior<Vector2> steeringBehavior;
+
+    /** Clamped linear output from steering behavior */
+    protected Vector2 clampedLinear;
 
     /**
      * Cache for output from steeringBehavior
@@ -47,6 +53,7 @@ public abstract class SteeringGameObject extends AttackingGameObject implements 
     public SteeringGameObject(boolean independentFacing) {
         super();
         setIndependentFacing(independentFacing);
+        clampedLinear = new Vector2();
     }
 
     public boolean isIndependentFacing() {
@@ -76,8 +83,9 @@ public abstract class SteeringGameObject extends AttackingGameObject implements 
      * @param vector        The vector whose direction is to be clamped. This vector is modified in place.
      * @param epsilonDegree The maximum allowable deviation from a cardinal direction, in degrees.
      */
-    public void clampToCardinal(Vector2 vector, float epsilonDegree) {
-        float angle = vector.angleDeg();
+    public Vector2 clampToCardinal(Vector2 vector, float epsilonDegree) {
+        clampedLinear.set(vector);
+        float angle = clampedLinear.angleDeg();
         float nearest = 0f;
         float minDiff = 180f;
 
@@ -93,17 +101,19 @@ public abstract class SteeringGameObject extends AttackingGameObject implements 
 
         if (minDiff > epsilonDegree) {
             if (angle - nearest > 0 && 180 > angle - nearest) {
-                vector.setAngleDeg(nearest + epsilonDegree);
+                clampedLinear.setAngleDeg(nearest + epsilonDegree);
             } else {
-                vector.setAngleDeg(nearest - epsilonDegree);
+                clampedLinear.setAngleDeg(nearest - epsilonDegree);
             }
         }
+
+        return clampedLinear;
     }
 
 
     /**
      * Calculates and applies the appropriate linear and angular acceleration using the current steering behavior.
-     * Taken from https://github.com/libgdx/gdx-ai/blob/master/tests/src/com/badlogic/gdx/ai/tests/steer/box2d/Box2dSteeringEntity.java.
+     * Adapted from https://github.com/libgdx/gdx-ai/blob/master/tests/src/com/badlogic/gdx/ai/tests/steer/box2d/Box2dSteeringEntity.java.
      */
     protected void applySteering(float deltaTime) {
         steeringBehavior.calculateSteering(steeringOutput);
@@ -113,8 +123,7 @@ public abstract class SteeringGameObject extends AttackingGameObject implements 
         if (!steeringOutput.linear.isZero()) {
             clampToCardinal(steeringOutput.linear, 25);
 
-             //body.applyForceToCenter(steeringOutput.linear, true);
-            body.setLinearVelocity(steeringOutput.linear.x, steeringOutput.linear.y);
+            body.setLinearVelocity(clampedLinear.x, clampedLinear.y);
             anyAccelerations = true;
         }
 
@@ -126,8 +135,9 @@ public abstract class SteeringGameObject extends AttackingGameObject implements 
                 anyAccelerations = true;
             }
         } else {
-            // If we haven't got any velocity, then we can do nothing.
-            Vector2 linVel = getLinearVelocity();
+            // Use the un-clamped output to set the orientation
+            // This is so the flashlights rotate smoothly
+            Vector2 linVel = steeringOutput.linear;
             if (!linVel.isZero(getZeroLinearSpeedThreshold())) {
                 float newOrientation = vectorToAngle(linVel);
                 body.setTransform(body.getPosition(), newOrientation);
@@ -259,6 +269,22 @@ public abstract class SteeringGameObject extends AttackingGameObject implements 
     @Override
     public void setMaxAngularAcceleration(float maxAngularAcceleration) {
         this.maxAngularAcceleration = maxAngularAcceleration;
+    }
+
+    /**
+     * DEBUG, draws the clamped steering output in PINK, and the un-clamped output in ORANGE
+     */
+    public void drawSteeringOutput(GameCanvas canvas) {
+        if (steeringBehavior == null) return;
+        steeringBehavior.calculateSteering(steeringOutput);
+        clampToCardinal(steeringOutput.linear, 25);
+
+        canvas.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        canvas.shapeRenderer.setColor(Color.ORANGE);
+        canvas.shapeRenderer.rectLine(getPosition().cpy(), getPosition().cpy().add(steeringOutput.linear), 0.1f);
+        canvas.shapeRenderer.setColor(Color.PINK);
+        canvas.shapeRenderer.rectLine(getPosition().cpy(), getPosition().cpy().add(clampedLinear), 0.1f);
+        canvas.shapeRenderer.end();
     }
 
     /**

@@ -131,7 +131,7 @@ public class LevelParser {
         }
 
         // create pathfinder
-        float playerSize = levelContainer.getPlayer().getBoundingRadius() * 2f;
+        float playerSize = levelContainer.getPlayer().getBoundingRadius();
         levelContainer.createPathFinder(new Vector2(playerSize, playerSize));
 
         // Generate enemies

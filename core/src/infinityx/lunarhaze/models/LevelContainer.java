@@ -3,6 +3,7 @@ package infinityx.lunarhaze.models;
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
@@ -616,8 +617,10 @@ public class LevelContainer {
             for (EnemyController e : getActiveControllers()) {
                 e.drawGizmo(canvas);
                 e.drawDetection(canvas);
+                e.getEnemy().drawSteeringOutput(canvas);
             }
-            pathfinder.map.drawMap(canvas);
+            if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT))
+                pathfinder.map.drawMap(canvas);
             canvas.end();
         }
     }

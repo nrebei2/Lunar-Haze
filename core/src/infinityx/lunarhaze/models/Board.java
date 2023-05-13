@@ -430,7 +430,6 @@ public class Board {
      */
     public Boolean isCollectable(int x, int y) {
         if (!inBounds(x, y)) {
-            Gdx.app.error("Board", "Illegal tile " + x + "," + y, new IndexOutOfBoundsException());
             return false;
         }
         Tile t = getTile(x, y);

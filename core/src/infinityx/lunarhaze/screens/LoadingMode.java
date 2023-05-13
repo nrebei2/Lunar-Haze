@@ -271,7 +271,7 @@ public class LoadingMode extends ScreenObservable implements Screen {
      * @param delta Number of seconds since last animation frame
      */
     private void update(float delta) {
-        stateTime += Gdx.graphics.getDeltaTime();
+        stateTime += delta;
         if (!set_lobby) {
             lobby_background.setLooping(true);
             lobby_background.play();

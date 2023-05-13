@@ -218,13 +218,6 @@ public class GameCanvas {
     }
 
     /**
-     * Scaling factors for world to screen translation. Use to map lengths, for positions use {@link #WorldToScreenX(float)} and Y
-     */
-    public Vector2 getWorldToScreen() {
-        return worldToScreen;
-    }
-
-    /**
      * represent a map from screen coordinates to world coordinates.
      *
      * @param view world view translation

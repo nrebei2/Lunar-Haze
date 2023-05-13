@@ -395,18 +395,19 @@ public class EnemyController {
      * @param delta time between last frame in seconds
      */
     public void update(LevelContainer container, float delta) {
+        time += delta;
         attackHandler.update(delta);
         if (enemy.hp <= 0) {
             container.removeEnemy(enemy);
         }
 
-        if (enemy.isInBattle() && stateMachine.getCurrentState() != EnemyState.ALERT) {
+        if (enemy.isInBattle() && stateMachine.getCurrentState() != EnemyState.ALERT && !enemy.isAttacking()) {
             stateMachine.changeState(EnemyState.ALERT);
         }
 
         // Process the FSM
-        enemy.update(delta);
         stateMachine.update();
+        enemy.update(delta);
         if (enemy.getDetection() == Enemy.Detection.NOTICED) {
             alert_sound.play();
         }

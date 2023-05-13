@@ -413,6 +413,7 @@ public class UIRender {
                 float scale = level.getPlayer().getNoiseRadius() * 0.63f;
                 Color color = Color.WHITE;
 
+                // Color depending on if there is an alerted or noticed/indicated enemy
                 outer:
                 for (Enemy enemy : level.getEnemies()) {
                     switch (enemy.getDetection()) {
@@ -768,6 +769,12 @@ public class UIRender {
                 canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f + UIFont_small.getCapHeight());
     }
 
+    float expSustainedImpulse( float x, float f, float k )
+    {
+        double s = Math.max(x-f,0.0);
+        return 0.5f * (float) Math.min( x*x/(f*f), 1.0+(2.0/f)*s*Math.exp(-k*s));
+    }
+
     /**
      * Draw the stealth indicator above enemies
      */
@@ -780,13 +787,14 @@ public class UIRender {
                     // Draw with view transform considered
                     canvas.begin(GameCanvas.DrawPass.SPRITE, level.getView().x, level.getView().y);
                     Texture tex = enemy.getDetection() == Enemy.Detection.ALERT ? alert : noticed;
+                    float scale = expSustainedImpulse(enemy.detectionTime, 0.1f, 10);
                     canvas.draw(
                             tex,
                             Color.WHITE,
-                            tex.getWidth() / 2, tex.getHeight() / 2,
-                            canvas.WorldToScreenX(enemy.getPosition().x) - 10,
-                            canvas.WorldToScreenY(enemy.getPosition().y) + enemy.getTextureHeight(), 0,
-                            0.5f, 0.5f
+                            tex.getWidth() / 2, 0,
+                            canvas.WorldToScreenX(enemy.getPosition().x),
+                            canvas.WorldToScreenY(enemy.getPosition().y) + enemy.getTextureHeight() - 25, 0,
+                            scale, scale
                     );
                     canvas.end();
                     break;
@@ -796,8 +804,8 @@ public class UIRender {
                     canvas.begin(GameCanvas.DrawPass.SHADER, level.getView().x, level.getView().y);
                     canvas.drawShader(
                             meter,
-                            canvas.WorldToScreenX(enemy.getPosition().x) - 38,
-                            canvas.WorldToScreenY(enemy.getPosition().y) + enemy.getTextureHeight() - 25,
+                            canvas.WorldToScreenX(enemy.getPosition().x) - 28,
+                            canvas.WorldToScreenY(enemy.getPosition().y) + enemy.getTextureHeight() - 15,
                             50, 50,
                             meterUniform);
                     canvas.end();

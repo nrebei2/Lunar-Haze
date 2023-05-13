@@ -62,28 +62,28 @@ public class AStarPathFinding {
      * @return Path from source to target using A*
      */
     public Path findPath(Vector2 source, Vector2 target) {
-        // World to grid
+        // Check adjacent nodes if source or target node is an obstacle
         Node sourceNode = map.getNodeAtWorld(source.x, source.y);
         if (sourceNode.isObstacle) {
-            for (Connection<Node> neighbor : sourceNode.getConnections()) {
-                Node next = neighbor.getToNode();
-                float dot = target.dot(next.position) - target.dot(source) - source.dot(next.position) + source.len2();
-                if (!next.isObstacle && dot < 0) sourceNode = next;
+            for (int i = -1; i < 2; i++) {
+                for (int j = -1; j < 2; j++) {
+                    Node next = map.getNodeAt(sourceNode.x + i, sourceNode.y + j);
+                    float dot = target.dot(next.position) - target.dot(source) - source.dot(next.position) + source.len2();
+                    if (!next.isObstacle && dot < 0) sourceNode = next;
+                }
             }
         }
-        if (sourceNode.isObstacle) System.out.println("ASKDKASDAKSHDA");
 
         Node targetNode = map.getNodeAtWorld(target.x, target.y);
         if (targetNode.isObstacle) {
-            for (Connection<Node> neighbor : targetNode.getConnections()) {
-                Node next = neighbor.getToNode();
-                float dot = source.dot(next.position) - source.dot(target) - target.dot(next.position) + target.len2();
-                if (!next.isObstacle && dot < 0) targetNode = next;
+            for (int i = -1; i < 2; i++) {
+                for (int j = -1; j < 2; j++) {
+                    Node next = map.getNodeAt(targetNode.x + i, targetNode.y + j);
+                    float dot = source.dot(next.position) - source.dot(target) - target.dot(next.position) + target.len2();
+                    if (!next.isObstacle && dot < 0) targetNode = next;
+                }
             }
         }
-
-
-        if (targetNode.isObstacle) System.out.println("ASKDKASDAKSHDA");
 
         connectionPath.clear();
         pathfinder.searchNodePath(sourceNode, targetNode, heuristic, connectionPath);

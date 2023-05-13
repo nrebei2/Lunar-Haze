@@ -203,7 +203,7 @@ public class GameplayController {
         // FSM for state and phase
         if (gameState == GameState.PLAY) {
             // Process the player only when the game is in play
-            playerController.update(phase, lightingController);
+            playerController.update(delta, phase, lightingController);
             switch (phase) {
                 case STEALTH:
                     lightingController.update(delta);
