@@ -81,7 +81,7 @@ public class AStarMap {
      * @return Node at position (x, y)
      */
     public Node getNodeAt(int x, int y) {
-        return map[x][y];
+        return map[MathUtils.clamp(x, 0, width - 1)][MathUtils.clamp(y, 0, height - 1)];
     }
 
     /**

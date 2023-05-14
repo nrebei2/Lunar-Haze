@@ -758,7 +758,6 @@ public class LevelSelectionMode extends ScreenObservable implements Screen, Inpu
             pressBackState = 1;
         }
 
-        // TODO: Fix scaling
         // Level button is a circle.
         float radius1 = BUTTON_SCALE * scale * level1.getWidth() / 2.0f;
         float dist1 = (screenX - centerX_column1) * (screenX - centerX_column1) + (screenY - centerY_row1) * (screenY - centerY_row1);

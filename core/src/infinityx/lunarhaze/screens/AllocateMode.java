@@ -368,8 +368,6 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
             active = false;
             playerController.setAllocateReady(true);
             gameMode.getGameplayController().setPhase(GameplayController.Phase.BATTLE);
-            // TODO: ?
-            // playerController.player.maxHp = playerController.player.hp;
             observer.exitScreen(this, GO_PLAY);
         }
     }

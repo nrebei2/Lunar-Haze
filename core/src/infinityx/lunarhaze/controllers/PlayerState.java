@@ -168,22 +168,6 @@ public enum PlayerState implements State<PlayerController> {
     },
 
     /**
-     * The player is currently dashing
-     */
-    DASH() {
-        // TODO: Add state transitions to DASH from other states
-        @Override
-        public void enter(PlayerController entity) {
-            // TODO: Update frame logic
-        }
-
-        @Override
-        public void update(PlayerController entity) {
-            // TODO: Add state transitions to other states
-        }
-    },
-
-    /**
      * The player is currently winding up for heavy attack
      */
     HEAVY_ATTACK_WINDUP() {

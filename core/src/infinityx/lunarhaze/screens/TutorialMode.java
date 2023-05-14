@@ -341,7 +341,6 @@ public class TutorialMode extends ScreenObservable implements Screen, InputProce
         // Flip to match graphics coordinates
         screenY = heightY - screenY;
 
-        // TODO: Fix scaling
         float x = BUTTON_SCALE * scale * backButton.getWidth() / 2;
         float distX = Math.abs(screenX - centerX);
         float y = BUTTON_SCALE * scale * backButton.getHeight() / 2;

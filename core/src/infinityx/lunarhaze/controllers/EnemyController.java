@@ -168,6 +168,10 @@ public class EnemyController {
         alert_sound = s;
     }
 
+    private Enemy.Detection cachedDetection;
+
+    /** Used so the detection only updates once every interval */
+    private float detectionTime;
 
     /**
      * Creates an EnemyController for the given enemy.
@@ -190,6 +194,7 @@ public class EnemyController {
         this.enemy = enemy;
         this.stateMachine = new DefaultStateMachine<>(this, EnemyState.INIT, EnemyState.ANY_STATE);
         this.combinedContext = new CombinedContext(enemy);
+        cachedDetection = Enemy.Detection.NONE;
 
         this.raycast = new RaycastInfo(enemy) {
             @Override
@@ -200,8 +205,8 @@ public class EnemyController {
                 if (objHit == requestingObject || ignore.contains(objHit.getType())) {
                     return 1;
                 }
-
-                outputCollision.set(point, normal);
+                if (outputCollision != null)
+                    outputCollision.set(point, normal);
                 this.fixture = fixture;
                 this.fraction = fraction;
                 this.hit = fraction != 0;
@@ -226,8 +231,8 @@ public class EnemyController {
                 if (objHit.getType() == GameObject.ObjectType.SCENE && ((SceneObject) objHit).isSeeThru()) {
                     return 1;
                 }
-
-                outputCollision.set(point, normal);
+                if (outputCollision != null)
+                    outputCollision.set(point, normal);
                 this.fixture = fixture;
                 this.fraction = fraction;
                 this.hit = fraction != 0;
@@ -246,6 +251,7 @@ public class EnemyController {
      * @param container holding surrounding model objects
      */
     public void populate(final LevelContainer container) {
+        detectionTime = 0;
         target = container.getPlayer();
         this.raycastCollision = new Box2DRaycastCollision(container.getWorld(), detectionCast);
         raycastCollision
@@ -342,7 +348,6 @@ public class EnemyController {
         followPathAvoid.add(avoidSB);
         followPathAvoid.add(followPathSB);
 
-        //Resolution is set to 8 to represent the 8 directions in which enemies can move
         this.battleSB = new ContextSteering(enemy, combinedContext, 30);
     }
 
@@ -395,6 +400,7 @@ public class EnemyController {
      * @param delta time between last frame in seconds
      */
     public void update(LevelContainer container, float delta) {
+        detectionTime += delta;
         time += delta;
         attackHandler.update(delta);
         if (enemy.hp <= 0) {
@@ -411,6 +417,21 @@ public class EnemyController {
         if (enemy.getDetection() == Enemy.Detection.NOTICED) {
             alert_sound.play();
         }
+
+        // If the enemy is alerted and the player is close enough, force the flashlight to always shine on the player
+        switch (enemy.getDetection()) {
+            case ALERT:
+            case INDICATOR:
+                if (getDetection() != Enemy.Detection.NONE) {
+                    enemy.getFlashlight().updateDirection(false);
+                    Vector2 enemyToTarget = target.getPosition().sub(enemy.getPosition());
+                    enemy.getFlashlight().setDirection(enemyToTarget.angleDeg());
+                    break;
+                }
+            case NOTICED:
+            case NONE:
+                enemy.getFlashlight().updateDirection(true);
+        }
     }
 
 
@@ -426,6 +447,11 @@ public class EnemyController {
          * Lerp between player stealth for max distance,
          * but maybe add cutoffs for NONE?
          */
+        if (enemy.isInBattle()) return Enemy.Detection.ALERT;
+        if (detectionTime < 0.5f) {
+            return cachedDetection;
+        }
+        detectionTime = 0;
 
         // Fake range increasing for ALERT and INDICATOR
         float stealth = target.getStealth();
@@ -434,18 +460,13 @@ public class EnemyController {
         } else if (enemy.getDetection() == Enemy.Detection.INDICATOR) {
             stealth *= 1.2f;
         }
-        if (getTarget().isOnMoonlight) {
-            stealth *= 2;
-        }
-
-        // TODO: right now there is no difference in logic between a return of ALERT and NOTICED
-        if (enemy.isInBattle()) return Enemy.Detection.ALERT;
 
         Interpolation lerp = Interpolation.linear;
         raycastCollision.findCollision(collCache, rayCache.set(enemy.getPosition(), target.getPosition()));
 
         if (!detectionCast.hit) {
             // For any reason...
+            cachedDetection = Enemy.Detection.NONE;
             return Enemy.Detection.NONE;
         }
 
@@ -457,20 +478,25 @@ public class EnemyController {
 
         if (detectionCast.hitObject == target) {
             if (degree <= enemy.getFlashlight().getConeDegree() / 2 && dist <= lerp.apply(FOCUSED_MIN, FOCUSED_MAX, stealth)) {
+                cachedDetection = Enemy.Detection.ALERT;
                 return Enemy.Detection.ALERT;
             }
             if (degree <= 50 && dist <= lerp.apply(SHORT_MIN, SHORT_MAX, stealth)) {
+                cachedDetection = Enemy.Detection.ALERT;
                 return Enemy.Detection.ALERT;
             }
             if (degree <= 90 && dist <= lerp.apply(PERIPHERAL_MIN, PERIPHERAL_MAX, stealth)) {
+                cachedDetection = Enemy.Detection.ALERT;
                 return Enemy.Detection.ALERT;
             }
             if (dist <= target.getNoiseRadius()) {
+                cachedDetection = Enemy.Detection.NOTICED;
                 return Enemy.Detection.NOTICED;
             }
         }
 
         // Target is too far away
+        cachedDetection = Enemy.Detection.NONE;
         return Enemy.Detection.NONE;
     }
 
@@ -487,9 +513,6 @@ public class EnemyController {
             stealth *= 1.5f;
         } else if (enemy.getDetection() == Enemy.Detection.INDICATOR) {
             stealth *= 1.2f;
-        }
-        if (getTarget().isOnMoonlight) {
-            stealth *= 2;
         }
 
         Interpolation lerp = Interpolation.linear;

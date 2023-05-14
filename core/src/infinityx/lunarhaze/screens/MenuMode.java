@@ -479,7 +479,6 @@ public class MenuMode extends ScreenObservable implements Screen, InputProcessor
 
         //System.out.printf("%d, %d", screenX, screenY);
 
-        // TODO: Fix scaling
         // Button are rectangles with same x-coordinate and shapes.
         float x = BUTTON_SCALE * scale * playButton.getWidth() / 2;
         float distX = Math.abs(screenX - centerX);
