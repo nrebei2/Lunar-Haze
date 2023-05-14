@@ -24,8 +24,6 @@ public class SmoothGraphPath<N extends Node> extends DefaultGraphPath<N> impleme
 
     @Override
     public void swapNodes(int index1, int index2) {
-// x.swap(index1, index2);
-// y.swap(index1, index2);
         nodes.set(index1, nodes.get(index2));
     }
 
@@ -33,5 +31,7 @@ public class SmoothGraphPath<N extends Node> extends DefaultGraphPath<N> impleme
     public void truncatePath(int newLength) {
         nodes.truncate(newLength);
     }
+
+
 
 }

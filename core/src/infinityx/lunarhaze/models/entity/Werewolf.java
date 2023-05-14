@@ -292,7 +292,6 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
         canMove = canMove && !heavyLockedOut && !isCollecting;
 
         if (heavyLockedOut) {
-            // TODO: Change frame to show that the werewolf is locked out? If needed
             heavyLockoutTime -= delta;
             if (heavyLockoutTime <= 0)
                 heavyLockedOut = false;

@@ -50,8 +50,6 @@ public class PlayerAttackHandler extends MeleeHandler {
         return dashCooldownCounter;
     }
 
-    //TODO: Make the attack cooldowns and attack lengths decrease with moonlight collected
-
     /**
      * See {@link #update(float)}
      *

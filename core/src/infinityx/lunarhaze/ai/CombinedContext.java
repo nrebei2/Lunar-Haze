@@ -57,7 +57,7 @@ public class CombinedContext extends ContextBehavior {
 
         // Get max for each slot
         for (ContextBehavior behavior : behaviors) {
-            behavior.calculateRealMaps(map);
+            behavior.calculateMaps(map);
             for (int i = 0; i < map.getResolution(); i++) {
                 dangerOutput.set(i, Math.max(dangerOutput.get(i), map.dangerMap[i]));
                 interestOutput.set(i, Math.max(interestOutput.get(i), map.interestMap[i]));

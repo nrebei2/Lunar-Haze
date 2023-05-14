@@ -15,7 +15,7 @@ public class Node {
     /**
      * Index of the node in an array. Libgdx's assumes all the nodes representing a map are stored in an array
      */
-    private final int index;
+    private int index;
 
     /**
      * World position assigned to this node. Represents the center of the grid tile
@@ -25,12 +25,12 @@ public class Node {
     /**
      * Edges from this node to another node
      */
-    private final Array<Connection<Node>> connections;
+    private Array<Connection<Node>> connections;
 
     /**
      * Grid position in map
      */
-    public final int x, y;
+    public int x, y;
 
     /**
      * Create a new Node with attributes
@@ -48,6 +48,13 @@ public class Node {
         this.index = x * map.getHeight() + y;
         this.isObstacle = false;
         this.connections = new Array<>();
+    }
+
+    /**
+     * Creates a new Node with only its position attribute defined
+     */
+    public Node(float wx, float wy) {
+        this.position = new Vector2(wx, wy);
     }
 
     public int getIndex() {

@@ -391,7 +391,6 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
         // Flip to match graphics coordinates
         screenY = heightY - screenY;
 
-        // TODO: Fix scaling
         float x_back = BUTTON_SCALE * scale * backButton.getWidth() / 2;
         float distX_back = Math.abs(screenX - centerX);
         float y_back = BUTTON_SCALE * scale * backButton.getHeight() / 2;

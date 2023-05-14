@@ -395,7 +395,6 @@ public class PauseMode extends ScreenObservable implements Screen, InputProcesso
         // Flip to match graphics coordinates
         screenY = heightY - screenY;
 
-        // TODO: Fix scaling
         // Button are rectangles with same x-coordinate and shapes.
         float x = BUTTON_SCALE * scale * pause_resume.getWidth() / 2;
         float distX = Math.abs(screenX - centerX);

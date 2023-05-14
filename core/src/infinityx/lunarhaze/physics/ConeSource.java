@@ -3,6 +3,8 @@ package infinityx.lunarhaze.physics;
 import box2dLight.ConeLight;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Filter;
 
 /**
@@ -22,6 +24,9 @@ public class ConeSource extends ConeLight implements LightSource {
      * Copy of the collision filter.  Necessary because the original version is private
      */
     protected Filter collisions;
+
+    /** Whether direction should update with body if parented */
+    private boolean updateDirection;
 
     /**
      * Creates light shaped as a circle with default radius, color and cone settings.
@@ -43,6 +48,7 @@ public class ConeSource extends ConeLight implements LightSource {
      */
     public ConeSource(RayHandler rayHandler, int rays) {
         super(rayHandler, rays, DEFAULT_COLOR, DEFAULT_DISTANCE, 0, 0, 0, DEFAULT_ANGLE);
+        updateDirection = true;
     }
 
     /**
@@ -97,6 +103,36 @@ public class ConeSource extends ConeLight implements LightSource {
     public ConeSource(RayHandler rayHandler, int rays, Color color, float distance,
                       float x, float y, float direction, float coneDegree) {
         super(rayHandler, rays, color, distance, x, y, direction, coneDegree);
+    }
+
+    /** If parented to a body, whether the direction will update */
+    public void updateDirection(boolean update) {
+        updateDirection = update;
+    }
+
+    @Override
+    protected void updateBody() {
+        if (body == null || staticLight) return;
+
+        final Vector2 vec = body.getPosition();
+        if (!updateDirection) {
+            float angle = getDirection() * MathUtils.degreesToRadians;
+            final float cos = MathUtils.cos(angle);
+            final float sin = MathUtils.sin(angle);
+            final float dX = bodyOffsetX * cos - bodyOffsetY * sin;
+            final float dY = bodyOffsetX * sin + bodyOffsetY * cos;
+            start.x = vec.x + dX;
+            start.y = vec.y + dY;
+        } else {
+            float angle = body.getAngle();
+            final float cos = MathUtils.cos(angle);
+            final float sin = MathUtils.sin(angle);
+            final float dX = bodyOffsetX * cos - bodyOffsetY * sin;
+            final float dY = bodyOffsetX * sin + bodyOffsetY * cos;
+            start.x = vec.x + dX;
+            start.y = vec.y + dY;
+            setDirection(bodyAngleOffset + angle * MathUtils.radiansToDegrees);
+        }
     }
 
     @Override

@@ -2,7 +2,7 @@
 "0": {
 	"settings": {
 		"transition": 4,
-		"phaseLength": 50000,
+		"phaseLength": 0,
 		"enemy-spawner": {
 			"count": 0,
 			"add-tick": [ 0.0, 0.0 ],
@@ -38,7 +38,7 @@
 				[ 31, 5 ]
 			],
 			"lighting": {
-				"color": [ 1.0, 0.0, 0.0, 0.9843137264251709 ],
+				"color": [ 1.0, 1.0, 1.0, 0.20000000298023224 ],
 				"distance": 2.5,
 				"rays": 40,
 				"soft": true

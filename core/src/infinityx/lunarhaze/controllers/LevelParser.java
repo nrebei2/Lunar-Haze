@@ -132,7 +132,7 @@ public class LevelParser {
 
         // create pathfinder
         float playerSize = levelContainer.getPlayer().getBoundingRadius();
-        levelContainer.createPathFinder(new Vector2(playerSize, playerSize));
+        levelContainer.createPathFinder(new Vector2(playerSize * 1.5f, playerSize));
 
         // Generate enemies
         JsonValue enemies = scene.get("enemies");
@@ -266,6 +266,8 @@ public class LevelParser {
         rayhandler.setAmbientLight(stealth[0], stealth[1], stealth[2], stealth[3]);
         levelContainer.setStealthAmbience(stealth);
         levelContainer.setBattleAmbience(battle);
+
+        rayhandler.setBlur(false);
     }
 
     /**

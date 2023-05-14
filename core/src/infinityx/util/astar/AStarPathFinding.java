@@ -6,9 +6,15 @@ import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
 import com.badlogic.gdx.ai.steer.utils.Path;
 import com.badlogic.gdx.ai.steer.utils.paths.LinePath;
+import com.badlogic.gdx.ai.utils.RaycastCollisionDetector;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import infinityx.lunarhaze.models.GameObject;
+import infinityx.lunarhaze.models.entity.SceneObject;
+import infinityx.lunarhaze.physics.Box2DRaycastCollision;
+import infinityx.lunarhaze.physics.RaycastInfo;
 
 /**
  * A* pathfinding utility class
@@ -32,7 +38,7 @@ public class AStarPathFinding {
     /**
      * The output path for pathfinder
      */
-    private final SmoothableGraphPath<Node, Vector2> connectionPath;
+    private final SmoothGraphPath<Node> connectionPath;
 
     /**
      * Waypoints cache for findPath
@@ -52,6 +58,27 @@ public class AStarPathFinding {
             public float estimate(Node node, Node endNode) {
                 // Euclidean distance, enemy should prefer diagonal movement if possible
                 return endNode.position.dst(node.position);
+            }
+        };
+
+        RaycastInfo collRay = new RaycastInfo(null) {
+            @Override
+            public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
+                // Right now, all hit bodies are contained in GameObjects
+                GameObject objHit = (GameObject) fixture.getBody().getUserData();
+
+                if (ignore.contains(objHit.getType())) {
+                    return 1;
+                }
+
+                outputCollision.set(point, normal);
+                this.fixture = fixture;
+                this.fraction = fraction;
+                this.hit = fraction != 0;
+                if (this.hit) {
+                    this.hitObject = objHit;
+                }
+                return fraction;
             }
         };
     }

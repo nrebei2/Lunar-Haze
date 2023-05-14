@@ -244,15 +244,6 @@ public class GameplayController {
         if (!(phase == Phase.TRANSITION || phase == Phase.ALLOCATE)) {
             resolveEnemies(delta);
         }
-
-        // TODO: for convenience, remove later
-        if (Gdx.input.isKeyPressed(Input.Keys.PERIOD)) {
-            gameState = GameState.WIN;
-        }
-
-        if (Gdx.input.isKeyPressed(Input.Keys.COMMA)) {
-            gameState = GameState.OVER;
-        }
     }
 
     /**
