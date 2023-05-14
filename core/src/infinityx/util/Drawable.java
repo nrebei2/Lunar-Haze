@@ -38,4 +38,8 @@ public interface Drawable {
      */
     void setDestroyed(boolean destroyed);
 
+    /**
+     * Returns an identifier that groups similar drawables together
+     */
+    int getID();
 }

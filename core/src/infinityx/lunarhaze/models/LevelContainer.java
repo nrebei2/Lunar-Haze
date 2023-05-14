@@ -6,12 +6,15 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.TimeUtils;
 import infinityx.assets.AssetDirectory;
@@ -121,13 +124,12 @@ public class LevelContainer {
     /**
      * Holds references to all drawable entities on the level (i.e. sceneObjects, player, enemies)
      */
-    private Array<Drawable> drawables;
-    private final DrawableCompare drawComp = new DrawableCompare();
+    private IntMap<Array<Drawable>> drawables;
 
     /**
-     * The backing set for garbage collection
+     * The backing map for garbage collection
      */
-    private Array<Drawable> backing;
+    private IntMap<Array<Drawable>> backing = new IntMap<>();
 
     /**
      * Constants for enemy initialization
@@ -178,7 +180,14 @@ public class LevelContainer {
 
     private boolean debugPressed;
 
+    /**
+     * Custom light shader
+     */
     private final ShaderProgram lightShader;
+
+    /**
+     * Total time (in seconds) since initialized
+     */
     private float totalTime;
 
     /**
@@ -193,8 +202,8 @@ public class LevelContainer {
         RayHandler.setGammaCorrection(true);
         RayHandler.useDiffuseLight(true);
 
-        drawables = new Array<>();
-        backing = new Array<>();
+        drawables = new IntMap<>();
+        backing = new IntMap<>();
         lampLights = new Array<>();
 
         // There will always be a player
@@ -272,7 +281,7 @@ public class LevelContainer {
     public Enemy addEnemy(Enemy enemy, EnemyController enemyController) {
         activeEnemies.add(enemy);
         activeControllers.add(enemyController);
-        addDrawables(enemy);
+        addDrawable(enemy);
         //if (enemy.getEnemyType() == Enemy.EnemyType.Villager)
         //    addDrawables(((Villager) enemy).attackHitbox);
 
@@ -288,12 +297,12 @@ public class LevelContainer {
     }
 
     /**
-     * @param enemy           enemy to append to enemy list
+     * @param enemy enemy to append to enemy list
      * @return enemy added
      */
     public Enemy addEnemy(Enemy enemy) {
         activeEnemies.add(enemy);
-        addDrawables(enemy);
+        addDrawable(enemy);
         enemy.setActive(true);
         enemy.getFlashlight().setActive(true);
 
@@ -318,7 +327,7 @@ public class LevelContainer {
         }
 
         activeEnemies.removeValue(enemy, true);
-        drawables.removeValue(enemy, true);
+        enemy.setDestroyed(true);
         enemy.setActive(false);
         enemy.getFlashlight().setActive(false);
     }
@@ -370,10 +379,19 @@ public class LevelContainer {
     }
 
     /**
-     * Add objects for this container to draw.
+     * Add an object for this container to draw.
      */
-    public void addDrawables(Drawable... drawable) {
-        drawables.addAll(drawable);
+    public void addDrawable(Drawable drawable) {
+        Array<Drawable> drawList = drawables.get(drawable.getID());
+
+        if (drawList == null) {
+            drawList = new Array<>();
+            Array backingList = new Array<>();
+            backing.put(drawable.getID(), backingList);
+            drawables.put(drawable.getID(), drawList);
+        }
+
+        drawList.add(drawable);
     }
 
     /**
@@ -441,8 +459,8 @@ public class LevelContainer {
      * @param player
      */
     public void setPlayer(Werewolf player) {
-        drawables.add(player);
-        drawables.add(player.attackHitbox);
+        addDrawable(player);
+        addDrawable(player.attackHitbox);
         this.player = player;
     }
 
@@ -454,7 +472,7 @@ public class LevelContainer {
      * Hide player from drawing. Used for level editor.
      */
     public void hidePlayer() {
-        drawables.removeValue(player, true);
+        player.setDestroyed(true);
         player.setActive(false);
         player.getSpotlight().setActive(false);
     }
@@ -463,7 +481,7 @@ public class LevelContainer {
      * Show player for drawing. Used for level editor.
      */
     public void showPlayer() {
-        drawables.add(player);
+        addDrawable(player);
         player.setActive(true);
         player.getSpotlight().setActive(true);
     }
@@ -494,7 +512,7 @@ public class LevelContainer {
      */
     public SceneObject addSceneObject(SceneObject obj) {
         sceneObjects.add(obj);
-        drawables.add(obj);
+        addDrawable(obj);
         obj.setActive(true);
 
         return obj;
@@ -507,7 +525,7 @@ public class LevelContainer {
      */
     public void removeSceneObject(SceneObject object) {
         sceneObjects.removeValue(object, true);
-        drawables.removeValue(object, true);
+        object.setDestroyed(true);
         object.setActive(false);
     }
 
@@ -530,7 +548,11 @@ public class LevelContainer {
         object.setFlipped(flipped);
 
         if (type.equalsIgnoreCase("lamp")) {
-            PointLight light = new PointLight(rayHandler, 20, new Color(1, 1, 0.8f, 0.7f), 5, x, y);
+            PointLight light = new PointLight(
+                    rayHandler, 20,
+                    new Color(moonlightColor[0], moonlightColor[1], moonlightColor[2], moonlightColor[3]),
+                    5, x, y
+            );
             light.setActive(true);
 
             lampLights.add(light);
@@ -582,7 +604,6 @@ public class LevelContainer {
      */
     public void drawLevel(float delta, GameCanvas canvas) {
         totalTime += delta;
-        garbageCollect();
 
         //Camera shake logic
         if (CameraShake.timeLeft() > 0) {
@@ -594,14 +615,7 @@ public class LevelContainer {
         canvas.begin(GameCanvas.DrawPass.SPRITE, view.x, view.y);
         board.draw(canvas);
 
-        // Uses timsort, so O(n) if already sorted, which is nice since it usually will be
-        // TODO: if this ever becomes a bottleneck, we can instead add the
-        //  depth as the z-position so OpenGL's depth buffer can do all the work
-        drawables.sort(drawComp);
-        for (Drawable d : drawables) {
-            d.draw(canvas);
-        }
-
+        drawAndGarbageCollect(canvas);
         // The scene objects rendered before the player (behind) should not become transparent
         canvas.playerCoords.set(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
 
@@ -638,22 +652,32 @@ public class LevelContainer {
     }
 
     /**
-     * Remove all objects set as destroyed from drawing queue.
+     * Remove all objects set as destroyed from drawing queue and draw the rest.
      */
-    public void garbageCollect() {
-        // INVARIANT: backing and objects are disjoint
-        for (Drawable o : drawables) {
-            if (!o.isDestroyed()) {
-                backing.add(o);
+    public void drawAndGarbageCollect(GameCanvas canvas) {
+        for (IntMap.Entry<Array<Drawable>> entry : drawables) {
+            int id = entry.key;
+            Array<Drawable> activeDrawables = entry.value;
+            Array<Drawable> backingArray = backing.get(id);
+
+            // Make sure the backing array is clear
+            backingArray.clear();
+
+            // Move the active drawables that are not destroyed to the backing array and draw them
+            for (Drawable drawable : activeDrawables) {
+                if (!drawable.isDestroyed()) {
+                    backingArray.add(drawable);
+                    drawable.draw(canvas);
+                }
             }
         }
+
         // stop-and-copy garbage collection
-        // no removal which is nice since each removal is worst case O(n)
-        Array<Drawable> tmp = backing;
-        backing = drawables;
-        drawables = tmp;
-        backing.clear();
+        IntMap<Array<Drawable>> temp = drawables;
+        drawables = backing;
+        backing = temp;
     }
+
 
     // used in pathfinder obstacle callback
     private boolean scene;
@@ -700,15 +724,5 @@ public class LevelContainer {
 
         //System.out.println(aStarMap);
         pathfinder = new AStarPathFinding(aStarMap);
-    }
-}
-
-/**
- * Depth comparison function used for drawing
- */
-class DrawableCompare implements Comparator<Drawable> {
-    @Override
-    public int compare(Drawable d1, Drawable d2) {
-        return (int) Math.signum(d2.getDepth() - d1.getDepth());
     }
 }

@@ -3,6 +3,7 @@ package infinityx.lunarhaze.screens;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Interpolation;
@@ -399,6 +400,8 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
      */
     public void draw(float delta) {
         canvas.clear(backgroundColor);
+        Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
+
         // Puts player at center of canvas
         levelContainer.setViewTranslation(
                 -canvas.WorldToScreenX(levelContainer.getPlayer().getPosition().x) + canvas.getWidth() / 2,
@@ -408,6 +411,8 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
         // Draw the level
         levelContainer.drawLevel(delta, canvas);
 
+        // Draw UI
+        Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
         switch (gameplayController.getState()) {
             case WIN:
                 displayFont.setColor(Color.YELLOW);
@@ -429,7 +434,6 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
                 canvas.end();
                 break;
             case PLAY:
-                Phase phase = gameplayController.getPhase();
                 uiRender.drawUI(canvas, levelContainer, gameplayController, delta);
                 canvas.beginUI(GameCanvas.DrawPass.SPRITE);
                 Color tintPlay = (pressPauseState == 1 ? color : Color.WHITE);

@@ -16,8 +16,6 @@ import java.util.ArrayList;
 /**
  * Class represents a 2D grid of tiles. The bottom left of the board defines (0, 0) in the world.
  * Wrapper around tile data
- * TODO: make this extend TiledMap? Useful if we will need layers later on. Tile can then extend StaticTiledMapTile.
- * Ref: https://libgdx.com/wiki/graphics/2d/tile-maps
  */
 public class Board {
     /**
@@ -263,7 +261,7 @@ public class Board {
         canvas.draw(
                 tileSheet, Color.WHITE, tileSheet.getRegionWidth() / 2, tileSheet.getRegionHeight() / 2,
                 canvas.WorldToScreenX(boardCenterToWorldX(x)), canvas.WorldToScreenY(boardCenterToWorldY(y)), 0.0f,
-                tileScreenDim.x / tileSheet.getRegionWidth(), tileScreenDim.y / tileSheet.getRegionHeight()
+                tileScreenDim.x / tileSheet.getRegionWidth(), tileScreenDim.y / tileSheet.getRegionHeight(), 1f
         );
     }
 
@@ -331,7 +329,7 @@ public class Board {
         canvas.draw(
                 tileSheet, EditorMode.SELECTED_COLOR, tileSheet.getRegionWidth() / 2, tileSheet.getRegionHeight() / 2,
                 canvas.WorldToScreenX(boardCenterToWorldX(x)), canvas.WorldToScreenY(boardCenterToWorldY(y)), 0.0f,
-                tileScreenDim.x / tileSheet.getRegionWidth(), tileScreenDim.y / tileSheet.getRegionHeight()
+                tileScreenDim.x / tileSheet.getRegionWidth(), tileScreenDim.y / tileSheet.getRegionHeight(), 1
         );
     }
 

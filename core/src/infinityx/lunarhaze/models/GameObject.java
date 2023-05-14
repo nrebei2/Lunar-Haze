@@ -37,7 +37,7 @@ import infinityx.lunarhaze.screens.EditorMode;
 import infinityx.util.Drawable;
 
 /**
- * Base class for most model objects in the game.
+ * Base class for Box2D model objects in the game.
  */
 public abstract class GameObject extends MultiShapeObstacle implements Drawable {
 
@@ -275,13 +275,18 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
     public float getDepth() {
         // For level editor, force to draw above everything
         if (tint.equals(EditorMode.SELECTED_COLOR) || tint.equals(EditorMode.OVERLAPPED_COLOR))
-            return Float.NEGATIVE_INFINITY;
-        return this.getY();
+            return 0;
+        return (this.getY() + 1000) / (2000);
     }
 
     public void draw(GameCanvas canvas) {
         canvas.draw(filmstrip, tint, origin.x, origin.y,
                 canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y), 0.0f,
-                textureScale * scale, textureScale * scale);
+                textureScale * scale, textureScale * scale, getDepth());
+    }
+
+    @Override
+    public int getID() {
+        return filmstrip.getTexture().getTextureObjectHandle();
     }
 }

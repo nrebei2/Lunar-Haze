@@ -78,7 +78,7 @@ public class GameCanvas {
     /**
      * Drawing context to handle textures AND POLYGONS as sprites
      */
-    private PolygonSpriteBatch spriteBatch;
+    public SpriteBatchDepth spriteBatch;
 
     /**
      * Rendering context for drawing shapes
@@ -248,7 +248,7 @@ public class GameCanvas {
      */
     public GameCanvas() {
         active = DrawPass.INACTIVE;
-        spriteBatch = new PolygonSpriteBatch();
+        spriteBatch = new SpriteBatchDepth();
         shapeRenderer = new ShapeRenderer();
         shaderRenderer = new ShaderRenderer();
 
@@ -546,7 +546,7 @@ public class GameCanvas {
     public void clear(Color c) {
         // Clear the screen
         Gdx.gl.glClearColor(c.r, c.g, c.b, c.a);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
     }
 
     /**
@@ -726,7 +726,7 @@ public class GameCanvas {
 
         spriteBatch.setColor(tint);
         // Should match bottom left and top right of camera
-        spriteBatch.draw(image, 0, 0, w, h);
+        spriteBatch.draw(image, 0, 0, w, h, 0);
     }
 
     /**
@@ -740,8 +740,8 @@ public class GameCanvas {
      * @param x     The x-coordinate of the bottom left corner
      * @param y     The y-coordinate of the bottom left corner
      */
-    public void draw(Texture image, float x, float y) {
-        draw(image, Color.WHITE, x, y);
+    public void draw(Texture image, float x, float y, float depth) {
+        draw(image, Color.WHITE, x, y, depth);
     }
 
     /**
@@ -759,7 +759,7 @@ public class GameCanvas {
      * @param x     The x-coordinate of the bottom left corner
      * @param y     The y-coordinate of the bottom left corner
      */
-    public void draw(Texture image, Color tint, float x, float y) {
+    public void draw(Texture image, Color tint, float x, float y, float depth) {
         if (active != DrawPass.SPRITE) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SPRITE", new IllegalStateException());
             return;
@@ -767,7 +767,7 @@ public class GameCanvas {
 
         // Unlike Lab 1, we can shortcut without a master drawing method
         spriteBatch.setColor(tint);
-        spriteBatch.draw(image, x, y);
+        spriteBatch.draw(image, x, y, depth);
     }
 
     /**
@@ -787,7 +787,7 @@ public class GameCanvas {
      * @param width  The texture width
      * @param height The texture height
      */
-    public void draw(Texture image, Color tint, float x, float y, float width, float height) {
+    public void draw(Texture image, Color tint, float x, float y, float width, float height, float depth) {
         if (active != DrawPass.SPRITE) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SPRITE", new IllegalStateException());
             return;
@@ -795,7 +795,7 @@ public class GameCanvas {
 
         // Unlike Lab 1, we can shortcut without a master drawing method
         spriteBatch.setColor(tint);
-        spriteBatch.draw(image, x, y, width, height);
+        spriteBatch.draw(image, x, y, width, height, depth);
     }
 
 
@@ -823,10 +823,10 @@ public class GameCanvas {
      * @param sy    The y-axis scaling factor
      */
     public void draw(Texture image, Color tint, float ox, float oy,
-                     float x, float y, float angle, float sx, float sy) {
+                     float x, float y, float angle, float sx, float sy, float depth) {
         // Call the master drawing method (more efficient that base method)
         holder.setRegion(image);
-        draw(holder, tint, ox, oy, x, y, angle, sx, sy);
+        draw(holder, tint, ox, oy, x, y, angle, sx, sy, depth);
     }
 
     /**
@@ -853,11 +853,11 @@ public class GameCanvas {
      * @param sy    The y-axis scaling factor
      */
     public void draw(Texture image, float alpha, float ox, float oy,
-                     float x, float y, float angle, float sx, float sy) {
+                     float x, float y, float angle, float sx, float sy, float depth) {
         // Call the master drawing method (more efficient that base method)
         holder.setRegion(image);
         alphaCache.a = alpha;
-        draw(holder, alphaCache, ox, oy, x, y, angle, sx, sy);
+        draw(holder, alphaCache, ox, oy, x, y, angle, sx, sy, depth);
     }
 
     /**
@@ -871,14 +871,14 @@ public class GameCanvas {
      * @param x      The x-coordinate of the bottom left corner
      * @param y      The y-coordinate of the bottom left corner
      */
-    public void draw(TextureRegion region, float x, float y) {
+    public void draw(TextureRegion region, float x, float y, float depth) {
         if (active != DrawPass.SPRITE) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SPRITE", new IllegalStateException());
             return;
         }
 
         // Unlike Lab 1, we can shortcut without a master drawing method
-        spriteBatch.draw(region, x, y);
+        spriteBatch.draw(region, x, y, depth);
     }
 
 
@@ -900,7 +900,7 @@ public class GameCanvas {
      * @param width  The texture width
      * @param height The texture height
      */
-    public void draw(TextureRegion region, Color tint, float x, float y, float width, float height) {
+    public void draw(TextureRegion region, Color tint, float x, float y, float width, float height, float depth) {
         if (active != DrawPass.SPRITE) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SPRITE", new IllegalStateException());
             return;
@@ -908,7 +908,7 @@ public class GameCanvas {
 
         // Unlike Lab 1, we can shortcut without a master drawing method
         spriteBatch.setColor(tint);
-        spriteBatch.draw(region, x, y, width, height);
+        spriteBatch.draw(region, x, y, width, height, depth);
     }
 
     /**
@@ -936,12 +936,13 @@ public class GameCanvas {
      * @param angle  The rotation angle (in degrees) about the origin.
      * @param sx     The x-axis scaling factor
      * @param sy     The y-axis scaling factor
+     * @return Whether the mesh was drawn (true) or not (false)
      */
-    public void draw(TextureRegion region, Color tint, float ox, float oy,
-                     float x, float y, float angle, float sx, float sy) {
+    public boolean draw(TextureRegion region, Color tint, float ox, float oy,
+                     float x, float y, float angle, float sx, float sy, float depth) {
         if (active != DrawPass.SPRITE) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SPRITE", new IllegalStateException());
-            return;
+            return false;
         }
 
         computeTransform(ox, oy, x, y, angle, sx, sy);
@@ -951,8 +952,8 @@ public class GameCanvas {
         float y1 = local.m12;
         if (x1 >= camX && x1 <= camX + camWidth && y1 >= camY && y1 <= camY + camHeight) {
             spriteBatch.setColor(tint);
-            spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
-            return;
+            spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local, depth);
+            return true;
         }
 
         float regionHeight = region.getRegionHeight();
@@ -960,8 +961,8 @@ public class GameCanvas {
         float y2 = local.m11 * regionHeight + local.m12;
         if (x2 >= camX && x2 <= camX + camWidth && y2 >= camY && y2 <= camY + camHeight) {
             spriteBatch.setColor(tint);
-            spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
-            return;
+            spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local, depth);
+            return true;
         }
 
         float regionWidth = region.getRegionWidth();
@@ -969,27 +970,60 @@ public class GameCanvas {
         float y3 = local.m10 * regionWidth + local.m11 * regionHeight + local.m12;
         if (x3 >= camX && x3 <= camX + camWidth && y3 >= camY && y3 <= camY + camHeight) {
             spriteBatch.setColor(tint);
-            spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
-            return;
+            spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local, depth);
+            return true;
         }
 
         float x4 = local.m00 * regionWidth + local.m02;
         float y4 = local.m10 * regionWidth + local.m12;
         if (x4 >= camX && x4 <= camX + camWidth && y4 >= camY && y4 <= camY + camHeight) {
             spriteBatch.setColor(tint);
-            spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
-            return;
+            spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local, depth);
+            return true;
         }
 
         // There is a possibility the texture covers the whole screen
         // This check will only work if the angle is 0
         if ((x1 <= camX && x3 >= camX + camWidth) || (y1 <= camY && y3 >= camY + camHeight)) {
             spriteBatch.setColor(tint);
-            spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
-            return;
+            spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local, depth);
+            return true;
         }
 
         // Otherwise, clip
+        return false;
+    }
+
+    public void draw(Texture image, float x, float y) {
+        draw(image, Color.WHITE, x, y, 0);
+    }
+
+    public void draw(Texture image, Color tint, float x, float y) {
+        draw(image, tint, x, y, 0);
+    }
+
+    public void draw(Texture image, Color tint, float x, float y, float width, float height) {
+        draw(image, tint, x, y, width, height, 0);
+    }
+
+    public void draw(Texture image, Color tint, float ox, float oy, float x, float y, float angle, float sx, float sy) {
+        draw(image, tint, ox, oy, x, y, angle, sx, sy, 0);
+    }
+
+    public void draw(Texture image, float alpha, float ox, float oy, float x, float y, float angle, float sx, float sy) {
+        draw(image, alpha, ox, oy, x, y, angle, sx, sy, 0);
+    }
+
+    public void draw(TextureRegion region, float x, float y) {
+        draw(region, x, y, 0);
+    }
+
+    public void draw(TextureRegion region, Color tint, float x, float y, float width, float height) {
+        draw(region, tint, x, y, width, height, 0);
+    }
+
+    public boolean draw(TextureRegion region, Color tint, float ox, float oy, float x, float y, float angle, float sx, float sy) {
+        return draw(region, tint, ox, oy, x, y, angle, sx, sy, 0);
     }
 
 
@@ -1041,38 +1075,6 @@ public class GameCanvas {
         shapeRenderer.line(x0, y0, x1, y1);
         shapeRenderer.end();
     }
-
-    public void drawPhysicsFill(PolygonShape shape, Color color, float x, float y, float angle, float sx, float sy) {
-        if (active != DrawPass.SHAPE) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin(SHAPE)", new IllegalStateException());
-            return;
-        }
-
-        local.setToScaling(sx, sy);
-        local.translate(x, y);
-        local.rotateRad(angle);
-
-        float x0, y0;
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(color);
-        Vector2 vertex = new Vector2();
-        float[] vertices = {};
-        float[] newVertices;
-        for (int ii = 0; ii < shape.getVertexCount(); ii++) {
-            shape.getVertex(ii, vertex);
-            local.applyTo(vertex);
-            x0 = vertex.x;
-            y0 = vertex.y;
-            newVertices = new float[vertices.length + 2];
-            System.arraycopy(vertices, 0, newVertices, 0, vertices.length);
-            newVertices[newVertices.length - 2] = x0;
-            newVertices[newVertices.length - 1] = y0;
-            vertices = newVertices;
-        }
-        shapeRenderer.polygon(vertices);
-        shapeRenderer.end();
-    }
-
 
     /**
      * Update and render lights
@@ -1146,75 +1148,6 @@ public class GameCanvas {
             uniform.apply(shaderRenderer.getShader());
         }
         shaderRenderer.end();
-    }
-
-    /**
-     * Draws text on the upper right corner of the screen.
-     *
-     * @param text   The string to draw
-     * @param font   The font to use
-     * @param offset The y-value offset from the center of the screen.
-     */
-    public void drawTextUpperRight(String text, BitmapFont font, float offset) {
-        if (active != DrawPass.SPRITE) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SPRITE", new IllegalStateException());
-            return;
-        }
-
-        GlyphLayout layout = new GlyphLayout(font, text);
-        float x = getWidth() - layout.width;
-        float y = getHeight() - layout.height / 2.0f;
-        font.draw(spriteBatch, layout, x, y + offset);
-    }
-
-    /**
-     * Draws a solid rectangle at the specified position with the specified width and height
-     *
-     * @param x      The x-coordinate of the rectangle's lower left corner
-     * @param y      The y-coordinate of the rectangle's lower left corner
-     * @param width  The width of the rectangle
-     * @param height The height of the rectangle
-     */
-    public void drawRecAt(float x, float y, float width, float height) {
-        ShapeRenderer barRenderer = new ShapeRenderer();
-        barRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        barRenderer.setColor(Color.YELLOW);
-        barRenderer.rect(x, y, width, height);
-        barRenderer.end();
-    }
-
-    /**
-     * Draws a rectangle outline affected by global transform.
-     *
-     * @param x bottom-left screen x
-     * @param y bottom-left screen y
-     */
-    public void drawBlackFilter() {
-        if (active != DrawPass.SHAPE) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
-            return;
-        }
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(0, 0, 0, 0.5f); // 设置颜色为半透明黑色（50%透明度）
-        shapeRenderer.rect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        shapeRenderer.end();
-    }
-
-    /**
-     * Draws a black filter.
-     *
-     * @param x bottom-left screen x
-     * @param y bottom-left screen y
-     */
-    public void drawRecOutline(float x, float y, float width, float height, Color color) {
-        if (active != DrawPass.SHAPE) {
-            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SHAPE", new IllegalStateException());
-            return;
-        }
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(color);
-        shapeRenderer.rect(x, y, width, height);
-        shapeRenderer.end();
     }
 
     /**

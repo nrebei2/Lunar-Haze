@@ -99,7 +99,7 @@ public class AttackHitbox extends GameObject {
     @Override
     public float getDepth() {
         // Must account offset from position
-        return super.getDepth() + MathUtils.sin(getAngle()) * getHitboxRange();
+        return (getY() + MathUtils.sin(getAngle()) * getHitboxRange() + 1000) / (2000);
     }
 
     @Override

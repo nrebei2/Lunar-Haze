@@ -240,7 +240,10 @@ public class Dust implements Drawable {
      * Once called this particle will begin decaying (disappearing) then become destroyed.
      */
     public void beginDestruction() {
-        this.condition = Condition.DESTROY;
+        condition = Condition.DESTROY;
+        state = DustState.DECAYING;
+        elapsed = 0;
+        fadeTime = MathUtils.random(fadeMin / 2, fadeMax / 2);
     }
 
     /**
@@ -333,7 +336,7 @@ public class Dust implements Drawable {
      */
     @Override
     public float getDepth() {
-        return getY();
+        return (getY() + 1000) / (2000);
     }
 
     /**
@@ -346,11 +349,11 @@ public class Dust implements Drawable {
         if (forUI) {
             canvas.draw(texture, alpha, texture.getWidth() / 2, texture.getHeight() / 2,
                     getPosition().x, getPosition().y + getPosition().z * 3 / 4, textureRot,
-                    textureScale * scale, textureScale * scale);
+                    textureScale * scale, textureScale * scale, getDepth());
         } else {
             canvas.draw(texture, alpha, texture.getWidth() / 2, texture.getHeight() / 2,
                     canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y + getPosition().z * 3 / 4), textureRot,
-                    textureScale * scale, textureScale * scale);
+                    textureScale * scale, textureScale * scale, getDepth());
         }
     }
 
@@ -367,5 +370,10 @@ public class Dust implements Drawable {
     @Override
     public void setDestroyed(boolean destroyed) {
         this.destroyed = destroyed;
+    }
+
+    @Override
+    public int getID() {
+        return texture.getTextureObjectHandle();
     }
 }

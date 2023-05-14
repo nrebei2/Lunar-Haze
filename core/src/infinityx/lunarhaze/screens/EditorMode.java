@@ -10,6 +10,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
@@ -1072,9 +1073,11 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * Draw the status of this editor mode.
      */
     private void draw(float delta) {
+        canvas.clear();
         imGuiGlfw.newFrame();
         ImGui.newFrame();
 
+        // UI
         canvas.beginUI(GameCanvas.DrawPass.SPRITE);
         canvas.drawOverlay(background, Color.WHITE, true);
         canvas.end();
@@ -1091,7 +1094,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             return;
         }
 
+        Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
         level.drawLevel(delta, canvas);
+        Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
 
         canvas.begin(GameCanvas.DrawPass.SHAPE, level.getView().x, level.getView().y);
         board.drawOutline(canvas);
@@ -1689,7 +1694,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                         if (!visible.get())
                             object.setDestroyed(true);
                         else {
-                            level.addDrawables(object);
+                            level.addDrawable(object);
                             object.setDestroyed(false);
                         }
                     }

@@ -4,6 +4,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
@@ -100,6 +101,7 @@ public class GDXRoot extends Game implements ScreenObserver {
      * Called when the Application is first created.
      */
     public void create() {
+        Gdx.gl.glDepthFunc(GL20.GL_LEQUAL);
         canvas = new GameCanvas();
 
         // Initialize each screen
@@ -217,7 +219,6 @@ public class GDXRoot extends Game implements ScreenObserver {
             loading.dispose();
             loading = null;
         } else if (screen == menu) {
-            // TODO: should exitCode be the level?
             switch (exitCode) {
                 case MenuMode.GO_EDITOR:
                     setScreen(editor);
