@@ -530,9 +530,12 @@ public class LevelContainer {
         object.setFlipped(flipped);
 
         if (type.equalsIgnoreCase("lamp")) {
-            PointLight light = new PointLight(rayHandler, 20, new Color(1, 1, 0.8f, 0.7f), 5, x, y);
+            PointLight light = new PointLight(
+                    rayHandler, 20,
+                    new Color(moonlightColor[0], moonlightColor[1], moonlightColor[2], moonlightColor[3]),
+                    5, x, y
+            );
             light.setActive(true);
-
             lampLights.add(light);
         }
 

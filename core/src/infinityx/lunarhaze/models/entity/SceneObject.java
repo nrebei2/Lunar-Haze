@@ -96,7 +96,11 @@ public class SceneObject extends GameObject implements Drawable {
     @Override
     public void draw(GameCanvas canvas) {
 
-        if (!canvas.playerCoords.epsilonEquals(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY)) {
+        boolean drawn = canvas.draw(filmstrip, tint, origin.x, origin.y,
+                canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y), 0.0f,
+                (flipped ? -1 : 1) * textureScale * scale, textureScale * scale);
+
+        if (drawn && !canvas.playerCoords.epsilonEquals(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY)) {
             // ugly but it is what it is
             float recX = canvas.WorldToScreenX(getPosition().x)
                     - origin.x * (flipped ? -1 : 1) * textureScale * scale
@@ -118,8 +122,5 @@ public class SceneObject extends GameObject implements Drawable {
             }
         }
 
-        canvas.draw(filmstrip, tint, origin.x, origin.y,
-                canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y), 0.0f,
-                (flipped ? -1 : 1) * textureScale * scale, textureScale * scale);
     }
 }

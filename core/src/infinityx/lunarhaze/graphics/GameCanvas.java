@@ -936,12 +936,13 @@ public class GameCanvas {
      * @param angle  The rotation angle (in degrees) about the origin.
      * @param sx     The x-axis scaling factor
      * @param sy     The y-axis scaling factor
+     * @return Whether the texture was drawn or not
      */
-    public void draw(TextureRegion region, Color tint, float ox, float oy,
+    public boolean draw(TextureRegion region, Color tint, float ox, float oy,
                      float x, float y, float angle, float sx, float sy) {
         if (active != DrawPass.SPRITE) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SPRITE", new IllegalStateException());
-            return;
+            return false;
         }
 
         computeTransform(ox, oy, x, y, angle, sx, sy);
@@ -952,7 +953,7 @@ public class GameCanvas {
         if (x1 >= camX && x1 <= camX + camWidth && y1 >= camY && y1 <= camY + camHeight) {
             spriteBatch.setColor(tint);
             spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
-            return;
+            return true;
         }
 
         float regionHeight = region.getRegionHeight();
@@ -961,7 +962,7 @@ public class GameCanvas {
         if (x2 >= camX && x2 <= camX + camWidth && y2 >= camY && y2 <= camY + camHeight) {
             spriteBatch.setColor(tint);
             spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
-            return;
+            return true;
         }
 
         float regionWidth = region.getRegionWidth();
@@ -970,7 +971,7 @@ public class GameCanvas {
         if (x3 >= camX && x3 <= camX + camWidth && y3 >= camY && y3 <= camY + camHeight) {
             spriteBatch.setColor(tint);
             spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
-            return;
+            return true;
         }
 
         float x4 = local.m00 * regionWidth + local.m02;
@@ -978,7 +979,7 @@ public class GameCanvas {
         if (x4 >= camX && x4 <= camX + camWidth && y4 >= camY && y4 <= camY + camHeight) {
             spriteBatch.setColor(tint);
             spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
-            return;
+            return true;
         }
 
         // There is a possibility the texture covers the whole screen
@@ -986,10 +987,11 @@ public class GameCanvas {
         if ((x1 <= camX && x3 >= camX + camWidth) || (y1 <= camY && y3 >= camY + camHeight)) {
             spriteBatch.setColor(tint);
             spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
-            return;
+            return true;
         }
 
         // Otherwise, clip
+        return false;
     }
 
 

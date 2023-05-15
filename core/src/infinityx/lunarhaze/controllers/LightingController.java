@@ -43,7 +43,7 @@ public class LightingController {
     /**
      * How many dust particles can be on a tile at once
      */
-    public static final int POOL_CAPACITY = 20;
+    public static final int POOL_CAPACITY = 40;
 
     /**
      * How long (in seconds) each lamp light is turned on or off
@@ -136,7 +136,7 @@ public class LightingController {
             boolean allDestroyed = true;
             for (Dust dust : entry.value) {
                 dust.update(delta);
-                if (!collectable) {
+                if (!collectable && !dust.inDestruction()) {
                     dust.beginDestruction();
                 }
                 if (!dust.isDestroyed()) allDestroyed = false;
@@ -175,7 +175,7 @@ public class LightingController {
         dust.reset();
         dust.setX(board.boardToWorldX(x) + MathUtils.random() * board.getTileWorldDim().x);
         dust.setY(board.boardToWorldY(y) + MathUtils.random() * board.getTileWorldDim().y);
-        dust.setZ(Interpolation.pow3In.apply(MathUtils.random()) * 2f);
+        dust.setZ(Interpolation.pow3In.apply(MathUtils.random()) * 1.3f);
 
         JsonValue rps = dustInfo.get("rps");
         JsonValue spd = dustInfo.get("speed");

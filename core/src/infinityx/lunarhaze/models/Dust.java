@@ -240,7 +240,10 @@ public class Dust implements Drawable {
      * Once called this particle will begin decaying (disappearing) then become destroyed.
      */
     public void beginDestruction() {
-        this.condition = Condition.DESTROY;
+        condition = Condition.DESTROY;
+        state = DustState.DECAYING;
+        elapsed = 0;
+        fadeTime = MathUtils.random(fadeMin / 3, fadeMax / 3);
     }
 
     /**
