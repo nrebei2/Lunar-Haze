@@ -100,6 +100,10 @@ public abstract class Enemy extends SteeringGameObject implements Pool.Poolable 
      * Whether the enemy is in battle mode
      */
     private boolean inBattle;
+    /**
+     * Whether the enemy alerting allies
+     */
+    private boolean isAlerting;
 
     /** Used to update the direction sprite only once per interval */
     private float timeSinceLastDirChange = 0f;
@@ -139,6 +143,7 @@ public abstract class Enemy extends SteeringGameObject implements Pool.Poolable 
         inBattle = false;
         direction = Direction.RIGHT;
         detectionTime = 0;
+        isAlerting = false;
 
 
         // TODO
@@ -218,6 +223,14 @@ public abstract class Enemy extends SteeringGameObject implements Pool.Poolable 
         if (detection == this.detection) return;
         this.detectionTime = 0;
         this.detection = detection;
+    }
+
+    public void setAlerting(Boolean bool){
+        this.isAlerting = bool;
+    }
+
+    public boolean getAlerting(){
+        return isAlerting;
     }
 
     public Detection getDetection() {

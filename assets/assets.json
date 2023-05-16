@@ -106,6 +106,17 @@
     "title-right": "allocateUI/title-right.png",
     "noticed": "images/noticed.png",
     "alert": "images/alert.png",
+    "yell": {
+      "file": 	"images/yell.png",
+      "wrap":  	false,
+      "sprites":	{
+        "yell" : {
+          "size" : 3,
+          "rows" : 1,
+          "cols" : 3
+        }
+      }
+    },
     "moon": "transitionUI/moon.png",
     "transition-background": "transitionUI/transition-background.png",
     "trees": "transitionUI/trees.png",

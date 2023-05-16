@@ -86,9 +86,10 @@ public class TacticalManager implements Telegraph {
     public void alertAllies(EnemyController entity) {
         for (EnemyController control : controllers) {
             entity.findCollision(control.getEnemy());
-            if (control != entity && (entity.getEnemy().getPosition()).dst(control.getEnemy().getPosition()) <= 5f
+            if (control != entity && (entity.getEnemy().getPosition()).dst(control.getEnemy().getPosition()) <= 7f
                     && entity.communicationCollision.hitObject == control.getEnemy() && !control.getEnemy().isAttacking()) {
                 System.out.println("alerting");
+                entity.getEnemy().setAlerting(true);
                 StateMachine<EnemyController, EnemyState> machine = control.getStateMachine();
                 machine.changeState(EnemyState.ALERT);
             }
