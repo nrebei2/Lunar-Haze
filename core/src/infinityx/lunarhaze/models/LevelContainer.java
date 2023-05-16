@@ -13,10 +13,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.IntMap;
-import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.TimeUtils;
+import com.badlogic.gdx.utils.*;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.controllers.EnemyController;
 import infinityx.lunarhaze.controllers.EnemySpawner;
@@ -25,6 +22,7 @@ import infinityx.lunarhaze.graphics.CameraShake;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.models.entity.*;
 import infinityx.util.Drawable;
+import infinityx.util.DrawableContainer;
 import infinityx.util.PatrolPath;
 import infinityx.util.astar.AStarMap;
 import infinityx.util.astar.AStarPathFinding;
@@ -124,12 +122,12 @@ public class LevelContainer {
     /**
      * Holds references to all drawable entities on the level (i.e. sceneObjects, player, enemies)
      */
-    private IntMap<Array<Drawable>> drawables;
+    private DrawableContainer drawables;
 
     /**
      * The backing map for garbage collection
      */
-    private IntMap<Array<Drawable>> backing = new IntMap<>();
+    private DrawableContainer backing;
 
     /**
      * Constants for enemy initialization
@@ -202,8 +200,8 @@ public class LevelContainer {
         RayHandler.setGammaCorrection(true);
         RayHandler.useDiffuseLight(true);
 
-        drawables = new IntMap<>();
-        backing = new IntMap<>();
+        drawables = new DrawableContainer();
+        backing = new DrawableContainer();
         lampLights = new Array<>();
 
         // There will always be a player
@@ -382,16 +380,10 @@ public class LevelContainer {
      * Add an object for this container to draw.
      */
     public void addDrawable(Drawable drawable) {
-        Array<Drawable> drawList = drawables.get(drawable.getID());
-
-        if (drawList == null) {
-            drawList = new Array<>();
-            Array backingList = new Array<>();
-            backing.put(drawable.getID(), backingList);
-            drawables.put(drawable.getID(), drawList);
+        if (!drawables.put(drawable)) {
+            // Make sure backing and drawables have the same keys
+            backing.add(drawable.getID());
         }
-
-        drawList.add(drawable);
     }
 
     /**
@@ -613,7 +605,7 @@ public class LevelContainer {
 
         // Render order: Board tiles -> (players, enemies, scene objects) sorted by depth (y coordinate) -> Lights
         canvas.begin(GameCanvas.DrawPass.SPRITE, view.x, view.y);
-        board.draw(canvas);
+        board.draw(canvas, player.getPosition());
 
         drawAndGarbageCollect(canvas);
         // The scene objects rendered before the player (behind) should not become transparent
@@ -655,10 +647,9 @@ public class LevelContainer {
      * Remove all objects set as destroyed from drawing queue and draw the rest.
      */
     public void drawAndGarbageCollect(GameCanvas canvas) {
-        for (IntMap.Entry<Array<Drawable>> entry : drawables) {
-            int id = entry.key;
-            Array<Drawable> activeDrawables = entry.value;
-            Array<Drawable> backingArray = backing.get(id);
+        for (int i = 0; i < drawables.getBacking().size; i++) {
+            Array<Drawable> activeDrawables = drawables.getBacking().get(i);
+            Array<Drawable> backingArray = backing.getBacking().get(i);
 
             // Make sure the backing array is clear
             backingArray.clear();
@@ -673,7 +664,7 @@ public class LevelContainer {
         }
 
         // stop-and-copy garbage collection
-        IntMap<Array<Drawable>> temp = drawables;
+        DrawableContainer temp = drawables;
         drawables = backing;
         backing = temp;
     }

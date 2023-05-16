@@ -233,10 +233,10 @@ public class Board {
      *
      * @param canvas the drawing context
      */
-    public void draw(GameCanvas canvas) {
+    public void draw(GameCanvas canvas, Vector2 pos) {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                drawTile(x, y, canvas);
+                drawTile(x, y, canvas, pos);
             }
         }
 
@@ -251,11 +251,14 @@ public class Board {
      * @param x The x index for the Tile cell
      * @param y The y index for the Tile cell
      */
-    private void drawTile(int x, int y, GameCanvas canvas) {
+    private void drawTile(int x, int y, GameCanvas canvas, Vector2 pos) {
         // Used for level editor
         if (getTileType(x, y) == Tile.TileType.EMPTY) {
             return;
         }
+
+        if (pos.dst(boardCenterToWorldX(x), boardCenterToWorldY(y)) > 10)
+            return;
 
         tileSheet.setFrame(getTileNum(x, y));
         canvas.draw(
