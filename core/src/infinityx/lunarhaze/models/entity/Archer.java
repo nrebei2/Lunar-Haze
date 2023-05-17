@@ -28,8 +28,12 @@ public class Archer extends Enemy {
     public void initialize(AssetDirectory directory, JsonValue json, LevelContainer container) {
         super.initialize(directory, json, container);
 
-        arrow = new Arrow(this);
         arrow.initialize(directory, json.get("arrow"), container);
+        arrow.setActive(false);
+
+        float range = json.get("attack").get("range").asFloat();
+        setAttackRange(range);
+
     }
 
     @Override
@@ -51,6 +55,10 @@ public class Archer extends Enemy {
      */
     public Archer() {
         super();
-        arrow = null;
+        arrow = new Arrow(this.getX(), this.getY(), this);
+    }
+
+    public Arrow getArrow(){
+        return arrow;
     }
 }

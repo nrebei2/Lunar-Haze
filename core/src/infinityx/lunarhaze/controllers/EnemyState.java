@@ -78,7 +78,7 @@ public enum EnemyState implements State<EnemyController> {
     INDICATOR() {
         @Override
         public void enter(EnemyController entity) {
-            entity.getEnemy().setMaxLinearSpeed(1.5f);
+            entity.getEnemy().setMaxLinearSpeed(1f);
             entity.getEnemy().setDetection(Enemy.Detection.INDICATOR);
             entity.getEnemy().setIndicatorAmount(0);
 

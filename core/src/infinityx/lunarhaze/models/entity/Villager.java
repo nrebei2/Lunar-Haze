@@ -42,12 +42,6 @@ public class Villager extends Enemy {
         attackHitbox.setHitboxRange(attackRange);
     }
 
-    /**
-     * Set whether the entity is currently attacking
-     */
-    public void setAttacking(boolean value) {
-        isAttacking = value;
-    }
 
     @Override
     public EnemyType getEnemyType() {

@@ -1,11 +1,14 @@
 package infinityx.lunarhaze.controllers;
 
+import com.badlogic.gdx.graphics.g3d.particles.influencers.ModelInfluencer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.Settings;
 import infinityx.lunarhaze.models.entity.Enemy;
+
+import java.util.Random;
 
 /**
  * Basically a monster spawner. Used for the battle phase.
@@ -42,6 +45,8 @@ public class EnemySpawner {
      */
     private Array<Vector2> spawnLocations;
 
+    private Random rand = new Random();
+
     /**
      * @param levelContainer providing API to add enemies
      */
@@ -74,7 +79,13 @@ public class EnemySpawner {
         time += delta;
         if (time >= enemyAddTime) {
             Vector2 position = spawnLocations.random();
-            Enemy newEnemy = container.addEnemy(Enemy.EnemyType.Archer, position.x, position.y);
+            Enemy newEnemy;
+            if (rand.nextFloat() < 0.3) {
+                 newEnemy = container.addEnemy(Enemy.EnemyType.Archer, position.x, position.y);
+            }
+            else{
+                newEnemy = container.addEnemy(Enemy.EnemyType.Villager, position.x, position.y);
+            }
             // This spawner is only used in battle phase
             newEnemy.setInBattle(true);
             enemyAddTime = MathUtils.random(addMin, addMax);

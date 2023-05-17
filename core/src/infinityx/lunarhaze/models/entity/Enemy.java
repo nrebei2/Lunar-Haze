@@ -339,4 +339,5 @@ public abstract class Enemy extends SteeringGameObject implements Pool.Poolable 
             direction = newDirection;
         }
     }
+
 }

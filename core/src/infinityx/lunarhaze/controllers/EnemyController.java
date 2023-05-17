@@ -18,13 +18,11 @@ import com.badlogic.gdx.utils.Array;
 import infinityx.lunarhaze.ai.*;
 import infinityx.lunarhaze.combat.AttackHandler;
 import infinityx.lunarhaze.combat.MeleeHandler;
+import infinityx.lunarhaze.combat.RangeHandler;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.models.GameObject;
 import infinityx.lunarhaze.models.LevelContainer;
-import infinityx.lunarhaze.models.entity.Enemy;
-import infinityx.lunarhaze.models.entity.SceneObject;
-import infinityx.lunarhaze.models.entity.Villager;
-import infinityx.lunarhaze.models.entity.Werewolf;
+import infinityx.lunarhaze.models.entity.*;
 import infinityx.lunarhaze.physics.Box2DRaycastCollision;
 import infinityx.lunarhaze.physics.RaycastInfo;
 import infinityx.util.PatrolPath;
@@ -179,15 +177,6 @@ public class EnemyController {
      * @param enemy The enemy being controlled by this AIController
      */
     public EnemyController(Enemy enemy) {
-        switch (enemy.getEnemyType()) {
-            case Villager:
-                this.attackHandler = new MeleeHandler(enemy, ((Villager) enemy).attackHitbox);
-                break;
-            case Archer:
-                this.attackHandler = new AttackHandler(enemy);
-                break;
-        }
-
         patrolTarget = new Vector2();
         this.targetPos = new Vector2();
         this.sourcePos = new Vector2();
@@ -253,6 +242,16 @@ public class EnemyController {
     public void populate(final LevelContainer container) {
         detectionTime = 0;
         target = container.getPlayer();
+
+        switch (enemy.getEnemyType()) {
+            case Villager:
+                this.attackHandler = new MeleeHandler(enemy, ((Villager) enemy).attackHitbox);
+                break;
+            case Archer:
+                this.attackHandler = new RangeHandler((Archer) enemy, target);
+                break;
+        }
+
         this.raycastCollision = new Box2DRaycastCollision(container.getWorld(), detectionCast);
         raycastCollision
                 .addIgnore(GameObject.ObjectType.ENEMY)
@@ -327,7 +326,7 @@ public class EnemyController {
             @Override
             protected ContextMap calculateRealMaps(ContextMap map) {
                 map.setZero();
-                if (!getAttackHandler().canStartNewAttack() || enemy.getHealthPercentage() < 0.5) {
+                if (!getAttackHandler().canStartNewAttack()) {
                     Vector2 evade_dir = enemy.getPosition().sub(target.getPosition());
                     for (int i = 0; i < map.getResolution(); i++) {
                         map.interestMap[i] = 1 / evade_dir.len() * Math.max(0, map.dirFromSlot(i).dot(evade_dir.nor()));
