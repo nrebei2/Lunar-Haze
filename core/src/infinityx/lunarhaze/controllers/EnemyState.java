@@ -169,14 +169,20 @@ public enum EnemyState implements State<EnemyController> {
             entity.targetPos.set(entity.getTarget().getPosition());
             entity.updatePath();
             entity.getEnemy().setSteeringBehavior(entity.followPathAvoid);
-            if (!(entity.getStateMachine().getPreviousState() == ATTACK)
-                    && entity.getEnemy().isInBattle()) {
+
+            //TODO fix the first part of the and statement, this breaks if enemy attack aand switches to battle. Make
+            //each enemy is added in only once
+            if (entity.getEnemy().isInBattle()) {
                 MessageManager.getInstance().dispatchMessage(TacticalManager.ADD, entity);
             }
         }
 
         @Override
         public void update(EnemyController entity) {
+            if (!entity.getEnemy().isActive()){
+                MessageManager.getInstance().dispatchMessage(TacticalManager.REMOVE, entity);
+            }
+
             switch (entity.getDetection()) {
                 case NONE:
                     entity.targetPos.set(entity.target.getPosition());

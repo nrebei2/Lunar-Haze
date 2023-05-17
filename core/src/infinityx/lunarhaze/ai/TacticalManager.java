@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.OrderedSet;
 import infinityx.lunarhaze.controllers.EnemyController;
 import infinityx.lunarhaze.controllers.EnemyState;
 import infinityx.lunarhaze.models.LevelContainer;
+import infinityx.lunarhaze.models.entity.Enemy;
 import infinityx.lunarhaze.models.entity.Werewolf;
 
 import java.util.Random;
@@ -69,7 +70,7 @@ public class TacticalManager implements Telegraph {
             //if behind enemy go attack
             if (control.isBehind(control.getEnemy(), target) && control.getAttackHandler().canStartNewAttack()) {
                 MessageManager.getInstance().dispatchMessage(null, enemy, ATTACK);
-            } else if (control.getAttackHandler().canStartNewAttack() && rand.nextFloat() <= 0.1f) {
+            } else if (control.getAttackHandler().canStartNewAttack() && rand.nextFloat() <= 0.2f) {
                 //attacking from front
                 MessageManager.getInstance().dispatchMessage(null, enemy, ATTACK);
             } else {
@@ -88,10 +89,12 @@ public class TacticalManager implements Telegraph {
             entity.findCollision(control.getEnemy());
             if (control != entity && (entity.getEnemy().getPosition()).dst(control.getEnemy().getPosition()) <= 7f
                     && entity.communicationCollision.hitObject == control.getEnemy() && !control.getEnemy().isAttacking()) {
-                System.out.println("alerting");
-                entity.getEnemy().setAlerting(true);
+//                System.out.println("alerting");
+//                entity.getEnemy().setAlerting(true);
                 StateMachine<EnemyController, EnemyState> machine = control.getStateMachine();
                 machine.changeState(EnemyState.ALERT);
+
+
             }
         }
     }
@@ -99,7 +102,8 @@ public class TacticalManager implements Telegraph {
     @Override
     public boolean handleMessage(Telegram msg) {
         /** See {@link EnemyState#ALERT} */
-        if (msg.message == ADD) enemies.add((EnemyController) msg.extraInfo);
+        if (msg.message == ADD && !enemies.contains((EnemyController) msg.extraInfo)) enemies.add((EnemyController) msg.extraInfo);
+//        if (msg.message == ADD) enemies.add((EnemyController) msg.extraInfo);
         if (msg.message == REMOVE) enemies.remove((EnemyController) msg.extraInfo);
         if (msg.message == FOUND) {
             alertAllies((EnemyController) msg.extraInfo);

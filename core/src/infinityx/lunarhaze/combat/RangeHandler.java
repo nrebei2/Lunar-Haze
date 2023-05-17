@@ -15,8 +15,8 @@ public class RangeHandler extends AttackHandler{
     private Werewolf target;
 
     /**
-     * @param Archer the archer this class is controlling
-     * @param Target target entity is trying to hit
+     * @param archer the archer this class is controlling
+     * @param target target entity is trying to hit
      */
     public RangeHandler(Archer archer, Werewolf target){
         super(archer);
@@ -29,6 +29,7 @@ public class RangeHandler extends AttackHandler{
     public void initiateAttack() {
         System.out.println("archers initate attack");
         super.initiateAttack();
+        arrow = new Arrow(entity.getX(), entity.getY(), (Archer) entity);
         arrow.setActive(true);
         Vector2 dir = target.getPosition().sub(entity.getPosition());
         arrow.setLinearVelocity(dir);
