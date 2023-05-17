@@ -243,6 +243,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
     }
 
     public void updateMusic(float delta) {
+        // TODO: move this out
         stealth_background.setVolume(setting.getMusicVolume());
         lobby_background.setVolume(setting.getMusicVolume());
         battle_background.setVolume(setting.getMusicVolume());
@@ -267,16 +268,14 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
                     battle_background.stop();
                     stealth_playing = false;
                 }
-                if (!lobby_playing) {
-                    lobby_background.setLooping(true);
-                    lobby_background.play();
-                    lobby_playing = true;
-                }
                 if (!setting.isMusicEnabled()) {
                     lobby_background.stop();
                 } else {
-                    lobby_background.setLooping(true);
-                    lobby_background.play();
+                    if (!lobby_playing) {
+                        lobby_background.setLooping(true);
+                        lobby_background.play();
+                        lobby_playing = true;
+                    }
                 }
                 break;
             case PLAY:
@@ -288,29 +287,25 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
                     case STEALTH:
                     case TRANSITION:
                     case ALLOCATE:
-                        if (!stealth_playing) {
-                            stealth_background.setLooping(true);
-                            stealth_background.play();
-                            stealth_playing = true;
-                        }
                         if (!setting.isMusicEnabled()) {
                             stealth_background.stop();
                         } else {
-                            stealth_background.setLooping(true);
-                            stealth_background.play();
+                            if (!stealth_playing) {
+                                stealth_background.setLooping(true);
+                                stealth_background.play();
+                                stealth_playing = true;
+                            }
                         }
                     case BATTLE:
                         stealth_background.stop();
-                        if (!battle_playing) {
-                            battle_background.setLooping(true);
-                            battle_background.play();
-                            battle_playing = true;
-                        }
                         if (!setting.isMusicEnabled()) {
                             battle_background.stop();
                         } else {
-                            battle_background.setLooping(true);
-                            battle_background.play();
+                            if (!battle_playing) {
+                                battle_background.setLooping(true);
+                                battle_background.play();
+                                battle_playing = true;
+                            }
                         }
                 }
                 break;
@@ -331,7 +326,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
     public void update(float delta) {
         // Process the game input
         inputController.readKeyboard();
-        updateMusic(delta);
+//        updateMusic(delta);
 
 
         switch (gameplayController.getState()) {
