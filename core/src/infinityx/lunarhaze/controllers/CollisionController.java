@@ -159,7 +159,7 @@ public class CollisionController implements ContactListener {
             attacked.hp -= attacker.attackDamage;
             if (attacked.hp < 0) attacked.hp = 0;
 
-            CameraShake.shake(attacker.attackKnockback * 4f, 0.3f);
+            CameraShake.shake(attacker.attackKnockback * 5f, 0.3f);
             if (attacked.getType() == GameObject.ObjectType.WEREWOLF) {
                 attacked.setAttacked();
                 // This class now flashes the werewolf only

@@ -63,12 +63,12 @@
     "damping": 0.0,
     "health": 8,
     "attack": {
-      "knockback": 0.3,
+      "knockback": 0.4,
       "damage": 1.5,
       "cooldown": 2,
       "length": 0.3,
       "immunity": 0.3,
-      "lockout": 0.8,
+      "lockout": 1,
       "hitbox": {
         "range": 1.5,
         "width": 1.5,
