@@ -79,6 +79,8 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
      */
     public SceneObject inTallGrass;
 
+    public boolean isHeavyAttacking;
+
     public AttackHitbox attackHitbox;
 
     /**
@@ -168,6 +170,7 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
         heavyLockoutTime = 0.4f; // this can be changed later
         direction = Direction.RIGHT;
         werewolfInfo = new WerewolfInfo();
+        isHeavyAttacking = false;
     }
 
     /**

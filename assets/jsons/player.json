@@ -247,7 +247,7 @@
     },
     "health": 5,
     "attack": {
-      "knockback": 3,
+      "knockback": 0.8,
       "damage": 1.0,
       "cooldown": 0.08,
       "length": 0.5,
@@ -262,6 +262,16 @@
             "durations": [
               0.2,
               0.2,
+              0.1
+            ]
+          },
+          "hitbox_heavy": {
+            "name": "werewolf.heavy-effect",
+            "durations": [
+              0.05,
+              0.15,
+              0.1,
+              0.1,
               0.1
             ]
           }
