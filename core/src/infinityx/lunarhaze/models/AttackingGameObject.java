@@ -107,6 +107,15 @@ public abstract class AttackingGameObject extends GameObject {
         isAttacked = false;
     }
 
+    public AttackingGameObject(float x, float y) {
+        super(x, y);
+        isAttacking = false;
+        canMove = true;
+        isImmune = false;
+        lockedOut = false;
+        isAttacked = false;
+    }
+
 
     /**
      * Further parses specific attacking attributes.

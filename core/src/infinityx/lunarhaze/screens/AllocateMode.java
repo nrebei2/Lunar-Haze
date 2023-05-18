@@ -393,7 +393,7 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
         Color gray = new Color(255f / 255.0f, 255f / 255.0f, 255f / 255.0f, 0.4f);
         setFontColor(gray);
         canvas.drawText(" / " + (totalMoonlightCollected),
-                UIFont_small, canvas.getWidth() / 4 + MOON_ICON_WIDTH + UIFont_small.getAscent() * 4 * (playerController.getPlayer().getMoonlightCollected() / 10), canvas.getHeight() / 2 + MOON_ICON_WIDTH / 2);
+                UIFont_small, canvas.getWidth() / 4 + MOON_ICON_WIDTH + UIFont_small.getAscent() * 4 * (playerController.getPlayer().getMoonlightCollected() / 10 + 1), canvas.getHeight() / 2 + MOON_ICON_WIDTH / 2);
         setFontColor(alphaTint);
         canvas.drawText("Moonlight Remaining",
                 UIFont_small, canvas.getWidth() / 4 - MOON_ICON_WIDTH * 3 / 2, canvas.getHeight() / 2 - MOON_ICON_WIDTH / 2);

@@ -30,6 +30,7 @@ public class Archer extends Enemy {
 
         arrow.initialize(directory, json.get("arrow"), container);
         arrow.setActive(false);
+        setArrow(arrow);
 
         float range = json.get("attack").get("range").asFloat();
         setAttackRange(range);
@@ -60,5 +61,9 @@ public class Archer extends Enemy {
 
     public Arrow getArrow(){
         return arrow;
+    }
+
+    public void setArrow(Arrow arrow){
+        this.arrow = arrow;
     }
 }

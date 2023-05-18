@@ -1,7 +1,10 @@
 package infinityx.lunarhaze.combat;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.JsonValue;
+import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.models.AttackingGameObject;
+import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.entity.Archer;
 import infinityx.lunarhaze.models.entity.Arrow;
 import infinityx.lunarhaze.models.entity.Werewolf;
@@ -29,21 +32,28 @@ public class RangeHandler extends AttackHandler{
     public void initiateAttack() {
         System.out.println("archers initate attack");
         super.initiateAttack();
-        arrow = new Arrow(entity.getX(), entity.getY(), (Archer) entity);
-//        arrow.initialize();
-        arrow.setActive(true);
-        Vector2 dir = target.getPosition().sub(entity.getPosition());
-        arrow.setLinearVelocity(dir);
 
+//        arrow = new Arrow(entity.getX(), entity.getY(), (Archer) entity);
+        arrow.setActive(true);
+//        arrow.setArcher((Archer) entity);
+        arrow.setX(entity.getX());
+        arrow.setY(entity.getY());
+        Vector2 dir = target.getPosition().sub(entity.getPosition());
+        System.out.println("Linear velocity is: " + dir);
+        System.out.println("Arrow position is: " + entity.getX() + ", " + entity.getY());
+        arrow.setLinearVelocity(dir);
     }
 
     @Override
     public void processAttack(float delta) {
         super.processAttack(delta);
+        arrow.update(delta);
+        System.out.println("Update position to: " + arrow.getX() + ", " + arrow.getY());
     }
 
     @Override
     protected void endAttack() {
+        super.endAttack();
         arrow.setActive(false);
     }
 

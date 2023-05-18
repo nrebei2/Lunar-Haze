@@ -8,9 +8,7 @@ import infinityx.lunarhaze.graphics.CameraShake;
 import infinityx.lunarhaze.graphics.ModelFlash;
 import infinityx.lunarhaze.models.AttackingGameObject;
 import infinityx.lunarhaze.models.GameObject;
-import infinityx.lunarhaze.models.entity.Enemy;
-import infinityx.lunarhaze.models.entity.SceneObject;
-import infinityx.lunarhaze.models.entity.Werewolf;
+import infinityx.lunarhaze.models.entity.*;
 
 /**
  * Controller to handle Box2D body interactions.
@@ -49,6 +47,36 @@ public class CollisionController implements ContactListener {
                 switch (o2.getType()) {
                     case WEREWOLF:
                         handleCollision((Enemy) o1, (Werewolf) o2);
+                        break;
+                    case HITBOX:
+                        handleCollision(
+                                ((AttackHitbox) o2).getAttacker(),
+                                (AttackingGameObject) o1
+                        );
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case ARCHER:
+                switch (o2.getType()) {
+                    case WEREWOLF:
+                        handleCollision((Archer) o1, (Werewolf) o2);
+                        break;
+                    case HITBOX:
+                        handleCollision(
+                                ((AttackHitbox) o2).getAttacker(),
+                                (AttackingGameObject) o1
+                        );
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case ARROW:
+                switch (o2.getType()) {
+                    case WEREWOLF:
+                        handleCollision((Arrow) o1, (Werewolf) o2);
                         break;
                     case HITBOX:
                         handleCollision(

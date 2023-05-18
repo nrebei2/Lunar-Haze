@@ -292,6 +292,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
                     case STEALTH:
                     case TRANSITION:
                     case ALLOCATE:
+                        battle_playing = false;
                         if (!setting.isMusicEnabled()) {
                             stealth_background.stop();
                             stealth_playing = false;
@@ -304,6 +305,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
                         }
                     case BATTLE:
                         stealth_background.stop();
+                        stealth_playing = false;
                         if (!setting.isMusicEnabled()) {
                             battle_background.stop();
                             battle_playing = false;
