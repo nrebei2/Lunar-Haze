@@ -34,6 +34,15 @@ public class Dust implements Drawable {
     private float rps;
 
     /**
+     * Whether this dust should draw
+     */
+    private boolean active;
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    /**
      * Track the current state of this dust particle.
      */
     public enum DustState {
@@ -268,6 +277,7 @@ public class Dust implements Drawable {
     public Dust() {
         position = new Vector3();
         velocity = new Vector3();
+        active = true;
         reset();
     }
 
@@ -346,6 +356,7 @@ public class Dust implements Drawable {
      */
     @Override
     public void draw(GameCanvas canvas) {
+        if (!active) return;
         if (forUI) {
             canvas.draw(texture, alpha, texture.getWidth() / 2, texture.getHeight() / 2,
                     getPosition().x, getPosition().y + getPosition().z * 3 / 4, textureRot,

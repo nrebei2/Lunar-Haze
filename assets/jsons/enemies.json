@@ -2,8 +2,8 @@
   "villager": {
     "flashlight": {
       "color":		[1.0, 1.0, 1.0, 0.7],
-      "distance":		   4.4,
-      "rays":			10,
+      "distance":		   4,
+      "rays":			7,
       "soft":			false,
       "degrees": 25
     },
@@ -95,8 +95,8 @@
   "archer": {
     "flashlight": {
       "color":		[1.0, 1.0, 1.0, 0.7],
-      "distance":		   4.4,
-      "rays":			10,
+      "distance":		   4,
+      "rays":			7,
       "soft":			false,
       "degrees": 25
     },

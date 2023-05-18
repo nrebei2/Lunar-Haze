@@ -276,7 +276,7 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
         // For level editor, force to draw above everything
         if (tint.equals(EditorMode.SELECTED_COLOR) || tint.equals(EditorMode.OVERLAPPED_COLOR))
             return 0;
-        return (this.getY() + 1000) / (2000);
+        return (getY() + 1000) / (2000);
     }
 
     public void draw(GameCanvas canvas) {

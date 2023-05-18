@@ -545,6 +545,7 @@ public class LevelContainer {
                     new Color(moonlightColor[0], moonlightColor[1], moonlightColor[2], moonlightColor[3]),
                     5, x, y
             );
+            light.setXray(true);
             light.setActive(true);
 
             lampLights.add(light);

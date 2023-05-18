@@ -4,6 +4,7 @@ import box2dLight.PointLight;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.JsonValue;
@@ -43,7 +44,7 @@ public class LightingController {
     /**
      * How many dust particles can be on a tile at once
      */
-    public static final int POOL_CAPACITY = 40;
+    public static final int POOL_CAPACITY = 25;
 
     /**
      * How long (in seconds) each lamp light is turned on or off
@@ -120,9 +121,10 @@ public class LightingController {
     public void updateDust(float delta) {
         boolean collecting = false;
         int bx = 0, by = 0;
+        Vector2 playerPos = player.getPosition();
         if (player.isCollecting) {
-            bx = board.worldToBoardX(player.getPosition().x);
-            by = board.worldToBoardY(player.getPosition().y);
+            bx = board.worldToBoardX(playerPos.x);
+            by = board.worldToBoardY(playerPos.y);
             collecting = true;
         }
 
@@ -149,6 +151,11 @@ public class LightingController {
                             0
                     ).scl(MathUtils.random(0.5f, 0.6f));
                 }
+
+                if (playerPos.dst(board.boardCenterToWorldX(x), board.boardCenterToWorldY(y)) > 10)
+                    dust.setActive(false);
+                else
+                    dust.setActive(true);
 
                 if (!board.inBoundsTileX(x, dust.getX()) || !board.inBoundsTileY(y, dust.getY())) {
                     dust.beginReset();

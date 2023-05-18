@@ -31,13 +31,39 @@ public class SceneObject extends GameObject {
     private boolean seeThru;
 
     /**
+     * Cache for position since static (other than in editor)
+     */
+    private Vector2 cachedPosition;
+
+    /** dirty bit for position */
+    private boolean dirty;
+
+    /**
      * Initialize a scene object.
      */
     public SceneObject(float x, float y, String type) {
         super(x, y);
+        cachedPosition = new Vector2(x, y);
         this.type = type;
         this.flipped = false;
         this.seeThru = false;
+        this.dirty = false;
+    }
+
+    public void setDirty() {
+        this.dirty = true;
+    }
+
+    @Override
+    public Vector2 getPosition() {
+        if (!dirty)
+            return positionCache;
+        return positionCache.set(super.getPosition());
+    }
+
+    @Override
+    public float getY() {
+        return getPosition().y;
     }
 
     /**
@@ -93,6 +119,7 @@ public class SceneObject extends GameObject {
     public boolean isSeeThru() {
         return seeThru;
     }
+
 
     @Override
     public void draw(GameCanvas canvas) {
