@@ -42,7 +42,6 @@ public class CollisionController implements ContactListener {
      * @param o2 Second object
      */
     private void processCollision(GameObject o1, GameObject o2) {
-        System.out.println("ProcessCollision on: " + o1.getType());
         switch (o1.getType()) {
             case ENEMY:
                 switch (o2.getType()) {
@@ -145,7 +144,6 @@ public class CollisionController implements ContactListener {
      * @param attacked The entity that was attacked
      */
     private void handleCollision(AttackingGameObject attacker, AttackingGameObject attacked) {
-        System.out.println("HandleCollision between ARCHER and WEREWOLF");
         if (attacker == attacked) return;
         boolean immune = attacked.isImmune();
         if (!immune) {

@@ -30,7 +30,7 @@ public class Archer extends Enemy {
 
         arrow.initialize(directory, json.get("arrow"), container);
         System.out.println("An arrow is initialized and set active to false");
-        arrow.setActive(false);
+        arrow.setActive(true);
 
         float range = json.get("attack").get("range").asFloat();
         setAttackRange(range);
