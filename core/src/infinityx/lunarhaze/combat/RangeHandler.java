@@ -30,6 +30,7 @@ public class RangeHandler extends AttackHandler{
         System.out.println("archers initate attack");
         super.initiateAttack();
         arrow = new Arrow(entity.getX(), entity.getY(), (Archer) entity);
+//        arrow.initialize();
         arrow.setActive(true);
         Vector2 dir = target.getPosition().sub(entity.getPosition());
         arrow.setLinearVelocity(dir);

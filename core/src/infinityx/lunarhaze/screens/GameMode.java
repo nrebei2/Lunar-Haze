@@ -231,6 +231,9 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
         filter = directory.getEntry("filter", Texture.class);
         victory = directory.getEntry("victory", Texture.class);
         defeat = directory.getEntry("defeat", Texture.class);
+        stealth_background.setVolume(setting.getMusicVolume());
+        lobby_background.setVolume(setting.getMusicVolume());
+        battle_background.setVolume(setting.getMusicVolume());
     }
 
     /**
@@ -244,26 +247,28 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
 
     public void updateMusic(float delta) {
         // TODO: move this out
-        stealth_background.setVolume(setting.getMusicVolume());
-        lobby_background.setVolume(setting.getMusicVolume());
-        battle_background.setVolume(setting.getMusicVolume());
         switch (gameplayController.getState()) {
             case OVER:
                 if (!setting.isMusicEnabled()) {
                     lobby_background.stop();
+                    lobby_playing = false;
                 } else {
                     lobby_background.play();
+                    lobby_playing = true;
                 }
             case WIN:
                 if (!setting.isMusicEnabled()) {
                     lobby_background.stop();
+                    lobby_playing = false;
                 } else {
                     lobby_background.play();
+                    lobby_playing = true;
                 }
             case PAUSED:
                 if (stealth_playing) {
                     stealth_background.stop();
                     stealth_playing = false;
+                    System.out.println("stealth_playing set to false");
                 } else if (battle_playing) {
                     battle_background.stop();
                     stealth_playing = false;
@@ -289,6 +294,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
                     case ALLOCATE:
                         if (!setting.isMusicEnabled()) {
                             stealth_background.stop();
+                            stealth_playing = false;
                         } else {
                             if (!stealth_playing) {
                                 stealth_background.setLooping(true);
@@ -300,6 +306,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
                         stealth_background.stop();
                         if (!setting.isMusicEnabled()) {
                             battle_background.stop();
+                            battle_playing = false;
                         } else {
                             if (!battle_playing) {
                                 battle_background.setLooping(true);
@@ -326,8 +333,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
     public void update(float delta) {
         // Process the game input
         inputController.readKeyboard();
-//        updateMusic(delta);
-
+        updateMusic(delta);
 
         switch (gameplayController.getState()) {
             case OVER:
@@ -441,6 +447,8 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
      */
     public void show() {
         pressPauseState = 0;
+        stealth_playing = false;
+        battle_playing = false;
         Gdx.input.setInputProcessor(this);
         dustList = new Dust[20][20];
         dustInfo = directory.getEntry("dust", JsonValue.class);

@@ -386,9 +386,6 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
         Color alphaTint = Color.WHITE;
         canvas.drawOverlay(background, alphaTint, true);
 
-//        canvas.drawText("Dear Lycan, you survived the stealth phase... \n Now it's time to allocate moonlights and arm for the battle!",
-//                UIFont_small, canvas.getWidth() / 8, canvas.getHeight() / 2 + LINE_DIST);
-
         // Draw number of moonlight left
         canvas.draw(moon_icon, alphaTint, canvas.getWidth() / 4 - MOON_ICON_WIDTH / 2, canvas.getHeight() / 2, MOON_ICON_WIDTH, MOON_ICON_WIDTH);
         canvas.drawText("" + playerController.getPlayer().getMoonlightCollected(),
@@ -396,7 +393,7 @@ public class AllocateMode extends ScreenObservable implements Screen, InputProce
         Color gray = new Color(255f / 255.0f, 255f / 255.0f, 255f / 255.0f, 0.4f);
         setFontColor(gray);
         canvas.drawText(" / " + (totalMoonlightCollected),
-                UIFont_small, canvas.getWidth() / 4 + MOON_ICON_WIDTH + UIFont_small.getAscent() * 4, canvas.getHeight() / 2 + MOON_ICON_WIDTH / 2);
+                UIFont_small, canvas.getWidth() / 4 + MOON_ICON_WIDTH + UIFont_small.getAscent() * 4 * (playerController.getPlayer().getMoonlightCollected() / 10), canvas.getHeight() / 2 + MOON_ICON_WIDTH / 2);
         setFontColor(alphaTint);
         canvas.drawText("Moonlight Remaining",
                 UIFont_small, canvas.getWidth() / 4 - MOON_ICON_WIDTH * 3 / 2, canvas.getHeight() / 2 - MOON_ICON_WIDTH / 2);

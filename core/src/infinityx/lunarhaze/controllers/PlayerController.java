@@ -111,7 +111,12 @@ public class PlayerController {
     /**
      * Whether the walk_grass sound is playing
      */
-    private boolean isWalkGrassPlaying = false;
+    private boolean isWalkGrassPlaying;
+
+    /**
+     * Whether the dash_sound sound is playing
+     */
+    private boolean isDashPlaying;
 
     private GameSetting setting;
 
@@ -185,6 +190,7 @@ public class PlayerController {
         attackHandler = new PlayerAttackHandler(player, player.getAttackHitbox());
         allocateReady = false;
         isWalkGrassPlaying = false;
+        isDashPlaying = false;
         this.setting = setting;
     }
 
@@ -199,9 +205,10 @@ public class PlayerController {
         player.update(delta);
 
         if (setting.isMusicEnabled()) {
-            if (player.isMoving() && inputController.didDash()) {
-                dash_sound.play();
-            } else if (getStateMachine().isInState(PlayerState.WALK) && !isWalkGrassPlaying) {
+//            if (player.isMoving() && inputController.didDash()) {
+//                dash_sound.play();
+//            } else
+            if (getStateMachine().isInState(PlayerState.WALK) && !isWalkGrassPlaying) {
                 long soundId = walk_sound.loop();
                 walk_sound.setLooping(soundId, true);
                 walk_sound.play(0.2f);
