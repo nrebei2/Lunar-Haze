@@ -3527,9 +3527,9 @@
 "4": {
 	"settings": {
 		"transition": 4,
-		"phaseLength": 5,
+		"phaseLength": 80,
 		"enemy-spawner": {
-			"count": 5,
+			"count": 8,
 			"add-tick": [ 0.0, 4.820000171661377 ],
 			"delay": 2.0,
 			"spawn-locations": [
