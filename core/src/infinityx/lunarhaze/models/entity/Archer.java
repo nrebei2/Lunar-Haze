@@ -29,12 +29,11 @@ public class Archer extends Enemy {
         super.initialize(directory, json, container);
 
         arrow.initialize(directory, json.get("arrow"), container);
+        System.out.println("An arrow is initialized and set active to false");
         arrow.setActive(false);
-        setArrow(arrow);
 
         float range = json.get("attack").get("range").asFloat();
         setAttackRange(range);
-
     }
 
     @Override

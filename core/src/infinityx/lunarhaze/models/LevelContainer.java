@@ -273,8 +273,10 @@ public class LevelContainer {
         activeEnemies.add(enemy);
         activeControllers.add(enemyController);
         addDrawables(enemy);
-        //if (enemy.getEnemyType() == Enemy.EnemyType.Villager)
-        //    addDrawables(((Villager) enemy).attackHitbox);
+        if (enemy.getEnemyType() == Enemy.EnemyType.Archer) {
+            addDrawables(((Archer) enemy).getArrow());
+            ((Archer) enemy).getArrow().activatePhysics(world);
+        }
 
         // Update enemy controller assigned to the new enemy
         enemyController.populate(this);
@@ -294,6 +296,10 @@ public class LevelContainer {
     public Enemy addEnemy(Enemy enemy) {
         activeEnemies.add(enemy);
         addDrawables(enemy);
+        if (enemy.getEnemyType() == Enemy.EnemyType.Archer) {
+            addDrawables(((Archer) enemy).getArrow());
+            ((Archer) enemy).getArrow().activatePhysics(world);
+        }
         enemy.setActive(true);
         enemy.getFlashlight().setActive(true);
 
@@ -319,6 +325,9 @@ public class LevelContainer {
 
         activeEnemies.removeValue(enemy, true);
         drawables.removeValue(enemy, true);
+        if (enemy.getEnemyType() == Enemy.EnemyType.Archer){
+            drawables.removeValue(((Archer) enemy).getArrow(), true);
+        }
         enemy.setActive(false);
         enemy.getFlashlight().setActive(false);
     }

@@ -172,7 +172,7 @@
       "friction": 0.0,
       "restitution": 0.2,
       "damping": 0.0,
-      "health": 0.1,
+      "health": 0.01,
       "textures": {
         "body": {
           "name" : "archer.arrow",
@@ -182,8 +182,7 @@
       "texture": {
         "name": "body",
         "origin": [700, 1342],
-//        "scale": 0.3,
-        "scale": 1.0
+        "scale": 0.15
       },
       "colliders": {
         "body": {
