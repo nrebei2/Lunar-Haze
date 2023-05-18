@@ -19,8 +19,8 @@ public class PlayerAttackHandler extends MeleeHandler {
     private float dashTimer;
     private Vector2 dashDirection;
     public boolean isDashing;
-    public static float DASH_COOLDOWN_BATTLE = 5.0f;
-    public static float DASH_COOLDOWN_STEALTH = 10.0f;
+    public static float DASH_COOLDOWN_BATTLE = 4.0f;
+    public static float DASH_COOLDOWN_STEALTH = 8.75f;
 
     public static final float DASH_REDUCE_AMOUNT = 0.5f;
     private float dashCooldownCounter;
@@ -100,7 +100,7 @@ public class PlayerAttackHandler extends MeleeHandler {
         }
         // Initiate dash based on input
         if (InputController.getInstance().didDash() && !player.isAttacking() && dashCooldownCounter >= dashCD) {
-            initiateDash(InputController.getInstance());
+            initiateDash(phase);
         }
 
     }
@@ -152,10 +152,15 @@ public class PlayerAttackHandler extends MeleeHandler {
     /**
      * Initiates a dash
      */
-    private void initiateDash(InputController input) {
+    private void initiateDash(GameplayController.Phase phase) {
         if (!isDashing) {
             isDashing = true;
-            dashDirection = new Vector2(input.getHorizontal(), input.getVertical()).nor();
+            dashDirection.set(
+                    InputController.getInstance().getHorizontal(),
+                    InputController.getInstance().getVertical()
+            ).nor();
+            if (phase == GameplayController.Phase.STEALTH)
+                dashDirection.scl(1.5f);
             dashTimer = 0f;
             entity.setImmune();
             entity.setLockedOut();

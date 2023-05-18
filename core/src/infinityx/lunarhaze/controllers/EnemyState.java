@@ -5,6 +5,7 @@ import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.utils.ArithmeticUtils;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.ai.TacticalManager;
@@ -102,13 +103,15 @@ public enum EnemyState implements State<EnemyController> {
             switch (entity.getDetection()) {
                 case NOTICED:
                 case ALERT:
-                    // Critical!! Set so that targetPos does not reference
-                    entity.targetPos.set(entity.target.getPosition());
+                    Vector2 tarPos = entity.target.getPosition();
+                    entity.targetPos.set(tarPos);
                     entity.updatePath();
 
-                    // Increase indicator
                     entity.getEnemy().setIndicatorAmount(
-                            MathUtils.clamp(entity.getEnemy().getIndicatorAmount() + Gdx.graphics.getDeltaTime() / 2, 0, 1)
+                            MathUtils.clamp(
+                                    entity.getEnemy().getIndicatorAmount() + Gdx.graphics.getDeltaTime() * 0.5f,
+                                    0, 1
+                            )
                     );
                     break;
                 case NONE:
@@ -118,7 +121,7 @@ public enum EnemyState implements State<EnemyController> {
                     );
                     // If the enemy has arrived to target and there is no detection, go back to looking around
                     float dist = entity.getEnemy().getPosition().dst(entity.targetPos);
-                    if (dist <= 0.5) {
+                    if (dist <= 0.2) {
                         entity.getStateMachine().changeState(LOOK_AROUND);
                     }
             }
