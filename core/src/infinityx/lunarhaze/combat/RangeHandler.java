@@ -47,6 +47,7 @@ public class RangeHandler extends AttackHandler{
         arrow.setLinearVelocity(dir);
         angleFacing = (float) Math.atan2(target.getY() - entity.getY(), target.getX() - entity.getX());
         arrow.setAngle(angleFacing + (float) Math.PI);
+        arrow.setInitialAngle(angleFacing + (float) Math.PI);
         arrow.canMove = true;
     }
 
