@@ -42,7 +42,6 @@ public class CollisionController implements ContactListener {
      * @param o2 Second object
      */
     private void processCollision(GameObject o1, GameObject o2) {
-        System.out.println("ProcessCollision on: " + o1.getType());
         switch (o1.getType()) {
             case ENEMY:
                 switch (o2.getType()) {
@@ -145,7 +144,6 @@ public class CollisionController implements ContactListener {
      * @param attacked The entity that was attacked
      */
     private void handleCollision(AttackingGameObject attacker, AttackingGameObject attacked) {
-        System.out.println("HandleCollision between ARCHER and WEREWOLF");
         if (attacker == attacked) return;
         boolean immune = attacked.isImmune();
         if (!immune) {
@@ -161,7 +159,7 @@ public class CollisionController implements ContactListener {
             attacked.hp -= attacker.attackDamage;
             if (attacked.hp < 0) attacked.hp = 0;
 
-            CameraShake.shake(attacker.attackKnockback * 4f, 0.3f);
+            CameraShake.shake(attacker.attackKnockback * 5f, 0.3f);
             if (attacked.getType() == GameObject.ObjectType.WEREWOLF) {
                 attacked.setAttacked();
                 // This class now flashes the werewolf only

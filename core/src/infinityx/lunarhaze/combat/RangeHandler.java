@@ -11,7 +11,7 @@ import infinityx.lunarhaze.models.entity.Werewolf;
 
 public class RangeHandler extends AttackHandler{
 
-    private final float TIME_TO_TRAVEL = 2.0f;
+    private final float TIME_TO_TRAVEL = 1.2f;
 
     /**
      * arrow attached to entity
@@ -19,6 +19,8 @@ public class RangeHandler extends AttackHandler{
     private Arrow arrow;
 
     private Werewolf target;
+
+    private float angleFacing;
 
     /**
      * @param archer the archer this class is controlling
@@ -28,7 +30,9 @@ public class RangeHandler extends AttackHandler{
         super(archer);
         this.target = target;
         this.arrow = archer.getArrow();
-
+        // Since the original image is facing left
+        angleFacing = (float) Math.atan2(target.getY() - entity.getY(), target.getX() - entity.getX());
+        arrow.setInitialAngle(angleFacing + (float) Math.PI);
     }
 
     @Override
@@ -40,16 +44,11 @@ public class RangeHandler extends AttackHandler{
         arrow.setX(entity.getX());
         arrow.setY(entity.getY());
         Vector2 dir = target.getPosition().sub(entity.getPosition());
-        System.out.println("Linear velocity is: " + dir);
-        System.out.println("Arrow position is: " + entity.getX() + ", " + entity.getY());
         arrow.setLinearVelocity(dir);
-        arrow.setAngle((float) Math.atan((target.getY() - entity.getY()) / (target.getX() - entity.getX())));
+        angleFacing = (float) Math.atan2(target.getY() - entity.getY(), target.getX() - entity.getX());
+        arrow.setAngle(angleFacing + (float) Math.PI);
+        arrow.setInitialAngle(angleFacing + (float) Math.PI);
         arrow.canMove = true;
-        System.out.println("Archer associated with the arrow is: " + arrow.getArcher());
-        if (arrow.hp != 0){
-            System.out.println("Arrow is initialized");
-        }
-        System.out.println("Arrow dimension is: " + arrow.getTextureWidth() + ", " + arrow.getTextureHeight());
     }
 
     @Override
@@ -58,13 +57,16 @@ public class RangeHandler extends AttackHandler{
         arrow.update(delta);
         arrow.setX(arrow.getX() + arrow.getLinearVelocity().x * delta / TIME_TO_TRAVEL);
         arrow.setY(arrow.getY() + arrow.getLinearVelocity().y * delta / TIME_TO_TRAVEL);
-//        System.out.println("Update position to: " + arrow.getX() + ", " + arrow.getY());
     }
 
     @Override
     protected void endAttack() {
         super.endAttack();
         arrow.setActive(false);
+    }
+
+    public float getAngleFacing(){
+        return angleFacing;
     }
 
 }
