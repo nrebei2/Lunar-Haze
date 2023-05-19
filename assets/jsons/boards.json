@@ -1,0 +1,42 @@
+{
+  "attack": {
+    "texture": "tutorial-attack",
+    "scale": 1
+  },
+  "dash": {
+    "texture": "tutorial-dash",
+    "scale": 1
+  },
+  "grass": {
+    "texture": "tutorial-grass",
+    "scale": 1
+  },
+  "heavy": {
+    "texture": "tutorial-heavy",
+    "scale": 1
+  },
+  "moonlight": {
+    "texture": "tutorial-moonlight",
+    "scale": 1
+  },
+  "movement": {
+    "texture": "tutorial-movement",
+    "scale": 1
+  },
+  "space": {
+    "texture": "tutorial.space",
+    "scale": 1
+  },
+  "x": {
+    "texture": "tutorial.x",
+    "scale": 1
+  },
+  "z": {
+    "texture": "tutorial.z",
+    "scale": 1
+  },
+  "move": {
+    "texture": "tutorial.move",
+    "scale": 1
+  }
+}

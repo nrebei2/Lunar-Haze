@@ -1,7 +1,14 @@
 package infinityx.lunarhaze.models;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.JsonValue;
+import infinityx.assets.AssetDirectory;
+import infinityx.lunarhaze.graphics.Animation;
+import infinityx.lunarhaze.graphics.FilmStrip;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.util.Drawable;
 
@@ -10,7 +17,7 @@ public class Billboard implements Drawable {
     /**
      * Texture drawn on canvas
      */
-    private Texture texture;
+    private Animation animation;
 
     /**
      * The billboard position in world coordinates
@@ -32,9 +39,19 @@ public class Billboard implements Drawable {
      */
     private float scale;
 
-    public Billboard(Texture texture, Vector3 position) {
-        this.texture = texture;
+    public Billboard(Vector3 position, float scale) {
         this.position = position;
+        this.scale = scale;
+    }
+
+    public void initialize(AssetDirectory directory, JsonValue json) {
+        String texture = json.getString("texture");
+        if (directory.hasEntry(texture, FilmStrip.class)) {
+            animation.addAnimation("main", directory.getEntry(texture, FilmStrip.class), 0.1f);
+        } else {
+            animation.addStaticAnimation("main", directory.getEntry(texture, Texture.class));
+        }
+        textureScale = json.getFloat("scale");
     }
 
     public Vector3 getPosition() {
@@ -72,7 +89,8 @@ public class Billboard implements Drawable {
 
     @Override
     public void draw(GameCanvas canvas) {
-        canvas.draw(texture, 0, texture.getWidth() / 2, texture.getHeight() / 2,
+        FilmStrip curFrame = animation.getKeyFrame(Gdx.graphics.getDeltaTime());
+        canvas.draw(curFrame, Color.WHITE, curFrame.getRegionWidth() / 2, curFrame.getRegionHeight() / 2,
                 canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y + getPosition().z), 0,
                 textureScale * scale, textureScale * scale);
     }
