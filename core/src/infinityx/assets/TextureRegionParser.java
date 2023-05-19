@@ -40,8 +40,6 @@ public class TextureRegionParser implements AssetParser<TextureRegion> {
         params.y = atlas.getInt(1);
         params.width = atlas.getInt(2);
         params.height = atlas.getInt(3);
-        params.width = params.width == -1 ? -1 : params.width - params.x;
-        params.height = params.height == -1 ? -1 : params.height - params.y;
         String region = file + ":" + atlas.name();
         keymap.put(root.name() + "." + atlas.name(), region);
         manager.load(region, TextureRegion.class, params);

@@ -47,8 +47,8 @@
     },
     "texture": {
       "name": "idle-r",
-      "origin" : [2050, 190],
-      "scale": 0.06
+      "origin" : [247, 36],
+      "scale": 0.3
     },
     "colliders": {
       "body": {
@@ -140,8 +140,8 @@
     },
     "texture": {
       "name": "idle-r",
-      "origin" : [1052, 480],
-      "scale": 0.06
+      "origin" : [177, 44],
+      "scale": 0.3
     },
     "colliders": {
       "body": {
@@ -181,8 +181,8 @@
       },
       "texture": {
         "name": "body",
-        "origin": [700, 1342],
-        "scale": 0.15
+        "origin": [105, 40],
+        "scale": 0.45
       },
       "colliders": {
         "body": {

@@ -143,6 +143,15 @@ public class FilmStrip extends TextureRegion {
         setFrame(0);
     }
 
+    /**
+     * Constructs a wrapper around a TextureRegion
+     */
+    public FilmStrip(TextureRegion textureRegion) {
+        super(textureRegion);
+        this.rows = this.cols = this.size = 1;
+        this.frame = 1;
+    }
+
 
     /**
      * Returns the number of frames in this filmstrip.
