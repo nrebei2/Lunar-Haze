@@ -199,6 +199,7 @@ public class GameplayController {
      */
     public void resolveActions(float delta) {
         // Update the phase timer
+        float volume = setting.getSoundVolume();
 
         // FSM for state and phase
         if (gameState == GameState.PLAY) {
@@ -219,7 +220,7 @@ public class GameplayController {
                     if (enemies.size == 0) {
                         gameState = GameState.WIN;
                         if (setting.isSoundEnabled()) {
-                            win_sound.play();
+                            win_sound.play(volume);
                         }
                     }
                     break;
@@ -236,7 +237,7 @@ public class GameplayController {
             if (player.hp <= 0) {
                 gameState = GameState.OVER;
                 if (setting.isSoundEnabled()) {
-                    fail_sound.play();
+                    fail_sound.play(volume);
                 }
             }
         }

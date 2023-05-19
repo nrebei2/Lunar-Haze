@@ -131,7 +131,7 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
 
     private static final float CHOICE_WIDTH_RATIO = 0.14f;
 
-    private static final float CHOICE1_HEIGHT_RATIO = 0.53f;
+    private static final float CHOICE1_HEIGHT_RATIO = 0.5f;
 
     private static final float CHOICE2_HEIGHT_RATIO = 0.47f;
 
@@ -346,9 +346,9 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
                 canvas.getHeight() * TITLE_HEIGHT_RATIO,0,TEXT_SCALE * scale, TEXT_SCALE * scale);
         canvas.draw(sound_choice, alphaTint, sound_choice.getWidth()/2, sound_choice.getHeight()/2,canvas.getWidth() * CHOICE_WIDTH_RATIO,
                 canvas.getHeight() * CHOICE1_HEIGHT_RATIO, 0, TEXT_SCALE * scale, TEXT_SCALE * scale );
-        canvas.draw(control_choice, alphaTint, control_choice.getWidth()/2, control_choice.getHeight()/2,canvas.getWidth() * CHOICE_WIDTH_RATIO,
-                canvas.getHeight() * CHOICE2_HEIGHT_RATIO, 0, TEXT_SCALE * scale, TEXT_SCALE * scale );
-
+//        canvas.draw(control_choice, alphaTint, control_choice.getWidth()/2, control_choice.getHeight()/2,canvas.getWidth() * CHOICE_WIDTH_RATIO,
+//                canvas.getHeight() * CHOICE2_HEIGHT_RATIO, 0, TEXT_SCALE * scale, TEXT_SCALE * scale );
+//
 
         canvas.draw(music, alphaTint, music.getWidth()/2, music.getHeight()/2, canvas.getWidth() * TEXT_WIDTH_RATIO,
                 canvas.getHeight() * MUSIC_HEIGHT_RATIO,0,TEXT_SCALE * scale, TEXT_SCALE * scale);

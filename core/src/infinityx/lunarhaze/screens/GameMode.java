@@ -340,7 +340,6 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
         lobby_background.setVolume(volume);
         stealth_background.setVolume(volume);
         battle_background.setVolume(volume);
-
         switch (gameplayController.getState()) {
             case OVER:
             case WIN:
