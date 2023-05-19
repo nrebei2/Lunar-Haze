@@ -130,6 +130,57 @@
     "moon": "transitionUI/moon.png",
     "transition-background": "transitionUI/transition-background.png",
     "trees": "transitionUI/trees.png",
+    "tutorial-attack": "images/tutorial/attack.png",
+    "tutorial-dash": "images/tutorial/dash.png",
+    "tutorial-grass": "images/tutorial/grass.png",
+    "tutorial-heavy": "images/tutorial/heavy.png",
+    "tutorial-moonlight": "images/tutorial/moonlight.png",
+    "tutorial-movement": "images/tutorial/movement.png",
+    "tutorial":{
+      "file": 	"images/tutorial/move-tutorial.png",
+      "wrap":  	false,
+      "sprites":	{
+        "move" : {
+          "size" : 6,
+          "rows" : 1,
+          "cols" : 6
+        }
+      }
+    },
+    "tutorial":{
+      "file": 	"images/tutorial/space-tutorial.png",
+      "wrap":  	false,
+      "sprites":	{
+        "space" : {
+          "size" : 10,
+          "rows" : 1,
+          "cols" : 10
+        }
+      }
+    },
+    "tutorial":{
+      "file": 	"images/tutorial/x-tutorial.png",
+      "wrap":  	false,
+      "sprites":	{
+        "x" : {
+          "size" : 10,
+          "rows" : 1,
+          "cols" : 10
+        }
+      }
+    },
+    "tutorial":{
+      "file": 	"images/tutorial/z-tutorial.png",
+      "wrap":  	false,
+      "sprites":	{
+        "z" : {
+          "size" : 11,
+          "rows" : 1,
+          "cols" : 11
+        }
+      }
+    },
+
 
     "tile": {
       "file": "images/tile-spritesheet.png",
@@ -884,7 +935,8 @@
     "dimensions": "jsons/dimensions.json",
     "objects": "jsons/objects.json",
     "enemies": "jsons/enemies.json",
-    "dust": "jsons/dust.json"
+    "dust": "jsons/dust.json",
+    "boards": "jsons/boards.json"
   },
   "music": {
     "stealthBackground": "sounds/village_no_drum.ogg",

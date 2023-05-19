@@ -31,6 +31,14 @@ public class SceneObject extends GameObject implements Drawable {
     private boolean seeThru;
 
     /**
+     * Cache for position since static (other than in editor)
+     */
+    private Vector2 cachedPosition;
+
+    /** dirty bit for position */
+    private boolean dirty;
+
+    /**
      * Initialize a scene object.
      */
     public SceneObject(float x, float y, String type) {
@@ -38,6 +46,24 @@ public class SceneObject extends GameObject implements Drawable {
         this.type = type;
         this.flipped = false;
         this.seeThru = false;
+    }
+
+    public void setDirty() {
+        this.dirty = true;
+    }
+
+    @Override
+    public Vector2 getPosition() {
+        if (!dirty)
+            return positionCache;
+        positionCache.set(super.getPosition());
+        dirty = false;
+        return positionCache;
+    }
+
+    @Override
+    public float getY() {
+        return getPosition().y;
     }
 
     /**
@@ -99,16 +125,18 @@ public class SceneObject extends GameObject implements Drawable {
     public void draw(GameCanvas canvas) {
 
         drawShadow(canvas);
+
+        Vector2 pos = getPosition();
         boolean drawn = canvas.draw(filmstrip, tint, origin.x, origin.y,
-                canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y), 0.0f,
+                canvas.WorldToScreenX(pos.x), canvas.WorldToScreenY(pos.y), 0.0f,
                 (flipped ? -1 : 1) * textureScale * scale, textureScale * scale);
 
         if (drawn && !canvas.playerCoords.epsilonEquals(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY)) {
             // ugly but it is what it is
-            float recX = canvas.WorldToScreenX(getPosition().x)
+            float recX = canvas.WorldToScreenX(pos.x)
                     - origin.x * (flipped ? -1 : 1) * textureScale * scale
                     - (flipped ? 1 : 0) * getTextureWidth();
-            float recY = canvas.WorldToScreenY(getPosition().y) - origin.y * textureScale * scale;
+            float recY = canvas.WorldToScreenY(pos.y) - origin.y * textureScale * scale;
             float width = getTextureWidth();
             float height = getTextureHeight();
 
@@ -129,7 +157,6 @@ public class SceneObject extends GameObject implements Drawable {
 
     /**
      * Draws a nice shadow for the object
-     * @param canvas
      */
     private void drawShadow(GameCanvas canvas) {
         Vector2 pos = getPosition();
