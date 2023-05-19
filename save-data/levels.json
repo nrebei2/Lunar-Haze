@@ -2,7 +2,7 @@
 "0": {
 	"settings": {
 		"transition": 4,
-		"phaseLength": 0,
+		"phaseLength": 1000,
 		"enemy-spawner": {
 			"count": 0,
 			"add-tick": [ 0.0, 0.0 ],
@@ -11,31 +11,27 @@
 		}
 	},
 	"ambient": {
-		"stealth-color": [ 0.5953307151794434, 0.607927680015564, 1.0, 1.0 ],
+		"stealth-color": [ 0.699999988079071, 0.699999988079071, 0.699999988079071, 1.0 ],
 		"battle-color": [ 1.0, 1.0, 1.0, 1.0 ],
 		"gamma": true,
 		"diffuse": true
 	},
 	"tiles": {
 		"layout": [
-			[ 9, 9, 9, 9, 9, 9, 1, 3, 3, 3, 3, 3, 3, 3, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1, 4, 1, 0, 3, 5, 3, 1, 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1 ],
-			[ 9, 9, 9, 9, 9, 9, 4, 3, 3, 3, 3, 1, 3, 1, 3, 1, 1, 1, 1, 3, 3, 1, 9, 9, 9, 9, 9, 9, 9, 9, 3, 3, 3, 3, 3, 4, 1, 1, 3, 3, 3, 1, 5, 3, 5, 1, 3, 3, 3, 3, 1, 3, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1 ],
-			[ 9, 2, 3, 4, 9, 9, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 9, 9, 9, 9, 9, 3, 1, 3, 3, 3, 9, 9, 3, 4, 3, 3, 3, 3, 3, 3, 5, 3, 3, 3, 3, 3, 1, 9, 3, 3, 1, 9, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
-			[ 9, 7, 6, 5, 9, 9, 3, 1, 3, 3, 3, 3, 3, 9, 3, 1, 3, 3, 9, 3, 3, 1, 1, 3, 3, 3, 4, 3, 9, 9, 1, 1, 3, 3, 3, 3, 1, 1, 3, 3, 3, 4, 3, 1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
-			[ 9, 9, 0, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 3, 3, 3, 1, 9, 3, 3, 2, 3, 3, 3, 2, 3, 3, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 3, 3, 3, 3, 3, 9, 9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
-			[ 9, 9, 9, 9, 9, 9, 1, 1, 3, 3, 3, 3, 3, 9, 9, 9, 9, 9, 9, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 4, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 3, 1, 1, 1, 9, 9, 3, 3, 3, 3, 1, 9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
-			[ 9, 9, 9, 9, 9, 9, 2, 3, 3, 3, 3, 3, 4, 4, 3, 3, 3, 3, 1, 3, 1, 3, 3, 3, 3, 1, 2, 3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 9, 1, 3, 3, 1, 1, 9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
-			[ 9, 9, 9, 9, 9, 9, 3, 3, 1, 2, 3, 3, 3, 3, 4, 1, 1, 3, 1, 1, 3, 1, 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 1, 9, 1, 3, 1, 9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
-			[ 9, 9, 9, 9, 9, 9, 3, 3, 3, 3, 3, 1, 3, 1, 3, 3, 2, 1, 3, 3, 3, 3, 2, 3, 3, 3, 1, 3, 3, 3, 1, 3, 1, 3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 5, 3, 1, 9, 9, 9, 9, 9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
-			[ 9, 9, 9, 9, 9, 9, 1, 3, 1, 3, 3, 3, 3, 1, 3, 3, 3, 3, 2, 3, 3, 3, 3, 1, 1, 1, 3, 1, 1, 3, 3, 1, 3, 4, 3, 1, 1, 3, 5, 3, 1, 3, 3, 3, 3, 5, 3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ]
+			[ 0, 0, 0, 0, 0, 0, 0, 0, 3, 3 ],
+			[ 0, 0, 0, 0, 0, 0, 0, 0, 3, 3 ],
+			[ 0, 0, 0, 0, 0, 3, 3, 3, 3, 3 ],
+			[ 0, 0, 0, 0, 0, 3, 0, 0, 3, 3 ],
+			[ 0, 0, 0, 0, 0, 3, 3, 3, 3, 3 ],
+			[ 3, 0, 0, 0, 0, 3, 3, 3, 3, 3 ],
+			[ 4, 4, 0, 0, 0, 15, 13, 12, 35, 35 ],
+			[ 4, 4, 35, 35, 35, 35, 35, 35, 35, 35 ],
+			[ 4, 4, 35, 35, 35, 19, 18, 16, 35, 35 ],
+			[ 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 ]
 		],
 		"moonlight": {
 			"positions": [
-				[ 6, 5 ],
-				[ 25, 8 ],
-				[ 27, 8 ],
-				[ 30, 5 ],
-				[ 31, 5 ]
+				[ 9, 9 ]
 			],
 			"lighting": {
 				"color": [ 1.0, 1.0, 1.0, 0.20000000298023224 ],
@@ -46,1249 +42,122 @@
 		}
 	},
 	"scene": {
-		"player": [ 1.7578125, 5.208333492279053 ],
-		"enemies": [
-			{
-				"type": "Villager",
-				"scale": 1.0,
-				"position": [ 43.418357849121094, 5.9015631675720215 ],
-				"patrol": [
-					[ 43.0, 5.0 ]
-				]
-			},
-			{
-				"type": "Villager",
-				"scale": 1.0,
-				"position": [ 43.353904724121094, 4.423437118530273 ],
-				"patrol": [
-					[ 43.0, 4.0 ]
-				]
-			},
-			{
-				"type": "Villager",
-				"scale": 1.0,
-				"position": [ 42.662109375, 2.9510414600372314 ],
-				"patrol": [
-					[ 42.0, 2.0 ]
-				]
-			},
-			{
-				"type": "Villager",
-				"scale": 1.0,
-				"position": [ 25.618749618530273, 4.038541316986084 ],
-				"patrol": [
-					[ 26.0, 4.0 ],
-					[ 26.0, 6.0 ]
-				]
-			},
-			{
-				"type": "Villager",
-				"scale": 1.0,
-				"position": [ 27.294530868530273, 1.6895833015441895 ],
-				"patrol": [
-					[ 26.0, 1.0 ],
-					[ 23.0, 1.0 ]
-				]
-			},
-			{
-				"type": "Villager",
-				"scale": 1.0,
-				"position": [ 37.5625, 5.3125 ],
-				"patrol": [
-					[ 37.0, 5.0 ]
-				]
-			},
-			{
-				"type": "Villager",
-				"scale": 1.0,
-				"position": [ 16.02300262451172, 7.4095892906188965 ],
-				"patrol": [
-					[ 16.0, 7.0 ],
-					[ 16.0, 7.0 ],
-					[ 15.0, 7.0 ]
-				]
-			},
-			{
-				"type": "Villager",
-				"scale": 1.0,
-				"position": [ 42.614959716796875, 7.3702826499938965 ],
-				"patrol": [
-					[ 42.0, 7.0 ]
-				]
-			},
-			{
-				"type": "Villager",
-				"scale": 1.0,
-				"position": [ 8.98828125, 1.5489581823349 ],
-				"patrol": [
-					[ 9.0, 1.0 ],
-					[ 11.0, 1.0 ]
-				]
-			},
-			{
-				"type": "Villager",
-				"scale": 1.0,
-				"position": [ 8.885156631469727, 9.229166984558105 ],
-				"patrol": [
-					[ 9.0, 8.0 ],
-					[ 11.0, 8.0 ]
-				]
-			},
-			{
-				"type": "Villager",
-				"scale": 1.0,
-				"position": [ 21.411195755004883, 5.738397121429443 ],
-				"patrol": [
-					[ 21.0, 6.0 ]
-				]
-			}
-		],
+		"player": [ 3.6297836303710938, 6.378620624542236 ],
+		"enemies": [],
 		"objects": [
 			{
-				"type": "fence1",
+				"type": "house4",
 				"scale": 1.0,
-				"flip": true,
-				"position": [ 1.0, 10.0 ]
-			},
-			{
-				"type": "fence1",
-				"scale": 1.0,
-				"flip": true,
-				"position": [ 3.0, 10.0 ]
-			},
-			{
-				"type": "fence1",
-				"scale": 1.0,
-				"flip": true,
-				"position": [ 5.0, 10.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 0.0, 10.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 0.0, 9.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 0.0, 8.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 0.0, 8.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 0.0, 7.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 0.0, 7.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 0.0, 6.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 0.0, 6.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 0.0, 5.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 0.0, 5.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 0.0, 4.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 0.0, 3.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 0.0, 3.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 0.0, 2.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 0.0, 1.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 0.0, 1.0 ]
-			},
-			{
-				"type": "fence1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 1.0, 0.0 ]
-			},
-			{
-				"type": "fence1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 3.0, 0.0 ]
-			},
-			{
-				"type": "fence1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 5.0, 0.0 ]
-			},
-			{
-				"type": "fence5",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 6.0, 10.0 ]
-			},
-			{
-				"type": "fence5",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 6.0, 9.0 ]
-			},
-			{
-				"type": "fence5",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 6.0, 8.0 ]
-			},
-			{
-				"type": "fence5",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 6.0, 1.0 ]
-			},
-			{
-				"type": "fence5",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 6.0, 2.0 ]
-			},
-			{
-				"type": "fence5",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 6.0, 3.0 ]
-			},
-			{
-				"type": "fence5",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 6.0, 4.0 ]
-			},
-			{
-				"type": "fence5",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 6.0, 7.0 ]
-			},
-			{
-				"type": "fence3",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 7.0, 4.0 ]
-			},
-			{
-				"type": "fence3",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 7.0, 6.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 8.0, 7.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 8.0, 8.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 8.0, 9.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 8.0, 10.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 8.0, 4.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 8.0, 3.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 8.0, 2.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 8.0, 1.0 ]
-			},
-			{
-				"type": "fencex",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 9.0, 0.0 ]
-			},
-			{
-				"type": "fence3",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 11.0, 0.0 ]
-			},
-			{
-				"type": "fence3",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 9.0, 10.0 ]
-			},
-			{
-				"type": "fence3",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 11.0, 10.0 ]
-			},
-			{
-				"type": "fence5",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 12.0, 10.0 ]
-			},
-			{
-				"type": "fence5",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 12.0, 9.0 ]
-			},
-			{
-				"type": "fence5",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 12.0, 1.0 ]
-			},
-			{
-				"type": "fence5",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 12.0, 2.0 ]
-			},
-			{
-				"type": "fence5",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 11.96484375, 2.9776039123535156 ]
-			},
-			{
-				"type": "fence3",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 12.927343368530273, 3.28125 ]
-			},
-			{
-				"type": "fence3",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 13.0, 8.0 ]
-			},
-			{
-				"type": "fence3",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 15.0, 8.0 ]
-			},
-			{
-				"type": "fence3",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 17.014842987060547, 8.024998664855957 ]
-			},
-			{
-				"type": "fence3",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 19.0, 8.0 ]
-			},
-			{
-				"type": "fence3",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 21.0, 8.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 19.0703125, 5.791666507720947 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 19.0703125, 6.4375 ]
-			},
-			{
-				"type": "fencex",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 19.9453125, 6.395833492279053 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.1999999284744263,
-				"flip": false,
-				"position": [ 7.109375, 8.0 ]
-			},
-			{
-				"type": "stone",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 6.84375, 2.875 ]
-			},
-			{
-				"type": "tree4",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 12.796875, 9.104166984558105 ]
-			},
-			{
-				"type": "tree10",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 14.25, 9.354166984558105 ]
-			},
-			{
-				"type": "tree9",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 15.765625, 9.239583015441895 ]
-			},
-			{
-				"type": "tree6",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 17.21875, 9.25 ]
-			},
-			{
-				"type": "tree9",
-				"scale": 1.0,
-				"flip": true,
-				"position": [ 19.1953125, 9.260416984558105 ]
-			},
-			{
-				"type": "tree5",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 20.7734375, 9.3125 ]
-			},
-			{
-				"type": "fence5",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 19.0, 5.0 ]
-			},
-			{
-				"type": "fence3",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 18.15479278564453, 3.261185884475708 ]
-			},
-			{
-				"type": "fence3",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 16.738204956054688, 3.3138771057128906 ]
-			},
-			{
-				"type": "fence3",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 14.810311317443848, 3.309823989868164 ]
-			},
-			{
-				"type": "fence1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 21.0078125, 6.458333492279053 ]
-			},
-			{
-				"type": "fence1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 22.95828628540039, 9.245986938476562 ]
-			},
-			{
-				"type": "fence1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 24.969310760498047, 9.2373628616333 ]
-			},
-			{
-				"type": "fence1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 26.999736785888672, 9.245986938476562 ]
-			},
-			{
-				"type": "fence1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 23.0, 0.0 ]
-			},
-			{
-				"type": "fence1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 25.0, 0.0 ]
-			},
-			{
-				"type": "fence1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 27.0, 0.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 21.943073272705078, 9.883997917175293 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 22.0, 9.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 22.0, 6.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 22.0, 5.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 22.0, 4.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 22.0, 3.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 22.0, 2.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 22.0, 1.0 ]
-			},
-			{
-				"type": "fence3",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 22.2265625, 6.510416507720947 ]
-			},
-			{
-				"type": "fence5",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 23.1796875, 7.5 ]
-			},
-			{
-				"type": "fencex",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 24.09375, 7.75 ]
-			},
-			{
-				"type": "fence5",
-				"scale": 1.0,
 				"flip": false,
-				"position": [ 23.203125, 7.96875 ]
+				"position": [ 6.134674072265625, 4.799968719482422 ]
 			},
 			{
-				"type": "fence3",
+				"type": "house",
 				"scale": 1.0,
 				"flip": false,
-				"position": [ 25.6015625, 7.708333492279053 ]
+				"position": [ 10.71711540222168, 4.364160060882568 ]
 			},
 			{
-				"type": "fence3",
+				"type": "lamp",
 				"scale": 1.0,
 				"flip": false,
-				"position": [ 27.046875, 7.677083492279053 ]
+				"position": [ 3.178577423095703, 4.353813648223877 ]
 			},
 			{
-				"type": "fence5",
+				"type": "barn",
 				"scale": 1.0,
 				"flip": false,
-				"position": [ 28.0, 1.0 ]
+				"position": [ 1.6783790588378906, 7.099296569824219 ]
 			},
 			{
-				"type": "fence5",
+				"type": "sign",
 				"scale": 1.0,
 				"flip": false,
-				"position": [ 28.0, 1.0 ]
+				"position": [ 4.2423248291015625, 6.867265224456787 ]
 			},
 			{
-				"type": "fence5",
+				"type": "bucket",
 				"scale": 1.0,
 				"flip": false,
-				"position": [ 28.0, 2.0 ]
+				"position": [ 1.3361330032348633, 4.868828296661377 ]
 			},
 			{
-				"type": "fence5",
+				"type": "well",
 				"scale": 1.0,
 				"flip": false,
-				"position": [ 28.0, 3.0 ]
+				"position": [ 4.857206344604492, 4.745078086853027 ]
 			},
 			{
-				"type": "fence5",
+				"type": "stone1",
 				"scale": 1.0,
 				"flip": false,
-				"position": [ 28.0, 4.0 ]
+				"position": [ 1.2326107025146484, 3.094085693359375 ]
 			},
 			{
-				"type": "fence5",
+				"type": "stone3",
 				"scale": 1.0,
 				"flip": false,
-				"position": [ 28.0, 5.0 ]
+				"position": [ 3.397228240966797, 2.008467435836792 ]
 			},
 			{
-				"type": "fence5",
+				"type": "stone4",
 				"scale": 1.0,
 				"flip": false,
-				"position": [ 28.0, 6.0 ]
+				"position": [ 4.976008415222168, 3.239717483520508 ]
 			},
 			{
-				"type": "fence5",
+				"type": "stone5",
 				"scale": 1.0,
 				"flip": false,
-				"position": [ 28.0, 7.0 ]
+				"position": [ 5.204385757446289, 1.664246916770935 ]
 			},
 			{
-				"type": "fence5",
+				"type": "tree",
 				"scale": 1.0,
-				"flip": false,
-				"position": [ 28.002342224121094, 7.8359375 ]
-			},
-			{
-				"type": "stone",
-				"scale": 1.5799996852874756,
-				"flip": true,
-				"position": [ 7.0234375, 1.2604166269302368 ]
-			},
-			{
-				"type": "tree6",
-				"scale": 0.7600000500679016,
 				"flip": false,
-				"position": [ 12.75, 0.0729166641831398 ]
+				"position": [ 1.2425403594970703, 1.0684804916381836 ]
 			},
 			{
 				"type": "tree7",
 				"scale": 1.0,
 				"flip": false,
-				"position": [ 14.625, 0.125 ]
-			},
-			{
-				"type": "tree2",
-				"scale": 0.8400001525878906,
-				"flip": true,
-				"position": [ 17.3984375, 0.1875 ]
-			},
-			{
-				"type": "tree9",
-				"scale": 0.800000011920929,
-				"flip": false,
-				"position": [ 19.370744705200195, 0.08025232702493668 ]
-			},
-			{
-				"type": "tree5",
-				"scale": 0.8400000929832458,
-				"flip": false,
-				"position": [ 21.328125, 0.1458333283662796 ]
-			},
-			{
-				"type": "fence1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 28.9765625, 9.239583015441895 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 30.0, 9.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 30.0, 8.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 30.0, 7.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 30.0, 1.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 30.0, 2.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 30.0, 3.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 30.0, 4.0 ]
-			},
-			{
-				"type": "fence1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 31.0, 4.0 ]
-			},
-			{
-				"type": "fence1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 31.0, 6.0 ]
-			},
-			{
-				"type": "fence1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 29.0, 0.0 ]
-			},
-			{
-				"type": "fence1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 33.0, 6.0 ]
-			},
-			{
-				"type": "fence1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 35.0, 6.0 ]
-			},
-			{
-				"type": "fence1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 33.0, 4.0 ]
-			},
-			{
-				"type": "fence1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 35.0, 4.0 ]
-			},
-			{
-				"type": "fence1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 37.0, 6.0 ]
-			},
-			{
-				"type": "fence1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 37.0, 4.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 38.0, 7.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 38.0, 8.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 38.0, 4.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 38.0, 3.0 ]
-			},
-			{
-				"type": "fence1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 39.0, 2.0 ]
-			},
-			{
-				"type": "fence1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 41.0, 2.0 ]
-			},
-			{
-				"type": "fence1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 43.0, 2.0 ]
-			},
-			{
-				"type": "fence1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 39.0, 8.0 ]
-			},
-			{
-				"type": "fence1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 41.0, 8.0 ]
-			},
-			{
-				"type": "fence1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 43.0, 8.0 ]
-			},
-			{
-				"type": "fence5",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 44.0, 8.0 ]
-			},
-			{
-				"type": "fence5",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 44.0, 7.0 ]
-			},
-			{
-				"type": "fence5",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 44.0, 3.0 ]
-			},
-			{
-				"type": "fence5",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 44.0, 4.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 30.8984375, 8.166666984558105 ]
+				"position": [ 7.815828323364258, 1.0287628173828125 ]
 			},
 			{
 				"type": "tree9",
 				"scale": 1.0,
 				"flip": false,
-				"position": [ 32.84375, 7.760416507720947 ]
+				"position": [ 6.604435920715332, 0.4065183103084564 ]
+			},
+			{
+				"type": "tree8",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 5.393044471740723, 9.104704856872559 ]
+			},
+			{
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 2.9702625274658203, 0.4329967498779297 ]
+			},
+			{
+				"type": "tallgrass-2",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 3.973134994506836, 0.7772172093391418 ]
 			},
 			{
 				"type": "tree11",
 				"scale": 1.0,
 				"flip": false,
-				"position": [ 34.5859375, 7.958333492279053 ]
+				"position": [ 10.069808959960938, 10.256519317626953 ]
 			},
 			{
-				"type": "tree6",
+				"type": "tree4",
 				"scale": 1.0,
 				"flip": false,
-				"position": [ 35.8359375, 7.895833492279053 ]
-			},
-			{
-				"type": "tree5",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 37.5, 7.916666507720947 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 13.54296875, 7.131249904632568 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 13.517187118530273, 6.197395324707031 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 13.517187118530273, 5.143229007720947 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 13.44114875793457, 4.140725612640381 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 14.544626235961914, 4.096140384674072 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 15.410992622375488, 4.132619380950928 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 16.447593688964844, 4.128565311431885 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 17.55411148071289, 4.116405963897705 ]
-			},
-			{
-				"type": "house2",
-				"scale": 0.7200000286102295,
-				"flip": false,
-				"position": [ 30.65625, 0.5625 ]
-			},
-			{
-				"type": "house",
-				"scale": 0.8400000929832458,
-				"flip": false,
-				"position": [ 33.9375, 0.2604166567325592 ]
-			},
-			{
-				"type": "fence5",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 18.993799209594727, 3.9307734966278076 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 18.547706604003906, 4.171698093414307 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 18.525060653686523, 4.986915588378906 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 18.453351974487305, 5.7719407081604 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 18.415611267089844, 6.486513614654541 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 18.39296531677246, 7.160830020904541 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 12.256187438964844, 10.517313957214355 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 20.728837966918945, 6.2658233642578125 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 20.75356101989746, 5.553797245025635 ]
-			},
-			{
-				"type": "fencex",
-				"scale": 0.8200001120567322,
-				"flip": false,
-				"position": [ 21.322193145751953, 4.894514560699463 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 13.509815216064453, 7.631882190704346 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": true,
-				"position": [ 13.525032997131348, 7.398552417755127 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": true,
-				"position": [ 13.395687103271484, 6.62755012512207 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": true,
-				"position": [ 13.836984634399414, 6.749287128448486 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 13.578292846679688, 6.120311737060547 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 13.441338539123535, 5.572494029998779 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 13.486989974975586, 5.694231033325195 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": true,
-				"position": [ 13.273950576782227, 5.430467128753662 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": true,
-				"position": [ 13.593509674072266, 5.288440704345703 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": true,
-				"position": [ 13.311992645263672, 5.065255641937256 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 13.502206802368164, 4.649320125579834 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 13.372861862182617, 4.456569194793701 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 13.601119041442871, 4.192805290222168 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 14.247847557067871, 4.558017253875732 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": true,
-				"position": [ 14.255456924438477, 4.395700931549072 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": true,
-				"position": [ 14.704362869262695, 4.1623711585998535 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": true,
-				"position": [ 15.617391586303711, 4.507293224334717 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 15.739129066467285, 4.121791839599609 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 16.51520347595215, 4.466713905334473 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 16.697811126708984, 4.1420817375183105 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 17.27606201171875, 4.395700931549072 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": true,
-				"position": [ 17.49671173095703, 4.152225971221924 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": true,
-				"position": [ 18.386913299560547, 4.071068286895752 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": true,
-				"position": [ 18.295612335205078, 5.765244960784912 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 18.424957275390625, 6.586970806121826 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 18.402130126953125, 5.7145209312438965 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 18.326045989990234, 7.266670227050781 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 18.310829162597656, 5.592783451080322 ]
-			},
-			{
-				"type": "tallgrass-1",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 18.539085388183594, 4.994242191314697 ]
+				"position": [ 3.476663589477539, 9.528361320495605 ]
 			}
 		]
 	}
@@ -4016,9 +2885,9 @@
 			"add-tick": [ 0.0, 4.820000171661377 ],
 			"delay": 2.0,
 			"spawn-locations": [
-				[ 20.520000457763672, 21.329999923706055 ],
-				[ 6.390000343322754, 19.260000228881836 ],
-				[ 13.59000015258789, 3.4200000762939453 ]
+				[ 20.0, 21.0 ],
+				[ 6.0, 19.0 ],
+				[ 12.0, 8.0 ]
 			]
 		}
 	},
@@ -4026,8 +2895,7 @@
 		"stealth-color": [ 0.8064786791801453, 0.724916398525238, 0.9805447459220886, 1.0 ],
 		"battle-color": [ 1.0, 1.0, 1.0, 1.0 ],
 		"gamma": true,
-		"diffuse": true,
-		"blur": 5
+		"diffuse": true
 	},
 	"tiles": {
 		"layout": [
@@ -4086,41 +2954,41 @@
 		"player": [ 2.5234756469726562, 23.29163360595703 ],
 		"enemies": [
 			{
-				"type": "villager",
+				"type": "Villager",
 				"scale": 1.0,
 				"position": [ 2.9746294021606445, 18.613454818725586 ],
 				"patrol": [
-					[ 2.957975387573242, 19.768171310424805 ],
-					[ 3.0245933532714844, 13.548049926757812 ]
+					[ 2.0, 19.0 ],
+					[ 3.0, 13.0 ]
 				]
 			},
 			{
-				"type": "villager",
+				"type": "Villager",
 				"scale": 1.0,
 				"position": [ 9.052932739257812, 22.56654167175293 ],
 				"patrol": [
-					[ 9.435986518859863, 21.922563552856445 ],
-					[ 14.848711967468262, 21.789329528808594 ],
-					[ 14.815402030944824, 16.282228469848633 ]
+					[ 9.0, 21.0 ],
+					[ 14.0, 21.0 ],
+					[ 14.0, 16.0 ]
 				]
 			},
 			{
-				"type": "villager",
+				"type": "Villager",
 				"scale": 1.0,
 				"position": [ 21.546846389770508, 17.61457061767578 ],
 				"patrol": [
-					[ 21.517192840576172, 18.87306022644043 ],
-					[ 21.58380889892578, 10.878880500793457 ]
+					[ 21.0, 18.0 ],
+					[ 21.0, 10.0 ]
 				]
 			},
 			{
-				"type": "villager",
+				"type": "Villager",
 				"scale": 1.0,
 				"position": [ 16.903884887695312, 15.209060668945312 ],
 				"patrol": [
-					[ 21.433917999267578, 15.453327178955078 ],
-					[ 14.888686180114746, 15.342296600341797 ],
-					[ 14.905341148376465, 12.255656242370605 ]
+					[ 21.0, 15.0 ],
+					[ 14.0, 15.0 ],
+					[ 14.0, 12.0 ]
 				]
 			}
 		],

@@ -10,6 +10,7 @@ import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.models.AttackingGameObject;
 import infinityx.lunarhaze.models.GameObject;
 import infinityx.lunarhaze.models.LevelContainer;
+import infinityx.lunarhaze.models.entity.Werewolf;
 
 /**
  * This class represents a rectangular attack hitbox that is parented to an entity,
@@ -108,10 +109,22 @@ public class AttackHitbox extends GameObject {
         if (!attacker.isAttacking()) {
             return;
         }
+
         // Add 90 degrees since sprite is facing down
+        float angle = getAngle() + MathUtils.PI / 2;
+        float offsetX = 0;
         // Fake height
+        float offsetY = 0.5f;
+
+        // Heavy attack should face down and should not have fake height
+        if(attacker instanceof Werewolf && ((Werewolf) attacker).isHeavyAttacking) {
+            angle = 0;
+            offsetX = -0.7f;
+            offsetY = 0;
+        }
+
         canvas.draw(filmstrip, tint, origin.x, origin.y,
-                canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y + 0.5f), getAngle() + MathUtils.PI / 2,
+                canvas.WorldToScreenX(getPosition().x + offsetX), canvas.WorldToScreenY(getPosition().y + offsetY), angle,
                 textureScale * scale, textureScale * scale);
     }
 
@@ -121,5 +134,6 @@ public class AttackHitbox extends GameObject {
     public void updateHitboxPosition() {
         // This is the logic that makes the hitbox "parented" to the entity
         getBody().setTransform(attacker.getPosition(), attacker.getAngle());
+
     }
 }

@@ -292,6 +292,10 @@ public class UIRender {
      */
     private final Texture alert;
 
+    private Animation animation;
+
+    protected FilmStrip yell;
+
     /**
      * shader program which draws the enemy indicator meter
      */
@@ -381,6 +385,12 @@ public class UIRender {
         // shaders
         this.meter = directory.get("meter", ShaderProgram.class);
         this.meterUniform = new ShaderUniform("u_amount");
+
+        //yelling animation
+        animation = new Animation();
+        animation.addAnimation("yell", directory.getEntry("yell.yell", FilmStrip.class), new float[]{0.2f, 0.2f, 0.2f});
+        animation.setCurrentAnimation("yell");
+        yell = animation.getKeyFrame(0);
     }
 
     /**
@@ -472,7 +482,7 @@ public class UIRender {
             canvas.end();
 
             if (phase == Phase.STEALTH) {
-                drawStealthIndicator(canvas, level);
+                drawStealthIndicator(canvas, level, delta);
             }
 
             if (phase == Phase.TRANSITION) {
@@ -777,9 +787,24 @@ public class UIRender {
     /**
      * Draw the stealth indicator above enemies
      */
-    public void drawStealthIndicator(GameCanvas canvas, LevelContainer level) {
+    public void drawStealthIndicator(GameCanvas canvas, LevelContainer level, float delta) {
         Array<Enemy> enemies = level.getEnemies();
         for (Enemy enemy : enemies) {
+
+            //draw yelling symbol if alerting. DOING IT HERE to avoid another for loop
+            if (enemy.getAlerting() && enemy.detectionTime < 2){
+                canvas.begin(GameCanvas.DrawPass.SPRITE, level.getView().x, level.getView().y);
+                yell = animation.getKeyFrame(delta);
+                canvas.draw(yell, Color.WHITE,0 ,0,
+                        canvas.WorldToScreenX(enemy.getPosition().x) + 10,
+                        canvas.WorldToScreenY(enemy.getPosition().y) + enemy.getTextureHeight() - 25, 0,
+                        0.5f, 0.5f
+                );
+                canvas.end();
+            }else{
+                enemy.setAlerting(false);
+            }
+
             switch (enemy.getDetection()) {
                 case ALERT:
                 case NOTICED:

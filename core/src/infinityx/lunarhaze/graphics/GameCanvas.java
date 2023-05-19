@@ -936,7 +936,7 @@ public class GameCanvas {
      * @param angle  The rotation angle (in degrees) about the origin.
      * @param sx     The x-axis scaling factor
      * @param sy     The y-axis scaling factor
-     * @return Whether the mesh was drawn (true) or not (false)
+     * @return Whether the texture was drawn or not
      */
     public boolean draw(TextureRegion region, Color tint, float ox, float oy,
                      float x, float y, float angle, float sx, float sy, float depth) {
@@ -1168,7 +1168,12 @@ public class GameCanvas {
         local.translate(-ox, -oy);
     }
 
-    public OrthographicCamera getCamera() {
-        return camera;
+    private void computeTransform(float ox, float oy, float x, float y, float angle, float sx, float sy, float shx, float shy) {
+        local.setToTranslation(x, y);
+        local.rotate(180.0f * angle / (float) Math.PI);
+        local.scale(sx, sy);
+        local.shear(shx, shy); // Add shear transformation here
+        local.translate(-ox, -oy);
     }
+
 }

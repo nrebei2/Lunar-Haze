@@ -12,6 +12,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -407,7 +408,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * Holds the necessary information to display the scene object button
      */
     class SceneButton {
-        public SceneButton(Texture texture, String type) {
+        public SceneButton(TextureRegion texture, String type) {
             this.type = type;
             this.texture = texture;
         }
@@ -420,7 +421,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         /**
          * Texture for button
          */
-        public Texture texture;
+        public TextureRegion texture;
     }
 
 
@@ -550,13 +551,13 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
         // Add all objects in json
         for (JsonValue object : objects) {
+            TextureRegion textureRegion = directory.getEntry(
+                    object.get("textures").getString(
+                            object.get("texture").getString("name")
+                    ), TextureRegion.class);
             objectSelections.add(
                     new SceneButton(
-                            directory.getEntry(
-                                    object.get("textures").getString(
-                                            object.get("texture").getString("name")
-                                    ), Texture.class
-                            ), object.name
+                            textureRegion, object.name
                     )
             );
         }
@@ -1102,6 +1103,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         board.drawOutline(canvas);
         canvas.end();
 
+        ImGui.setNextWindowSize(800, 400, ImGuiCond.FirstUseEver);
         ImGui.begin("Selection");
         if (ImGui.beginTabBar("bruh")) {
             if (ImGui.beginTabItem("Tile")) {
@@ -1126,7 +1128,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         createSceneMenu();
 
         // Position window right below Selection
-        ImGui.setNextWindowPos(ImGui.getWindowPosX(), ImGui.getWindowPosY() + 300, ImGuiCond.FirstUseEver);
+        ImGui.setNextWindowPos(ImGui.getWindowPosX(), ImGui.getWindowPosY() + 400, ImGuiCond.FirstUseEver);
         ImGui.setNextWindowSize(800, 175, ImGuiCond.FirstUseEver);
         createAmbientLightingMenu();
 
@@ -1713,6 +1715,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     private void createTileMenu() {
         FilmStrip tiles = board.getTileSheet();
+        float windowWidth = ImGui.getWindowWidth();
+        float rowWidth = 0;
 
         // Draw every frame in the tile sheet. Note UV's must be considered as the texture
         //  remains unchanged
@@ -1720,10 +1724,25 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             tiles.setFrame(i);
             // to avoid ID conflicts
             ImGui.pushID(i);
+            // Scale if window height scales
+            int height = Math.max(100, (int) ImGui.getWindowHeight() / 8);
+            int width = height * tiles.getRegionWidth() / tiles.getRegionHeight();
+            float totalButtonWidth = width + 20;
+
+            // Check if the button fits within the remaining space on the current row
+            // If it doesnt, put it on a new line
+            if (rowWidth + totalButtonWidth > windowWidth) {
+                ImGui.newLine();
+                rowWidth = 0;
+            }
+
+            if (rowWidth > 0) {
+                ImGui.sameLine();
+            }
             if (
                     ImGui.imageButton(
                             tiles.getTexture().getTextureObjectHandle(),
-                            100, 100 * 3 / 4,
+                            width, height,
                             tiles.getU(), tiles.getV(),
                             tiles.getU2(), tiles.getV2()
                     )
@@ -1731,15 +1750,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 removeSelection();
                 selected = new Tile(i);
             }
+            rowWidth += totalButtonWidth;
             ImGui.popID();
-
-            // Make tile menu have 6 columns
-            if ((i + 1) % 6 == 0) {
-                ImGui.newLine();
-            } else {
-                ImGui.sameLine();
-            }
-
         }
     }
 
@@ -1750,10 +1762,12 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         float windowWidth = ImGui.getWindowWidth();
         float rowWidth = 0;
 
+        int i = 0;
         for (SceneButton obj : objectSelections) {
+            ImGui.pushID(i);
             // Scale if window height scales
             int height = Math.max(100, (int) ImGui.getWindowHeight() / 4);
-            int width = height * obj.texture.getWidth() / obj.texture.getHeight();
+            int width = height * obj.texture.getRegionWidth() / obj.texture.getRegionHeight();
             float totalButtonWidth = width + 20;
 
             // Check if the button fits within the remaining space on the current row
@@ -1767,7 +1781,12 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 ImGui.sameLine();
             }
 
-            if (ImGui.imageButton(obj.texture.getTextureObjectHandle(), width, height)) {
+            if (ImGui.imageButton(
+                    obj.texture.getTexture().getTextureObjectHandle(),
+                    width, height,
+                    obj.texture.getU(), obj.texture.getV(),
+                    obj.texture.getU2(), obj.texture.getV2())
+            ) {
                 removeSelection();
                 SceneObject newObject = level.addSceneObject(obj.type, mouseWorld.x, mouseWorld.y, 1, false);
                 selected = new ObjectSelection(newObject);
@@ -1776,6 +1795,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             }
 
             rowWidth += totalButtonWidth;
+            ImGui.popID();
+            i += 1;
         }
 
         ImGui.spacing();

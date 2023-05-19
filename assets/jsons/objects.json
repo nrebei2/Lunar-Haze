@@ -1,30 +1,72 @@
 {
   "house": {
     "textures": {
-      "static": "house1"
+      "static": "objects.house1"
     },
     "texture": {
       "name": "static",
-      "origin": [324, 294],
-      "scale": 0.36
+      "origin": [38, 114],
+      "scale": 1
     },
     "colliders": {
       "body": {
         "type": "box",
-        "width": 4,
-        "height": 2.5,
-        "offset": [2, 0.9]
+        "width": 4.5,
+        "height": 3,
+        "offset": [2.25, 1.5]
       }
     }
   },
   "house2": {
     "textures": {
-      "static": "house2"
+      "static": "objects.house2"
     },
     "texture": {
       "name": "static",
-      "origin": [249, 157],
-      "scale": 0.795
+      "origin": [13, 79],
+      "scale": 1
+    },
+    "colliders": {
+      "body": {
+        "type": "box",
+        "width": 1,
+        "height": 2,
+        "offset": [0.5, 1]
+      },
+      "body2": {
+        "type": "box",
+        "width": 2.1,
+        "height": 2.8,
+        "offset": [2.05, 0.6]
+      }
+    }
+  },
+  "house3": {
+    "textures": {
+      "static": "objects.house3"
+    },
+    "texture": {
+      "name": "static",
+      "origin": [28, 8],
+      "scale": 1
+    },
+    "colliders": {
+      "body": {
+        "type": "box",
+        "width": 3.4,
+        "height": 3.4,
+        "offset": [1.7, 1.7]
+      }
+    }
+  },
+  "house4": {
+    "textures": {
+      "static": "objects.house4"
+    },
+    "texture": {
+      "name": "static",
+      "origin": [35, 100],
+      "scale": 1
     },
     "colliders": {
       "body": {
@@ -35,141 +77,230 @@
       }
     }
   },
-  "stone": {
+  "house5": {
     "textures": {
-    "static": "stone"
+      "static": "objects.house5"
+    },
+    "texture": {
+      "name": "static",
+      "origin": [500, 100],
+      "scale": 1
+    },
+    "colliders": {
+      "body2": {
+        "type": "box",
+        "width": 2.4,
+        "height": 3.4,
+        "offset": [-2.3, 0.7]
+      },
+      "body": {
+        "type": "box",
+        "width": 1.1,
+        "height": 2.4,
+        "offset": [-0.55, 1.2]
+      }
+    }
+  },
+  "stone1": {
+    "textures": {
+    "static": "objects.stone1"
   },
     "texture": {
       "name": "static",
-      "origin": [925, 630],
-      "scale": 0.15
+      "origin": [114, 45],
+      "scale": 0.5
     },
     "colliders": {
       "body": {
         "type": "circle",
-        "radius": 0.5
+        "radius": 0.3
+      }
+    }
+  },
+  "stone2": {
+    "textures": {
+      "static": "objects.stone2"
+    },
+    "texture": {
+      "name": "static",
+      "origin": [143, 50],
+      "scale": 0.5
+    },
+    "colliders": {
+      "body": {
+        "type": "circle",
+        "radius": 0.35
+      }
+    }
+  },
+  "stone3": {
+    "textures": {
+      "static": "objects.stone3"
+    },
+    "texture": {
+      "name": "static",
+      "origin": [129, 59],
+      "scale": 0.38
+    },
+    "colliders": {
+      "body": {
+        "type": "box",
+        "width": 0.7,
+        "height": 0.5
+      }
+    }
+  },
+  "stone4": {
+    "textures": {
+      "static": "objects.stone4"
+    },
+    "texture": {
+      "name": "static",
+      "origin": [75, 30],
+      "scale": 0.5
+    },
+    "colliders": {
+      "body": {
+        "type": "box",
+        "width": 0.5,
+        "height": 0.3
+      }
+    }
+  },
+  "stone5": {
+    "textures": {
+      "static": "objects.stone5"
+    },
+    "texture": {
+      "name": "static",
+      "origin": [56, 22],
+      "scale": 0.72
+    },
+    "colliders": {
+      "body": {
+        "type": "box",
+        "width": 0.5,
+        "height": 0.3
       }
     }
   },
   "fence1": {
     "textures": {
-      "static": "fence1"
+      "static": "objects.fence1"
     },
     "texture": {
       "name": "static",
-      "origin": [512, 46],
-      "scale": 0.25
+      "origin": [0, 8],
+      "scale": 0.64
     },
     "colliders": {
       "body": {
         "type": "box",
         "width": 2,
         "height": 0.1,
-        "offset": [0,0]
+        "offset": [1,0]
       }
     },
     "overlook":true
   },
   "fencex": {
     "textures": {
-      "static": "fence2"
+      "static": "objects.fence2"
     },
     "texture": {
       "name": "static",
-      "origin": [512, 46],
-      "scale": 0.25
+      "origin": [0, 8],
+      "scale": 0.64
     },
     "colliders": {
       "body": {
         "type": "box",
         "width": 2,
         "height": 0.1,
-        "offset": [0,0]
+        "offset": [1,0]
       }
     },
     "overlook": true
   },
   "fence3": {
     "textures": {
-      "static": "fence3"
+      "static": "objects.fence3"
     },
     "texture": {
       "name": "static",
-      "origin": [512, 46],
-      "scale": 0.25
+      "origin": [0, 8],
+      "scale": 0.64
     },
     "colliders": {
       "body": {
         "type": "box",
         "width": 2,
         "height": 0.1,
-        "offset": [0,0]
+        "offset": [1,0]
       }
     },
     "overlook": true
   },
   "fencey": {
     "textures": {
-      "static": "fence4"
+      "static": "objects.fence4"
     },
     "texture": {
       "name": "static",
-      "origin": [60, 300],
-      "scale": 0.25
+      "origin": [0, 0],
+      "scale": 0.435
     },
     "colliders": {
       "body": {
         "type": "box",
         "width": 0.1,
         "height": 1,
-        "offset": [0,0]
-      }
-    },
-    "overlook": true
-  },
-  "fence5": {
-    "textures": {
-      "static": "fence5"
-    },
-    "texture": {
-      "name": "static",
-      "origin": [60, 300],
-      "scale": 0.25
-    },
-    "colliders": {
-      "body": {
-        "type": "box",
-        "width": 0.2,
-        "height": 1,
-        "offset": [0,0]
+        "offset": [0.05,0.5]
       }
     },
     "overlook": true
   },
   "lamp": {
     "textures": {
-      "static": "lamp"
+      "static": "objects.lamp"
     },
     "texture": {
       "name": "static",
-      "origin": [1026, 100],
-      "scale": 0.15
+      "origin": [44, 16],
+      "scale": 0.8
     },
     "colliders": {
       "body": {
         "type": "circle",
-        "radius": 0.2
+        "radius": 0.3
       }
     }
   },
-  "tree": {
+  "barn": {
     "textures": {
-      "static": "tree0"
+      "static": "objects.barn"
     },
     "texture": {
       "name": "static",
-      "origin": [1040, 564],
-      "scale": 0.25
+      "origin": [147, 80],
+      "scale": 1
+    },
+    "colliders": {
+      "body": {
+        "type": "ellipse",
+        "width": 2.2,
+        "height": 1.6
+      }
+    }
+  },
+  "bucket": {
+    "textures": {
+      "static": "objects.bucket"
+    },
+    "texture": {
+      "name": "static",
+      "origin": [144, 94],
+      "scale": 0.42
     },
     "colliders": {
       "body": {
@@ -178,48 +309,48 @@
       }
     }
   },
-  "forest": {
+  "sign": {
     "textures": {
-      "static": "tree1"
+      "static": "objects.sign"
     },
     "texture": {
       "name": "static",
-      "origin": [1040, 460],
-      "scale": 0.25
+      "origin": [92, 32],
+      "scale": 1
     },
     "colliders": {
       "body": {
-        "type": "circle",
-        "radius": 0.3
+        "type": "box",
+        "width": 1,
+        "height": 0.2
       }
     }
   },
-
-  "tree2": {
+  "well": {
     "textures": {
-      "static": "tree2"
+      "static": "objects.well"
     },
     "texture": {
       "name": "static",
-      "origin": [936, 444],
-      "scale": 0.25
+      "origin": [144, 37],
+      "scale": 0.48
     },
     "colliders": {
       "body": {
-        "type": "circle",
-        "radius": 0.3
+        "type": "ellipse",
+        "width": 1,
+        "height": 0.6
       }
     }
   },
-
-  "tree3": {
+  "tree": {
     "textures": {
-      "static": "tree3"
+      "static": "objects.tree2"
     },
     "texture": {
       "name": "static",
-      "origin": [1032, 264],
-      "scale": 0.25
+      "origin": [107, 11],
+      "scale": 1
     },
     "colliders": {
       "body": {
@@ -228,156 +359,196 @@
       }
     }
   },
-
+  "forest": {
+    "textures": {
+      "static": "objects.forest"
+    },
+    "texture": {
+      "name": "static",
+      "origin": [254, 51],
+      "scale": 1
+    },
+    "colliders": {
+      "body": {
+        "type": "circle",
+        "radius": 0.35
+      }
+    }
+  },
+  "tree2": {
+    "textures": {
+      "static": "objects.tree3"
+    },
+    "texture": {
+      "name": "static",
+      "origin": [303, 73],
+      "scale": 1
+    },
+    "colliders": {
+      "body": {
+        "type": "circle",
+        "radius": 0.4
+      }
+    }
+  },
+  "tree3": {
+    "textures": {
+      "static": "objects.tree4"
+    },
+    "texture": {
+      "name": "static",
+      "origin": [212, 57],
+      "scale": 1
+    },
+    "colliders": {
+      "body": {
+        "type": "circle",
+        "radius": 0.4
+      }
+    }
+  },
   "tree4": {
     "textures": {
-      "static": "tree4"
+      "static": "objects.tree5"
     },
     "texture": {
       "name": "static",
-      "origin": [976, 150],
-      "scale": 0.25
+      "origin": [165, 9],
+      "scale": 1
     },
     "colliders": {
       "body": {
         "type": "circle",
-        "radius": 0.3
+        "radius": 0.13
       }
     }
   },
-
   "tree5": {
     "textures": {
-      "static": "tree5"
+      "static": "objects.tree6"
     },
     "texture": {
       "name": "static",
-      "origin": [1047, 150],
-      "scale": 0.25
+      "origin": [191, 9],
+      "scale": 1
     },
     "colliders": {
       "body": {
         "type": "circle",
-        "radius": 0.3
+        "radius": 0.25
       }
     }
   },
-
   "tree6": {
     "textures": {
-      "static": "tree6"
+      "static": "objects.tree7"
     },
     "texture": {
       "name": "static",
-      "origin": [719, 400],
-      "scale": 0.25
+      "origin": [161, 18],
+      "scale": 1
     },
     "colliders": {
       "body": {
         "type": "circle",
-        "radius": 0.3
+        "radius": 0.275
       }
     }
   },
-
   "tree7": {
     "textures": {
-      "static": "tree7"
+      "static": "objects.tree8"
     },
     "texture": {
       "name": "static",
-      "origin": [183, 486],
-      "scale": 0.25
+      "origin": [140, 20],
+      "scale": 1
     },
     "colliders": {
       "body": {
         "type": "circle",
-        "radius": 0.3
+        "radius": 0.45
       }
     }
   },
-
   "tree8": {
     "textures": {
-      "static": "tree8"
+      "static": "objects.tree9"
     },
     "texture": {
       "name": "static",
-      "origin": [1875, 486],
-      "scale": 0.25
+      "origin": [51, 17],
+      "scale": 1
     },
     "colliders": {
       "body": {
         "type": "circle",
-        "radius": 0.3
+        "radius": 0.4
       }
     }
   },
-
   "tree9": {
     "textures": {
-      "static": "tree9"
+      "static": "objects.tree10"
     },
     "texture": {
       "name": "static",
-      "origin": [1059, 174],
-      "scale": 0.25
+      "origin": [367, 20],
+      "scale": 1
     },
     "colliders": {
       "body": {
         "type": "circle",
-        "radius": 0.3
+        "radius": 0.45
       }
     }
   },
-
   "tree10": {
     "textures": {
-      "static": "tree10"
+      "static": "objects.tree11"
     },
     "texture": {
       "name": "static",
-      "origin": [1059, 174],
-      "scale": 0.25
+      "origin": [203, 10],
+      "scale": 1
     },
     "colliders": {
       "body": {
         "type": "circle",
-        "radius": 0.3
+        "radius": 0.23
       }
     }
   },
-
   "tree11": {
     "textures": {
-      "static": "tree11"
+      "static": "objects.tree12"
     },
     "texture": {
       "name": "static",
-      "origin": [1539, 430],
-      "scale": 0.25
+      "origin": [162, 18],
+      "scale": 1
     },
     "colliders": {
       "body": {
         "type": "circle",
-        "radius": 0.3
+        "radius": 0.35
       }
     }
   },
 
   "tallgrass-1": {
     "textures": {
-      "static": "tallgrass-1"
+      "static": "objects.grass1"
     },
     "texture": {
       "name": "static",
-      "origin": [1300, 200],
-      "scale": 0.12
+      "origin": [128, 10],
+      "scale": 0.6
     },
     "colliders": {
       "body": {
         "type": "box",
-        "width": 0.9,
+        "width": 1,
         "height": 0.7
       }
     },
@@ -386,17 +557,17 @@
 
   "tallgrass-2": {
     "textures": {
-      "static": "tallgrass-2"
+      "static": "objects.grass2"
     },
     "texture": {
       "name": "static",
-      "origin": [1220, 192],
-      "scale": 0.12
+      "origin": [92, 10],
+      "scale": 0.7
     },
     "colliders": {
       "body": {
         "type": "box",
-        "width": 0.9,
+        "width": 0.6,
         "height": 0.7
       }
     },

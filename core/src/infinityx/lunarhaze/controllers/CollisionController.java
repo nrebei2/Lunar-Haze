@@ -8,9 +8,7 @@ import infinityx.lunarhaze.graphics.CameraShake;
 import infinityx.lunarhaze.graphics.ModelFlash;
 import infinityx.lunarhaze.models.AttackingGameObject;
 import infinityx.lunarhaze.models.GameObject;
-import infinityx.lunarhaze.models.entity.Enemy;
-import infinityx.lunarhaze.models.entity.SceneObject;
-import infinityx.lunarhaze.models.entity.Werewolf;
+import infinityx.lunarhaze.models.entity.*;
 
 /**
  * Controller to handle Box2D body interactions.
@@ -49,6 +47,37 @@ public class CollisionController implements ContactListener {
                 switch (o2.getType()) {
                     case WEREWOLF:
                         handleCollision((Enemy) o1, (Werewolf) o2);
+                        break;
+                    case HITBOX:
+                        handleCollision(
+                                ((AttackHitbox) o2).getAttacker(),
+                                (AttackingGameObject) o1
+                        );
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case ARCHER:
+                switch (o2.getType()) {
+                    case WEREWOLF:
+                        handleCollision((Archer) o1, (Werewolf) o2);
+                        break;
+                    case HITBOX:
+                        handleCollision(
+                                ((AttackHitbox) o2).getAttacker(),
+                                (AttackingGameObject) o1
+                        );
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case ARROW:
+                switch (o2.getType()) {
+                    case WEREWOLF:
+                        System.out.println("ProcessCollision between ARROW and WEREWOLF");
+                        handleCollision((Arrow) o1, (Werewolf) o2);
                         break;
                     case HITBOX:
                         handleCollision(
@@ -130,7 +159,7 @@ public class CollisionController implements ContactListener {
             attacked.hp -= attacker.attackDamage;
             if (attacked.hp < 0) attacked.hp = 0;
 
-            CameraShake.shake(attacker.attackKnockback * 4f, 0.3f);
+            CameraShake.shake(attacker.attackKnockback * 5f, 0.3f);
             if (attacked.getType() == GameObject.ObjectType.WEREWOLF) {
                 attacked.setAttacked();
                 // This class now flashes the werewolf only

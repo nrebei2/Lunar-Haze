@@ -103,9 +103,21 @@
     "star-empty": "allocateUI/star-empty.png",
     "star-filled": "allocateUI/star-filled.png",
     "title-left": "allocateUI/title-left.png",
+    "placeholder": "images/placeholder.png",
     "title-right": "allocateUI/title-right.png",
     "noticed": "images/noticed.png",
     "alert": "images/alert.png",
+    "yell": {
+      "file": 	"images/yell.png",
+      "wrap":  	false,
+      "sprites":	{
+        "yell" : {
+          "size" : 3,
+          "rows" : 1,
+          "cols" : 3
+        }
+      }
+    },
     "moon": "transitionUI/moon.png",
     "transition-background": "transitionUI/transition-background.png",
     "trees": "transitionUI/trees.png",
@@ -114,36 +126,218 @@
       "file": "images/tile-spritesheet.png",
       "sprites":	{
         "sheet" : {
-          "size" : 12,
-          "rows" : 4,
-          "cols" : 3
+          "size" : 36,
+          "rows" : 3,
+          "cols" : 12
         }
       }
     },
 
-    "stone": "images/objects/stone1.png",
-    "lamp":  "images/objects/lamp.png",
-    "house1": "images/objects/House_a_1_night.png",
-    "house2": "images/objects/House_a_4_night.png",
-    "fence1":  "images/objects/Fence_a_1.png",
-    "fence2":  "images/objects/Fence_a_2.png",
-    "fence3":  "images/objects/Fence_a_3.png",
-    "fence4":  "images/objects/Fence_a_4.png",
-    "fence5":  "images/objects/Fence_a_5.png",
-    "tree0":  "images/objects/Tree_a_1.png",
-    "tree1":  "images/objects/forest.png",
-    "tree2":  "images/objects/Tree_a_4.png",
-    "tree3":  "images/objects/Tree_a_5.png",
-    "tree4":  "images/objects/Tree_b_1.png",
-    "tree5":  "images/objects/Tree_b_2.png",
-    "tree6":  "images/objects/Tree_b_3.png",
-    "tree7":  "images/objects/Tree_b_4.png",
-    "tree8":  "images/objects/Tree_b_5.png",
-    "tree9":  "images/objects/Tree_b_6.png",
-    "tree10":  "images/objects/Tree_b_7.png",
-    "tree11":  "images/objects/Tree_b_8.png",
-    "tallgrass-1": "images/objects/tallgrass-1.png",
-    "tallgrass-2": "images/objects/tallgrass-2.png",
+    "objects": {
+      "file": "images/atlas.png",
+      "minFilter": "linear",
+      "magFilter": "linear",
+      "atlas": {
+        "tree5": [
+          0,
+          0,
+          270,
+          700
+        ],
+        "barn": [
+          270,
+          0,
+          297,
+          700
+        ],
+        "well": [
+          270,
+          700,
+          284,
+          300
+        ],
+        "house4": [
+          567,
+          0,
+          554,
+          700
+        ],
+        "tree2": [
+          270,
+          1000,
+          289,
+          800
+        ],
+        "tree9": [
+          1121,
+          0,
+          640,
+          600
+        ],
+        "bucket": [
+          270,
+          1800,
+          288,
+          400
+        ],
+        "stone1": [
+          0,
+          700,
+          233,
+          200
+        ],
+        "house2": [
+          1761,
+          0,
+          445,
+          600
+        ],
+        "fence1": [
+          2206,
+          0,
+          400,
+          234
+        ],
+        "tree10": [
+          567,
+          700,
+          501,
+          600
+        ],
+        "tree11": [
+          2294,
+          610,
+          390,
+          600
+        ],
+        "fence3": [
+          2206,
+          234,
+          400,
+          234
+        ],
+        "tree12": [
+          567,
+          1900,
+          326,
+          600
+        ],
+        "stone5": [
+          0,
+          900,
+          113,
+          55
+        ],
+        "tree6": [
+          1068,
+          700,
+          395,
+          600
+        ],
+        "forest": [
+          1068,
+          1300,
+          477,
+          700
+        ],
+        "stone2": [
+          270,
+          2200,
+          293,
+          250
+        ],
+        "stone4": [
+          0,
+          955,
+          156,
+          104
+        ],
+        "tree4": [
+          1068,
+          2000,
+          477,
+          700
+        ],
+        "grass2": [
+          0,
+          1059,
+          211,
+          300
+        ],
+        "grass1": [
+          567,
+          2500,
+          309,
+          300
+        ],
+        "tree8": [
+          567,
+          1300,
+          501,
+          600
+        ],
+        "tree7": [
+          1463,
+          700,
+          326,
+          600
+        ],
+        "house1": [
+          1545,
+          1300,
+          635,
+          800
+        ],
+        "house5": [
+          2180,
+          1300,
+          519,
+          700
+        ],
+        "sign": [
+          0,
+          1359,
+          163,
+          250
+        ],
+        "fence2": [
+          1789,
+          700,
+          400,
+          248
+        ],
+        "fence4": [
+          0,
+          1609,
+          85,
+          400
+        ],
+        "house3": [
+          1545,
+          2100,
+          499,
+          700
+        ],
+        "lamp": [
+          0,
+          2009,
+          94,
+          700
+        ],
+        "stone3": [
+          270,
+          2450,
+          272,
+          145
+        ],
+        "tree3": [
+          2044,
+          2100,
+          650,
+          700
+        ]
+      }
+    },
 
     "dust": "images/dust.png",
     "werewolf": {

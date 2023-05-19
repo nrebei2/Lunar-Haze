@@ -25,6 +25,7 @@ package infinityx.lunarhaze.models;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.utils.JsonValue;
@@ -115,6 +116,15 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
      * @param container LevelContainer which this player is placed in
      */
     public void initialize(AssetDirectory directory, JsonValue json, LevelContainer container) {
+        if (json == null) {
+            // Failsafe
+            Texture tex = directory.getEntry("placeholder", Texture.class);
+            animation.addStaticAnimation("ERROR", tex);
+            setTexture("ERROR");
+            setOrigin(tex.getWidth() / 2, 0);
+            textureScale = 1;
+            return;
+        }
         // Box2D body info
         String bodyType = json.has("bodytype") ? json.get("bodytype").asString() : "static";
         if (bodyType.equals("static")) {
@@ -143,7 +153,11 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
                     animation.addAnimation(tex.name(), directory.getEntry(tex.getString("name"), FilmStrip.class), durations);
                 } else {
                     // If no durations, assume it's a single texture
-                    animation.addStaticAnimation(tex.name(), directory.getEntry(tex.asString(), Texture.class));
+                    if (directory.hasEntry(tex.asString(), Texture.class)) {
+                        animation.addStaticAnimation(tex.name(), directory.getEntry(tex.asString(), Texture.class));
+                    } else {
+                        animation.addStaticAnimation(tex.name(), directory.getEntry(tex.asString(), TextureRegion.class));
+                    }
                 }
             }
 
@@ -177,6 +191,8 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
                 );
             } else if (coll.getString("type").equals("circle")) {
                 addCircle(name, coll.getFloat("radius"), offset);
+            } else {
+                addEllipse(name, coll.getFloat("width"), coll.getFloat("height"), offset);
             }
         }
 

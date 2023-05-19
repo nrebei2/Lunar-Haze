@@ -6457,7 +6457,7 @@
 "6": {
 	"settings": {
 		"transition": 4,
-		"phaseLength": 80,
+		"phaseLength": 10,
 		"enemy-spawner": {
 			"count": 10,
 			"add-tick": [ 0.0, 0.0 ],

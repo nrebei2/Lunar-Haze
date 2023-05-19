@@ -241,17 +241,17 @@
     "texture": {
       "name": "idle-r",
       "origin": [
-        984,200
+        181,53
       ],
-      "scale": 0.065
+      "scale": 0.3
     },
     "health": 5,
     "attack": {
-      "knockback": 3,
+      "knockback": 0.8,
       "damage": 1.0,
       "cooldown": 0.08,
-      "length": 0.3,
-      "immunity": 0.3,
+      "length": 0.5,
+      "immunity": 0.5,
       "lockout": 0.5,
       "hitbox": {
         "range": 1.6,
@@ -260,9 +260,19 @@
           "hitbox": {
             "name": "werewolf.attack-effect",
             "durations": [
-              0.15,
               0.2,
-              0.05
+              0.2,
+              0.1
+            ]
+          },
+          "hitbox_heavy": {
+            "name": "werewolf.heavy-effect",
+            "durations": [
+              0.05,
+              0.15,
+              0.1,
+              0.1,
+              0.1
             ]
           }
         },

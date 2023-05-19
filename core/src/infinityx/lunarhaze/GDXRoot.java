@@ -321,10 +321,7 @@ public class GDXRoot extends Game implements ScreenObserver {
             }
         } else if (screen == allocate) {
             if (exitCode == AllocateMode.GO_PLAY) {
-                System.out.println("Exit code switch to GO_PLAY");
                 game.setGameplayController(allocate.getGameplayController());
-                System.out.println("Current phase is " + game.getGameplayController().getPhase());
-                System.out.println("Current hp is " + game.getGameplayController().getPlayerController().getPlayer().hp);
                 setScreen(game);
             }
         } else if (screen == editor) {

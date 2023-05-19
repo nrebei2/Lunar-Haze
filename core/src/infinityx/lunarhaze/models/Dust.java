@@ -252,7 +252,7 @@ public class Dust implements Drawable {
         condition = Condition.DESTROY;
         state = DustState.DECAYING;
         elapsed = 0;
-        fadeTime = MathUtils.random(fadeMin / 2, fadeMax / 2);
+        fadeTime = MathUtils.random(fadeMin / 3, fadeMax / 3);
     }
 
     /**
