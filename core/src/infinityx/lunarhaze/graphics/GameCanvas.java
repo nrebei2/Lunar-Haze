@@ -994,6 +994,89 @@ public class GameCanvas {
         return false;
     }
 
+    /**
+     * Draws the tinted texture region (filmstrip) with the given transformations
+     * <p>
+     * A texture region is a single texture file that can hold one or more textures.
+     * It is used for filmstrip animation.
+     * <p>
+     * The texture colors will be multiplied by the given color.  This will turn
+     * any white into the given color.  Other colors will be similarly affected.
+     * <p>
+     * The transformations are BEFORE after the global transform (@see begin(Affine2)).
+     * As a result, the specified texture origin will be applied to all transforms
+     * (both the local and global).
+     * <p>
+     * The local transformations in this method are applied in the following order:
+     * scaling, then rotation, then translation (e.g. placement at (sx,sy)).
+     *
+     * @param region The texture to draw
+     * @param tint   The color tint
+     * @param ox     The x-coordinate of texture origin (in pixels)
+     * @param oy     The y-coordinate of texture origin (in pixels)
+     * @param x      The x-coordinate of the texture origin (on screen)
+     * @param y      The y-coordinate of the texture origin (on screen)
+     * @param angle  The rotation angle (in degrees) about the origin.
+     * @param sx     The x-axis scaling factor
+     * @param sy     The y-axis scaling factor
+     * @return Whether the texture was drawn or not
+     */
+    public boolean draw(TextureRegion region, Color tint, float ox, float oy,
+                        float x, float y, float angle, float sx, float sy, float shx, float shy) {
+        if (active != DrawPass.SPRITE) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SPRITE", new IllegalStateException());
+            return false;
+        }
+
+        computeTransform(ox, oy, x, y, angle, sx, sy, shx, shy);
+
+        // Draw if any vertices are inside the camera view
+        float x1 = local.m02;
+        float y1 = local.m12;
+        if (x1 >= camX && x1 <= camX + camWidth && y1 >= camY && y1 <= camY + camHeight) {
+            spriteBatch.setColor(tint);
+            spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
+            return true;
+        }
+
+        float regionHeight = region.getRegionHeight();
+        float x2 = local.m01 * regionHeight + local.m02;
+        float y2 = local.m11 * regionHeight + local.m12;
+        if (x2 >= camX && x2 <= camX + camWidth && y2 >= camY && y2 <= camY + camHeight) {
+            spriteBatch.setColor(tint);
+            spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
+            return true;
+        }
+
+        float regionWidth = region.getRegionWidth();
+        float x3 = local.m00 * regionWidth + local.m01 * regionHeight + local.m02;
+        float y3 = local.m10 * regionWidth + local.m11 * regionHeight + local.m12;
+        if (x3 >= camX && x3 <= camX + camWidth && y3 >= camY && y3 <= camY + camHeight) {
+            spriteBatch.setColor(tint);
+            spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
+            return true;
+        }
+
+        float x4 = local.m00 * regionWidth + local.m02;
+        float y4 = local.m10 * regionWidth + local.m12;
+        if (x4 >= camX && x4 <= camX + camWidth && y4 >= camY && y4 <= camY + camHeight) {
+            spriteBatch.setColor(tint);
+            spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
+            return true;
+        }
+
+        // There is a possibility the texture covers the whole screen
+        // This check will only work if the angle is 0
+        if ((x1 <= camX && x3 >= camX + camWidth) || (y1 <= camY && y3 >= camY + camHeight)) {
+            spriteBatch.setColor(tint);
+            spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
+            return true;
+        }
+
+        // Otherwise, clip
+        return false;
+    }
+
 
     /**
      * Draws the outline of the given shape in the specified color
@@ -1237,7 +1320,12 @@ public class GameCanvas {
         local.translate(-ox, -oy);
     }
 
-    public OrthographicCamera getCamera() {
-        return camera;
+    private void computeTransform(float ox, float oy, float x, float y, float angle, float sx, float sy, float shx, float shy) {
+        local.setToTranslation(x, y);
+        local.rotate(180.0f * angle / (float) Math.PI);
+        local.scale(sx, sy);
+        local.shear(shx, shy); // Add shear transformation here
+        local.translate(-ox, -oy);
     }
+
 }
