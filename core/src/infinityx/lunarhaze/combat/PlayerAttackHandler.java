@@ -16,6 +16,7 @@ public class PlayerAttackHandler extends MeleeHandler {
      * Dash variables
      */
     private static final float DASH_TIME = 0.05f;
+    private static final float MAX_IMPULSE = 1.2f;
     private float dashTimer;
     private Vector2 dashDirection;
     public boolean isDashing;
@@ -173,7 +174,9 @@ public class PlayerAttackHandler extends MeleeHandler {
     }
 
     private void processDash(Vector2 direction, float delta) {
-        entity.getBody().applyLinearImpulse(direction.x, direction.y, entity.getX(), entity.getY(), true);
+        float t = dashTimer / DASH_TIME;
+        float impulse = MAX_IMPULSE * t;
+        entity.getBody().applyLinearImpulse(direction.x * impulse, direction.y * impulse, entity.getX(), entity.getY(), true);
         dashTimer += delta;
         if (dashTimer >= DASH_TIME) {
             endDash();
