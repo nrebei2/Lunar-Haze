@@ -64,10 +64,10 @@
     "health": 8,
     "attack": {
       "knockback": 0.4,
-      "damage": 1.5,
+      "damage": 1,
       "cooldown": 2,
       "length": 0.3,
-      "immunity": 0.3,
+      "immunity": 0.2,
       "lockout": 1,
       "hitbox": {
         "range": 1.5,
@@ -147,7 +147,7 @@
       "range": 4,
       "cooldown": 3,
       "length": 3,
-      "immunity": 0.5,
+      "immunity": 0.3,
       "lockout": 0.8,
       "shootdist": 4
     },
@@ -182,7 +182,7 @@
         "range": 0.5,
         "cooldown": 3,
         "length": 3,
-        "immunity": 0.2,
+        "immunity": 0.1,
         "lockout": 0.8
       },
       "bullet": true
