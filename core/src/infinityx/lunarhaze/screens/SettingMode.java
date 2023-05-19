@@ -3,6 +3,7 @@ package infinityx.lunarhaze.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -167,6 +168,11 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
     private Texture sound_off;
 
     /**
+     * Lobby and pause background music
+     */
+    private Music lobby_background;
+
+    /**
      * Whether or not this player mode is still active
      */
     private boolean active;
@@ -243,6 +249,8 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
     private float centerY_music_off;
     private float centerY_sound_on;
     private float centerY_sound_off;
+
+
 
 
     /**
@@ -327,6 +335,7 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
         backButton = directory.getEntry("back", Texture.class);
         star_empty = directory.getEntry("star-empty", Texture.class);
         star_filled = directory.getEntry("star-filled", Texture.class);
+        lobby_background = directory.getEntry("lobbyBackground", Music.class);
     }
 
     private void draw() {
@@ -402,6 +411,13 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
      * Update the status of this menu.
      */
     private void update(float delta) {
+        lobby_background.setVolume(setting.getMusicVolume());
+        if(setting.isMusicEnabled()) {
+            lobby_background.setLooping(true);
+            lobby_background.play();
+        }else{
+            lobby_background.stop();
+        }
         sound_choice = (setting_choice_sound ? sound_s : sound_u);
         control_choice = (setting_choice_sound ? control_u : control_s );
         music_on = (setting.isMusicEnabled() ? on_s : on_u);
@@ -438,6 +454,7 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
             update(delta);
             draw();
             if ((isReady() || inputController.didExit()) && observer != null) {
+                lobby_background.stop();
                 if (game.getPreviousScreen() == "pause") {
                     observer.exitScreen(this, GO_PAUSE);
                 }
