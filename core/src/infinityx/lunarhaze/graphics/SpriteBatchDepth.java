@@ -150,7 +150,7 @@ public class SpriteBatchDepth implements Batch {
                 + "void main()\n"//
                 + "{\n" //
                 + " vec4 col = texture2D(u_texture, v_texCoords);\n" //
-                + " if (col.a < 0.01) discard;\n" //
+                + " if (col.a < 0.3) discard;\n" //
                 + " gl_FragColor = v_color * col;\n" //
                 + "}";
 

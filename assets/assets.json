@@ -867,6 +867,10 @@
     "light": {
       "vert": "shaders/light.vert",
       "frag": "shaders/light.frag"
+    },
+    "shade": {
+      "vert": "shaders/shade.vert",
+      "frag": "shaders/shade.frag"
     }
   },
   "jsons": {

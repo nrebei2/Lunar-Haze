@@ -115,6 +115,8 @@ public class GameCanvas {
      */
     private OrthographicCamera raycamera;
 
+    public Color SHADE = new Color(0.2125f, 0.7154f, 0.0721f, 1).mul(0.25f);
+
     /**
      * Value to cache window width (if we are currently full screen)
      */
@@ -946,6 +948,66 @@ public class GameCanvas {
         }
 
         computeTransform(ox, oy, x, y, angle, sx, sy);
+
+        // Draw if any vertices are inside the camera view
+        float x1 = local.m02;
+        float y1 = local.m12;
+        if (x1 >= camX && x1 <= camX + camWidth && y1 >= camY && y1 <= camY + camHeight) {
+            spriteBatch.setColor(tint);
+            spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local, depth);
+            return true;
+        }
+
+        float regionHeight = region.getRegionHeight();
+        float x2 = local.m01 * regionHeight + local.m02;
+        float y2 = local.m11 * regionHeight + local.m12;
+        if (x2 >= camX && x2 <= camX + camWidth && y2 >= camY && y2 <= camY + camHeight) {
+            spriteBatch.setColor(tint);
+            spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local, depth);
+            return true;
+        }
+
+        float regionWidth = region.getRegionWidth();
+        float x3 = local.m00 * regionWidth + local.m01 * regionHeight + local.m02;
+        float y3 = local.m10 * regionWidth + local.m11 * regionHeight + local.m12;
+        if (x3 >= camX && x3 <= camX + camWidth && y3 >= camY && y3 <= camY + camHeight) {
+            spriteBatch.setColor(tint);
+            spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local, depth);
+            return true;
+        }
+
+        float x4 = local.m00 * regionWidth + local.m02;
+        float y4 = local.m10 * regionWidth + local.m12;
+        if (x4 >= camX && x4 <= camX + camWidth && y4 >= camY && y4 <= camY + camHeight) {
+            spriteBatch.setColor(tint);
+            spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local, depth);
+            return true;
+        }
+
+        // There is a possibility the texture covers the whole screen
+        // This check will only work if the angle is 0
+        if ((x1 <= camX && x3 >= camX + camWidth) || (y1 <= camY && y3 >= camY + camHeight)) {
+            spriteBatch.setColor(tint);
+            spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local, depth);
+            return true;
+        }
+
+        // Otherwise, clip
+        return false;
+    }
+
+    public void setSpriteShader(ShaderProgram program) {
+        spriteBatch.setShader(program);
+    }
+
+    public boolean draw(TextureRegion region, Color tint, float ox, float oy,
+                        float x, float y, float angle, float sx, float sy, float shx, float shy, float depth) {
+        if (active != DrawPass.SPRITE) {
+            Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SPRITE", new IllegalStateException());
+            return false;
+        }
+
+        computeTransform(ox, oy, x, y, angle, sx, sy, shx, shy);
 
         // Draw if any vertices are inside the camera view
         float x1 = local.m02;

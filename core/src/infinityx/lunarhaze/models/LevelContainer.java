@@ -7,6 +7,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -179,7 +180,7 @@ public class LevelContainer {
     private boolean debugPressed;
 
     /**
-     * Custom light shader
+     * Custom shaders
      */
     private final ShaderProgram lightShader;
 
@@ -187,6 +188,8 @@ public class LevelContainer {
      * Total time (in seconds) since initialized
      */
     private float totalTime;
+
+    private final DrawableCompare drawComp = new DrawableCompare();
 
     /**
      * Initialize attributes
@@ -513,7 +516,7 @@ public class LevelContainer {
      */
     public SceneObject addSceneObject(SceneObject obj) {
         sceneObjects.add(obj);
-        addDrawable(obj);
+        sceneObjects.sort(drawComp);
         obj.setActive(true);
 
         return obj;
@@ -526,7 +529,6 @@ public class LevelContainer {
      */
     public void removeSceneObject(SceneObject object) {
         sceneObjects.removeValue(object, true);
-        object.setDestroyed(true);
         object.setActive(false);
     }
 
@@ -617,6 +619,18 @@ public class LevelContainer {
         board.draw(canvas, player.getPosition());
 
         drawAndGarbageCollect(canvas);
+
+        // Only sceneobjects are transparent
+        for (SceneObject obj: sceneObjects) {
+            obj.draw(canvas);
+        }
+
+        Gdx.gl.glDepthMask(false);
+        for (SceneObject obj: sceneObjects) {
+            obj.drawShadow(canvas);
+        }
+        Gdx.gl.glDepthMask(true);
+
         // The scene objects rendered before the player (behind) should not become transparent
         canvas.playerCoords.set(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
 
@@ -724,5 +738,15 @@ public class LevelContainer {
 
         //System.out.println(aStarMap);
         pathfinder = new AStarPathFinding(aStarMap);
+    }
+}
+
+/**
+ * Depth comparison function used for drawing transparent objects
+ */
+class DrawableCompare implements Comparator<Drawable> {
+    @Override
+    public int compare(Drawable d1, Drawable d2) {
+        return (int) Math.signum(d2.getDepth() - d1.getDepth());
     }
 }

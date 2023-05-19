@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Vector3;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.util.Drawable;
 
-public class Billboard implements Drawable {
+public abstract class Billboard implements Drawable {
 
     /**
      * Texture drawn on canvas
