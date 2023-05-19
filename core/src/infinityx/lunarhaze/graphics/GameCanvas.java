@@ -80,6 +80,8 @@ public class GameCanvas {
      */
     private PolygonSpriteBatch spriteBatch;
 
+    public Color SHADE = new Color(0.2125f, 0.7154f, 0.0721f, 1).mul(0.25f);
+
     /**
      * Rendering context for drawing shapes
      */

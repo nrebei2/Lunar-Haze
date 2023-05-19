@@ -1,5 +1,6 @@
 package infinityx.lunarhaze.models.entity;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
@@ -97,6 +98,7 @@ public class SceneObject extends GameObject implements Drawable {
     @Override
     public void draw(GameCanvas canvas) {
 
+        drawShadow(canvas);
         boolean drawn = canvas.draw(filmstrip, tint, origin.x, origin.y,
                 canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y), 0.0f,
                 (flipped ? -1 : 1) * textureScale * scale, textureScale * scale);
@@ -123,5 +125,16 @@ public class SceneObject extends GameObject implements Drawable {
             }
         }
 
+    }
+
+    /**
+     * Draws a nice shadow for the object
+     * @param canvas
+     */
+    private void drawShadow(GameCanvas canvas) {
+        Vector2 pos = getPosition();
+        canvas.draw(filmstrip, canvas.SHADE, origin.x, origin.y,
+                canvas.WorldToScreenX(pos.x), canvas.WorldToScreenY(pos.y), 0.0f,
+                (flipped ? -1 : 1) * textureScale * scale, textureScale * scale * 0.5f, 0.5f, 0);
     }
 }
