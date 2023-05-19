@@ -1,6 +1,7 @@
 package infinityx.lunarhaze.graphics;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -120,6 +121,17 @@ public class Animation {
      */
     public void addStaticAnimation(String name, Texture texture) {
         FilmStrip staticStrip = new FilmStrip(texture, 1, 1);
+        animations.put(name, new AnimationData(staticStrip, null));
+    }
+
+    /**
+     * Adds a static animation with a single TextureRegion.
+     *
+     * @param name    The name of the static animation.
+     * @param texture The TextureRegion instance for the static animation.
+     */
+    public void addStaticAnimation(String name, TextureRegion texture) {
+        FilmStrip staticStrip = new FilmStrip(texture);
         animations.put(name, new AnimationData(staticStrip, null));
     }
 

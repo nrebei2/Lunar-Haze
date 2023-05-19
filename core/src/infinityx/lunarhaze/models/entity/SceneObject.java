@@ -49,7 +49,7 @@ public class SceneObject extends GameObject implements Drawable {
     @Override
     public void initialize(AssetDirectory directory, JsonValue json, LevelContainer container) {
         super.initialize(directory, json, container);
-        if (json.has("overlook")) {
+        if (json != null && json.has("overlook")) {
             seeThru = json.getBoolean("overlook");
         }
     }
@@ -81,6 +81,7 @@ public class SceneObject extends GameObject implements Drawable {
 
         // Flip the collider offset
         ShapeCache bodyInfo = getShapeInformation("body");
+        if (bodyInfo == null) return; // Prolly a better way to do this
         if (bodyInfo.shape.getType() == Shape.Type.Polygon && !bodyInfo.offset.isZero())
             resizeBox("body", bodyInfo.width, bodyInfo.height, bodyInfo.offset.scl(-1, 1));
     }

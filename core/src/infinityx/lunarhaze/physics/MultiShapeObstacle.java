@@ -1,6 +1,7 @@
 package infinityx.lunarhaze.physics;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -15,6 +16,16 @@ import com.badlogic.gdx.utils.ObjectMap;
 public class MultiShapeObstacle extends SimpleObstacle {
 
     /**
+     * Type of the shape for internal usage
+     */
+    private enum ShapeType {
+        CIRCLE,
+        BOX,
+        ELLIPSE
+    }
+
+
+    /**
      * Holds information regarding a shape on this object
      */
     public static class ShapeCache {
@@ -27,6 +38,11 @@ public class MultiShapeObstacle extends SimpleObstacle {
          * Actual shape
          */
         public Shape shape;
+
+        /**
+         * Type of shape
+         */
+        public ShapeType shapeType;
 
         /**
          * Width of square if shape is a box, diameter if shape is a circle
@@ -67,13 +83,16 @@ public class MultiShapeObstacle extends SimpleObstacle {
     public void setScale(float s) {
         for (ObjectMap.Entry<String, ShapeCache> entry : geometries) {
             ShapeCache cache = entry.value;
-            switch (cache.shape.getType()) {
+            switch (cache.shapeType) {
                 // Resize by new scale / old scale
-                case Polygon:
+                case BOX:
                     resizeBox(entry.key, s * cache.width / scale, s * cache.height / scale, cache.offset.scl(s / scale));
                     break;
-                case Circle:
+                case CIRCLE:
                     resizeCircle(entry.key, s * cache.width / (2 * scale), cache.offset.scl(s / scale));
+                    break;
+                case ELLIPSE:
+                    resizeEllipse(entry.key, s * cache.width / scale, s * cache.height / scale);
                     break;
                 default:
                     break;
@@ -81,6 +100,7 @@ public class MultiShapeObstacle extends SimpleObstacle {
         }
         super.setScale(s);
     }
+
 
     /**
      * Add an oriented box shape to this object
@@ -95,6 +115,7 @@ public class MultiShapeObstacle extends SimpleObstacle {
         cache.height = height;
         cache.offset = offset;
         cache.angle = angle;
+        cache.shapeType = ShapeType.BOX;
 
         createFixture(name, cache);
 
@@ -170,6 +191,7 @@ public class MultiShapeObstacle extends SimpleObstacle {
         cache.shape = shape;
         cache.width = radius * 2;
         cache.offset = offset;
+        cache.shapeType = ShapeType.CIRCLE;
 
         createFixture(name, cache);
     }
@@ -193,6 +215,65 @@ public class MultiShapeObstacle extends SimpleObstacle {
         releaseFixture(name);
         addCircle(name, radius, offset);
     }
+
+    /**
+     * Reset the polygon vertices in the shape to match the new dimensions.
+     * This assumes the shape is an ellipse, and recreates the ellipse with the new dimensions.
+     *
+     * @param name   Name of the shape
+     * @param width  New width of the ellipse
+     * @param height New height of the ellipse
+     */
+    protected void resizeEllipse(String name, float width, float height) {
+        if (!geometries.containsKey(name)) {
+            Gdx.app.error("MultiShapeObstacle", "Cannot resize a shape which doesn't exist", new IllegalStateException());
+            return;
+        }
+
+        ShapeCache cache = geometries.get(name);
+
+        if (cache.shapeType != ShapeType.ELLIPSE) {
+            Gdx.app.error("MultiShapeObstacle", "Shape is not an ellipse", new IllegalStateException());
+            return;
+        }
+
+        releaseFixture(name);
+        addEllipse(name, width, height, cache.offset);
+    }
+
+    /**
+     * Add an ellipse shape to this object. The ellipse is approximated by a polygon shape.
+     *
+     * @param name   Name of the shape
+     * @param width  Width of the ellipse
+     * @param height Height of the ellipse
+     * @param offset Offset of the ellipse's center from the object's center
+     */
+    protected void addEllipse(String name, float width, float height, Vector2 offset) {
+        int numSegments = 8; // Increase this for a smoother ellipse
+        Vector2[] vertices = new Vector2[numSegments];
+
+        for (int i = 0; i < numSegments; i++) {
+            float angle = i / (float) numSegments * 2 * MathUtils.PI;
+            vertices[i] = new Vector2(
+                    width / 2 * MathUtils.cos(angle),
+                    height / 2 * MathUtils.sin(angle)
+            ).add(offset);
+        }
+
+        PolygonShape shape = new PolygonShape();
+        shape.set(vertices);
+
+        ShapeCache cache = new ShapeCache();
+        cache.shape = shape;
+        cache.shapeType = ShapeType.ELLIPSE;
+        cache.width = width;
+        cache.height = height;
+        cache.offset = offset;
+
+        createFixture(name, cache);
+    }
+
 
     protected void removeShape(String name) {
         if (!geometries.containsKey(name)) {

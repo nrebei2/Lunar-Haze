@@ -241,9 +241,9 @@
     "texture": {
       "name": "idle-r",
       "origin": [
-        984,200
+        181,53
       ],
-      "scale": 0.065
+      "scale": 0.3
     },
     "health": 5,
     "attack": {
