@@ -289,7 +289,7 @@ public class PlayerController {
      * @param lightingController lighting controller to update moonlight particles
      */
     public void resolveMoonlight(LightingController lightingController) {
-        if (player.isCollecting) return;
+        if (player.isCollecting || player.isAttacked()) return;
         boolean isOn = false;
 
         // Check if player is within range of a lamp
