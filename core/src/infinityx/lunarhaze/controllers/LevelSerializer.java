@@ -65,7 +65,8 @@ public class LevelSerializer {
         settings.addChild("phaseLength", new JsonValue(level.getSettings().getPhaseLength()));
 
         JsonValue enemySpawner = new JsonValue(JsonValue.ValueType.object);
-        enemySpawner.addChild("count", new JsonValue(level.getSettings().getEnemyCount()));
+        enemySpawner.addChild("villager-count", new JsonValue(level.getSettings().getVillagerCount()));
+        enemySpawner.addChild("archer-count", new JsonValue(level.getSettings().getArcherCount()));
         JsonValue addTick = new JsonValue(JsonValue.ValueType.array);
         addTick.addChild(new JsonValue(level.getSettings().getSpawnRateMin()));
         addTick.addChild(new JsonValue(level.getSettings().getSpawnRateMax()));

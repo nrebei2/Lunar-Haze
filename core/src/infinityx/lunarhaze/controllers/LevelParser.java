@@ -300,7 +300,13 @@ public class LevelParser {
         float[] addInfo = enemySpawnerSettings.get("add-tick").asFloatArray();
         levelContainer.getSettings().setSpawnRateMin(addInfo[0]);
         levelContainer.getSettings().setSpawnRateMax(addInfo[1]);
-        levelContainer.getSettings().setEnemyCount(enemySpawnerSettings.getInt("count"));
+        if (enemySpawnerSettings.has("archer-count")) {
+            levelContainer.getSettings().setArcherCount(enemySpawnerSettings.getInt("archer-count"));
+            levelContainer.getSettings().setVillagerCount(enemySpawnerSettings.getInt("villager-count"));
+        } else {
+            // More backwards compatible shit
+            levelContainer.getSettings().setVillagerCount(enemySpawnerSettings.getInt("count"));
+        }
         levelContainer.getSettings().setDelay(enemySpawnerSettings.getInt("delay"));
 
         for (JsonValue spawnPos : enemySpawnerSettings.get("spawn-locations")) {

@@ -11,7 +11,8 @@ import imgui.type.ImInt;
 public class Settings {
     // public and imgui for use in level editor
     public ImInt phaseLength = new ImInt(0);
-    public ImInt enemyCount = new ImInt(0);
+    public ImInt villagerCount = new ImInt(0);
+    public ImInt archerCount = new ImInt(0);
     public ImFloat spawnRateMin = new ImFloat(0);
     public ImFloat spawnRateMax = new ImFloat(0);
     public ImInt delay = new ImInt(0);
@@ -36,8 +37,17 @@ public class Settings {
      *
      * @return The enemy count.
      */
-    public int getEnemyCount() {
-        return enemyCount.get();
+    public int getArcherCount() {
+        return archerCount.get();
+    }
+
+    /**
+     * Returns the total number of enemies that will spawn.
+     *
+     * @return The enemy count.
+     */
+    public int getVillagerCount() {
+        return villagerCount.get();
     }
 
     /**
@@ -72,8 +82,17 @@ public class Settings {
      *
      * @param enemyCount The enemy count to set.
      */
-    public void setEnemyCount(int enemyCount) {
-        this.enemyCount.set(enemyCount);
+    public void setVillagerCount(int enemyCount) {
+        this.villagerCount.set(enemyCount);
+    }
+
+    /**
+     * Sets the total number of enemies that will spawn.
+     *
+     * @param enemyCount The enemy count to set.
+     */
+    public void setArcherCount(int enemyCount) {
+        this.archerCount.set(enemyCount);
     }
 
     /**
