@@ -404,14 +404,16 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
      */
     public void draw(float delta) {
         //canvas.clear(backgroundColor);
-        // Puts player at center of canvas
-        levelContainer.setViewTranslation(
-                -canvas.WorldToScreenX(levelContainer.getPlayer().getPosition().x) + canvas.getWidth() / 2,
-                -canvas.WorldToScreenY(levelContainer.getPlayer().getPosition().y) + canvas.getHeight() / 2
-        );
 
         // Draw the level
-        levelContainer.drawLevel(delta, canvas, false);
+        if (gameplayController.getPhase() != Phase.ALLOCATE) {
+            // Puts player at center of canvas
+            levelContainer.setViewTranslation(
+                    -canvas.WorldToScreenX(levelContainer.getPlayer().getPosition().x) + canvas.getWidth() / 2,
+                    -canvas.WorldToScreenY(levelContainer.getPlayer().getPosition().y) + canvas.getHeight() / 2
+            );
+            levelContainer.drawLevel(delta, canvas, false);
+        }
 
         switch (gameplayController.getState()) {
             case WIN:
