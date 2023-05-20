@@ -230,7 +230,6 @@ public enum EnemyState implements State<EnemyController> {
                         entity.time = 0;
                     }
                 } else {
-                    System.out.println("is in battle");
                     //go to battle mode
                     // Always face towards target
                     entity.getEnemy().setIndependentFacing(true);
