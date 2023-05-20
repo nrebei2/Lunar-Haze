@@ -126,8 +126,8 @@ public class SceneObject extends GameObject implements Drawable {
 
     @Override
     public void draw(GameCanvas canvas) {
-
-        drawShadow(canvas);
+        if (!getSceneObjectType().equalsIgnoreCase("fencey"))
+            drawShadow(canvas);
 
         Vector2 pos = getPosition();
         boolean drawn = canvas.draw(filmstrip, tint, origin.x, origin.y,
