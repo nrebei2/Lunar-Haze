@@ -26,9 +26,9 @@ public enum EnemyState implements State<EnemyController> {
                 } else {
                     entity.getEnemy().setFilmstripPrefix("walk");
                 }
-//                if (entity.getEnemy().isAttacked()) {
-//                    entity.getStateMachine().changeState(ATTACKED);
-//                }
+                if (entity.getEnemy().isAttacked()) {
+                    entity.getStateMachine().changeState(ATTACKED);
+                }
             }
         }
     },

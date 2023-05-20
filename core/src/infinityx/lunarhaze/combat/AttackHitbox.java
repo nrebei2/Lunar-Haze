@@ -160,7 +160,9 @@ public class AttackHitbox extends GameObject {
                     flip = true;
                     break;
                 case DOWN:;
-                    //offsetY = -1f;
+                    if (MathUtils.isEqual(Math.abs(offset.x), Math.abs(offset.y))) {
+                        flip = true;
+                    }
                     break;
             }
         }
