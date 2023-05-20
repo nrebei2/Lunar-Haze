@@ -1,19 +1,17 @@
 package infinityx.util.astar;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.ai.pfa.*;
+import com.badlogic.gdx.ai.pfa.Connection;
+import com.badlogic.gdx.ai.pfa.DefaultConnection;
+import com.badlogic.gdx.ai.pfa.Heuristic;
+import com.badlogic.gdx.ai.pfa.PathFinder;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
 import com.badlogic.gdx.ai.steer.utils.Path;
 import com.badlogic.gdx.ai.steer.utils.paths.LinePath;
-import com.badlogic.gdx.ai.utils.RaycastCollisionDetector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import infinityx.lunarhaze.models.GameObject;
-import infinityx.lunarhaze.models.entity.SceneObject;
-import infinityx.lunarhaze.physics.Box2DRaycastCollision;
 import infinityx.lunarhaze.physics.RaycastInfo;
 
 /**
@@ -46,7 +44,7 @@ public class AStarPathFinding {
     private Array<Vector2> waypoints;
 
     /**
-     * @param map   Map pathfinding will be perform on
+     * @param map Map pathfinding will be perform on
      */
     public AStarPathFinding(AStarMap map) {
         this.map = map;

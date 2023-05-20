@@ -1,10 +1,8 @@
 package infinityx.lunarhaze.models.entity;
 
-import com.badlogic.gdx.ai.steer.SteeringBehavior;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Pool;
 import infinityx.assets.AssetDirectory;
@@ -63,7 +61,9 @@ public abstract class Enemy extends SteeringGameObject implements Pool.Poolable 
      */
     private Detection detection;
 
-    /** How long (in seconds) this enemy was in the current detection */
+    /**
+     * How long (in seconds) this enemy was in the current detection
+     */
     public float detectionTime;
 
     /**
@@ -105,7 +105,9 @@ public abstract class Enemy extends SteeringGameObject implements Pool.Poolable 
      */
     private boolean isAlerting;
 
-    /** Used to update the direction sprite only once per interval */
+    /**
+     * Used to update the direction sprite only once per interval
+     */
     private float timeSinceLastDirChange = 0f;
     private static final float DIR_CHANGE_INTERVAL = 0.5f;
 
@@ -204,7 +206,7 @@ public abstract class Enemy extends SteeringGameObject implements Pool.Poolable 
 
     public void updateStrafeDistance() {
         // set strafe distance randomly between attack range*2 and attackrange*2 + 2
-        this.strafeDistance = rand.nextInt(3)  + getAttackRange() * 2;
+        this.strafeDistance = rand.nextInt(3) + getAttackRange() * 2;
     }
 
     public float getStrafeDistance() {
@@ -225,11 +227,11 @@ public abstract class Enemy extends SteeringGameObject implements Pool.Poolable 
         this.detection = detection;
     }
 
-    public void setAlerting(Boolean bool){
+    public void setAlerting(Boolean bool) {
         this.isAlerting = bool;
     }
 
-    public boolean getAlerting(){
+    public boolean getAlerting() {
         return isAlerting;
     }
 
@@ -255,7 +257,6 @@ public abstract class Enemy extends SteeringGameObject implements Pool.Poolable 
     }
 
     /**
-     *
      * @param attach Whether to attach or detach
      */
     public void attachFlashlight(boolean attach) {

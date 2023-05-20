@@ -1,17 +1,17 @@
 package infinityx.lunarhaze.controllers;
 
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.combat.AttackHitbox;
 import infinityx.lunarhaze.graphics.CameraShake;
-import infinityx.lunarhaze.graphics.ModelFlash;
 import infinityx.lunarhaze.models.AttackingGameObject;
 import infinityx.lunarhaze.models.GameObject;
-import infinityx.lunarhaze.models.entity.*;
-import infinityx.lunarhaze.screens.GameMode;
+import infinityx.lunarhaze.models.entity.Arrow;
+import infinityx.lunarhaze.models.entity.Enemy;
+import infinityx.lunarhaze.models.entity.SceneObject;
+import infinityx.lunarhaze.models.entity.Werewolf;
 import infinityx.lunarhaze.screens.GameSetting;
 
 /**
@@ -22,6 +22,7 @@ public class CollisionController implements ContactListener {
     private GameSetting setting;
     private AssetDirectory directory;
     private Sound enemy_attacked;
+
     /**
      * @param world World to register this contact listener to
      */
@@ -80,7 +81,7 @@ public class CollisionController implements ContactListener {
 //                        );
 //                        break;
                     case SCENE:
-                        if (!((SceneObject)o2).isSeeThru()){
+                        if (!((SceneObject) o2).isSeeThru()) {
                             o1.setLinearVelocity(Vector2.Zero);
                         }
                         break;
@@ -136,7 +137,7 @@ public class CollisionController implements ContactListener {
                         );
                         break;
                     case ARROW:
-                        if (!((SceneObject)o1).isSeeThru()){
+                        if (!((SceneObject) o1).isSeeThru()) {
                             o2.setLinearVelocity(Vector2.Zero);
                         }
                         break;
@@ -151,7 +152,7 @@ public class CollisionController implements ContactListener {
 
     private void handleArrow(Arrow arrow, AttackingGameObject attacked) {
         boolean immune = attacked.isImmune();
-        if (!immune){
+        if (!immune) {
             Vector2 direction = attacked.getPosition().sub(arrow.getArcher().getPosition()).nor();
             attacked.getBody().applyLinearImpulse(direction.scl(arrow.getArcher().attackKnockback), attacked.getBody().getWorldCenter(), true);
 
@@ -160,7 +161,7 @@ public class CollisionController implements ContactListener {
 
             CameraShake.shake(arrow.getArcher().attackKnockback * 5f, 0.3f);
             if (attacked.getType() == GameObject.ObjectType.ENEMY) {
-                if(setting.isSoundEnabled()){
+                if (setting.isSoundEnabled()) {
                     enemy_attacked.play(setting.getMusicVolume());
                 }
             }
@@ -178,25 +179,25 @@ public class CollisionController implements ContactListener {
         if (attacker == attacked) return;
         boolean immune = attacked.isImmune();
         if (!immune) {
-           // Immunity frames for being attacked and when attacking
-           attacker.setImmune();
-           attacked.setImmune();
-           attacked.setLockedOut();
+            // Immunity frames for being attacked and when attacking
+            attacker.setImmune();
+            attacked.setImmune();
+            attacked.setLockedOut();
 
-           // Knock back attacked entity
-           Vector2 direction = attacked.getPosition().sub(attacker.getPosition()).nor();
-           attacked.getBody().applyLinearImpulse(direction.scl(attacker.attackKnockback), attacked.getBody().getWorldCenter(), true);
+            // Knock back attacked entity
+            Vector2 direction = attacked.getPosition().sub(attacker.getPosition()).nor();
+            attacked.getBody().applyLinearImpulse(direction.scl(attacker.attackKnockback), attacked.getBody().getWorldCenter(), true);
 
-           attacked.hp -= attacker.attackDamage;
-           if (attacked.hp < 0) attacked.hp = 0;
+            attacked.hp -= attacker.attackDamage;
+            if (attacked.hp < 0) attacked.hp = 0;
 
-           CameraShake.shake(attacker.attackKnockback * 5f, 0.3f);
-           if (attacked.getType() == GameObject.ObjectType.ENEMY) {
-                if(setting.isSoundEnabled()){
+            CameraShake.shake(attacker.attackKnockback * 5f, 0.3f);
+            if (attacked.getType() == GameObject.ObjectType.ENEMY) {
+                if (setting.isSoundEnabled()) {
                     enemy_attacked.play(setting.getMusicVolume());
                 }
-           }
-           attacked.setAttacked();
+            }
+            attacked.setAttacked();
         }
     }
 

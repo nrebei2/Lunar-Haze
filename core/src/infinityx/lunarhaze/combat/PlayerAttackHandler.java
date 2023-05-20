@@ -1,6 +1,5 @@
 package infinityx.lunarhaze.combat;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.controllers.GameplayController;
 import infinityx.lunarhaze.controllers.InputController;

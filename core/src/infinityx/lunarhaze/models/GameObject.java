@@ -152,8 +152,18 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
         if (textures != null) {
             for (JsonValue tex : textures) {
                 if (tex.isObject()) {
-                    float[] durations = tex.get("durations").asFloatArray();
-                    animation.addAnimation(tex.name(), directory.getEntry(tex.getString("name"), FilmStrip.class), durations);
+                    JsonValue durations = tex.get("durations");
+                    if (durations.isArray()) {
+                        animation.addAnimation(
+                                tex.name(), directory.getEntry(tex.getString("name"), FilmStrip.class),
+                                durations.asFloatArray()
+                        );
+                    } else {
+                        animation.addAnimation(
+                                tex.name(), directory.getEntry(tex.getString("name"), FilmStrip.class),
+                                durations.asFloat()
+                        );
+                    }
                 } else {
                     // If no durations, assume it's a single texture
                     if (directory.hasEntry(tex.asString(), Texture.class)) {

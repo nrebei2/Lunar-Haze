@@ -25,7 +25,9 @@ public class ConeSource extends ConeLight implements LightSource {
      */
     protected Filter collisions;
 
-    /** Whether direction should update with body if parented */
+    /**
+     * Whether direction should update with body if parented
+     */
     private boolean updateDirection;
 
     /**
@@ -105,7 +107,9 @@ public class ConeSource extends ConeLight implements LightSource {
         super(rayHandler, rays, color, distance, x, y, direction, coneDegree);
     }
 
-    /** If parented to a body, whether the direction will update */
+    /**
+     * If parented to a body, whether the direction will update
+     */
     public void updateDirection(boolean update) {
         updateDirection = update;
     }

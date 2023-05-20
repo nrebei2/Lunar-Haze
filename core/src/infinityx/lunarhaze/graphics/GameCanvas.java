@@ -7,7 +7,10 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Affine2;
@@ -24,7 +27,9 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
  */
 public class GameCanvas {
 
-    /** Scale and shearing constants for object shadows */
+    /**
+     * Scale and shearing constants for object shadows
+     */
     public float shadowScale, shadowShear = 0.5f;
 
     /**
@@ -941,7 +946,7 @@ public class GameCanvas {
      * @return Whether the texture was drawn or not
      */
     public boolean draw(TextureRegion region, Color tint, float ox, float oy,
-                     float x, float y, float angle, float sx, float sy) {
+                        float x, float y, float angle, float sx, float sy) {
         if (active != DrawPass.SPRITE) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SPRITE", new IllegalStateException());
             return false;

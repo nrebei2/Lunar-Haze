@@ -3,7 +3,6 @@ package infinityx.lunarhaze.models;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.util.Drawable;
@@ -188,7 +187,9 @@ public class Dust implements Drawable {
         );
     }
 
-    /** Set the velocity of this particle */
+    /**
+     * Set the velocity of this particle
+     */
     public Vector3 setVelocity(float x, float y, float z) {
         return velocity.set(x, y, z);
     }

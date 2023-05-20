@@ -778,10 +778,9 @@ public class UIRender {
                 canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f + UIFont_small.getCapHeight());
     }
 
-    float expSustainedImpulse( float x, float f, float k )
-    {
-        double s = Math.max(x-f,0.0);
-        return 0.5f * (float) Math.min( x*x/(f*f), 1.0+(2.0/f)*s*Math.exp(-k*s));
+    float expSustainedImpulse(float x, float f, float k) {
+        double s = Math.max(x - f, 0.0);
+        return 0.5f * (float) Math.min(x * x / (f * f), 1.0 + (2.0 / f) * s * Math.exp(-k * s));
     }
 
     /**
@@ -792,16 +791,16 @@ public class UIRender {
         for (Enemy enemy : enemies) {
 
             //draw yelling symbol if alerting. DOING IT HERE to avoid another for loop
-            if (enemy.getAlerting() && enemy.detectionTime < 2){
+            if (enemy.getAlerting() && enemy.detectionTime < 2) {
                 canvas.begin(GameCanvas.DrawPass.SPRITE, level.getView().x, level.getView().y);
                 yell = animation.getKeyFrame(delta);
-                canvas.draw(yell, Color.WHITE,0 ,0,
+                canvas.draw(yell, Color.WHITE, 0, 0,
                         canvas.WorldToScreenX(enemy.getPosition().x) + 10,
                         canvas.WorldToScreenY(enemy.getPosition().y) + enemy.getTextureHeight() - 25, 0,
                         0.5f, 0.5f
                 );
                 canvas.end();
-            }else{
+            } else {
                 enemy.setAlerting(false);
             }
 

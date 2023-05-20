@@ -170,14 +170,16 @@ public class EnemyController {
 
     private Enemy.Detection cachedDetection;
 
-    /** Used so the detection only updates once every interval */
+    /**
+     * Used so the detection only updates once every interval
+     */
     private float detectionTime;
 
-    public Sound getAttackedSound(){
+    public Sound getAttackedSound() {
         return attacked_sound;
     }
 
-    public void setAttackedSound(Sound s){
+    public void setAttackedSound(Sound s) {
         attacked_sound = s;
     }
 
@@ -454,7 +456,7 @@ public class EnemyController {
          * but maybe add cutoffs for NONE?
          */
         if (enemy.isInBattle()) return Enemy.Detection.ALERT;
-        if (detectionTime < 0.5f) {
+        if (detectionTime < 0.1f) {
             return cachedDetection;
         }
         detectionTime = 0;
@@ -465,6 +467,10 @@ public class EnemyController {
             stealth *= 1.5f;
         } else if (enemy.getDetection() == Enemy.Detection.INDICATOR) {
             stealth *= 1.2f;
+        }
+        if (enemy.getPosition().dst(target.getPosition()) > 5) {
+            // Early return
+            return Enemy.Detection.NONE;
         }
 
         Interpolation lerp = Interpolation.linear;

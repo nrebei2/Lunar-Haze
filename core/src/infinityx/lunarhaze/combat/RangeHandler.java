@@ -1,17 +1,12 @@
 package infinityx.lunarhaze.combat;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.JsonValue;
-import infinityx.assets.AssetDirectory;
-import infinityx.lunarhaze.models.AttackingGameObject;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.entity.Archer;
 import infinityx.lunarhaze.models.entity.Arrow;
 import infinityx.lunarhaze.models.entity.Werewolf;
 
-import java.util.logging.Level;
-
-public class RangeHandler extends AttackHandler{
+public class RangeHandler extends AttackHandler {
 
 //    private final float TIME_TO_TRAVEL = 0.8f;
 
@@ -35,7 +30,7 @@ public class RangeHandler extends AttackHandler{
      * @param archer the archer this class is controlling
      * @param target target entity is trying to hit
      */
-    public RangeHandler(Archer archer, Werewolf target, LevelContainer container){
+    public RangeHandler(Archer archer, Werewolf target, LevelContainer container) {
         super(archer);
         this.target = target;
         this.container = container;
@@ -76,7 +71,7 @@ public class RangeHandler extends AttackHandler{
 //        arrowFlyTime += delta;
         // IMPORTANT: fly time has to be lower than archer attack cool down due to initialization
 //
-        if ((arrow != null && arrow.getLinearVelocity().epsilonEquals(Vector2.Zero))){
+        if ((arrow != null && arrow.getLinearVelocity().epsilonEquals(Vector2.Zero))) {
             System.out.println(arrowFlyTime >= 2f);
             container.removeArrow(arrow);
             arrow = null;
@@ -84,7 +79,7 @@ public class RangeHandler extends AttackHandler{
         }
     }
 
-    public float getAngleFacing(){
+    public float getAngleFacing() {
         return angleFacing;
     }
 

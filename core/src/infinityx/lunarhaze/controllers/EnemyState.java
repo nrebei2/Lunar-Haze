@@ -5,11 +5,9 @@ import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.utils.ArithmeticUtils;
-import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.ai.TacticalManager;
-import infinityx.lunarhaze.models.GameObject;
 import infinityx.lunarhaze.models.entity.Enemy;
 import infinityx.util.AngleUtils;
 
@@ -110,7 +108,7 @@ public enum EnemyState implements State<EnemyController> {
 
                     entity.getEnemy().setIndicatorAmount(
                             MathUtils.clamp(
-                                    entity.getEnemy().getIndicatorAmount() + Gdx.graphics.getDeltaTime()*0.75f,
+                                    entity.getEnemy().getIndicatorAmount() + Gdx.graphics.getDeltaTime() * 0.75f,
                                     0, 1
                             )
                     );
@@ -152,7 +150,7 @@ public enum EnemyState implements State<EnemyController> {
         public void update(EnemyController entity) {
 
             // Handle state transitions
-            if(entity.getEnemy().isLockedOut()) {
+            if (entity.getEnemy().isLockedOut()) {
                 entity.getStateMachine().changeState(LOCKED_OUT);
             } else if (!entity.getEnemy().isAttacking()) {
                 entity.getStateMachine().changeState(ALERT);
@@ -160,14 +158,14 @@ public enum EnemyState implements State<EnemyController> {
         }
 
         @Override
-        public void exit(EnemyController entity) {}
+        public void exit(EnemyController entity) {
+        }
     },
 
     /**
      * Enemy knows where player is (!) and is actively moving towards player
      */
     ALERT() {
-
         @Override
         public void enter(EnemyController entity) {
             if (entity.getEnemy().getEnemyType() == Enemy.EnemyType.Villager) {
@@ -192,7 +190,7 @@ public enum EnemyState implements State<EnemyController> {
 
         @Override
         public void update(EnemyController entity) {
-            if(entity.getEnemy().isLockedOut()) {
+            if (entity.getEnemy().isLockedOut()) {
                 entity.getStateMachine().changeState(LOCKED_OUT);
             } else {
                 if (!entity.getEnemy().isActive()) {
@@ -373,7 +371,8 @@ public enum EnemyState implements State<EnemyController> {
         }
 
         @Override
-        public void exit(EnemyController entity) {}
+        public void exit(EnemyController entity) {
+        }
 
         @Override
         public boolean onMessage(EnemyController control, Telegram telegram) {

@@ -3,9 +3,7 @@ package infinityx.lunarhaze.models;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.ParticleEffectPool;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.Queue;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.combat.AttackHitbox;
 import infinityx.lunarhaze.graphics.GameCanvas;
@@ -107,7 +105,9 @@ public abstract class AttackingGameObject extends GameObject {
      */
     protected float immunityTime;
 
-    /** Particle effect variables */
+    /**
+     * Particle effect variables
+     */
     public ParticleEffectPool particlePool;
     public ParticleEffect particleEffect;
 
@@ -142,7 +142,7 @@ public abstract class AttackingGameObject extends GameObject {
         lockout = attack.getFloat("lockout");
 
         // Particle effect
-        if(json.get("particle_hit") != null) {
+        if (json.get("particle_hit") != null) {
             JsonValue particle = json.get("particle_hit");
             ParticleEffect dummyParticleEffect = new ParticleEffect();
             dummyParticleEffect.load(Gdx.files.internal(particle.getString("effect")), Gdx.files.internal(particle.getString("imagesDir")));
@@ -238,13 +238,13 @@ public abstract class AttackingGameObject extends GameObject {
             attackedTime -= delta;
             if (attackedTime <= 0) {
                 isAttacked = false;
-                if(particleEffect != null) {
+                if (particleEffect != null) {
                     particleEffect.dispose();
                     particleEffect = null;
                 }
             }
 
-            if(particleEffect != null) {
+            if (particleEffect != null) {
                 particleEffect.update(delta);
             }
         }
@@ -262,7 +262,7 @@ public abstract class AttackingGameObject extends GameObject {
 
     @Override
     public void draw(GameCanvas canvas) {
-        if(particleEffect != null) {
+        if (particleEffect != null) {
             particleEffect.setPosition(canvas.WorldToScreenX(getX()), canvas.WorldToScreenY(getY() + 0.75f));
             particleEffect.draw(canvas.getSpriteBatch());
         }
