@@ -51,7 +51,7 @@ public class AttackHitbox extends GameObject {
         addBox(
                 //bad name ignore yellow box
                 "body", attackRange, attackWidth,
-                new Vector2(attacker.getBoundingRadius() + attackRange / 2, 0),
+                new Vector2(attacker.getBoundingRadius() + attackRange / 2 + 0.2f, 0),
                 0
         );
 
