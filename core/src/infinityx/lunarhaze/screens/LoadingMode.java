@@ -377,12 +377,12 @@ public class LoadingMode extends ScreenObservable implements Screen {
      * Split the sprite sheet and generate animation frames
      */
     public void create() {
-        TextureRegion[][] moonTextures = TextureRegion.split(moonphase, (int) (moonphase.getWidth() / 35.0f),
-                moonphase.getHeight());
-        TextureRegion[] moonFrames = new TextureRegion[35 * 1];
+        TextureRegion[][] moonTextures = TextureRegion.split(moonphase, moonphase.getWidth() / 36,
+                moonphase.getHeight() / 1);
+        TextureRegion[] moonFrames = new TextureRegion[36 * 1];
         int index = 0;
         for (int i = 0; i < 1; i++) {
-            for (int j = 0; j < 35; j++) {
+            for (int j = 0; j < 36; j++) {
                 moonFrames[index++] = moonTextures[i][j];
             }
         }
