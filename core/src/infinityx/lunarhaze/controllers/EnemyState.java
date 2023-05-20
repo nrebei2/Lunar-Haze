@@ -232,7 +232,7 @@ public enum EnemyState implements State<EnemyController> {
 
                 //if in stealth just walk towards target and attack if close enough
                 if (!entity.getEnemy().isInBattle()) {
-                    if (targetDst <= entity.getEnemy().getAttackRange() && entity.getAttackHandler().canStartNewAttack()) {
+                    if (targetDst <= entity.getEnemy().getAttackRange() - 0.1f && entity.getAttackHandler().canStartNewAttack()) {
                         entity.getStateMachine().changeState(ATTACK);
                         return;
                     }
@@ -245,7 +245,7 @@ public enum EnemyState implements State<EnemyController> {
                         entity.time = 0;
                     }
                 } else {
-                    if (targetDst <= entity.getEnemy().getAttackRange() && entity.getAttackHandler().canStartNewAttack()) {
+                    if (targetDst <= entity.getEnemy().getAttackRange() - 0.1f && entity.getAttackHandler().canStartNewAttack()) {
                         entity.getStateMachine().changeState(ATTACK);
                         return;
                     }
