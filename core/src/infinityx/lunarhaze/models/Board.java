@@ -249,8 +249,8 @@ public class Board {
             }
         } else {
             // Draw any out of bounds tiles close to player
-            for (int i = worldToBoardX(pos.x) - 10; i < worldToBoardX(pos.x) + 10; i++) {
-                for (int j = worldToBoardY(pos.y) - 10; j < worldToBoardY(pos.y) + 10; j++) {
+            for (int i = worldToBoardX(pos.x) - 11; i < worldToBoardX(pos.x) + 11; i++) {
+                for (int j = worldToBoardY(pos.y) - 11; j < worldToBoardY(pos.y) + 11; j++) {
                     if (!inBounds(i, j)) {
                         drawTile(i, j, canvas, pos, false);
                     }
