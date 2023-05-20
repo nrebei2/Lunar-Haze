@@ -134,9 +134,24 @@ public class AttackHitbox extends GameObject {
 
         // Heavy attack should face down and should not have fake height
         if (attacker instanceof Werewolf && ((Werewolf) attacker).isHeavyAttacking) {
-            angle = 0;
-            offsetX = -0.7f;
-            offsetY = 0;
+            switch (((Werewolf) attacker).direction){
+                case LEFT:
+                    offsetX -= 1;
+                    offsetY = 0.2f;
+                    break;
+                case RIGHT:
+                    offsetX += 1;
+                    offsetY = 0.2f;
+                    break;
+                case UP:
+                    offsetX = 0;
+                    offsetY = 1f;
+                    break;
+                case DOWN:;
+                    offsetX = 0;
+                    offsetY = -1f;
+                    break;
+            }
         }
 
         canvas.draw(filmstrip, tint, origin.x, origin.y,
