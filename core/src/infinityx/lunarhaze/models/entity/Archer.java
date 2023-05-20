@@ -48,7 +48,6 @@ public class Archer extends Enemy {
      */
     public Archer() {
         super();
-//        arrow = new Arrow(this.getX(), this.getY(), this);
     }
 
 }
