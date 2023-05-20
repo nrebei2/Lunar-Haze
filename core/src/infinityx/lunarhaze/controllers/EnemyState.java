@@ -173,7 +173,7 @@ public enum EnemyState implements State<EnemyController> {
             entity.targetPos.set(entity.getTarget().getPosition());
             entity.updatePath();
             entity.getEnemy().setSteeringBehavior(entity.followPathAvoid);
-
+            
             if (entity.getEnemy().isInBattle()) {
                 MessageManager.getInstance().dispatchMessage(TacticalManager.ADD, entity);
             }
