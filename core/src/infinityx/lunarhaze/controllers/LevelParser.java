@@ -137,8 +137,6 @@ public class LevelParser {
                 JsonValue objPos = objInfo.get("position");
                 float objScale = objInfo.getFloat("scale");
 
-                boolean flip = objInfo.has("flip") ? objInfo.getBoolean("flip") : false;
-
                 levelContainer.addBillboard(
                         objInfo.getString("type"), objPos.getFloat(0),
                         objPos.getFloat(1), objPos.getFloat(2), objScale
