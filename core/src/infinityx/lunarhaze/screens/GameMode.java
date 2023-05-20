@@ -17,6 +17,7 @@ import infinityx.lunarhaze.controllers.LevelParser;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.graphics.UIRender;
 import infinityx.lunarhaze.models.Dust;
+import infinityx.lunarhaze.models.GameObject;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.util.ScreenObservable;
 
@@ -404,7 +405,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
      * Draw the game mode.
      */
     public void draw(float delta) {
-        canvas.clear(backgroundColor);
+        //canvas.clear(backgroundColor);
         // Puts player at center of canvas
         levelContainer.setViewTranslation(
                 -canvas.WorldToScreenX(levelContainer.getPlayer().getPosition().x) + canvas.getWidth() / 2,

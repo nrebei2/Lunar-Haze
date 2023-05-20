@@ -180,8 +180,6 @@
         }
       }
     },
-    "forest-background": "images/forest-background.jpg",
-
     "tile": {
       "file": "images/tile-spritesheet.png",
       "sprites":	{
