@@ -150,6 +150,7 @@ public enum EnemyState implements State<EnemyController> {
 
         @Override
         public void update(EnemyController entity) {
+
             // Handle state transitions
             if(entity.getEnemy().isLockedOut()) {
                 entity.getStateMachine().changeState(LOCKED_OUT);
@@ -169,7 +170,13 @@ public enum EnemyState implements State<EnemyController> {
 
         @Override
         public void enter(EnemyController entity) {
-            entity.getEnemy().setMaxLinearSpeed(1.63f);
+            if (entity.getEnemy().getEnemyType() == Enemy.EnemyType.Villager) {
+                entity.getEnemy().setMaxLinearSpeed(1.63f);
+            }
+            else{
+                entity.getEnemy().setMaxLinearSpeed(1f);
+
+            }
             entity.getEnemy().setDetection(Enemy.Detection.ALERT);
 
             entity.targetPos.set(entity.getTarget().getPosition());

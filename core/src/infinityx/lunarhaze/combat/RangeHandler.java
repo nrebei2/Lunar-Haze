@@ -13,7 +13,9 @@ import java.util.logging.Level;
 
 public class RangeHandler extends AttackHandler{
 
-    private final float TIME_TO_TRAVEL = 1.2f;
+//    private final float TIME_TO_TRAVEL = 0.8f;
+
+    private final float ARROW_SPEED = 5f;
 
     /**
      * arrow attached to entity
@@ -44,7 +46,7 @@ public class RangeHandler extends AttackHandler{
         super.initiateAttack();
 
         arrow = container.addArrow(entity.getX(), entity.getY(), (Archer) entity);
-        Vector2 dir = target.getPosition().sub(entity.getPosition());
+        Vector2 dir = target.getPosition().sub(entity.getPosition()).nor();
         arrow.setLinearVelocity(dir);
         angleFacing = (float) Math.atan2(target.getY() - entity.getY(), target.getX() - entity.getX());
         arrow.setAngle(angleFacing + (float) Math.PI);
@@ -54,9 +56,12 @@ public class RangeHandler extends AttackHandler{
     @Override
     public void processAttack(float delta) {
         super.processAttack(delta);
-        arrow.update(delta);
-        arrow.setX(arrow.getX() + arrow.getLinearVelocity().x * delta / TIME_TO_TRAVEL);
-        arrow.setY(arrow.getY() + arrow.getLinearVelocity().y * delta / TIME_TO_TRAVEL);
+        if (arrow != null) {
+            arrow.update(delta);
+//            System.out.println(arrow.getLinearVelocity());
+            arrow.setX(arrow.getX() + ARROW_SPEED * arrow.getLinearVelocity().x * delta );
+            arrow.setY(arrow.getY() + ARROW_SPEED * arrow.getLinearVelocity().y * delta );
+        }
     }
 
     @Override

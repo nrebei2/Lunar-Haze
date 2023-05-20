@@ -33,6 +33,7 @@ public class Arrow extends GameObject {
     public void initialize(AssetDirectory directory, JsonValue json, LevelContainer container) {
         super.initialize(directory, json, container);
         this.setActive(false);
+
     }
 
     /**
