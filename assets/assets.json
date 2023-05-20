@@ -435,9 +435,9 @@
       "wrap":  	false,
       "sprites":	{
         "attack1-l" : {
-          "size" : 3,
+          "size" : 4,
           "rows" : 1,
-          "cols" : 3
+          "cols" : 4
         }
       }
     },
@@ -446,9 +446,9 @@
       "wrap":  	false,
       "sprites":	{
         "attack2-l" : {
-          "size" : 3,
+          "size" : 4,
           "rows" : 1,
-          "cols" : 3
+          "cols" : 4
         }
       }
     },
@@ -457,9 +457,9 @@
       "wrap":   false,
       "sprites": {
         "attack1-r" : {
-          "size" : 3,
+          "size" : 4,
           "rows" : 1,
-          "cols" : 3
+          "cols" : 4
         }
       }
     },
@@ -468,9 +468,9 @@
       "wrap":   false,
       "sprites": {
         "attack2-r" : {
-          "size" : 3,
+          "size" : 4,
           "rows" : 1,
-          "cols" : 3
+          "cols" : 4
         }
       }
     },

@@ -655,7 +655,7 @@ public class LevelContainer {
      *
      * @param canvas The drawing context
      */
-    public void drawLevel(float delta, GameCanvas canvas) {
+    public void drawLevel(float delta, GameCanvas canvas, boolean editor) {
         totalTime += delta;
         garbageCollect();
 
@@ -670,7 +670,7 @@ public class LevelContainer {
 
         // Render order: Board tiles -> (players, enemies, scene objects) sorted by depth (y coordinate) -> Lights
         canvas.begin(GameCanvas.DrawPass.SPRITE, view.x, view.y);
-        board.draw(canvas, player.getPosition());
+        board.draw(canvas, player.getPosition(), editor);
 
         // Uses timsort, so O(n) if already sorted, which is nice since it usually will be
         // TODO: if this ever becomes a bottleneck, we can instead add the
