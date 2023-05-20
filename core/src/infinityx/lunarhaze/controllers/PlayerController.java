@@ -173,6 +173,8 @@ public class PlayerController {
         return attack_sound;
     }
 
+    public GameSetting getSetting() {return setting;}
+
 
     /**
      * Initializes
@@ -204,14 +206,14 @@ public class PlayerController {
         InputController inputController = InputController.getInstance();
         player.update(delta);
 
-        if (setting.isMusicEnabled()) {
-//            if (player.isMoving() && inputController.didDash()) {
-//                dash_sound.play();
-//            } else
+        if (setting.isSoundEnabled()) {
+            if (!player.isAttacked() && inputController.didDash()&& attackHandler.isDashing) {
+                dash_sound.play(setting.getSoundVolume());
+            } else
             if (getStateMachine().isInState(PlayerState.WALK) && !isWalkGrassPlaying) {
                 long soundId = walk_sound.loop();
                 walk_sound.setLooping(soundId, true);
-                walk_sound.play(0.2f);
+                walk_sound.play(setting.getSoundVolume());
                 isWalkGrassPlaying = true;
             }
             if (!getStateMachine().isInState(PlayerState.WALK)) {
@@ -256,7 +258,7 @@ public class PlayerController {
         player.addMoonlightCollected();
 
         if (setting.isSoundEnabled()) {
-            collect_sound.play(0.8f);
+            collect_sound.play(setting.getSoundVolume());
         }
     }
 

@@ -413,9 +413,6 @@ public class EnemyController {
         // Process the FSM
         stateMachine.update();
         enemy.update(delta);
-        if (enemy.getDetection() == Enemy.Detection.NOTICED) {
-            alert_sound.play();
-        }
 
         // If the enemy is alerted and the player is close enough, force the flashlight to always shine on the player
         switch (enemy.getDetection()) {

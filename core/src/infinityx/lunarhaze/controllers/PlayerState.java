@@ -93,7 +93,9 @@ public enum PlayerState implements State<PlayerController> {
     ATTACK() {
         @Override
         public void enter(PlayerController entity) {
-            entity.getAttackSound().play(0.8f);
+            if(entity.getSetting().isSoundEnabled()) {
+                entity.getAttackSound().play(entity.getSetting().getSoundVolume());
+            }
             setTexture(entity, entity.getAttackHandler().useRightHand() ? "attack1" : "attack2");
         }
 
@@ -109,7 +111,9 @@ public enum PlayerState implements State<PlayerController> {
     HEAVY_ATTACK() {
         @Override
         public void enter(PlayerController entity) {
-            entity.getAttackSound().play(0.8f);
+            if(entity.getSetting().isSoundEnabled()) {
+                entity.getAttackSound().play(entity.getSetting().getSoundVolume());
+            }
             setTexture(entity, "heavyattack");
         }
 
