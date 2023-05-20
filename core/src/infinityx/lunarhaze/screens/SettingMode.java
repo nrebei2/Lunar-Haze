@@ -454,9 +454,10 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
             update(delta);
             draw();
             if ((isReady() || inputController.didExit()) && observer != null) {
-                lobby_background.stop();
+//                lobby_background.stop();
                 if (game.getPreviousScreen() == "pause") {
                     observer.exitScreen(this, GO_PAUSE);
+                    lobby_background.stop();
                 }
                 if (game.getPreviousScreen() == "menu") {
                     observer.exitScreen(this, GO_MENU);
@@ -468,14 +469,12 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
                     pressStarState[i] = 0;
                 }
             }
-
             if (isStarSoundReady() != 0 && observer != null) {
                 setting.setSoundVolume(((float) isStarSoundReady()) / 10.0f);
                 for (int i = 1; i <= 10; i++) {
                     pressStarSoundState[i] = 0;
                 }
             }
-
             if (isMusicOnReady() && observer != null) {
                 setting.setMusicEnabled(true);
                 pressMusicOnState = 0;

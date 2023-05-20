@@ -3,6 +3,7 @@ package infinityx.lunarhaze;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
@@ -82,6 +83,8 @@ public class GDXRoot extends Game implements ScreenObserver {
      * The game's previous screen
      */
     private String previousScreen;
+
+    private Music lobby_background;
 
     public String getPreviousScreen() {
         return previousScreen;
@@ -211,7 +214,14 @@ public class GDXRoot extends Game implements ScreenObserver {
             editor.setupImGui();
 
             setScreen(menu);
-
+            lobby_background = directory.getEntry("lobbyBackground", Music.class);
+            lobby_background.setVolume(setting_preference.getMusicVolume());
+            if(setting_preference.isMusicEnabled()) {
+                lobby_background.setLooping(true);
+                lobby_background.play();
+            }else{
+                lobby_background.stop();
+            }
             LevelParser ps = LevelParser.LevelParser();
             ps.loadConstants(directory, canvas);
             loading.dispose();
@@ -221,7 +231,7 @@ public class GDXRoot extends Game implements ScreenObserver {
             switch (exitCode) {
                 case MenuMode.GO_EDITOR:
                     setScreen(editor);
-
+                    lobby_background.stop();
                     break;
                 case MenuMode.GO_PLAY:
                     setScreen(selection);
@@ -246,6 +256,7 @@ public class GDXRoot extends Game implements ScreenObserver {
                     game.setLevel(selection.getLevelSelected());
                     game.setupLevel();
                     setScreen(game);
+                    lobby_background.stop();
                     break;
                 case LevelSelectionMode.GO_BACK:
                     setScreen(menu);
@@ -258,6 +269,7 @@ public class GDXRoot extends Game implements ScreenObserver {
                     break;
                 case SettingMode.GO_PAUSE:
                     setScreen(pause);
+                    lobby_background.stop();
                     break;
             }
         } else if (screen == aboutUs) {
@@ -285,6 +297,10 @@ public class GDXRoot extends Game implements ScreenObserver {
                 case GameMode.GO_NEXT:
                     if(selection.getLevelSelected() == 15){
                         setScreen(aboutUs);
+                        if(setting_preference.isMusicEnabled()) {
+                            lobby_background.setVolume(setting_preference.getMusicVolume());
+                            lobby_background.play();
+                        }
                     }else {
                         selection.setLevelSelected(selection.getLevelSelected() + 1);
                         game.setLevel(selection.getLevelSelected());
@@ -299,10 +315,18 @@ public class GDXRoot extends Game implements ScreenObserver {
                     break;
                 case PauseMode.GO_MENU:
                     setScreen(menu);
+                    if(setting_preference.isMusicEnabled()){
+                        lobby_background.setVolume(setting_preference.getMusicVolume());
+                        lobby_background.play();
+                    }
                     break;
                 case PauseMode.GO_SETTING:
                     previousScreen = "pause";
                     setScreen(setting);
+                    if(setting_preference.isMusicEnabled()){
+                        lobby_background.setVolume(setting_preference.getMusicVolume());
+                        lobby_background.play();
+                    }
                     break;
                 case PauseMode.GO_EXIT:
                     Gdx.app.exit();
@@ -320,6 +344,7 @@ public class GDXRoot extends Game implements ScreenObserver {
                             )
                     );
                     setScreen(editor);
+                    lobby_background.stop();
                     break;
             }
         } else if (screen == allocate) {
@@ -330,6 +355,10 @@ public class GDXRoot extends Game implements ScreenObserver {
         } else if (screen == editor) {
             if (exitCode == EditorMode.GO_MENU) {
                 setScreen(menu);
+                if(setting_preference.isMusicEnabled()){
+                    lobby_background.setVolume(setting_preference.getMusicVolume());
+                    lobby_background.play();
+                }
             } else if (exitCode == EditorMode.GO_PLAY) {
                 // Really not necessary, could just move the levelContainer from editor to game
                 // But this works so whatever

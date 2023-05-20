@@ -272,11 +272,11 @@ public class LoadingMode extends ScreenObservable implements Screen {
      */
     private void update(float delta) {
         stateTime += delta;
-        if (!set_lobby) {
-            lobby_background.setLooping(true);
-            lobby_background.play();
-            set_lobby = true;
-        }
+//        if (!set_lobby) {
+//            lobby_background.setLooping(true);
+//            lobby_background.play();
+//            set_lobby = true;
+//        }
         switch (loadingState) {
             case FADE_IN:
                 elapsed += delta;
@@ -377,8 +377,8 @@ public class LoadingMode extends ScreenObservable implements Screen {
      * Split the sprite sheet and generate animation frames
      */
     public void create() {
-        TextureRegion[][] moonTextures = TextureRegion.split(moonphase, moonphase.getWidth() / 35,
-                moonphase.getHeight() / 1);
+        TextureRegion[][] moonTextures = TextureRegion.split(moonphase, (int) (moonphase.getWidth() / 35.0f),
+                moonphase.getHeight());
         TextureRegion[] moonFrames = new TextureRegion[35 * 1];
         int index = 0;
         for (int i = 0; i < 1; i++) {
