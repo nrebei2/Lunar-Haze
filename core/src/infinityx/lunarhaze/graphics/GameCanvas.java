@@ -949,6 +949,12 @@ public class GameCanvas {
 
         computeTransform(ox, oy, x, y, angle, sx, sy);
 
+        //if (flipped) {
+        //    local.translate(region.getRegionWidth() / 2, region.getRegionHeight() / 2);
+        //    local.scale(-1, 1);
+        //    local.translate(-region.getRegionWidth() / 2, -region.getRegionHeight() / 2);
+        //}
+
         // Draw if any vertices are inside the camera view
         float x1 = local.m02;
         float y1 = local.m12;
@@ -1024,13 +1030,19 @@ public class GameCanvas {
      * @return Whether the texture was drawn or not
      */
     public boolean draw(TextureRegion region, Color tint, float ox, float oy,
-                        float x, float y, float angle, float sx, float sy, float shx, float shy) {
+                        float x, float y, float angle, float sx, float sy, float shx, float shy, boolean flipped) {
         if (active != DrawPass.SPRITE) {
             Gdx.app.error("GameCanvas", "Cannot draw without active begin() for SPRITE", new IllegalStateException());
             return false;
         }
 
         computeTransform(ox, oy, x, y, angle, sx, sy, shx, shy);
+
+        if (flipped) {
+            local.translate(region.getRegionWidth() / 2, region.getRegionHeight() / 2);
+            local.scale(-1, 1);
+            local.translate(-region.getRegionWidth() / 2, -region.getRegionHeight() / 2);
+        }
 
         // Draw if any vertices are inside the camera view
         float x1 = local.m02;

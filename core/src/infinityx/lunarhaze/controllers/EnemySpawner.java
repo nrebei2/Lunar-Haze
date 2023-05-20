@@ -31,9 +31,14 @@ public class EnemySpawner {
     private float enemyAddTime;
 
     /**
-     * Maximum number of enemies this spawner can spawn
+     * Maximum number of villagers this spawner can spawn
      */
-    private int count;
+    private int villagerCount;
+
+    /**
+     * Maximum number of archers this spawner can spawn
+     */
+    private int archerCount;
 
     /**
      * Total time in seconds this spawner has been alive
@@ -62,7 +67,8 @@ public class EnemySpawner {
     public void initialize(Settings settings) {
         this.addMin = settings.getSpawnRateMin();
         this.addMax = settings.getSpawnRateMax();
-        this.count = settings.getEnemyCount();
+        this.archerCount = settings.getArcherCount();
+        this.villagerCount = settings.getVillagerCount();
         this.time = 0;
 
         float delay = settings.getDelay();
@@ -75,22 +81,30 @@ public class EnemySpawner {
      * Add enemy to level when applicable.
      */
     public void update(float delta) {
-        if (count <= 0) return;
+        if (archerCount + villagerCount <= 0) return;
         time += delta;
         if (time >= enemyAddTime) {
             Vector2 position = spawnLocations.random();
             Enemy newEnemy;
-            if (rand.nextFloat() < 0.3) {
-                 newEnemy = container.addEnemy(Enemy.EnemyType.Archer, position.x, position.y);
-            }
-            else{
+            if (archerCount == 0) {
                 newEnemy = container.addEnemy(Enemy.EnemyType.Villager, position.x, position.y);
+                villagerCount--;
+            } else if (villagerCount == 0) {
+                newEnemy = container.addEnemy(Enemy.EnemyType.Villager, position.x, position.y);
+                archerCount--;
+            } else {
+                if (rand.nextFloat() < 0.5) {
+                    newEnemy = container.addEnemy(Enemy.EnemyType.Archer, position.x, position.y);
+                    archerCount--;
+                } else {
+                    newEnemy = container.addEnemy(Enemy.EnemyType.Villager, position.x, position.y);
+                    villagerCount--;
+                }
             }
             // This spawner is only used in battle phase
             newEnemy.setInBattle(true);
             enemyAddTime = MathUtils.random(addMin, addMax);
             time = 0;
-            count -= 1;
         }
     }
 }

@@ -131,6 +131,19 @@ public class LevelParser {
             }
         }
 
+        if (scene.has("billboards")) {
+            JsonValue boards = scene.get("billboards");
+            for (JsonValue objInfo : boards) {
+                JsonValue objPos = objInfo.get("position");
+                float objScale = objInfo.getFloat("scale");
+
+                levelContainer.addBillboard(
+                        objInfo.getString("type"), objPos.getFloat(0),
+                        objPos.getFloat(1), objPos.getFloat(2), objScale
+                );
+            }
+        }
+
         // create pathfinder
         float playerSize = levelContainer.getPlayer().getBoundingRadius();
         levelContainer.createPathFinder(new Vector2(playerSize * 1.5f, playerSize));
@@ -287,7 +300,13 @@ public class LevelParser {
         float[] addInfo = enemySpawnerSettings.get("add-tick").asFloatArray();
         levelContainer.getSettings().setSpawnRateMin(addInfo[0]);
         levelContainer.getSettings().setSpawnRateMax(addInfo[1]);
-        levelContainer.getSettings().setEnemyCount(enemySpawnerSettings.getInt("count"));
+        if (enemySpawnerSettings.has("archer-count")) {
+            levelContainer.getSettings().setArcherCount(enemySpawnerSettings.getInt("archer-count"));
+            levelContainer.getSettings().setVillagerCount(enemySpawnerSettings.getInt("villager-count"));
+        } else {
+            // More backwards compatible shit
+            levelContainer.getSettings().setVillagerCount(enemySpawnerSettings.getInt("count"));
+        }
         levelContainer.getSettings().setDelay(enemySpawnerSettings.getInt("delay"));
 
         for (JsonValue spawnPos : enemySpawnerSettings.get("spawn-locations")) {
