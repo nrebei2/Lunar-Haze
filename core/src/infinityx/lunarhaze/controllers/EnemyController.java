@@ -118,6 +118,8 @@ public class EnemyController {
 
     private Sound alert_sound;
 
+    private Sound attacked_sound;
+
     /**
      * Holds context behaviors for strafing,
      */
@@ -170,6 +172,14 @@ public class EnemyController {
 
     /** Used so the detection only updates once every interval */
     private float detectionTime;
+
+    public Sound getAttackedSound(){
+        return attacked_sound;
+    }
+
+    public void setAttackedSound(Sound s){
+        attacked_sound = s;
+    }
 
     /**
      * Creates an EnemyController for the given enemy.

@@ -177,6 +177,8 @@ public class LevelContainer {
 
     private Sound alert_sound;
 
+    private Sound attacked_sound;
+
     /**
      * Moonlight color of point lights
      */
@@ -301,7 +303,8 @@ public class LevelContainer {
         // Update enemy controller assigned to the new enemy
         enemyController.populate(this);
         alert_sound = this.getDirectory().getEntry("alerted", Sound.class);
-        enemyController.setAlertSound(alert_sound);
+        attacked_sound = this.getDirectory().getEntry("enemy-get-hit", Sound.class);
+        enemyController.setAttackedSound(attacked_sound);
 
         enemy.setActive(true);
         enemy.getFlashlight().setActive(true);

@@ -941,7 +941,9 @@
     "alerted": "sounds/alerted.wav",
     "dash": "sounds/dash.wav",
     "walking-on-grass": "sounds/walking_on_grass-02.wav",
-    "walking-on-soil": "sounds/walking_on_soil-03.wav"
+    "walking-on-soil": "sounds/walking_on_soil-03.wav",
+    "werewolf-get-hit": "sounds/werewolf_got_hit.wav",
+    "enemy-get-hit": "sounds/enemy_get_hit.wav"
   },
   "fonts": {
     "retro": {
