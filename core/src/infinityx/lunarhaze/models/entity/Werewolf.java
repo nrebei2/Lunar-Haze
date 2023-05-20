@@ -336,9 +336,13 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
             float movementH = InputController.getInstance().getHorizontal();
             float movementV = InputController.getInstance().getVertical();
 
+            velocity.x = movementH;
+            velocity.y = movementV;
+            velocity.nor();
+
             float speed = isWindingUp ? windupSpeed : walkSpeed;
-            velocity.x = movementH * speed;
-            velocity.y = movementV * speed;
+            velocity.x *= speed;
+            velocity.y *= speed;
 
             // Set the direction given velocity
             // For diagonal movement we prefer using UP or DOWN

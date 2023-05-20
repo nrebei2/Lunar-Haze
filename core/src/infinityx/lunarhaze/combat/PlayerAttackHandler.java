@@ -169,8 +169,9 @@ public class PlayerAttackHandler extends MeleeHandler {
                     InputController.getInstance().getHorizontal(),
                     InputController.getInstance().getVertical()
             ).nor();
-            if (phase == GameplayController.Phase.STEALTH)
+            if (phase == GameplayController.Phase.STEALTH) {
                 dashDirection.scl(1.5f);
+            }
             dashTimer = 0f;
             entity.setImmune();
             entity.setLockedOut();
