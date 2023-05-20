@@ -171,7 +171,7 @@ public class GameplayController {
         this.gameState = GameState.PLAY;
         this.phase = Phase.STEALTH;
         this.container = levelContainer;
-        this.collisionController = new CollisionController(levelContainer.getWorld());
+        this.collisionController = new CollisionController(levelContainer.getWorld(),setting, levelContainer.getDirectory());
 
         lightingController = new LightingController(levelContainer);
 

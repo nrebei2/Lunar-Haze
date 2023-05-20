@@ -1,26 +1,35 @@
 package infinityx.lunarhaze.controllers;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.combat.AttackHitbox;
 import infinityx.lunarhaze.graphics.CameraShake;
 import infinityx.lunarhaze.graphics.ModelFlash;
 import infinityx.lunarhaze.models.AttackingGameObject;
 import infinityx.lunarhaze.models.GameObject;
 import infinityx.lunarhaze.models.entity.*;
+import infinityx.lunarhaze.screens.GameMode;
+import infinityx.lunarhaze.screens.GameSetting;
 
 /**
  * Controller to handle Box2D body interactions.
  * </summary>
  */
 public class CollisionController implements ContactListener {
-
+    private GameSetting setting;
+    private AssetDirectory directory;
+    private Sound enemy_attacked;
     /**
      * @param world World to register this contact listener to
      */
-    public CollisionController(World world) {
+    public CollisionController(World world, GameSetting setting, AssetDirectory directory) {
         world.setContactListener(this);
+        this.setting = setting;
+        this.directory = directory;
+        enemy_attacked = directory.getEntry("enemy-get-hit", Sound.class);
     }
 
     @Override
@@ -149,6 +158,10 @@ public class CollisionController implements ContactListener {
                 attacked.setAttacked();
                 // This class now flashes the werewolf only
                 ModelFlash.flash(new Color(1f, 0f, 0f, 1), 0.7f, 0.2f, 0.2f, 1f);
+            }else if (attacked.getType() == GameObject.ObjectType.ENEMY) {
+                if(setting.isSoundEnabled()){
+                    enemy_attacked.play(setting.getMusicVolume());
+                }
             }
         }
     }
