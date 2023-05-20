@@ -8,12 +8,12 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.TimeUtils;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.controllers.EnemyController;
 import infinityx.lunarhaze.controllers.EnemySpawner;
@@ -96,6 +96,12 @@ public class LevelContainer {
      * Stores SceneObjects
      */
     private Array<SceneObject> sceneObjects;
+
+    /**
+     * Stores boards
+     */
+    private Array<Billboard> billboards;
+
     /**
      * Stores Werewolf. Since there is always one and only one player in a level,
      * this attribute is always initialized and carried over across levels.
@@ -138,6 +144,11 @@ public class LevelContainer {
      * Constants for scene object initialization
      */
     JsonValue objectJson;
+
+    /**
+     * Constants for billboard initialization
+     */
+    JsonValue billboardJson;
 
     /**
      * Constants for player initialization
@@ -211,6 +222,7 @@ public class LevelContainer {
         activeEnemies = new Array<>(10);
         activeControllers = new Array<>(10);
         sceneObjects = new Array<>(true, 5);
+        billboards = new Array<>(true, 5);
 
         battleSettings = new Settings();
     }
@@ -224,11 +236,12 @@ public class LevelContainer {
     /**
      * Creates a new LevelContainer with no active elements.
      */
-    public LevelContainer(AssetDirectory directory, JsonValue enemiesJson, JsonValue objectJson, JsonValue playerJson) {
+    public LevelContainer(AssetDirectory directory, JsonValue enemiesJson, JsonValue objectJson, JsonValue playerJson, JsonValue billboardJson) {
         this.enemiesJson = enemiesJson;
         this.objectJson = objectJson;
         this.playerJson = playerJson;
         this.directory = directory;
+        this.billboardJson = billboardJson;
         this.lightShader = directory.get("light", ShaderProgram.class);
         System.out.println(lightShader.getLog());
         initialize();
@@ -255,6 +268,13 @@ public class LevelContainer {
      */
     public Array<Enemy> getEnemies() {
         return activeEnemies;
+    }
+
+    /**
+     * @return All tutorial billboards in level.
+     */
+    public Array<Billboard> getBillboards() {
+        return billboards;
     }
 
     /**
@@ -510,6 +530,23 @@ public class LevelContainer {
     }
 
     /**
+     * @return billboard added
+     */
+    public Billboard addBillboard(String type, float x, float y, float scale) {
+        Billboard object = new Billboard(new Vector3(x, y, 0), scale);
+        object.initialize(directory, billboardJson.get(type));
+        billboards.add(object);
+        drawables.add(object);
+
+        return object;
+    }
+
+    public void removeBillboard(Billboard billboard) {
+        billboards.removeValue(billboard, true);
+        drawables.removeValue(billboard, true);
+    }
+
+    /**
      * Removes a scene object from the level.
      *
      * @param object scene object to remove
@@ -517,6 +554,18 @@ public class LevelContainer {
     public void removeSceneObject(SceneObject object) {
         sceneObjects.removeValue(object, true);
         drawables.removeValue(object, true);
+        // Remove attached light if lamp
+        if (object.getName().equalsIgnoreCase("lamp")) {
+            Array.ArrayIterator<PointLight> lights = lampLights.iterator();
+            while (lights.hasNext()) {
+                PointLight light = lights.next();
+                if (light.getBody() == object.getBody()) {
+                    lights.remove();
+                    light.remove();
+                    break;
+                }
+            }
+        }
         object.setActive(false);
     }
 
@@ -544,6 +593,8 @@ public class LevelContainer {
                     new Color(moonlightColor[0], moonlightColor[1], moonlightColor[2], moonlightColor[3]),
                     5, x, y
             );
+            light.setXray(true);
+            light.attachToBody(object.getBody());
             light.setActive(true);
             lampLights.add(light);
         }

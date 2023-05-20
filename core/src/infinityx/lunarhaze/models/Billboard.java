@@ -39,9 +39,16 @@ public class Billboard implements Drawable {
      */
     private float scale;
 
+    /**
+     * The tint applied to the texture when drawing
+     */
+    protected Color tint;
+
     public Billboard(Vector3 position, float scale) {
         this.position = position;
         this.scale = scale;
+        this.tint = new Color(Color.WHITE);
+        this.animation = new Animation();
     }
 
     public void initialize(AssetDirectory directory, JsonValue json) {
@@ -51,6 +58,7 @@ public class Billboard implements Drawable {
         } else {
             animation.addStaticAnimation("main", directory.getEntry(texture, Texture.class));
         }
+        animation.setCurrentAnimation("main");
         textureScale = json.getFloat("scale");
     }
 
@@ -68,6 +76,16 @@ public class Billboard implements Drawable {
         this.position.set(x, y, z);
     }
 
+    public void setX(float x) {
+        this.position.x = x;
+    }
+    public void setY(float y) {
+        this.position.y = y;
+    }
+    public void setZ(float z) {
+        this.position.z = z;
+    }
+
     /**
      * sets texture scale for drawing
      */
@@ -82,6 +100,10 @@ public class Billboard implements Drawable {
         this.scale = scale;
     }
 
+    public float getScale() {
+        return scale;
+    }
+
     @Override
     public float getDepth() {
         return position.y;
@@ -90,7 +112,7 @@ public class Billboard implements Drawable {
     @Override
     public void draw(GameCanvas canvas) {
         FilmStrip curFrame = animation.getKeyFrame(Gdx.graphics.getDeltaTime());
-        canvas.draw(curFrame, Color.WHITE, curFrame.getRegionWidth() / 2, curFrame.getRegionHeight() / 2,
+        canvas.draw(curFrame, tint, curFrame.getRegionWidth() / 2, curFrame.getRegionHeight() / 2,
                 canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y + getPosition().z), 0,
                 textureScale * scale, textureScale * scale);
     }
@@ -103,5 +125,8 @@ public class Billboard implements Drawable {
     @Override
     public void setDestroyed(boolean destroyed) {
         this.destroyed = destroyed;
+    }
+
+    public void setTint(Color selectedColor) {
     }
 }

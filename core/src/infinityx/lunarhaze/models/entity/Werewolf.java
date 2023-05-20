@@ -240,6 +240,7 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
                 container.getRayHandler(), rays, Color.WHITE, dist,
                 0, 0
         );
+        spotLight.setXray(true);
         spotLight.setColor(color[0], color[1], color[2], color[3]);
         spotLight.setSoft(light.getBoolean("soft"));
         activatePhysics(container.getWorld());

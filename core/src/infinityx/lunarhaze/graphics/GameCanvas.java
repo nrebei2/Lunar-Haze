@@ -1325,8 +1325,8 @@ public class GameCanvas {
     private void computeTransform(float ox, float oy, float x, float y, float angle, float sx, float sy, float shx, float shy) {
         local.setToTranslation(x, y);
         local.rotate(180.0f * angle / (float) Math.PI);
+        local.shear(shx, shy);
         local.scale(sx, sy);
-        local.shear(shx, shy); // Add shear transformation here
         local.translate(-ox, -oy);
     }
 
