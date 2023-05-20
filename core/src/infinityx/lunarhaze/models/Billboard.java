@@ -44,6 +44,8 @@ public class Billboard implements Drawable {
      */
     protected Color tint;
 
+    public String name;
+
     public Billboard(Vector3 position, float scale) {
         this.position = position;
         this.scale = scale;
@@ -128,5 +130,13 @@ public class Billboard implements Drawable {
     }
 
     public void setTint(Color selectedColor) {
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

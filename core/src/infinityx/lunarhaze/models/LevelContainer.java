@@ -532,8 +532,9 @@ public class LevelContainer {
     /**
      * @return billboard added
      */
-    public Billboard addBillboard(String type, float x, float y, float scale) {
-        Billboard object = new Billboard(new Vector3(x, y, 0), scale);
+    public Billboard addBillboard(String type, float x, float y, float z, float scale) {
+        Billboard object = new Billboard(new Vector3(x, y, z), scale);
+        object.setName(type);
         object.initialize(directory, billboardJson.get(type));
         billboards.add(object);
         drawables.add(object);

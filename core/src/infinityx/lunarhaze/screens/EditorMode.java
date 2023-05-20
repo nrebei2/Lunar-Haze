@@ -768,7 +768,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             // So moonlightTiles in board can update
             board.setCollectable(x, y, false);
         } else {
-            if (!board.isLit(x, y)) {
+            if (!board.isLit(x, y) && board.inBounds(x, y)) {
                 // PointLight logic
                 PointLight light = new PointLight(
                         level.getRayHandler(),
@@ -2123,7 +2123,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                     obj.texture.getU2(), obj.texture.getV2())
             ) {
                 removeSelection();
-                Billboard newObject = level.addBillboard(obj.name, mouseWorld.x, mouseWorld.y, 1);
+                Billboard newObject = level.addBillboard(obj.name, mouseWorld.x, mouseWorld.y, 0, 1);
                 selected = new Tutorial(newObject);
                 objectScale[0] = 1;
                 newObject.setTint(SELECTED_COLOR);

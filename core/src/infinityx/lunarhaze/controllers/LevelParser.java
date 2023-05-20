@@ -131,6 +131,21 @@ public class LevelParser {
             }
         }
 
+        if (scene.has("billboards")) {
+            JsonValue boards = scene.get("billboards");
+            for (JsonValue objInfo : boards) {
+                JsonValue objPos = objInfo.get("position");
+                float objScale = objInfo.getFloat("scale");
+
+                boolean flip = objInfo.has("flip") ? objInfo.getBoolean("flip") : false;
+
+                levelContainer.addBillboard(
+                        objInfo.getString("type"), objPos.getFloat(0),
+                        objPos.getFloat(1), objPos.getFloat(2), objScale
+                );
+            }
+        }
+
         // create pathfinder
         float playerSize = levelContainer.getPlayer().getBoundingRadius();
         levelContainer.createPathFinder(new Vector2(playerSize * 1.5f, playerSize));
