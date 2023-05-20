@@ -130,10 +130,12 @@ public class PlayerAttackHandler extends MeleeHandler {
         player.setLinearVelocity(Vector2.Zero);
         player.attackDamage *= 1.75f;
         player.attackKnockback *= 1.75f;
-        player.getAttackHitbox().setHitboxRange(player.getAttackHitbox().getHitboxRange() * 1.25f);
-        player.getAttackHitbox().setHitboxWidth(player.getAttackHitbox().getHitboxWidth() * 1.25f);
+        AttackHitbox hitbox = player.getAttackHitbox();
+        hitbox.setHitboxRange(player.getAttackHitbox().getHitboxRange() * 1.25f);
+        hitbox.setHitboxWidth(player.getAttackHitbox().getHitboxWidth() * 1.25f);
 
-        player.getAttackHitbox().setTexture("hitbox_heavy");
+        hitbox.setTexture("hitbox_heavy");
+        hitbox.setOrigin(420, 360);
         heavyAttacking = true;
         player.isHeavyAttacking = true;
         player.attackLength *= 1.5f;
@@ -150,6 +152,7 @@ public class PlayerAttackHandler extends MeleeHandler {
             player.attackDamage /= 1.75f;
             player.attackKnockback /= 1.75f;
             player.attackLength /= 1.5f;
+            player.getAttackHitbox().setOrigin(280, 420);
             player.getAttackHitbox().setHitboxRange(player.getAttackHitbox().getHitboxRange() /1.25f);
             player.getAttackHitbox().setHitboxWidth(player.getAttackHitbox().getHitboxWidth() / 1.25f);
             player.getAttackHitbox().setTexture("hitbox");

@@ -131,32 +131,43 @@ public class AttackHitbox extends GameObject {
         float offsetX = 0;
         // Fake height
         float offsetY = 0.2f;
+        boolean flip = false;
+
+        Werewolf player = (Werewolf) attacker;
 
         // Heavy attack should face down and should not have fake height
-        if (attacker instanceof Werewolf && ((Werewolf) attacker).isHeavyAttacking) {
+        if (player.isHeavyAttacking) {
+
+            Vector2 offset = new Vector2();
+            player.angleToVector(offset, player.getAngle());
+
+            offsetX += offset.x;
+            offsetY += offset.y;
+
+            System.out.println(offset.x);
+            System.out.println(offset.y);
             switch (((Werewolf) attacker).direction){
                 case LEFT:
-                    offsetX -= 1;
-                    offsetY = 0.2f;
+                    //offsetX -= 1;
+                    flip = true;
                     break;
                 case RIGHT:
-                    offsetX += 1;
-                    offsetY = 0.2f;
+                    //offsetX += 1;
+                    flip = true;
                     break;
                 case UP:
-                    offsetX = 0;
-                    offsetY = 1f;
+                    //offsetY = 1.5f;
+                    flip = true;
                     break;
                 case DOWN:;
-                    offsetX = 0;
-                    offsetY = -1f;
+                    //offsetY = -1f;
                     break;
             }
         }
 
         canvas.draw(filmstrip, tint, origin.x, origin.y,
                 canvas.WorldToScreenX(getPosition().x + offsetX), canvas.WorldToScreenY(getPosition().y + offsetY), angle,
-                textureScale * scale, textureScale * scale);
+                textureScale * scale, textureScale * scale, flip);
     }
 
     /**
