@@ -6,6 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -245,7 +246,7 @@ public class LevelContainer {
         this.directory = directory;
         this.billboardJson = billboardJson;
         this.lightShader = directory.get("light", ShaderProgram.class);
-        System.out.println(lightShader.getLog());
+
         initialize();
     }
 
@@ -654,7 +655,7 @@ public class LevelContainer {
      *
      * @param canvas The drawing context
      */
-    public void drawLevel(float delta, GameCanvas canvas) {
+    public void drawLevel(float delta, GameCanvas canvas, boolean editor) {
         totalTime += delta;
         garbageCollect();
 
@@ -669,7 +670,7 @@ public class LevelContainer {
 
         // Render order: Board tiles -> (players, enemies, scene objects) sorted by depth (y coordinate) -> Lights
         canvas.begin(GameCanvas.DrawPass.SPRITE, view.x, view.y);
-        board.draw(canvas);
+        board.draw(canvas, player.getPosition(), editor);
 
         // Uses timsort, so O(n) if already sorted, which is nice since it usually will be
         // TODO: if this ever becomes a bottleneck, we can instead add the

@@ -4,6 +4,7 @@ import box2dLight.PointLight;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import infinityx.lunarhaze.graphics.FilmStrip;
@@ -200,7 +201,7 @@ public class Board {
      * @return the board cell index for a world x-position.
      */
     public int worldToBoardX(float x) {
-        return (int) (x / tileWorldDim.x);
+        return MathUtils.floor(x / tileWorldDim.x);
     }
 
 
@@ -210,7 +211,7 @@ public class Board {
      * @return the board cell index for a world y-position.
      */
     public int worldToBoardY(float y) {
-        return (int) (y / tileWorldDim.y);
+        return MathUtils.floor(y / tileWorldDim.y);
     }
 
     /**
@@ -235,16 +236,28 @@ public class Board {
      *
      * @param canvas the drawing context
      */
-    public void draw(GameCanvas canvas) {
+    public void draw(GameCanvas canvas, Vector2 pos, boolean editor) {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                drawTile(x, y, canvas);
+                drawTile(x, y, canvas, pos, editor);
             }
         }
 
-        if (this.previewTile != null) {
-            drawPreview(canvas);
+        if (editor) {
+            if (this.previewTile != null) {
+                drawPreview(canvas);
+            }
+        } else {
+            // Draw any out of bounds tiles close to player
+            for (int i = worldToBoardX(pos.x) - 10; i < worldToBoardX(pos.x) + 10; i++) {
+                for (int j = worldToBoardY(pos.y) - 10; j < worldToBoardY(pos.y) + 10; j++) {
+                    if (!inBounds(i, j)) {
+                        drawTile(i, j, canvas, pos, false);
+                    }
+                }
+            }
         }
+
     }
 
     /**
@@ -253,9 +266,14 @@ public class Board {
      * @param x The x index for the Tile cell
      * @param y The y index for the Tile cell
      */
-    private void drawTile(int x, int y, GameCanvas canvas) {
+    private void drawTile(int x, int y, GameCanvas canvas, Vector2 pos, boolean editor) {
         // Used for level editor
         if (getTileType(x, y) == Tile.TileType.EMPTY) {
+            return;
+        }
+
+        // Fast clipping test
+        if (!editor && pos.dst(boardCenterToWorldX(x), boardCenterToWorldY(y)) > 10) {
             return;
         }
 
@@ -541,8 +559,8 @@ public class Board {
      */
     public int getTileNum(int x, int y) {
         if (!inBounds(x, y)) {
-            Gdx.app.error("Board", "Illegal tile " + x + "," + y, new IndexOutOfBoundsException());
-            return -1;
+            // simple randomness
+            return Math.abs((31 * x + 14682) ^ (37 * y + 12383)) % 12;
         }
         return getTile(x, y).getTileNum();
     }
