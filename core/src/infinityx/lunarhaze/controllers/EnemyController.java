@@ -248,7 +248,7 @@ public class EnemyController {
                 this.attackHandler = new MeleeHandler(enemy, ((Villager) enemy).attackHitbox);
                 break;
             case Archer:
-                this.attackHandler = new RangeHandler((Archer) enemy, target);
+                this.attackHandler = new RangeHandler((Archer) enemy, target, container);
                 break;
         }
 

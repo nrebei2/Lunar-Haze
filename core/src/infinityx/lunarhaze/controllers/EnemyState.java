@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.ai.TacticalManager;
+import infinityx.lunarhaze.models.GameObject;
 import infinityx.lunarhaze.models.entity.Enemy;
 import infinityx.util.AngleUtils;
 
@@ -109,7 +110,7 @@ public enum EnemyState implements State<EnemyController> {
 
                     entity.getEnemy().setIndicatorAmount(
                             MathUtils.clamp(
-                                    entity.getEnemy().getIndicatorAmount() + Gdx.graphics.getDeltaTime() * 0.5f,
+                                    entity.getEnemy().getIndicatorAmount() + Gdx.graphics.getDeltaTime()*0.75f,
                                     0, 1
                             )
                     );

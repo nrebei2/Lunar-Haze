@@ -129,7 +129,7 @@ public abstract class Enemy extends SteeringGameObject implements Pool.Poolable 
         return flashlight;
     }
 
-    private float strafeDistance;
+    public float strafeDistance;
 
     public Random rand = new Random();
 

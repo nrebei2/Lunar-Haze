@@ -273,10 +273,6 @@ public class LevelContainer {
         activeEnemies.add(enemy);
         activeControllers.add(enemyController);
         addDrawables(enemy);
-        if (enemy.getEnemyType() == Enemy.EnemyType.Archer) {
-            addDrawables(((Archer) enemy).getArrow());
-            ((Archer) enemy).getArrow().activatePhysics(world);
-        }
 
         // Update enemy controller assigned to the new enemy
         enemyController.populate(this);
@@ -296,10 +292,6 @@ public class LevelContainer {
     public Enemy addEnemy(Enemy enemy) {
         activeEnemies.add(enemy);
         addDrawables(enemy);
-        if (enemy.getEnemyType() == Enemy.EnemyType.Archer) {
-            addDrawables(((Archer) enemy).getArrow());
-            ((Archer) enemy).getArrow().activatePhysics(world);
-        }
         enemy.setActive(true);
         enemy.getFlashlight().setActive(true);
 
@@ -325,9 +317,6 @@ public class LevelContainer {
 
         activeEnemies.removeValue(enemy, true);
         drawables.removeValue(enemy, true);
-        if (enemy.getEnemyType() == Enemy.EnemyType.Archer){
-            drawables.removeValue(((Archer) enemy).getArrow(), true);
-        }
         enemy.setActive(false);
         enemy.getFlashlight().setActive(false);
     }
@@ -372,6 +361,18 @@ public class LevelContainer {
         enemy.setPosition(x, y);
 
         return addEnemy(enemy, controller);
+    }
+
+    /**
+     * Adds an arrow to the level
+     */
+    public Arrow addArrow(float x, float y, Archer archer){
+        Arrow arrow = new Arrow(x, y, archer);
+        arrow.initialize(directory, enemiesJson.get("arrow"), this );
+        addDrawables(arrow);
+        arrow.activatePhysics(world);
+        return arrow;
+
     }
 
     public Array<EnemyController> getActiveControllers() {

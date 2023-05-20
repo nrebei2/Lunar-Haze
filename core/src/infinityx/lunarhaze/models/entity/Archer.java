@@ -10,11 +10,6 @@ import infinityx.lunarhaze.models.LevelContainer;
 public class Archer extends Enemy {
 
     /**
-     * Arrow the archer holds
-     */
-    private Arrow arrow;
-
-    /**
      * At what distance to attack from
      */
     private float attackRange;
@@ -27,10 +22,6 @@ public class Archer extends Enemy {
      */
     public void initialize(AssetDirectory directory, JsonValue json, LevelContainer container) {
         super.initialize(directory, json, container);
-
-        arrow.initialize(directory, json.get("arrow"), container);
-        System.out.println("An arrow is initialized and set active to false");
-        arrow.setActive(true);
 
         float range = json.get("attack").get("range").asFloat();
         setAttackRange(range);
@@ -55,14 +46,14 @@ public class Archer extends Enemy {
      */
     public Archer() {
         super();
-        arrow = new Arrow(this.getX(), this.getY(), this);
+//        arrow = new Arrow(this.getX(), this.getY(), this);
     }
 
-    public Arrow getArrow(){
-        return arrow;
-    }
-
-    public void setArrow(Arrow arrow){
-        this.arrow = arrow;
-    }
+//    public Arrow getArrow(){
+//        return arrow;
+//    }
+//
+//    public void setArrow(Arrow arrow){
+//        this.arrow = arrow;
+//    }
 }

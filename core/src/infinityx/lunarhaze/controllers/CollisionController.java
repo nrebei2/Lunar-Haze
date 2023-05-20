@@ -77,7 +77,7 @@ public class CollisionController implements ContactListener {
                 switch (o2.getType()) {
                     case WEREWOLF:
                         System.out.println("ProcessCollision between ARROW and WEREWOLF");
-                        handleCollision((Arrow) o1, (Werewolf) o2);
+                        handleCollision(((Arrow) o1).getArcher(), (Werewolf) o2);
                         break;
                     case HITBOX:
                         handleCollision(
