@@ -1543,7 +1543,7 @@
 		"enemy-spawner": {
 			"villager-count": 2,
 			"archer-count": 0,
-			"add-tick": [ 0.0, 0.0 ],
+			"add-tick": [ 3.0, 5.0 ],
 			"delay": 0.0,
 			"spawn-locations": [
 				[ 8.0, 8.0 ]
@@ -1931,7 +1931,7 @@
 		"enemy-spawner": {
 			"villager-count": 4,
 			"archer-count": 0,
-			"add-tick": [ 0.0, 0.0 ],
+			"add-tick": [ 5.0, 8.0 ],
 			"delay": 0.0,
 			"spawn-locations": [
 				[ 5.0, 2.0 ],
@@ -2166,11 +2166,11 @@
 		"enemy-spawner": {
 			"villager-count": 2,
 			"archer-count": 1,
-			"add-tick": [ 0.0, 0.0 ],
+			"add-tick": [ 3.0, 5.0 ],
 			"delay": 0.0,
 			"spawn-locations": [
-				[ 1.7599999904632568, 3.0 ],
-				[ 4.799999713897705, 10.59999942779541 ]
+				[ 1.0, 3.0 ],
+				[ 4.0, 10.0 ]
 			]
 		}
 	},
@@ -2479,11 +2479,11 @@
 		"enemy-spawner": {
 			"villager-count": 5,
 			"archer-count": 0,
-			"add-tick": [ 0.0, 0.0 ],
+			"add-tick": [ 4.0, 8.0 ],
 			"delay": 30.0,
 			"spawn-locations": [
-				[ 7.560000419616699, 14.700000762939453 ],
-				[ 9.24000072479248, 7.440000534057617 ]
+				[ 7.0, 14.0 ],
+				[ 9.0, 7.0 ]
 			]
 		}
 	},
@@ -3264,12 +3264,13 @@
 		"shadow-shear": 0.5,
 		"shadow-scale": 0.5,
 		"enemy-spawner": {
-			"villager-count": 8,
+			"villager-count": 6,
 			"archer-count": 2,
-			"add-tick": [ 0.0, 0.0 ],
+			"add-tick": [ 5.0, 10.0 ],
 			"delay": 30.0,
 			"spawn-locations": [
-				[ 13.600000381469727, 11.466667175292969 ]
+				[ 13.0, 11.0 ],
+				[ 12.40000057220459, 2.4000000953674316 ]
 			]
 		}
 	},
@@ -3332,10 +3333,10 @@
 				"scale": 1.0,
 				"position": [ 15.999889373779297, 15.215603828430176 ],
 				"patrol": [
-					[ 15.999889373779297, 15.215603828430176 ],
-					[ 12.731557846069336, 14.97541332244873 ],
-					[ 12.397005081176758, 17.102828979492188 ],
-					[ 15.74254035949707, 17.20577049255371 ]
+					[ 15.0, 15.0 ],
+					[ 12.0, 14.0 ],
+					[ 12.0, 17.0 ],
+					[ 15.0, 17.0 ]
 				]
 			},
 			{
@@ -3343,10 +3344,10 @@
 				"scale": 1.0,
 				"position": [ 10.981586456298828, 16.896949768066406 ],
 				"patrol": [
-					[ 10.981586456298828, 16.896949768066406 ],
-					[ 7.301496505737305, 17.17145538330078 ],
-					[ 7.35296630859375, 14.906786918640137 ],
-					[ 10.981586456298828, 14.941100120544434 ]
+					[ 10.0, 16.0 ],
+					[ 7.0, 17.0 ],
+					[ 7.0, 14.0 ],
+					[ 10.0, 14.0 ]
 				]
 			},
 			{
@@ -3354,11 +3355,11 @@
 				"scale": 1.0,
 				"position": [ 2.2059879302978516, 15.146979331970215 ],
 				"patrol": [
-					[ 2.2059879302978516, 15.146979331970215 ],
-					[ 2.103048324584961, 17.068517684936523 ],
-					[ 5.937546730041504, 16.931264877319336 ],
-					[ 6.09195613861084, 14.941100120544434 ],
-					[ 2.4376020431518555, 14.906786918640137 ]
+					[ 2.0, 15.0 ],
+					[ 2.0, 17.0 ],
+					[ 5.0, 16.0 ],
+					[ 6.0, 14.0 ],
+					[ 2.0, 14.0 ]
 				]
 			},
 			{
@@ -3366,11 +3367,11 @@
 				"scale": 1.0,
 				"position": [ 12.03671646118164, 9.691181182861328 ],
 				"patrol": [
-					[ 12.03671646118164, 9.691181182861328 ],
-					[ 12.191125869750977, 7.872582912445068 ],
-					[ 5.705933570861816, 7.8382697105407715 ],
-					[ 5.602993965148926, 10.205879211425781 ],
-					[ 11.779367446899414, 9.656868934631348 ]
+					[ 12.0, 9.0 ],
+					[ 12.0, 7.0 ],
+					[ 5.0, 7.0 ],
+					[ 5.0, 10.0 ],
+					[ 11.0, 9.0 ]
 				]
 			}
 		],
@@ -3901,13 +3902,13 @@
 		"shadow-shear": 0.5,
 		"shadow-scale": 0.5,
 		"enemy-spawner": {
-			"villager-count": 5,
-			"archer-count": 3,
-			"add-tick": [ 0.0, 0.0 ],
+			"villager-count": 8,
+			"archer-count": 4,
+			"add-tick": [ 5.0, 10.0 ],
 			"delay": 0.0,
 			"spawn-locations": [
-				[ 6.826666831970215, 12.533333778381348 ],
-				[ 16.213333129882812, 1.8666666746139526 ]
+				[ 6.0, 12.0 ],
+				[ 16.0, 1.0 ]
 			]
 		}
 	},
@@ -4500,11 +4501,11 @@
 		"enemy-spawner": {
 			"villager-count": 6,
 			"archer-count": 4,
-			"add-tick": [ 0.0, 0.0 ],
+			"add-tick": [ 5.0, 10.0 ],
 			"delay": 0.0,
 			"spawn-locations": [
-				[ 21.13333511352539, 6.133333683013916 ],
-				[ 42.333335876464844, 5.366666793823242 ]
+				[ 21.0, 6.0 ],
+				[ 42.0, 5.0 ]
 			]
 		}
 	},
@@ -5806,10 +5807,12 @@
 		"enemy-spawner": {
 			"villager-count": 8,
 			"archer-count": 2,
-			"add-tick": [ 0.0, 0.05000000074505806 ],
+			"add-tick": [ 3.0, 7.0 ],
 			"delay": 5.0,
 			"spawn-locations": [
-				[ 14.0, 6.0 ]
+				[ 14.186667442321777, 6.186666965484619 ],
+				[ 5.493333339691162, 3.5199999809265137 ],
+				[ 6.933333396911621, 12.693333625793457 ]
 			]
 		}
 	},
@@ -6330,11 +6333,11 @@
 		"enemy-spawner": {
 			"villager-count": 10,
 			"archer-count": 3,
-			"add-tick": [ 0.0, 4.820000171661377 ],
+			"add-tick": [ 5.0, 7.0 ],
 			"delay": 5.0,
 			"spawn-locations": [
-				[ 7.0, 14.0 ],
-				[ 3.0, 8.0 ]
+				[ 7.360000133514404, 12.956666946411133 ],
+				[ 5.059999942779541, 7.820000171661377 ]
 			]
 		}
 	},
@@ -7353,14 +7356,14 @@
 		"shadow-shear": 0.5,
 		"shadow-scale": 0.5,
 		"enemy-spawner": {
-			"villager-count": 5,
-			"archer-count": 0,
-			"add-tick": [ 0.0, 4.820000171661377 ],
+			"villager-count": 7,
+			"archer-count": 4,
+			"add-tick": [ 3.0, 5.0 ],
 			"delay": 2.0,
 			"spawn-locations": [
-				[ 20.0, 21.0 ],
+				[ 19.6200008392334, 18.270000457763672 ],
 				[ 6.0, 19.0 ],
-				[ 12.0, 8.0 ]
+				[ 13.860000610351562, 9.0 ]
 			]
 		}
 	},
@@ -8544,55 +8547,60 @@
 "13": {
 	"settings": {
 		"transition": 4,
-		"phaseLength": 90,
+		"phaseLength": 100,
+		"shadow-shear": 0.5,
+		"shadow-scale": 0.5,
 		"enemy-spawner": {
-			"count": 6,
-			"add-tick": [ 0.0, 4.820000171661377 ],
-			"delay": 2.0,
+			"villager-count": 8,
+			"archer-count": 5,
+			"add-tick": [ 5.0, 10.0 ],
+			"delay": 0.0,
 			"spawn-locations": [
-				[ 3.7966668605804443, 6.913333415985107 ],
-				[ 15.356667518615723, 12.863333702087402 ],
-				[ 0.0, 0.0 ]
+				[ 7.0, 14.0 ],
+				[ 10.0, 3.0 ]
 			]
 		}
 	},
 	"ambient": {
-		"stealth-color": [ 0.4000000059604645, 0.44999998807907104, 0.6000000238418579, 0.6000000238418579 ],
+		"stealth-color": [ 0.5126984715461731, 0.4803100824356079, 0.5992218255996704, 1.0 ],
 		"battle-color": [ 1.0, 1.0, 1.0, 1.0 ],
 		"gamma": true,
-		"diffuse": true,
-		"blur": 5
+		"diffuse": true
 	},
 	"tiles": {
 		"layout": [
-			[ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 ],
-			[ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 ],
-			[ 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 2, 2, 2, 2 ],
-			[ 1, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1 ],
-			[ 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1 ],
-			[ 1, 1, 1, 1, 2, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1 ],
-			[ 6, 6, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1 ],
-			[ 6, 3, 2, 1, 2, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1 ],
-			[ 1, 1, 1, 2, 1, 1, 2, 2, 3, 4, 4, 3, 3, 4, 4, 6 ],
-			[ 1, 2, 1, 2, 2, 2, 2, 1, 2, 2, 1, 1, 2, 2, 6, 6 ],
-			[ 1, 1, 1, 3, 2, 2, 1, 1, 1, 3, 4, 4, 4, 6, 6, 4 ],
-			[ 1, 1, 1, 2, 2, 1, 3, 1, 2, 1, 2, 1, 6, 6, 3, 1 ],
-			[ 1, 1, 2, 2, 1, 1, 3, 1, 3, 2, 1, 3, 2, 1, 2, 2 ],
-			[ 1, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4, 1, 1, 4, 2, 3 ],
-			[ 2, 2, 1, 4, 4, 4, 4, 4, 4, 4, 4, 4, 2, 1, 1, 1 ],
-			[ 2, 1, 4, 4, 1, 1, 2, 3, 1, 3, 1, 1, 2, 1, 2, 1 ],
-			[ 2, 4, 4, 2, 3, 2, 3, 1, 1, 1, 1, 1, 1, 2, 1, 2 ]
+			[ 2, 5, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 ],
+			[ 2, 2, 6, 2, 2, 2, 6, 2, 2, 2, 2, 4, 2, 2, 2 ],
+			[ 2, 2, 6, 2, 3, 2, 2, 2, 2, 2, 11, 11, 11, 11, 2 ],
+			[ 2, 4, 2, 4, 3, 6, 2, 2, 2, 2, 11, 2, 2, 11, 2 ],
+			[ 6, 6, 6, 3, 2, 2, 2, 2, 2, 2, 11, 2, 2, 11, 4 ],
+			[ 2, 2, 3, 6, 2, 2, 15, 13, 12, 2, 11, 6, 2, 11, 2 ],
+			[ 2, 2, 4, 2, 3, 2, 23, 27, 21, 2, 11, 2, 4, 11, 5 ],
+			[ 6, 11, 11, 11, 11, 11, 23, 27, 21, 11, 11, 11, 11, 11, 2 ],
+			[ 2, 11, 15, 13, 12, 2, 23, 27, 21, 6, 2, 2, 2, 2, 2 ],
+			[ 2, 11, 23, 24, 21, 2, 19, 17, 16, 6, 2, 2, 2, 3, 2 ],
+			[ 2, 11, 23, 24, 21, 11, 2, 2, 2, 6, 2, 2, 6, 2, 2 ],
+			[ 2, 11, 23, 24, 21, 11, 2, 2, 2, 3, 2, 2, 2, 2, 2 ],
+			[ 2, 11, 19, 17, 16, 11, 2, 2, 6, 2, 2, 2, 3, 2, 2 ],
+			[ 2, 11, 11, 11, 11, 11, 2, 6, 2, 2, 2, 2, 6, 2, 5 ],
+			[ 2, 2, 2, 6, 2, 2, 3, 2, 2, 5, 2, 2, 6, 2, 2 ],
+			[ 2, 2, 2, 6, 3, 3, 2, 2, 2, 6, 2, 2, 6, 2, 4 ],
+			[ 2, 2, 4, 5, 4, 6, 6, 6, 3, 3, 6, 6, 2, 2, 2 ],
+			[ 5, 2, 2, 2, 2, 6, 2, 2, 6, 2, 2, 2, 2, 2, 2 ]
 		],
 		"moonlight": {
 			"positions": [
-				[ 2, 2 ],
-				[ 8, 6 ],
-				[ 8, 7 ],
-				[ 13, 11 ],
-				[ 14, 1 ]
+				[ 0, 2 ],
+				[ 3, 6 ],
+				[ 3, 12 ],
+				[ 5, 10 ],
+				[ 6, 4 ],
+				[ 9, 10 ],
+				[ 11, 5 ],
+				[ 14, 16 ]
 			],
 			"lighting": {
-				"color": [ 0.699999988079071, 0.699999988079071, 0.8999999761581421, 0.699999988079071 ],
+				"color": [ 1.0, 0.9183939099311829, 0.7276264429092407, 0.20000000298023224 ],
 				"distance": 2.5,
 				"rays": 40,
 				"soft": true
@@ -8600,1404 +8608,851 @@
 		}
 	},
 	"scene": {
-		"player": [ 14.0, 16.0 ],
+		"player": [ 7.5, 10.40137767791748 ],
+		"billboards": [],
 		"enemies": [
 			{
-				"type": "villager",
+				"type": "Villager",
 				"scale": 1.0,
-				"position": [ 7.151982307434082, 15.433430671691895 ],
+				"position": [ 9.81734848022461, 5.933909893035889 ],
 				"patrol": [
-					[ 7.078790664672852, 15.064793586730957 ],
-					[ 7.076266288757324, 10.166974067687988 ]
+					[ 9.0, 6.0 ],
+					[ 10.0, 10.0 ],
+					[ 11.0, 10.0 ],
+					[ 12.0, 6.0 ]
 				]
 			},
 			{
-				"type": "villager",
+				"type": "Archer",
 				"scale": 1.0,
-				"position": [ 4.350496292114258, 5.943714141845703 ],
+				"position": [ 1.6093130111694336, 6.40008020401001 ],
 				"patrol": [
-					[ 4.350496292114258, 6.431661128997803 ],
-					[ 4.413593292236328, 9.76315689086914 ],
-					[ 9.612746238708496, 9.72950553894043 ]
+					[ 1.0, 10.0 ]
 				]
 			},
 			{
-				"type": "villager",
+				"type": "Villager",
 				"scale": 1.0,
-				"position": [ 10.218472480773926, 6.953258514404297 ],
+				"position": [ 5.699164390563965, 2.1853649616241455 ],
 				"patrol": [
-					[ 10.218472480773926, 6.953258514404297 ]
+					[ 5.0, 5.0 ],
+					[ 5.0, 2.0 ]
+				]
+			},
+			{
+				"type": "Villager",
+				"scale": 1.0,
+				"position": [ 14.359968185424805, 12.685317039489746 ],
+				"patrol": [
+					[ 14.0, 16.0 ],
+					[ 14.0, 12.0 ]
+				]
+			},
+			{
+				"type": "Villager",
+				"scale": 1.0,
+				"position": [ 9.589483261108398, 16.290346145629883 ],
+				"patrol": [
+					[ 9.0, 12.0 ],
+					[ 9.0, 16.0 ]
+				]
+			},
+			{
+				"type": "Archer",
+				"scale": 1.0,
+				"position": [ 0.827153205871582, 12.233126640319824 ],
+				"patrol": [
+					[ 5.0, 12.0 ],
+					[ 0.0, 12.0 ]
 				]
 			}
 		],
 		"objects": [
 			{
-				"type": "lamp",
+				"type": "tree5",
 				"scale": 1.0,
 				"flip": false,
-				"position": [ 13.5, 12.5 ]
+				"position": [ 0.4725055694580078, 17.3945255279541 ]
 			},
 			{
-				"type": "lamp",
-				"scale": 1.2000000476837158,
-				"flip": false,
-				"position": [ 13.5, 2.5 ]
-			},
-			{
-				"type": "lamp",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 0.5, 6.5 ]
-			},
-			{
-				"type": "house",
-				"scale": 0.699999988079071,
-				"flip": false,
-				"position": [ 3.0, 12.0 ]
-			},
-			{
-				"type": "house",
-				"scale": 0.699999988079071,
-				"flip": false,
-				"position": [ 8.313488006591797, 10.994468688964844 ]
-			},
-			{
-				"type": "house",
-				"scale": 0.699999988079071,
-				"flip": false,
-				"position": [ 11.0, 4.0 ]
-			},
-			{
-				"type": "fencex",
+				"type": "tree5",
 				"scale": 1.0,
 				"flip": false,
-				"position": [ 8.0, 8.0 ]
+				"position": [ 3.378302574157715, 17.55939292907715 ]
 			},
 			{
-				"type": "fencex",
+				"type": "tree5",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 9.220809936523438, 17.586872100830078 ]
+			},
+			{
+				"type": "tree5",
+				"scale": 0.8600001335144043,
+				"flip": true,
+				"position": [ 0.6888942718505859, 0.30321693420410156 ]
+			},
+			{
+				"type": "tree5",
+				"scale": 0.8600001335144043,
+				"flip": true,
+				"position": [ 14.496583938598633, 0.4680849611759186 ]
+			},
+			{
+				"type": "tree6",
 				"scale": 1.0,
 				"flip": false,
-				"position": [ 9.0, 8.0 ]
+				"position": [ 1.430800437927246, 17.476961135864258 ]
 			},
 			{
-				"type": "tree",
+				"type": "tree6",
 				"scale": 1.0,
 				"flip": false,
-				"position": [ 1.0, 15.0 ]
+				"position": [ 14.445062637329102, 17.53191566467285 ]
 			},
 			{
-				"type": "tree",
+				"type": "tree7",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 10.354276657104492, 17.586872100830078 ]
+			},
+			{
+				"type": "tree7",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 6.191361427307129, 17.628087997436523 ]
+			},
+			{
+				"type": "tree10",
 				"scale": 1.0,
 				"flip": false,
-				"position": [ 11.0, 14.0 ]
+				"position": [ 2.3890953063964844, 17.53191566467285 ]
 			},
 			{
-				"type": "tree",
+				"type": "tree9",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 4.532378196716309, 17.655567169189453 ]
+			},
+			{
+				"type": "tree9",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 11.683525085449219, 17.586872100830078 ]
+			},
+			{
+				"type": "tree11",
 				"scale": 1.0,
 				"flip": false,
-				"position": [ 13.0, 7.0 ]
+				"position": [ 7.376350402832031, 17.628087997436523 ]
 			},
 			{
-				"type": "tree",
+				"type": "tree11",
 				"scale": 1.0,
 				"flip": false,
-				"position": [ 8.0, 2.0 ]
+				"position": [ 8.427383422851562, 17.628087997436523 ]
 			},
 			{
-				"type": "fencey",
+				"type": "tree11",
 				"scale": 1.0,
 				"flip": false,
-				"position": [ 7.0, 9.0 ]
+				"position": [ 13.157032012939453, 17.586872100830078 ]
 			},
 			{
-				"type": "fencey",
+				"type": "fence1",
 				"scale": 1.0,
 				"flip": false,
-				"position": [ 7.0, 8.0 ]
+				"position": [ 0.0, 17.0 ]
 			},
 			{
-				"type": "fencey",
+				"type": "fence1",
 				"scale": 1.0,
 				"flip": false,
-				"position": [ 7.0, 7.0 ]
+				"position": [ 2.0, 17.0 ]
 			},
 			{
-				"type": "fencey",
+				"type": "fence1",
 				"scale": 1.0,
 				"flip": false,
-				"position": [ 7.0, 6.0 ]
+				"position": [ 4.0, 17.0 ]
 			},
 			{
-				"type": "fencey",
+				"type": "fence1",
 				"scale": 1.0,
 				"flip": false,
-				"position": [ 7.0, 5.0 ]
+				"position": [ 6.0, 17.0 ]
 			},
 			{
-				"type": "fencex",
+				"type": "fence1",
 				"scale": 1.0,
 				"flip": false,
-				"position": [ 1.0, 0.0 ]
+				"position": [ 8.0, 17.0 ]
 			},
 			{
-				"type": "fencex",
+				"type": "fence1",
 				"scale": 1.0,
 				"flip": false,
-				"position": [ 3.0, 0.0 ]
+				"position": [ 10.0, 17.0 ]
 			},
 			{
-				"type": "fencex",
+				"type": "fence1",
 				"scale": 1.0,
 				"flip": false,
-				"position": [ 5.0, 0.0 ]
+				"position": [ 12.0, 17.0 ]
 			},
 			{
-				"type": "fencex",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 7.0, 0.0 ]
-			},
-			{
-				"type": "fencex",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 9.0, 0.0 ]
-			},
-			{
-				"type": "fencex",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 11.0, 0.0 ]
-			},
-			{
-				"type": "fencex",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 13.0, 0.0 ]
-			},
-			{
-				"type": "fencex",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 15.0, 0.0 ]
-			},
-			{
-				"type": "fencex",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 1.0, 17.0 ]
-			},
-			{
-				"type": "fencex",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 3.0, 17.0 ]
-			},
-			{
-				"type": "fencex",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 5.0, 17.0 ]
-			},
-			{
-				"type": "fencex",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 7.0, 17.0 ]
-			},
-			{
-				"type": "fencex",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 9.0, 17.0 ]
-			},
-			{
-				"type": "fencex",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 11.0, 17.0 ]
-			},
-			{
-				"type": "fencex",
+				"type": "fence1",
 				"scale": 1.0,
 				"flip": false,
 				"position": [ 13.0, 17.0 ]
 			},
 			{
-				"type": "fencex",
+				"type": "fence1",
 				"scale": 1.0,
 				"flip": false,
-				"position": [ 15.0, 17.0 ]
+				"position": [ 1.0, 1.0 ]
 			},
 			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 0.0, 1.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 0.0, 3.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 0.0, 5.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 0.0, 7.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 0.0, 9.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 0.0, 11.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 0.0, 13.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 0.0, 15.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 0.0, 17.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 16.0, 1.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 16.0, 2.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 16.0, 3.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 16.0, 4.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 16.0, 5.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 16.0, 6.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 16.0, 7.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 16.0, 8.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 16.0, 9.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 16.0, 10.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 16.0, 11.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 16.0, 12.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 16.0, 13.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 16.0, 14.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 16.0, 15.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 16.0, 16.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 16.0, 17.0 ]
-			},
-			{
-				"type": "fencey",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 16.0, 18.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.0,
-				"flip": false,
-				"position": [ 0.0, 0.0 ]
-			},
-			{
-				"type": "forest",
+				"type": "fence1",
 				"scale": 1.0,
 				"flip": false,
 				"position": [ 0.0, 1.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
+				"type": "fence1",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ 0.0, 2.0 ]
+				"position": [ 3.0, 1.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.399999976158142,
+				"type": "fence1",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ 0.0, 3.0 ]
+				"position": [ 5.0, 1.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.5,
+				"type": "fence1",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ 0.0, 4.0 ]
+				"position": [ 7.0, 1.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 2.0,
+				"type": "fence1",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ 0.0, 5.0 ]
+				"position": [ 9.0, 1.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 3.5,
+				"type": "fence1",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ 0.0, 6.0 ]
+				"position": [ 11.0, 1.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.399999976158142,
+				"type": "fence1",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ 0.0, 7.0 ]
+				"position": [ 13.0, 1.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 0.0, 8.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 2.0999999046325684,
-				"flip": false,
-				"position": [ 0.0, 9.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 0.0, 10.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 2.0999999046325684,
-				"flip": false,
-				"position": [ 0.0, 11.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 0.0, 12.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 0.0, 13.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 2.0999999046325684,
-				"flip": false,
-				"position": [ 0.0, 14.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 2.5,
-				"flip": false,
-				"position": [ 0.0, 15.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 2.0999999046325684,
+				"type": "fencey",
+				"scale": 1.0,
 				"flip": false,
 				"position": [ 0.0, 16.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 0.0, 17.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 0.0, 18.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ -1.0, 0.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ -1.0, 1.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ -1.0, 2.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ -1.0, 3.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ -1.0, 5.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ -1.0, 6.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ -1.0, 7.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ -1.0, 8.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ -1.0, 9.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ -1.0, 10.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ -1.0, 11.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ -1.0, 12.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ -1.0, 13.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ -1.0, 14.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ -1.0, 16.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ -1.0, 18.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ -2.0, 1.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ -2.0, 2.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ -2.0, 3.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ -2.0, 5.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ -2.0, 6.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ -2.0, 7.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ -2.0, 8.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ -2.0, 10.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ -2.0, 12.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ -2.0, 13.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ -2.0, 14.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ -2.0, 15.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ -2.0, 16.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ -2.0, 17.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ -2.0, 18.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ -3.0, 0.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ -3.0, 1.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 2.0999999046325684,
-				"flip": false,
-				"position": [ -3.0, 3.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ -3.0, 4.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.7999999523162842,
-				"flip": false,
-				"position": [ -3.0, 6.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ -3.0, 7.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ -3.0, 8.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 2.0999999046325684,
-				"flip": false,
-				"position": [ -3.0, 9.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ -3.0, 10.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.899999976158142,
-				"flip": false,
-				"position": [ -3.0, 12.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ -3.0, 13.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ -3.0, 14.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 2.4000000953674316,
-				"flip": false,
-				"position": [ -3.0, 15.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ -3.0, 17.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 2.0999999046325684,
-				"flip": false,
-				"position": [ -3.0, 18.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 0.8999999761581421,
-				"flip": false,
-				"position": [ 18.0, 0.0 ]
-			},
-			{
-				"type": "forest",
+				"type": "fencey",
 				"scale": 1.0,
 				"flip": false,
-				"position": [ 18.0, 1.0 ]
+				"position": [ 0.0, 15.0 ]
 			},
 			{
-				"type": "forest",
+				"type": "fencey",
 				"scale": 1.0,
 				"flip": false,
-				"position": [ 18.0, 2.0 ]
+				"position": [ 0.0, 14.0 ]
 			},
 			{
-				"type": "forest",
+				"type": "fencey",
 				"scale": 1.0,
 				"flip": false,
-				"position": [ 18.0, 3.0 ]
+				"position": [ 0.0, 13.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 0.800000011920929,
-				"flip": false,
-				"position": [ 18.0, 4.0 ]
-			},
-			{
-				"type": "forest",
+				"type": "fencey",
 				"scale": 1.0,
 				"flip": false,
-				"position": [ 18.0, 5.0 ]
+				"position": [ 0.0, 12.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 0.8999999761581421,
-				"flip": false,
-				"position": [ 18.0, 7.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 18.0, 8.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 18.0, 9.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 18.0, 10.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 18.0, 11.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 0.8999999761581421,
-				"flip": false,
-				"position": [ 18.0, 12.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 0.800000011920929,
-				"flip": false,
-				"position": [ 18.0, 13.0 ]
-			},
-			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 18.0, 14.0 ]
-			},
-			{
-				"type": "forest",
+				"type": "fencey",
 				"scale": 1.0,
 				"flip": false,
-				"position": [ 18.0, 15.0 ]
+				"position": [ 0.0, 10.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.2000000476837158,
-				"flip": false,
-				"position": [ 18.0, 16.0 ]
-			},
-			{
-				"type": "forest",
+				"type": "fencey",
 				"scale": 1.0,
 				"flip": false,
-				"position": [ 18.0, 17.0 ]
+				"position": [ 0.0, 11.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
+				"type": "fencey",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ 19.0, 0.0 ]
+				"position": [ 0.0, 9.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
+				"type": "fencey",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ 19.0, 1.0 ]
+				"position": [ 0.0, 8.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
+				"type": "fencey",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ 19.0, 2.0 ]
+				"position": [ 0.0, 7.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
+				"type": "fencey",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ 19.0, 3.0 ]
+				"position": [ 0.0, 6.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
+				"type": "fencey",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ 19.0, 4.0 ]
+				"position": [ 0.0, 5.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
+				"type": "fencey",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ 19.0, 5.0 ]
+				"position": [ 0.0, 5.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
+				"type": "fencey",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ 19.0, 6.0 ]
+				"position": [ 0.0, 4.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
+				"type": "fencey",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ 19.0, 8.0 ]
+				"position": [ 0.0, 3.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
+				"type": "fencey",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ 19.0, 9.0 ]
+				"position": [ 0.0, 2.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
+				"type": "fencey",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ 19.0, 10.0 ]
+				"position": [ 0.0, 2.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
+				"type": "fencey",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ 19.0, 11.0 ]
+				"position": [ 0.0, 1.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
+				"type": "fencey",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ 19.0, 12.0 ]
+				"position": [ 0.0, 2.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
+				"type": "fencey",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ 19.0, 13.0 ]
+				"position": [ 0.0, 4.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
+				"type": "fencey",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ 19.0, 15.0 ]
+				"position": [ 0.0, 4.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 19.0, 16.0 ]
+				"type": "fencey",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 15.0, 16.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 19.0, 17.0 ]
+				"type": "fencey",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 15.0, 15.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 19.0, 18.0 ]
+				"type": "fencey",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 15.0, 14.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 20.0, 0.0 ]
+				"type": "fencey",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 15.0, 12.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 20.0, 1.0 ]
+				"type": "fencey",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 15.0, 13.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 20.0, 2.0 ]
+				"type": "fencey",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 15.0, 11.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 20.0, 3.0 ]
+				"type": "fencey",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 15.0, 10.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 20.0, 4.0 ]
+				"type": "fencey",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 15.0, 9.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 20.0, 5.0 ]
+				"type": "fencey",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 15.0, 8.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 20.0, 7.0 ]
+				"type": "fencey",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 15.0, 7.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 20.0, 8.0 ]
+				"type": "fencey",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 15.0, 5.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 20.0, 9.0 ]
+				"type": "fencey",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 15.0, 6.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 20.0, 10.0 ]
+				"type": "fencey",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 15.0, 4.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 20.0, 11.0 ]
+				"type": "fencey",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 15.0, 3.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 20.0, 12.0 ]
+				"type": "fencey",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 15.0, 2.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 20.0, 13.0 ]
+				"type": "fencey",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 15.0, 1.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
+				"type": "fencey",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ 20.0, 14.0 ]
+				"position": [ 6.0, 11.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
+				"type": "fencey",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ 20.0, 15.0 ]
+				"position": [ 6.0, 12.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
+				"type": "fencey",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ 20.0, 17.0 ]
+				"position": [ 6.0, 9.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
+				"type": "fencey",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ 20.0, 18.0 ]
+				"position": [ 6.0, 8.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 20.0, 0.0 ]
+				"type": "fencey",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 9.0, 8.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 21.0, 1.0 ]
+				"type": "fencey",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 9.0, 9.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 21.0, 2.0 ]
+				"type": "fencey",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 9.0, 11.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 21.0, 4.0 ]
+				"type": "fencey",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 9.0, 12.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
+				"type": "lamp",
+				"scale": 0.8000001311302185,
 				"flip": false,
-				"position": [ 21.0, 5.0 ]
+				"position": [ 6.191361427307129, 12.860657691955566 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.7999999523162842,
+				"type": "lamp",
+				"scale": 0.8000001311302185,
 				"flip": false,
-				"position": [ 21.0, 6.0 ]
+				"position": [ 8.942594528198242, 7.777229309082031 ]
 			},
 			{
-				"type": "forest",
-				"scale": 3.0999999046325684,
-				"flip": false,
-				"position": [ 21.0, 7.0 ]
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 5.666032791137695, 9.140937805175781 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 21.0, 13.0 ]
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 5.650177001953125, 8.42919635772705 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 21.0, 14.0 ]
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 5.639606475830078, 7.879535675048828 ]
 			},
 			{
-				"type": "forest",
-				"scale": 2.4000000953674316,
-				"flip": false,
-				"position": [ 21.0, 15.0 ]
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 9.339252471923828, 11.642603874206543 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 21.0, 16.0 ]
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 9.291685104370117, 12.297968864440918 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
-				"flip": false,
-				"position": [ 21.0, 17.0 ]
+				"type": "tallgrass-1",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 9.318111419677734, 12.932194709777832 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
+				"type": "house4",
+				"scale": 0.7000001072883606,
 				"flip": false,
-				"position": [ 22.0, 1.0 ]
+				"position": [ 2.1830811500549316, 8.034568786621094 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
+				"type": "house2",
+				"scale": 0.6800000071525574,
 				"flip": false,
-				"position": [ 22.0, 3.0 ]
+				"position": [ 10.998807907104492, 11.642603874206543 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.899999976158142,
+				"type": "tallgrass-2",
+				"scale": 1.2599999904632568,
 				"flip": false,
-				"position": [ 22.0, 5.0 ]
+				"position": [ 5.5909271240234375, 3.5588505268096924 ]
 			},
 			{
-				"type": "forest",
-				"scale": 1.100000023841858,
+				"type": "tallgrass-2",
+				"scale": 1.2599999904632568,
 				"flip": false,
-				"position": [ 22.0, 7.0 ]
+				"position": [ 4.849482536315918, 3.5510666370391846 ]
 			},
 			{
-				"type": "forest",
-				"scale": 3.4000000953674316,
+				"type": "tallgrass-2",
+				"scale": 1.2599999904632568,
 				"flip": false,
-				"position": [ 22.0, 11.0 ]
+				"position": [ 13.600860595703125, 9.685009002685547 ]
 			},
 			{
-				"type": "forest",
-				"scale": 2.0999999046325684,
+				"type": "tallgrass-2",
+				"scale": 1.2599999904632568,
 				"flip": false,
-				"position": [ 22.0, 17.0 ]
+				"position": [ 12.818548202514648, 9.716145515441895 ]
 			},
 			{
-				"type": "forest",
-				"scale": 3.0999999046325684,
+				"type": "well",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ -2.0, -6.0 ]
+				"position": [ 4.470003128051758, 5.302509307861328 ]
 			},
 			{
-				"type": "forest",
-				"scale": 2.0,
+				"type": "fence1",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ 0.0, -6.0 ]
+				"position": [ 2.4457273483276367, 3.798868179321289 ]
 			},
 			{
-				"type": "forest",
-				"scale": 2.0,
+				"type": "fence1",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ 2.0, -6.0 ]
+				"position": [ 0.4556999206542969, 3.7856674194335938 ]
 			},
 			{
-				"type": "forest",
-				"scale": 2.0,
+				"type": "fence1",
+				"scale": 0.9600000381469727,
 				"flip": false,
-				"position": [ 4.0, -6.0 ]
+				"position": [ 10.019710540771484, 16.00400733947754 ]
 			},
 			{
-				"type": "forest",
-				"scale": 2.0,
+				"type": "fence1",
+				"scale": 0.9600000381469727,
 				"flip": false,
-				"position": [ 6.0, -6.0 ]
+				"position": [ 11.920631408691406, 16.01060676574707 ]
 			},
 			{
-				"type": "forest",
-				"scale": 2.0,
-				"flip": false,
-				"position": [ 8.0, -6.0 ]
+				"type": "fencey",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 14.0, 15.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 2.0,
-				"flip": false,
-				"position": [ 10.0, -6.0 ]
+				"type": "fencey",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 14.0, 14.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 2.0,
-				"flip": false,
-				"position": [ 12.0, -6.0 ]
+				"type": "fencey",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 14.0, 13.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 2.0,
-				"flip": false,
-				"position": [ 14.0, -6.0 ]
+				"type": "fencey",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 14.0, 15.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 2.0,
+				"type": "lamp",
+				"scale": 0.8000001311302185,
 				"flip": false,
-				"position": [ 16.0, -6.0 ]
+				"position": [ 1.1094112396240234, 10.8641996383667 ]
 			},
 			{
-				"type": "forest",
-				"scale": 2.0,
+				"type": "lamp",
+				"scale": 0.8000001311302185,
 				"flip": false,
-				"position": [ 19.0, -6.0 ]
+				"position": [ 10.148869514465332, 15.702908515930176 ]
 			},
 			{
-				"type": "forest",
-				"scale": 3.0,
+				"type": "barn",
+				"scale": 0.8000000715255737,
 				"flip": false,
-				"position": [ 23.0, -6.0 ]
+				"position": [ 3.4065380096435547, 13.537129402160645 ]
 			},
 			{
-				"type": "forest",
-				"scale": 2.299999952316284,
+				"type": "stone4",
+				"scale": 1.1999998092651367,
 				"flip": false,
-				"position": [ 0.0, 18.0 ]
+				"position": [ 0.8569455146789551, 16.35719108581543 ]
 			},
 			{
-				"type": "forest",
-				"scale": 2.700000047683716,
+				"type": "stone4",
+				"scale": 1.1999998092651367,
 				"flip": false,
-				"position": [ 1.0, 18.0 ]
+				"position": [ 2.2925376892089844, 2.2962512969970703 ]
 			},
 			{
-				"type": "forest",
-				"scale": 2.0999999046325684,
+				"type": "stone4",
+				"scale": 1.0999999046325684,
 				"flip": false,
-				"position": [ 5.0, 18.0 ]
+				"position": [ 11.270700454711914, 11.289505958557129 ]
 			},
 			{
-				"type": "forest",
-				"scale": 2.9000000953674316,
-				"flip": false,
-				"position": [ 3.0, 18.0 ]
+				"type": "stone4",
+				"scale": 1.0999999046325684,
+				"flip": true,
+				"position": [ 12.929057121276855, 2.2997324466705322 ]
 			},
 			{
-				"type": "forest",
-				"scale": 2.5999999046325684,
-				"flip": false,
-				"position": [ 7.0, 18.0 ]
+				"type": "stone4",
+				"scale": 1.0999999046325684,
+				"flip": true,
+				"position": [ 14.364646911621094, 9.7846097946167 ]
 			},
 			{
-				"type": "forest",
-				"scale": 2.4000000953674316,
+				"type": "tallgrass-1",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ 9.0, 18.0 ]
+				"position": [ 2.059782028198242, 13.341998100280762 ]
 			},
 			{
-				"type": "forest",
-				"scale": 2.5999999046325684,
+				"type": "tallgrass-1",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ 11.0, 18.0 ]
+				"position": [ 2.059782028198242, 13.341998100280762 ]
 			},
 			{
-				"type": "forest",
-				"scale": 3.5,
+				"type": "tallgrass-1",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ 13.0, 18.5 ]
+				"position": [ 4.708200454711914, 13.40140151977539 ]
 			},
 			{
-				"type": "forest",
-				"scale": 3.200000047683716,
+				"type": "tallgrass-1",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ 15.0, 18.5 ]
+				"position": [ 2.0548315048217773, 12.800763130187988 ]
 			},
 			{
-				"type": "forest",
-				"scale": 2.700000047683716,
+				"type": "tallgrass-1",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ 17.0, 18.0 ]
+				"position": [ 4.693349838256836, 12.833765983581543 ]
 			},
 			{
-				"type": "forest",
-				"scale": 2.4000000953674316,
-				"flip": false,
-				"position": [ 19.0, 18.0 ]
+				"type": "fencey",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 9.0, 7.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 2.799999952316284,
-				"flip": false,
-				"position": [ 0.0, 21.0 ]
+				"type": "fencey",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 9.0, 6.0 ]
+			},
+			{
+				"type": "fencey",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 9.0, 5.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 2.5999999046325684,
+				"type": "fencey",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 9.0, 4.0 ]
+			},
+			{
+				"type": "fencey",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ 1.0, 21.0 ]
+				"position": [ 11.0, 8.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 2.9000000953674316,
+				"type": "fencey",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ 5.0, 21.0 ]
+				"position": [ 11.0, 7.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 2.299999952316284,
+				"type": "fencey",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ 3.0, 21.0 ]
+				"position": [ 11.0, 6.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 3.5,
+				"type": "fencey",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ 7.0, 21.0 ]
+				"position": [ 11.0, 5.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 2.799999952316284,
+				"type": "fencey",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ 9.0, 21.0 ]
+				"position": [ 11.0, 4.0 ]
+			},
+			{
+				"type": "fencey",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 13.0, 8.0 ]
+			},
+			{
+				"type": "fencey",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 13.0, 7.0 ]
+			},
+			{
+				"type": "fencey",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 13.0, 6.0 ]
+			},
+			{
+				"type": "fencey",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 13.0, 5.0 ]
+			},
+			{
+				"type": "fencey",
+				"scale": 1.0,
+				"flip": true,
+				"position": [ 13.0, 4.0 ]
 			},
 			{
-				"type": "forest",
-				"scale": 2.700000047683716,
+				"type": "stone2",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ 11.0, 21.0 ]
+				"position": [ 11.956893920898438, 4.234915256500244 ]
 			},
 			{
-				"type": "forest",
-				"scale": 2.9000000953674316,
+				"type": "tallgrass-1",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ 13.0, 21.0 ]
+				"position": [ 9.432111740112305, 4.076869964599609 ]
 			},
 			{
-				"type": "forest",
-				"scale": 3.0999999046325684,
+				"type": "tallgrass-1",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ 15.0, 21.0 ]
+				"position": [ 12.276939392089844, 8.731322288513184 ]
 			},
 			{
-				"type": "forest",
-				"scale": 2.799999952316284,
+				"type": "tallgrass-1",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ 17.0, 21.0 ]
+				"position": [ 0.7020506858825684, 6.8742828369140625 ]
 			},
 			{
-				"type": "forest",
-				"scale": 2.5999999046325684,
+				"type": "bucket",
+				"scale": 1.0,
 				"flip": false,
-				"position": [ 19.0, 21.0 ]
+				"position": [ 8.207645416259766, 4.357944011688232 ]
 			}
 		]
 	}
@@ -10091,18 +9546,18 @@
 "15": {
 	"settings": {
 		"transition": 4,
-		"phaseLength": 2,
+		"phaseLength": 145,
 		"shadow-shear": 0.5,
 		"shadow-scale": 0.5,
 		"enemy-spawner": {
-			"villager-count": 15,
-			"archer-count": 8,
+			"villager-count": 12,
+			"archer-count": 6,
 			"add-tick": [ 5.0, 10.0 ],
 			"delay": 3.0,
 			"spawn-locations": [
-				[ 5.28000020980835, 15.960000991821289 ],
-				[ 12.360000610351562, 7.9800004959106445 ],
-				[ 2.2200000286102295, 4.380000114440918 ]
+				[ 5.0, 15.0 ],
+				[ 12.0, 7.0 ],
+				[ 2.0, 4.0 ]
 			]
 		}
 	},
