@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.JsonWriter;
 import infinityx.assets.AssetDirectory;
+import infinityx.lunarhaze.models.Billboard;
 import infinityx.lunarhaze.models.Board;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.entity.Enemy;
@@ -64,7 +65,8 @@ public class LevelSerializer {
         settings.addChild("phaseLength", new JsonValue(level.getSettings().getPhaseLength()));
 
         JsonValue enemySpawner = new JsonValue(JsonValue.ValueType.object);
-        enemySpawner.addChild("count", new JsonValue(level.getSettings().getEnemyCount()));
+        enemySpawner.addChild("villager-count", new JsonValue(level.getSettings().getVillagerCount()));
+        enemySpawner.addChild("archer-count", new JsonValue(level.getSettings().getArcherCount()));
         JsonValue addTick = new JsonValue(JsonValue.ValueType.array);
         addTick.addChild(new JsonValue(level.getSettings().getSpawnRateMin()));
         addTick.addChild(new JsonValue(level.getSettings().getSpawnRateMax()));
@@ -225,6 +227,23 @@ public class LevelSerializer {
         playerStartPos.addChild(new JsonValue(level.getPlayer().getPosition().x));
         playerStartPos.addChild(new JsonValue(level.getPlayer().getPosition().y));
         scene.addChild("player", playerStartPos);
+
+        // Tutorial boards
+        JsonValue boards = new JsonValue(JsonValue.ValueType.array);
+        for (Billboard billboard : level.getBillboards()) {
+            JsonValue currBoard = new JsonValue(JsonValue.ValueType.object);
+            currBoard.addChild("type", new JsonValue(billboard.getName()));
+
+            currBoard.addChild("scale", new JsonValue(billboard.getScale()));
+            JsonValue pos = new JsonValue(JsonValue.ValueType.array);
+            pos.addChild(new JsonValue(billboard.getPosition().x));
+            pos.addChild(new JsonValue(billboard.getPosition().y));
+            pos.addChild(new JsonValue(billboard.getPosition().z));
+            currBoard.addChild("position", pos);
+
+            boards.addChild(currBoard);
+        }
+        scene.addChild("billboards", boards);
 
         // Enemies
         JsonValue enemy = new JsonValue(JsonValue.ValueType.array);

@@ -48,6 +48,9 @@ public class SceneObject extends GameObject implements Drawable {
         this.seeThru = false;
     }
 
+    /**
+     * Set whenever the position of this object changes
+     */
     public void setDirty() {
         this.dirty = true;
     }
@@ -160,8 +163,10 @@ public class SceneObject extends GameObject implements Drawable {
      */
     private void drawShadow(GameCanvas canvas) {
         Vector2 pos = getPosition();
-        canvas.draw(filmstrip, canvas.SHADE, origin.x, origin.y,
+
+        canvas.draw(filmstrip, canvas.SHADE, flipped ? filmstrip.getRegionWidth() - origin.x : origin.x, origin.y,
                 canvas.WorldToScreenX(pos.x), canvas.WorldToScreenY(pos.y), 0.0f,
-                (flipped ? -1 : 1) * textureScale * scale, textureScale * scale * 0.5f, 0.5f, 0);
+                textureScale * scale, textureScale * scale * 0.5f, 0.5f, 0, flipped);
+
     }
 }

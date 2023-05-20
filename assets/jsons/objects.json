@@ -359,30 +359,15 @@
       }
     }
   },
-  "forest": {
-    "textures": {
-      "static": "objects.forest"
-    },
-    "texture": {
-      "name": "static",
-      "origin": [254, 51],
-      "scale": 1
-    },
-    "colliders": {
-      "body": {
-        "type": "circle",
-        "radius": 0.35
-      }
-    }
-  },
+
   "tree2": {
     "textures": {
       "static": "objects.tree3"
     },
     "texture": {
       "name": "static",
-      "origin": [303, 73],
-      "scale": 1
+      "origin": [572, 73],
+      "scale": 0.6
     },
     "colliders": {
       "body": {
@@ -391,22 +376,7 @@
       }
     }
   },
-  "tree3": {
-    "textures": {
-      "static": "objects.tree4"
-    },
-    "texture": {
-      "name": "static",
-      "origin": [212, 57],
-      "scale": 1
-    },
-    "colliders": {
-      "body": {
-        "type": "circle",
-        "radius": 0.4
-      }
-    }
-  },
+
   "tree4": {
     "textures": {
       "static": "objects.tree5"

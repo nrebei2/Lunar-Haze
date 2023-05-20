@@ -83,7 +83,8 @@ public class LevelParser {
                 directory,
                 directory.getEntry("enemies", JsonValue.class),
                 directory.getEntry("objects", JsonValue.class),
-                directory.getEntry("player", JsonValue.class)
+                directory.getEntry("player", JsonValue.class),
+                directory.getEntry("boards", JsonValue.class)
         );
 
         this.tileSheet = directory.getEntry("tile.sheet", FilmStrip.class);
@@ -126,6 +127,19 @@ public class LevelParser {
                 levelContainer.addSceneObject(
                         objInfo.getString("type"), objPos.getFloat(0),
                         objPos.getFloat(1), objScale, flip
+                );
+            }
+        }
+
+        if (scene.has("billboards")) {
+            JsonValue boards = scene.get("billboards");
+            for (JsonValue objInfo : boards) {
+                JsonValue objPos = objInfo.get("position");
+                float objScale = objInfo.getFloat("scale");
+
+                levelContainer.addBillboard(
+                        objInfo.getString("type"), objPos.getFloat(0),
+                        objPos.getFloat(1), objPos.getFloat(2), objScale
                 );
             }
         }
@@ -233,7 +247,7 @@ public class LevelParser {
                 );
                 point.setColor(color[0], color[1], color[2], color[3]);
                 point.setSoft(light.getBoolean("soft"));
-                point.setXray(true);
+                point.setStaticLight(true);
                 board.setSpotlight(x, y, point);
                 board.setLit(x, y, false);
             }
@@ -286,7 +300,13 @@ public class LevelParser {
         float[] addInfo = enemySpawnerSettings.get("add-tick").asFloatArray();
         levelContainer.getSettings().setSpawnRateMin(addInfo[0]);
         levelContainer.getSettings().setSpawnRateMax(addInfo[1]);
-        levelContainer.getSettings().setEnemyCount(enemySpawnerSettings.getInt("count"));
+        if (enemySpawnerSettings.has("archer-count")) {
+            levelContainer.getSettings().setArcherCount(enemySpawnerSettings.getInt("archer-count"));
+            levelContainer.getSettings().setVillagerCount(enemySpawnerSettings.getInt("villager-count"));
+        } else {
+            // More backwards compatible shit
+            levelContainer.getSettings().setVillagerCount(enemySpawnerSettings.getInt("count"));
+        }
         levelContainer.getSettings().setDelay(enemySpawnerSettings.getInt("delay"));
 
         for (JsonValue spawnPos : enemySpawnerSettings.get("spawn-locations")) {

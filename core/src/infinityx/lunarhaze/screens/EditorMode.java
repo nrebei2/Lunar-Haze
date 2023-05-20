@@ -31,6 +31,7 @@ import infinityx.lunarhaze.controllers.LevelParser;
 import infinityx.lunarhaze.graphics.FilmStrip;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.graphics.ImGuiImplGLES2;
+import infinityx.lunarhaze.models.Billboard;
 import infinityx.lunarhaze.models.Board;
 import infinityx.lunarhaze.models.GameObject;
 import infinityx.lunarhaze.models.LevelContainer;
@@ -114,7 +115,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
          * Enum specifying the type of the selected object.
          */
         public enum Type {
-            TILE, PLAYER, ENEMY, OBJECT, EXIST_ENEMY, EXIST_OBJECT, MOONLIGHT
+            TILE, PLAYER, ENEMY, OBJECT, EXIST_ENEMY, EXIST_OBJECT, MOONLIGHT, TUT, ERASER
         }
 
         /**
@@ -135,6 +136,40 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         @Override
         public Type getType() {
             return Type.MOONLIGHT;
+        }
+    }
+
+    /**
+     * Eraser tool
+     */
+    class Eraser extends Selected {
+        /** Width and height of eraser */
+        public float size = 1;
+
+        public Erase eraseAction = new Erase();
+
+        @Override
+        public Type getType() {
+            return Type.ERASER;
+        }
+    }
+
+    /**
+     * Holds the necessary information to place a tutorial image.
+     */
+    class Tutorial extends Selected {
+        public Tutorial(Billboard billboard) {
+            this.billboard = billboard;
+        }
+
+        /**
+         * wrapped enemy
+         */
+        public Billboard billboard;
+
+        @Override
+        public Type getType() {
+            return Type.TUT;
         }
     }
 
@@ -256,7 +291,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             ADD_OBJECT,
             REMOVE_OBJECT,
             ADD_POINT,
-            REMOVE_POINT
+            REMOVE_POINT,
+            ERASE
         }
 
         /**
@@ -383,6 +419,17 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         }
     }
 
+
+    /** The action of erasing using the tool (over a lifetime of dragging once) */
+    class Erase extends Action {
+        public Array<RemoveObject> removedObjects = new Array<>();
+
+        @Override
+        public Type getType() {
+            return Type.ERASE;
+        }
+    }
+
     /**
      * Holds the necessary information to display the enemy button
      */
@@ -402,6 +449,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
          */
         public Texture texture;
     }
+
 
     /**
      * Holds the necessary information to display the scene object button
@@ -423,6 +471,26 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         public TextureRegion texture;
     }
 
+    /**
+     * Holds the necessary information to display the scene object button
+     */
+    class TutorialButton {
+        public TutorialButton(FilmStrip texture, String name) {
+            this.name = name;
+            this.texture = texture;
+        }
+
+        /**
+         * name for identification
+         */
+        public String name;
+
+        /**
+         * Texture for button
+         */
+        public FilmStrip texture;
+    }
+
 
     /**
      * What is on my cursor right now? null if none
@@ -438,6 +506,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * Tint for textures for overlapping
      */
     public static final Color OVERLAPPED_COLOR = Color.RED.cpy().mul(1, 1, 1, 0.8f);
+
+
 
     /**
      * Holds world coordinates of cursor
@@ -478,6 +548,11 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * List of scene object buttons
      */
     Array<SceneButton> objectSelections;
+
+    /**
+     * List of tutorial image buttons
+     */
+    Array<TutorialButton> tutorialSelections;
 
     /**
      * List of enemy brush buttons
@@ -533,6 +608,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         this.canvas = canvas;
         objectSelections = new Array<>();
         enemySelections = new Array<>();
+        tutorialSelections = new Array<>();
     }
 
     /**
@@ -547,6 +623,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         this.directory = directory;
         JsonValue objects = directory.getEntry("objects", JsonValue.class);
         JsonValue enemies = directory.getEntry("enemies", JsonValue.class);
+        JsonValue boards = directory.getEntry("boards", JsonValue.class);
 
         // Add all objects in json
         for (JsonValue object : objects) {
@@ -570,6 +647,21 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                                             enemy.get("texture").getString("name")
                                     ), Texture.class
                             ), Enemy.EnemyType.fromString(enemy.name)
+                    )
+            );
+        }
+
+        // Add all tutorial images in json
+        for (JsonValue object : boards) {
+            FilmStrip texture;
+            if (directory.hasEntry(object.getString("texture"), Texture.class)) {
+                texture = new FilmStrip(directory.getEntry(object.getString("texture"), Texture.class), 1, 1);
+            } else {
+                texture = directory.getEntry(object.getString("texture"), FilmStrip.class);
+            }
+            tutorialSelections.add(
+                    new TutorialButton(
+                            texture, object.name
                     )
             );
         }
@@ -637,6 +729,10 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             case MOONLIGHT:
                 placeMoonlightTile();
                 break;
+            case TUT:
+                ((Tutorial) selected).billboard.setTint(Color.WHITE);
+                selected = null;
+                break;
         }
     }
 
@@ -672,7 +768,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             // So moonlightTiles in board can update
             board.setCollectable(x, y, false);
         } else {
-            if (!board.isLit(x, y)) {
+            if (!board.isLit(x, y) && board.inBounds(x, y)) {
                 // PointLight logic
                 PointLight light = new PointLight(
                         level.getRayHandler(),
@@ -743,6 +839,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             case TILE:
                 board.removePreview();
                 break;
+            case TUT:
+                level.removeBillboard(((Tutorial) selected).billboard);
             default:
                 break;
         }
@@ -775,6 +873,20 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                         case SCENE:
                             level.removeSceneObject((infinityx.lunarhaze.models.entity.SceneObject) obj);
                             break;
+                    }
+                    break;
+                case ERASE:
+                    for (RemoveObject removal: ((Erase) lastAction).removedObjects) {
+                        GameObject removedObj = removal.gameObject;
+                        switch (removedObj.getType()) {
+                            case ENEMY:
+                                level.addEnemy((Enemy) removedObj);
+                                currEnemyControlled = (Enemy) removedObj;
+                                break;
+                            case SCENE:
+                                level.addSceneObject((infinityx.lunarhaze.models.entity.SceneObject) removedObj);
+                                break;
+                        }
                     }
                     break;
                 case REMOVE_OBJECT:
@@ -832,6 +944,24 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                         case SCENE:
                             level.addSceneObject((infinityx.lunarhaze.models.entity.SceneObject) obj);
                             break;
+                    }
+                    break;
+                case ERASE:
+                    for (RemoveObject removal: ((Erase) lastUndoneAction).removedObjects) {
+                        GameObject removedObj = removal.gameObject;
+                        switch (removedObj.getType()) {
+                            case ENEMY:
+                                level.removeEnemy((Enemy) removedObj);
+                                // Remove the controller window if it's controlling the removed enemy
+                                if (currEnemyControlled == removedObj) {
+                                    currEnemyControlled = null;
+                                    selectedWaypointIndex = -1;
+                                }
+                                break;
+                            case SCENE:
+                                level.removeSceneObject((infinityx.lunarhaze.models.entity.SceneObject) removedObj);
+                                break;
+                        }
                     }
                     break;
                 case REMOVE_OBJECT:
@@ -961,6 +1091,31 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     };
 
     /**
+     * Callback for eraser
+     */
+    QueryCallback eraserCallback = new QueryCallback() {
+        @Override
+        public boolean reportFixture(Fixture fixture) {
+            GameObject hit = (GameObject) fixture.getBody().getUserData();
+            switch (hit.getType()) {
+                case SCENE:
+                    level.removeSceneObject((SceneObject) hit);
+                    ((Eraser) selected).eraseAction.removedObjects.add(new RemoveObject(hit));
+                    break;
+                case ENEMY:
+                    level.removeEnemy((Enemy) hit);
+                    ((Eraser) selected).eraseAction.removedObjects.add(new RemoveObject(hit));
+                    if (hit == currEnemyControlled) {
+                        currEnemyControlled = null;
+                        selectedWaypointIndex = -1;
+                    }
+                    break;
+            }
+            return true;
+        }
+    };
+
+    /**
      * Callback for scene used to determine what object in scene to select
      */
     QueryCallback selectCallback = new QueryCallback() {
@@ -1025,6 +1180,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         if (selectedObject != null) {
             getAABB(selectedObject.getShapeInformation("body").fixture, lowerCache, upperCache);
             if (selectedObject.getType() == GameObject.ObjectType.SCENE) {
+                // Quick and dirty
+                ((SceneObject) selectedObject).setDirty();
                 if (!selectedObject.isSensor())
                     level.getWorld().QueryAABB(sceneCallback, lowerCache.x, lowerCache.y, upperCache.x, upperCache.y);
             } else {
@@ -1065,6 +1222,10 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         }
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
             level.translateView(0, 20);
+        }
+        // ... or with mouse
+        if (Gdx.input.isButtonPressed(Input.Buttons.MIDDLE)) {
+            level.translateView(Gdx.input.getDeltaX() * 7.5f/canvas.getZoom(), -Gdx.input.getDeltaY() * 7.5f/canvas.getZoom() * 3 / 4);
         }
 
     }
@@ -1116,6 +1277,11 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 ImGui.endTabItem();
             }
 
+            if (ImGui.beginTabItem("Tutorial")) {
+                createTutorialSelection();
+                ImGui.endTabItem();
+            }
+
             ImGui.endTabBar();
         }
         ImGui.end();
@@ -1161,6 +1327,16 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 );
             }
 
+            canvas.shapeRenderer.end();
+            canvas.end();
+        }
+        if (selected != null && selected.getType() == Selected.Type.ERASER) {
+            // If the eraser is selected draw an outline of the eraser
+            float size = ((Eraser) selected).size;
+            canvas.begin(GameCanvas.DrawPass.SHAPE, level.getView().x, level.getView().y);
+            canvas.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+            canvas.shapeRenderer.setColor(Color.WHITE);
+            canvas.shapeRenderer.rect(mouseWorld.x - size / 2, mouseWorld.y - size * 2 / 3, size, size * 4 / 3);
             canvas.shapeRenderer.end();
             canvas.end();
         }
@@ -1261,7 +1437,8 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        if (level == null) return false;
+        if (level == null || Gdx.input.isButtonPressed(Input.Buttons.MIDDLE)) return false;
+
         if (ImGui.getIO().getWantCaptureMouse()) return false;
         int boardX = board.worldToBoardX(mouseWorld.x);
         int boardY = board.worldToBoardY(mouseWorld.y);
@@ -1335,7 +1512,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      */
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        if (level == null) return false;
+        if (level == null || Gdx.input.isButtonPressed(Input.Buttons.MIDDLE)) return false;
         mouseWorld.set(canvas.ScreenToWorldX(Gdx.input.getX(), level.getView()), canvas.ScreenToWorldY(Gdx.input.getY(), level.getView()));
         if (ImGui.getIO().getWantCaptureMouse()) return false;
 
@@ -1368,10 +1545,40 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                     placeTile();
                 }
                 break;
+            case ERASER:
+                float size = ((Eraser) selected).size;
+                level.getWorld().QueryAABB(
+                        eraserCallback,
+                        mouseWorld.x - size / 2, mouseWorld.y - size * 2 / 3,
+                        mouseWorld.x + size / 2, mouseWorld.y + size * 2 / 3
+                );
+                break;
             default:
                 break;
         }
         return true;
+    }
+
+    /**
+     * Called when a finger was lifted or a mouse button was released. The button parameter will be {@link Buttons#LEFT} on iOS.
+     *
+     * @param screenX
+     * @param screenY
+     * @param pointer the pointer for the event.
+     * @param button  the button
+     * @return whether the input was processed
+     */
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        if (button == Input.Buttons.LEFT && selected != null && selected.getType() == Selected.Type.ERASER) {
+            Eraser eraser = (Eraser) selected;
+            if (eraser.eraseAction.removedObjects.size != 0) {
+                doneActions.add(eraser.eraseAction);
+                undoneActions.clear();
+                eraser.eraseAction = new Erase();
+            }
+        }
+        return false;
     }
 
     /**
@@ -1387,6 +1594,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         mouseWorld.set(canvas.ScreenToWorldX(Gdx.input.getX(), level.getView()), canvas.ScreenToWorldY(Gdx.input.getY(), level.getView()));
 
         if (ImGui.getIO().getWantCaptureMouse()) return false;
+
         int boardX = board.worldToBoardX(mouseWorld.x);
         int boardY = board.worldToBoardY(mouseWorld.y);
 
@@ -1422,6 +1630,10 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 } else
                     ((ObjectSelection) selected).object.setPosition(mouseWorld);
                 break;
+            case TUT:
+                ((Tutorial) selected).billboard.setX(mouseWorld.x);
+                ((Tutorial) selected).billboard.setY(mouseWorld.y);
+                break;
         }
 
         return true;
@@ -1437,18 +1649,28 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     @Override
     public boolean scrolled(float amountX, float amountY) {
         if (level == null) return false;
-        if (ImGui.getIO().getWantCaptureMouse() || selected == null) return false;
-        if (selected.getType() == Selected.Type.OBJECT) {
-            // Update the scale to the selected object
-            float delta = 0.02f * amountY;
-            objectScale[0] += delta;
-            ((ObjectSelection) selected).object.setScale(objectScale[0]);
+        if (ImGui.getIO().getWantCaptureMouse()) return false;
+        if (selected == null) {
+            canvas.setZoom(canvas.getZoom() + 0.02f * amountY);
+            return true;
         }
-        if (selected.getType() == Selected.Type.EXIST_OBJECT) {
-            // Update the scale to the selected object
-            float delta = 0.02f * amountY;
-            objectScale[0] += delta;
-            ((ExistingObject) selected).object.setScale(objectScale[0]);
+
+        switch (selected.getType()) {
+            case OBJECT:
+                float delta = 0.02f * amountY;
+                objectScale[0] += delta;
+                ((ObjectSelection) selected).object.setScale(objectScale[0]);
+                break;
+            case EXIST_OBJECT:
+                float delta2 = 0.02f * amountY;
+                objectScale[0] += delta2;
+                ((ExistingObject) selected).object.setScale(objectScale[0]);
+                break;
+            case ERASER:
+                ((Eraser) selected).size += 0.02f * amountY;
+                break;
+            default:
+                canvas.setZoom(canvas.getZoom() + 0.02f * amountY);
         }
         return false;
     }
@@ -1551,6 +1773,68 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
         if (ImGui.begin("Scene")) {
             GameObject selectedObject = getSelectedObject();
+
+            if (selected != null && selected.getType() == Selected.Type.TUT)
+                ImGui.setNextItemOpen(true);
+
+            // Enemies dropdown
+            if (ImGui.collapsingHeader("Tutorial")) {
+                int i = 0;
+                for (Billboard billboard : level.getBillboards()) {
+                    ImGui.pushID(i);
+                    boolean isSelected = false;
+                    if (selected != null && selected.getType() == Selected.Type.TUT && ((Tutorial) selected).billboard == billboard) {
+                        ImGui.setNextItemOpen(true, ImGuiCond.Always);
+                        ImGui.pushStyleColor(ImGuiCol.Text, 0.2f, 0.6f, 1.0f, 1.0f);
+                        isSelected = true;
+                    }
+                    if (ImGui.treeNode("Image " + (i + 1))) {
+                        if (isSelected) {
+                            ImGui.setScrollHereY();
+                        } else {
+                            if (ImGui.isItemHovered()) {
+                                billboard.setTint(SELECTED_COLOR);
+                            } else {
+                                billboard.setTint(Color.WHITE);
+                            }
+                        }
+                        // Position
+                        float[] posX = new float[]{billboard.getPosition().x};
+                        float[] posY = new float[]{billboard.getPosition().y};
+                        float[] posZ = new float[]{billboard.getPosition().z};
+                        ImGui.dragFloat("X", posX, 0.05f);
+                        ImGui.dragFloat("Y", posY, 0.05f);
+                        ImGui.dragFloat("Z", posZ, 0.05f);
+                        billboard.setPosition(posX[0], posY[0], posZ[0]);
+
+                        // Scale
+                        float[] scale = new float[]{billboard.getScale()};
+                        ImGui.dragFloat("Scale", scale, 0.01f);
+                        billboard.setScale(scale[0]);
+
+                        // Remove button
+                        if (ImGui.button("Remove")) {
+                            level.removeBillboard(billboard);
+                            selected = null;
+                        }
+
+                        ImGui.treePop();
+                    } else {
+                        if (ImGui.isItemHovered()) {
+                            billboard.setTint(SELECTED_COLOR);
+                        } else {
+                            billboard.setTint(Color.WHITE);
+                        }
+                    }
+
+                    if (isSelected) {
+                        ImGui.popStyleColor();
+                    }
+
+                    ImGui.popID();
+                    i++;
+                }
+            }
 
             if (selectedObject != null && selectedObject.getType() == GameObject.ObjectType.ENEMY)
                 ImGui.setNextItemOpen(true);
@@ -1807,6 +2091,62 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     }
 
     /**
+     * Popup window for object selection using ImGui
+     */
+    private void createTutorialSelection() {
+        float windowWidth = ImGui.getWindowWidth();
+        float rowWidth = 0;
+
+        int i = 0;
+        for (TutorialButton obj : tutorialSelections) {
+            ImGui.pushID(i);
+            // Scale if window height scales
+            int height = Math.max(100, (int) ImGui.getWindowHeight() / 4);
+            int width = height * obj.texture.getRegionWidth() / obj.texture.getRegionHeight();
+            float totalButtonWidth = width + 20;
+
+            // Check if the button fits within the remaining space on the current row
+            // If it doesnt, put it on a new line
+            if (rowWidth + totalButtonWidth > windowWidth) {
+                ImGui.newLine();
+                rowWidth = 0;
+            }
+
+            if (rowWidth > 0) {
+                ImGui.sameLine();
+            }
+
+            if (ImGui.imageButton(
+                    obj.texture.getTexture().getTextureObjectHandle(),
+                    width, height,
+                    obj.texture.getU(), obj.texture.getV(),
+                    obj.texture.getU2(), obj.texture.getV2())
+            ) {
+                removeSelection();
+                Billboard newObject = level.addBillboard(obj.name, mouseWorld.x, mouseWorld.y, 0, 1);
+                selected = new Tutorial(newObject);
+                objectScale[0] = 1;
+                newObject.setTint(SELECTED_COLOR);
+            }
+
+            rowWidth += totalButtonWidth;
+            ImGui.popID();
+            i += 1;
+        }
+
+        ImGui.spacing();
+
+        // Create a slider for the scale of the object
+        if (ImGui.sliderFloat("Object Scale", objectScale, 0.1f, 5.0f)) {
+            // Apply the scale to the selected object when the slider is moved
+            if (selected != null && selected.getType() == Selected.Type.OBJECT) {
+                SceneObject selectedObj = ((ObjectSelection) selected).object;
+                selectedObj.setScale(objectScale[0]);
+            }
+        }
+    }
+
+    /**
      * Toolbar at top of window with File, Edit, Enemy, View, Settings, and Controls menu
      */
     private void createToolbar() {
@@ -1845,17 +2185,17 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 ImGui.textColored(1.0f, 0.0f, 0.0f, 1.0f, "Action");
 
                 ImGui.tableNextColumn();
-                ImGui.text("Arrow keys");
+                ImGui.text("MMB / Arrow keys");
                 ImGui.tableNextColumn();
                 ImGui.text("Move scene");
 
                 ImGui.tableNextColumn();
-                ImGui.text("-");
+                ImGui.text("Scroll / -");
                 ImGui.tableNextColumn();
                 ImGui.text("Zoom out");
 
                 ImGui.tableNextColumn();
-                ImGui.text("=");
+                ImGui.text("Scroll / =");
                 ImGui.tableNextColumn();
                 ImGui.text("Zoom in");
 
@@ -2243,16 +2583,28 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             level.getSettings().phaseLength.set(Math.max(0, level.getSettings().phaseLength.get()));
         }
 
-        ImGui.text("Enemy Count:");
+        ImGui.text("Villager Count:");
 
         if (ImGui.isItemHovered()) {
             ImGui.beginTooltip();
-            ImGui.text("The total number of new enemies that will spawn during the battle phase");
+            ImGui.text("The total number of villagers that will spawn during the battle phase");
             ImGui.endTooltip();
         }
 
-        if (ImGui.inputInt("##enemyCount", level.getSettings().enemyCount)) {
-            level.getSettings().enemyCount.set(Math.max(0, level.getSettings().enemyCount.get()));
+        if (ImGui.inputInt("##villagerCount", level.getSettings().villagerCount)) {
+            level.getSettings().villagerCount.set(Math.max(0, level.getSettings().getVillagerCount()));
+        }
+
+        ImGui.text("Archer Count:");
+
+        if (ImGui.isItemHovered()) {
+            ImGui.beginTooltip();
+            ImGui.text("The total number of archers that will spawn during the battle phase");
+            ImGui.endTooltip();
+        }
+
+        if (ImGui.inputInt("##archerCount", level.getSettings().archerCount)) {
+            level.getSettings().archerCount.set(Math.max(0, level.getSettings().getArcherCount()));
         }
 
         ImGui.text("Spawn Rate (seconds):");
@@ -2299,6 +2651,13 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             ImGui.beginTooltip();
             ImGui.text("Hold Left-Control to remove");
             ImGui.endTooltip();
+        }
+
+        ImGui.sameLine();
+
+        if (ImGui.button("Eraser")) {
+            removeSelection();
+            selected = new Eraser();
         }
 
         ImGui.sameLine();
@@ -2505,20 +2864,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     }
 
     // UNUSED
-
-    /**
-     * Called when a finger was lifted or a mouse button was released. The button parameter will be {@link Buttons#LEFT} on iOS.
-     *
-     * @param screenX
-     * @param screenY
-     * @param pointer the pointer for the event.
-     * @param button  the button
-     * @return whether the input was processed
-     */
-    @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        return false;
-    }
 
     /**
      * Called when a key was released

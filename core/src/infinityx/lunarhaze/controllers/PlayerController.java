@@ -89,6 +89,15 @@ public class PlayerController {
     private Sound attack_sound;
 
     /**
+     * Sound for player attacked
+     */
+    private Sound attacked_sound;
+    /**
+     * Sound for player heaby attacking
+     */
+    private Sound attack_heavy_sound;
+
+    /**
      * Sound for player dashing
      */
     private Sound dash_sound;
@@ -173,6 +182,16 @@ public class PlayerController {
         return attack_sound;
     }
 
+    public Sound getAttackedSound() {
+        return attacked_sound;
+    }
+
+
+
+    public Sound getHeavyAttackSound(){
+        return attack_heavy_sound;
+    }
+
     public GameSetting getSetting() {return setting;}
 
 
@@ -186,6 +205,8 @@ public class PlayerController {
         this.board = levelContainer.getBoard();
         collect_sound = levelContainer.getDirectory().getEntry("collect", Sound.class);
         attack_sound = levelContainer.getDirectory().getEntry("whip", Sound.class);
+        attacked_sound = levelContainer.getDirectory().getEntry("werewolf-get-hit", Sound.class);
+        attack_heavy_sound = levelContainer.getDirectory().getEntry("whip2", Sound.class);
         dash_sound = levelContainer.getDirectory().getEntry("dash", Sound.class);
         walk_sound = levelContainer.getDirectory().getEntry("walking-on-soil", Sound.class);
         stateMachine = new DefaultStateMachine<>(this, PlayerState.IDLE);
