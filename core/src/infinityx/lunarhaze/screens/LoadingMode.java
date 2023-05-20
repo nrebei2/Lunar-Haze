@@ -272,11 +272,11 @@ public class LoadingMode extends ScreenObservable implements Screen {
      */
     private void update(float delta) {
         stateTime += delta;
-        if (!set_lobby) {
-            lobby_background.setLooping(true);
-            lobby_background.play();
-            set_lobby = true;
-        }
+//        if (!set_lobby) {
+//            lobby_background.setLooping(true);
+//            lobby_background.play();
+//            set_lobby = true;
+//        }
         switch (loadingState) {
             case FADE_IN:
                 elapsed += delta;
