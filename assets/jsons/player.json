@@ -159,6 +159,10 @@
         150
       ],
       "scale": 0.4
+    },
+    "particle": {
+      "effect": "particles/enemy_hit.p",
+      "imagesDir": "particles"
     }
   },
 
@@ -287,6 +291,10 @@
         "bullet": true,
         "sensor": true
       }
+    },
+    "particle": {
+      "effect": "particles/enemy_hit.p",
+      "imagesDir": "particles"
     }
   }
 }

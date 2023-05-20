@@ -141,28 +141,25 @@ public class CollisionController implements ContactListener {
         if (attacker == attacked) return;
         boolean immune = attacked.isImmune();
         if (!immune) {
-            // Immunity frames for being attacked and when attacking
-            attacker.setImmune();
-            attacked.setImmune();
-            attacked.setLockedOut();
+           // Immunity frames for being attacked and when attacking
+           attacker.setImmune();
+           attacked.setImmune();
+           attacked.setLockedOut();
 
-            // Knock back attacked entity
-            Vector2 direction = attacked.getPosition().sub(attacker.getPosition()).nor();
-            attacked.getBody().applyLinearImpulse(direction.scl(attacker.attackKnockback), attacked.getBody().getWorldCenter(), true);
+           // Knock back attacked entity
+           Vector2 direction = attacked.getPosition().sub(attacker.getPosition()).nor();
+           attacked.getBody().applyLinearImpulse(direction.scl(attacker.attackKnockback), attacked.getBody().getWorldCenter(), true);
 
-            attacked.hp -= attacker.attackDamage;
-            if (attacked.hp < 0) attacked.hp = 0;
+           attacked.hp -= attacker.attackDamage;
+           if (attacked.hp < 0) attacked.hp = 0;
 
-            CameraShake.shake(attacker.attackKnockback * 5f, 0.3f);
-            if (attacked.getType() == GameObject.ObjectType.WEREWOLF) {
-                attacked.setAttacked();
-                // This class now flashes the werewolf only
-                ModelFlash.flash(new Color(1f, 0f, 0f, 1), 0.7f, 0.2f, 0.2f, 1f);
-            }else if (attacked.getType() == GameObject.ObjectType.ENEMY) {
+           CameraShake.shake(attacker.attackKnockback * 5f, 0.3f);
+           if (attacked.getType() == GameObject.ObjectType.ENEMY) {
                 if(setting.isSoundEnabled()){
                     enemy_attacked.play(setting.getMusicVolume());
                 }
-            }
+           }
+           attacked.setAttacked();
         }
     }
 

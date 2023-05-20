@@ -1,7 +1,14 @@
 package infinityx.lunarhaze.models;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
+import com.badlogic.gdx.graphics.g2d.ParticleEffectPool;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.Queue;
 import infinityx.assets.AssetDirectory;
+import infinityx.lunarhaze.combat.AttackHitbox;
+import infinityx.lunarhaze.graphics.GameCanvas;
 
 /**
  * A game object that can and can be attack
@@ -60,6 +67,11 @@ public abstract class AttackingGameObject extends GameObject {
     protected float attackedTime;
 
     /**
+     * Hitbox parented to the entity. Only active when {@link #isAttacking}
+     */
+    protected AttackHitbox attackHitbox;
+
+    /**
      * Impulse applied to entity hit
      */
     public float attackKnockback;
@@ -95,20 +107,15 @@ public abstract class AttackingGameObject extends GameObject {
      */
     protected float immunityTime;
 
+    /** Particle effect variables */
+    public ParticleEffectPool particlePool;
+    public ParticleEffect particleEffect;
+
     /**
      * Initialize attacking attributes for this entity
      */
     public AttackingGameObject() {
         super();
-        isAttacking = false;
-        canMove = true;
-        isImmune = false;
-        lockedOut = false;
-        isAttacked = false;
-    }
-
-    public AttackingGameObject(float x, float y) {
-        super(x, y);
         isAttacking = false;
         canMove = true;
         isImmune = false;
@@ -133,6 +140,15 @@ public abstract class AttackingGameObject extends GameObject {
         immunityLength = attack.getFloat("immunity");
         isAttackedLength = attack.getFloat("lockout");
         lockout = attack.getFloat("lockout");
+
+        // Particle effect
+        if(json.get("particle") != null) {
+            JsonValue particle = json.get("particle");
+            ParticleEffect dummyParticleEffect = new ParticleEffect();
+            dummyParticleEffect.load(Gdx.files.internal(particle.getString("effect")), Gdx.files.internal(particle.getString("imagesDir")));
+            particlePool = new ParticleEffectPool(dummyParticleEffect, 4, 8);
+        }
+
 
     }
 
@@ -190,10 +206,19 @@ public abstract class AttackingGameObject extends GameObject {
     public void setAttacked() {
         isAttacked = true;
         attackedTime = isAttackedLength;
+
+        // Get particle effect from level container
+        if (particlePool != null) {
+            particleEffect = particlePool.obtain();
+        }
     }
 
     public boolean isAttacked() {
         return isAttacked;
+    }
+
+    public AttackHitbox getAttackHitbox() {
+        return attackHitbox;
     }
 
     @Override
@@ -213,6 +238,14 @@ public abstract class AttackingGameObject extends GameObject {
             attackedTime -= delta;
             if (attackedTime <= 0) {
                 isAttacked = false;
+                if(particleEffect != null) {
+                    particleEffect.dispose();
+                    particleEffect = null;
+                }
+            }
+
+            if(particleEffect != null) {
+                particleEffect.update(delta);
             }
         }
         if (lockedOut) {
@@ -220,5 +253,20 @@ public abstract class AttackingGameObject extends GameObject {
             if (lockoutTime <= 0)
                 lockedOut = false;
         }
+
+        // Particle effect update
+        if (particleEffect != null && isAttacked) {
+            particleEffect.update(delta);
+        }
+    }
+
+    @Override
+    public void draw(GameCanvas canvas) {
+        if(particleEffect != null) {
+            particleEffect.setPosition(canvas.WorldToScreenX(getX()), canvas.WorldToScreenY(getY()));
+            particleEffect.draw(canvas.getSpriteBatch());
+        }
+        super.draw(canvas);
     }
 }
+
