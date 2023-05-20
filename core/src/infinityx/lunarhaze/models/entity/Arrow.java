@@ -1,5 +1,6 @@
 package infinityx.lunarhaze.models.entity;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.graphics.GameCanvas;
@@ -53,12 +54,8 @@ public class Arrow extends GameObject {
     @Override
     public void draw(GameCanvas canvas) {
         canvas.draw(filmstrip, tint, origin.x, origin.y,
-                canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y), getInitialAngle(),
+                canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y), getAngle(),
                 textureScale * scale, textureScale * scale);
-    }
-
-    public float getInitialAngle() {
-        return initialAngle;
     }
 
     public void setInitialAngle(float a) {

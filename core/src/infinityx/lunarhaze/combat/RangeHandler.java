@@ -42,7 +42,7 @@ public class RangeHandler extends AttackHandler {
 
         arrow = container.addArrow(entity.getX(), entity.getY(), (Archer) entity);
         Vector2 dir = target.getPosition().sub(entity.getPosition()).nor();
-        arrow.setLinearVelocity(dir);
+        arrow.setLinearVelocity(dir.scl(ARROW_SPEED));
         angleFacing = (float) Math.atan2(target.getY() - entity.getY(), target.getX() - entity.getX());
         arrow.setAngle(angleFacing + (float) Math.PI);
         arrow.setInitialAngle(angleFacing + (float) Math.PI);
@@ -53,9 +53,6 @@ public class RangeHandler extends AttackHandler {
         super.processAttack(delta);
         if (arrow != null) {
             arrow.update(delta);
-//            System.out.println(arrow.getLinearVelocity());
-            arrow.setX(arrow.getX() + ARROW_SPEED * arrow.getLinearVelocity().x * delta );
-            arrow.setY(arrow.getY() + ARROW_SPEED * arrow.getLinearVelocity().y * delta );
         }
     }
 
@@ -68,19 +65,11 @@ public class RangeHandler extends AttackHandler {
     public void update(float delta) {
         super.update(delta);
 
-//        arrowFlyTime += delta;
-        // IMPORTANT: fly time has to be lower than archer attack cool down due to initialization
-//
         if ((arrow != null && arrow.getLinearVelocity().epsilonEquals(Vector2.Zero))) {
             System.out.println(arrowFlyTime >= 2f);
             container.removeArrow(arrow);
             arrow = null;
-//            arrowFlyTime = 0f;
         }
-    }
-
-    public float getAngleFacing() {
-        return angleFacing;
     }
 
 }
