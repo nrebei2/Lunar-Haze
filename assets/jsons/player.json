@@ -202,8 +202,8 @@
     "textures": {
       "attacked-l": "lycan.attacked-l",
       "attacked-r": "lycan.attacked-r",
-      "attacked-f": "lycan.attacked-f",
-      "attacked-b": "lycan.idle-b",
+      "attacked-f": "lycan.attacked-r",
+      "attacked-b": "lycan.idle-r",
       "collect": "lycan.collect",
       "walk-l": {
         "name": "lycan.walk-l",

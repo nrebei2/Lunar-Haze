@@ -712,7 +712,6 @@
     },
     "lycan.attacked-l": "images/lycan/left_attacked.png",
     "lycan.attacked-r": "images/lycan/right_attacked.png",
-    "lycan.attacked-f": "images/lycan/front_attacked.png",
     "lycan.idle-r": "images/lycan/right_still.png",
     "lycan.idle-l": "images/lycan/left_still.png",
     "lycan.idle-b": "images/lycan/back_still.png",
