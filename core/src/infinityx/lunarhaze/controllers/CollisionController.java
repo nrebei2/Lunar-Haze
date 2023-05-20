@@ -58,21 +58,6 @@ public class CollisionController implements ContactListener {
                         break;
                 }
                 break;
-            case ARCHER:
-                switch (o2.getType()) {
-                    case WEREWOLF:
-                        handleCollision((Archer) o1, (Werewolf) o2);
-                        break;
-                    case HITBOX:
-                        handleCollision(
-                                ((AttackHitbox) o2).getAttacker(),
-                                (AttackingGameObject) o1
-                        );
-                        break;
-                    default:
-                        break;
-                }
-                break;
             case ARROW:
                 switch (o2.getType()) {
                     case WEREWOLF:
