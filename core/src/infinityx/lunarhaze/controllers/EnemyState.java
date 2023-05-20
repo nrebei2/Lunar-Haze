@@ -43,7 +43,7 @@ public enum EnemyState implements State<EnemyController> {
         @Override
         public void update(EnemyController entity) {
             if (!entity.getEnemy().isAttacked()) {
-                entity.getStateMachine().changeState(entity.getStateMachine().getPreviousState());
+                entity.getStateMachine().changeState(ALERT);
             }
         }
     },
