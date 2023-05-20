@@ -525,7 +525,7 @@
       "body": {
         "type": "box",
         "width": 1,
-        "height": 0.8
+        "height": 0.3
       }
     },
     "sensor": true
@@ -543,8 +543,8 @@
     "colliders": {
       "body": {
         "type": "box",
-        "width": 1,
-        "height": 0.8
+        "width": 0.6,
+        "height": 0.3
       }
     },
     "sensor": true

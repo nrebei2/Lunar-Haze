@@ -288,7 +288,7 @@ public class GameplayController {
     public void switchPhase(float delta) {
         updateAmbientLight(delta);
         if (ambientLightTransitionTimer >= container.getSettings().getTransition()) {
-            phase = Phase.ALLOCATE;
+            phase = player.getMoonlightCollected() == 0 ? BATTLE : Phase.ALLOCATE;
             for (Enemy enemy : enemies) {
                 enemy.setInBattle(true);
             }
