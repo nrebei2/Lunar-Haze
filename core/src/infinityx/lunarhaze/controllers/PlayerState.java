@@ -112,7 +112,7 @@ public enum PlayerState implements State<PlayerController> {
         @Override
         public void enter(PlayerController entity) {
             if(entity.getSetting().isSoundEnabled()) {
-                entity.getAttackSound().play(entity.getSetting().getSoundVolume());
+                entity.getHeavyAttackSound().play(entity.getSetting().getSoundVolume());
             }
             setTexture(entity, "heavyattack");
         }
