@@ -7,6 +7,8 @@ import infinityx.lunarhaze.controllers.GameplayController;
 import infinityx.lunarhaze.controllers.InputController;
 import infinityx.lunarhaze.models.entity.Werewolf;
 
+import static java.lang.Math.pow;
+
 /**
  * Handles all attacking for the player.
  * The player additionally has a three-part combo attack system.
@@ -187,7 +189,8 @@ public class PlayerAttackHandler extends MeleeHandler {
 
     private void processDash(Vector2 direction, float delta) {
         float t = dashTimer / DASH_TIME;
-        float impulse = MAX_IMPULSE * t;
+        // Cubic ease-in-out interpolation
+        float impulse = (float) (MAX_IMPULSE * (t < 0.5 ? 4*t*t*t : 1 - pow(-2*t + 2, 3) / 2));
         entity.getBody().applyLinearImpulse(direction.x * impulse, direction.y * impulse, entity.getX(), entity.getY(), true);
         dashTimer += delta;
         if (dashTimer >= DASH_TIME) {
