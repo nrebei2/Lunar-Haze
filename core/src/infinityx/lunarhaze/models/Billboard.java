@@ -3,7 +3,6 @@ package infinityx.lunarhaze.models;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
@@ -70,6 +69,7 @@ public class Billboard implements Drawable {
 
     /**
      * Set the position to the given components
+     *
      * @param x x-position in world
      * @param y y-position in world
      * @param z z-position in world
@@ -81,9 +81,11 @@ public class Billboard implements Drawable {
     public void setX(float x) {
         this.position.x = x;
     }
+
     public void setY(float y) {
         this.position.y = y;
     }
+
     public void setZ(float z) {
         this.position.z = z;
     }

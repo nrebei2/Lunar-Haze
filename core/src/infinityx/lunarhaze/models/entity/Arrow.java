@@ -3,7 +3,6 @@ package infinityx.lunarhaze.models.entity;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.graphics.GameCanvas;
-import infinityx.lunarhaze.models.AttackingGameObject;
 import infinityx.lunarhaze.models.GameObject;
 import infinityx.lunarhaze.models.LevelContainer;
 
@@ -42,11 +41,11 @@ public class Arrow extends GameObject {
         this(0, 0, archer);
     }
 
-    public Archer getArcher(){
+    public Archer getArcher() {
         return archer;
     }
 
-    public void setArcher(Archer archer){
+    public void setArcher(Archer archer) {
         this.archer = archer;
     }
 
@@ -57,11 +56,11 @@ public class Arrow extends GameObject {
                 textureScale * scale, textureScale * scale);
     }
 
-    public float getInitialAngle(){
+    public float getInitialAngle() {
         return initialAngle;
     }
 
-    public void setInitialAngle(float a){
+    public void setInitialAngle(float a) {
         initialAngle = a;
     }
 }

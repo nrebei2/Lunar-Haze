@@ -8,8 +8,6 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
-import infinityx.assets.JsonValueLoader;
-import infinityx.assets.JsonValueParser;
 import infinityx.lunarhaze.controllers.InputController;
 import infinityx.lunarhaze.controllers.LevelParser;
 import infinityx.lunarhaze.controllers.LevelSerializer;
@@ -216,10 +214,10 @@ public class GDXRoot extends Game implements ScreenObserver {
             setScreen(menu);
             lobby_background = directory.getEntry("lobbyBackground", Music.class);
             lobby_background.setVolume(setting_preference.getMusicVolume());
-            if(setting_preference.isMusicEnabled()) {
+            if (setting_preference.isMusicEnabled()) {
                 lobby_background.setLooping(true);
                 lobby_background.play();
-            }else{
+            } else {
                 lobby_background.stop();
             }
             LevelParser ps = LevelParser.LevelParser();
@@ -295,13 +293,13 @@ public class GDXRoot extends Game implements ScreenObserver {
                     setScreen(allocate);
                     break;
                 case GameMode.GO_NEXT:
-                    if(selection.getLevelSelected() == 15){
+                    if (selection.getLevelSelected() == 15) {
                         setScreen(aboutUs);
-                        if(setting_preference.isMusicEnabled()) {
+                        if (setting_preference.isMusicEnabled()) {
                             lobby_background.setVolume(setting_preference.getMusicVolume());
                             lobby_background.play();
                         }
-                    }else {
+                    } else {
                         selection.setLevelSelected(selection.getLevelSelected() + 1);
                         game.setLevel(selection.getLevelSelected());
                         game.setupLevel();
@@ -315,7 +313,7 @@ public class GDXRoot extends Game implements ScreenObserver {
                     break;
                 case PauseMode.GO_MENU:
                     setScreen(menu);
-                    if(setting_preference.isMusicEnabled()){
+                    if (setting_preference.isMusicEnabled()) {
                         lobby_background.setVolume(setting_preference.getMusicVolume());
                         lobby_background.play();
                     }
@@ -323,7 +321,7 @@ public class GDXRoot extends Game implements ScreenObserver {
                 case PauseMode.GO_SETTING:
                     previousScreen = "pause";
                     setScreen(setting);
-                    if(setting_preference.isMusicEnabled()){
+                    if (setting_preference.isMusicEnabled()) {
                         lobby_background.setVolume(setting_preference.getMusicVolume());
                         lobby_background.play();
                     }
@@ -355,7 +353,7 @@ public class GDXRoot extends Game implements ScreenObserver {
         } else if (screen == editor) {
             if (exitCode == EditorMode.GO_MENU) {
                 setScreen(menu);
-                if(setting_preference.isMusicEnabled()){
+                if (setting_preference.isMusicEnabled()) {
                     lobby_background.setVolume(setting_preference.getMusicVolume());
                     lobby_background.play();
                 }

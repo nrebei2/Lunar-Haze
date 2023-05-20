@@ -6,9 +6,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.GDXRoot;
 import infinityx.lunarhaze.controllers.InputController;
@@ -251,8 +248,6 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
     private float centerY_sound_off;
 
 
-
-
     /**
      * Returns true if all assets are loaded and the player is ready to go.
      *
@@ -274,7 +269,6 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
     public boolean isMusicOffReady() {
         return pressMusicOffState == 2;
     }
-
 
 
     /**
@@ -342,31 +336,31 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
         canvas.beginUI(GameCanvas.DrawPass.SPRITE);
         Color alphaTint = Color.WHITE;
         canvas.drawOverlay(background, alphaTint, true);
-        canvas.draw(title, alphaTint, title.getWidth()/2, title.getHeight()/2, canvas.getWidth() * TITLE_WIDTH_RATIO,
-                canvas.getHeight() * TITLE_HEIGHT_RATIO,0,TEXT_SCALE * scale, TEXT_SCALE * scale);
-        canvas.draw(sound_choice, alphaTint, sound_choice.getWidth()/2, sound_choice.getHeight()/2,canvas.getWidth() * CHOICE_WIDTH_RATIO,
-                canvas.getHeight() * CHOICE1_HEIGHT_RATIO, 0, TEXT_SCALE * scale, TEXT_SCALE * scale );
+        canvas.draw(title, alphaTint, title.getWidth() / 2, title.getHeight() / 2, canvas.getWidth() * TITLE_WIDTH_RATIO,
+                canvas.getHeight() * TITLE_HEIGHT_RATIO, 0, TEXT_SCALE * scale, TEXT_SCALE * scale);
+        canvas.draw(sound_choice, alphaTint, sound_choice.getWidth() / 2, sound_choice.getHeight() / 2, canvas.getWidth() * CHOICE_WIDTH_RATIO,
+                canvas.getHeight() * CHOICE1_HEIGHT_RATIO, 0, TEXT_SCALE * scale, TEXT_SCALE * scale);
 //        canvas.draw(control_choice, alphaTint, control_choice.getWidth()/2, control_choice.getHeight()/2,canvas.getWidth() * CHOICE_WIDTH_RATIO,
 //                canvas.getHeight() * CHOICE2_HEIGHT_RATIO, 0, TEXT_SCALE * scale, TEXT_SCALE * scale );
 //
 
-        canvas.draw(music, alphaTint, music.getWidth()/2, music.getHeight()/2, canvas.getWidth() * TEXT_WIDTH_RATIO,
-                canvas.getHeight() * MUSIC_HEIGHT_RATIO,0,TEXT_SCALE * scale, TEXT_SCALE * scale);
-        canvas.draw(music_volume, alphaTint, music_volume.getWidth()/2, music_volume.getHeight()/2, canvas.getWidth() * TEXT_WIDTH_RATIO,
-                canvas.getHeight() * MUSIC_VOLUME_HEIGHT_RATIO,0,TEXT_SCALE * scale, TEXT_SCALE * scale);
-        canvas.draw(sound, alphaTint, sound.getWidth()/2, sound.getHeight()/2, canvas.getWidth() * TEXT_WIDTH_RATIO,
-                canvas.getHeight() * SOUND_HEIGHT_RATIO,0,TEXT_SCALE * scale, TEXT_SCALE * scale);
-        canvas.draw(sound_volume, alphaTint, sound_volume.getWidth()/2, sound_volume.getHeight()/2, canvas.getWidth() * TEXT_WIDTH_RATIO,
-                canvas.getHeight() * SOUND_VOLUME_HEIGHT_RATIO,0,TEXT_SCALE * scale, TEXT_SCALE * scale);
+        canvas.draw(music, alphaTint, music.getWidth() / 2, music.getHeight() / 2, canvas.getWidth() * TEXT_WIDTH_RATIO,
+                canvas.getHeight() * MUSIC_HEIGHT_RATIO, 0, TEXT_SCALE * scale, TEXT_SCALE * scale);
+        canvas.draw(music_volume, alphaTint, music_volume.getWidth() / 2, music_volume.getHeight() / 2, canvas.getWidth() * TEXT_WIDTH_RATIO,
+                canvas.getHeight() * MUSIC_VOLUME_HEIGHT_RATIO, 0, TEXT_SCALE * scale, TEXT_SCALE * scale);
+        canvas.draw(sound, alphaTint, sound.getWidth() / 2, sound.getHeight() / 2, canvas.getWidth() * TEXT_WIDTH_RATIO,
+                canvas.getHeight() * SOUND_HEIGHT_RATIO, 0, TEXT_SCALE * scale, TEXT_SCALE * scale);
+        canvas.draw(sound_volume, alphaTint, sound_volume.getWidth() / 2, sound_volume.getHeight() / 2, canvas.getWidth() * TEXT_WIDTH_RATIO,
+                canvas.getHeight() * SOUND_VOLUME_HEIGHT_RATIO, 0, TEXT_SCALE * scale, TEXT_SCALE * scale);
 
 
-        canvas.draw(music_on, alphaTint, music_on.getWidth()/2, music_on.getHeight()/2,
+        canvas.draw(music_on, alphaTint, music_on.getWidth() / 2, music_on.getHeight() / 2,
                 centerX_music_on, centerY_music_on, 0, TEXT_SCALE * scale, TEXT_SCALE * scale);
-        canvas.draw(music_off, alphaTint, music_off.getWidth()/2, music_off.getHeight()/2,
+        canvas.draw(music_off, alphaTint, music_off.getWidth() / 2, music_off.getHeight() / 2,
                 centerX_music_off, centerY_music_off, 0, TEXT_SCALE * scale, TEXT_SCALE * scale);
-        canvas.draw(sound_on, alphaTint, sound_on.getWidth()/2, sound_on.getHeight()/2,
+        canvas.draw(sound_on, alphaTint, sound_on.getWidth() / 2, sound_on.getHeight() / 2,
                 centerX_sound_on, centerY_sound_on, 0, TEXT_SCALE * scale, TEXT_SCALE * scale);
-        canvas.draw(sound_off, alphaTint, sound_off.getWidth()/2, sound_off.getHeight()/2,
+        canvas.draw(sound_off, alphaTint, sound_off.getWidth() / 2, sound_off.getHeight() / 2,
                 centerX_sound_off, centerY_sound_off, 0, TEXT_SCALE * scale, TEXT_SCALE * scale);
 
         int stat_music = (int) (setting.getMusicVolume() * 10);
@@ -412,18 +406,18 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
      */
     private void update(float delta) {
         lobby_background.setVolume(setting.getMusicVolume());
-        if(setting.isMusicEnabled()) {
+        if (setting.isMusicEnabled()) {
             lobby_background.setLooping(true);
             lobby_background.play();
-        }else{
+        } else {
             lobby_background.stop();
         }
         sound_choice = (setting_choice_sound ? sound_s : sound_u);
-        control_choice = (setting_choice_sound ? control_u : control_s );
+        control_choice = (setting_choice_sound ? control_u : control_s);
         music_on = (setting.isMusicEnabled() ? on_s : on_u);
-        music_off = (setting.isMusicEnabled()? off_u : off_s);
+        music_off = (setting.isMusicEnabled() ? off_u : off_s);
         sound_on = (setting.isSoundEnabled() ? on_s : on_u);
-        sound_off = (setting.isSoundEnabled()? off_u : off_s);
+        sound_off = (setting.isSoundEnabled() ? off_u : off_s);
         inputController.readKeyboard();
     }
 
@@ -579,7 +573,7 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
         float[] disXstar = new float[11];
         float[] disYstar = new float[11];
         for (int i = 1; i <= 10; i++) {
-            disXstar[i] = Math.abs(screenX - (canvas.getWidth() * STAR_WIDTH_RATIO  + (i - 6) * STAR_WIDTH));
+            disXstar[i] = Math.abs(screenX - (canvas.getWidth() * STAR_WIDTH_RATIO + (i - 6) * STAR_WIDTH));
             disYstar[i] = Math.abs(screenY - starY_music);
         }
         for (int i = 1; i <= 10; i++) {
@@ -591,7 +585,7 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
         float[] disXstarSound = new float[11];
         float[] disYstarSound = new float[11];
         for (int i = 1; i <= 10; i++) {
-            disXstarSound[i] = Math.abs(screenX - (canvas.getWidth() * STAR_WIDTH_RATIO  + (i - 6) * STAR_WIDTH));
+            disXstarSound[i] = Math.abs(screenX - (canvas.getWidth() * STAR_WIDTH_RATIO + (i - 6) * STAR_WIDTH));
             disYstarSound[i] = Math.abs(screenY - starY_sound);
         }
         for (int i = 1; i <= 10; i++) {
@@ -632,7 +626,6 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
         if (distX_off_sound < x_off_sound && distY_off_sound < y_off_sound) {
             pressSoundOffState = 1;
         }
-
 
 
         return false;

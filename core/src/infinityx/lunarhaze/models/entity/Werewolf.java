@@ -33,10 +33,14 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
 
     public float windupSpeed;
 
-    /** Whether the player is currently above moonlight */
+    /**
+     * Whether the player is currently above moonlight
+     */
     public boolean isOnMoonlight;
 
-    /** Whether the player is currently collecting moonlight */
+    /**
+     * Whether the player is currently collecting moonlight
+     */
     public boolean isCollecting;
 
     /**
@@ -283,7 +287,7 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
 
         // Create particles
         // Particle effect
-        if(json.get("particle_dash") != null) {
+        if (json.get("particle_dash") != null) {
             JsonValue particle = json.get("particle_dash");
             ParticleEffect dummyParticleEffect = new ParticleEffect();
             dummyParticleEffect.load(Gdx.files.internal(particle.getString("effect")), Gdx.files.internal(particle.getString("imagesDir")));
@@ -320,7 +324,7 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
                 heavyLockedOut = false;
         }
 
-        if(isDashing && dashParticle != null) {
+        if (isDashing && dashParticle != null) {
             dashParticle.update(delta);
         }
 

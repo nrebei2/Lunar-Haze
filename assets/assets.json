@@ -384,6 +384,17 @@
         ]
       }
     },
+    "lamp": {
+      "file":   "images/objects/lamp.png",
+      "wrap":   false,
+      "sprites": {
+        "strip" : {
+          "size" : 15,
+          "rows" : 1,
+          "cols" : 15
+        }
+      }
+    },
 
     "dust": "images/dust.png",
     "werewolf": {

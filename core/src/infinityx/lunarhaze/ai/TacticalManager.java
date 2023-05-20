@@ -9,7 +9,6 @@ import com.badlogic.gdx.utils.OrderedSet;
 import infinityx.lunarhaze.controllers.EnemyController;
 import infinityx.lunarhaze.controllers.EnemyState;
 import infinityx.lunarhaze.models.LevelContainer;
-import infinityx.lunarhaze.models.entity.Enemy;
 import infinityx.lunarhaze.models.entity.Werewolf;
 
 import java.util.Random;
@@ -102,7 +101,8 @@ public class TacticalManager implements Telegraph {
     @Override
     public boolean handleMessage(Telegram msg) {
         /** See {@link EnemyState#ALERT} */
-        if (msg.message == ADD && !enemies.contains((EnemyController) msg.extraInfo)) enemies.add((EnemyController) msg.extraInfo);
+        if (msg.message == ADD && !enemies.contains((EnemyController) msg.extraInfo))
+            enemies.add((EnemyController) msg.extraInfo);
 //        if (msg.message == ADD) enemies.add((EnemyController) msg.extraInfo);
         if (msg.message == REMOVE) enemies.remove((EnemyController) msg.extraInfo);
         if (msg.message == FOUND) {

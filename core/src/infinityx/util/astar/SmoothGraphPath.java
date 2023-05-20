@@ -33,5 +33,4 @@ public class SmoothGraphPath<N extends Node> extends DefaultGraphPath<N> impleme
     }
 
 
-
 }

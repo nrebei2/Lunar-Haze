@@ -265,12 +265,15 @@
   },
   "lamp": {
     "textures": {
-      "static": "objects.lamp"
+      "static": {
+        "name": "lamp.strip",
+        "durations": 0.1
+      }
     },
     "texture": {
       "name": "static",
-      "origin": [44, 16],
-      "scale": 0.8
+      "origin": [107, 7],
+      "scale": 1
     },
     "colliders": {
       "body": {

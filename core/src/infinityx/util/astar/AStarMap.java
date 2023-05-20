@@ -4,7 +4,6 @@ import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.graphics.GameCanvas;
 
@@ -93,11 +92,13 @@ public class AStarMap {
         return map[MathUtils.clamp(worldToGridX(x), 0, width - 1)][MathUtils.clamp(worldToGridY(y), 0, height - 1)];
     }
 
-    /** DEBUG. Draws each node in the map, red if obstructed, blue otherwise. */
+    /**
+     * DEBUG. Draws each node in the map, red if obstructed, blue otherwise.
+     */
     public void drawMap(GameCanvas canvas) {
         canvas.shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        for (Node[] row: map) {
-            for (Node node: row) {
+        for (Node[] row : map) {
+            for (Node node : row) {
                 canvas.shapeRenderer.setColor(node.isObstacle ? Color.RED : Color.BLUE);
                 canvas.shapeRenderer.rect(
                         node.position.x - gridSize.x / 2,
@@ -105,8 +106,8 @@ public class AStarMap {
                         gridSize.x, gridSize.y
                 );
                 canvas.shapeRenderer.setColor(Color.WHITE);
-                for (Connection conn: node.getConnections()) {
-                    canvas.shapeRenderer.line(node.position, ((Node)conn.getToNode()).position);
+                for (Connection conn : node.getConnections()) {
+                    canvas.shapeRenderer.line(node.position, ((Node) conn.getToNode()).position);
                 }
             }
         }

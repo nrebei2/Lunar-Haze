@@ -117,7 +117,7 @@ public class AttackHitbox extends GameObject {
         float offsetY = 0.5f;
 
         // Heavy attack should face down and should not have fake height
-        if(attacker instanceof Werewolf && ((Werewolf) attacker).isHeavyAttacking) {
+        if (attacker instanceof Werewolf && ((Werewolf) attacker).isHeavyAttacking) {
             angle = 0;
             offsetX = -0.7f;
             offsetY = 0;

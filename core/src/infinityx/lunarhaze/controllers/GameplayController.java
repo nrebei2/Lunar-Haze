@@ -1,7 +1,5 @@
 package infinityx.lunarhaze.controllers;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.utils.Array;
@@ -173,7 +171,7 @@ public class GameplayController {
         this.gameState = GameState.PLAY;
         this.phase = Phase.STEALTH;
         this.container = levelContainer;
-        this.collisionController = new CollisionController(levelContainer.getWorld(),setting, levelContainer.getDirectory());
+        this.collisionController = new CollisionController(levelContainer.getWorld(), setting, levelContainer.getDirectory());
 
         lightingController = new LightingController(levelContainer);
 
@@ -195,11 +193,11 @@ public class GameplayController {
         totalMoonlight = levelContainer.getTotalMoonlight();
     }
 
-    public int getTotalMoonlight(){
+    public int getTotalMoonlight() {
         return totalMoonlight;
     }
 
-    public void setTotalMoonlight(int totalMoonlight){
+    public void setTotalMoonlight(int totalMoonlight) {
         this.totalMoonlight = totalMoonlight;
     }
 

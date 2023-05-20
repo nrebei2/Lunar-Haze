@@ -42,7 +42,9 @@ public abstract class SteeringGameObject extends AttackingGameObject implements 
      */
     public SteeringBehavior<Vector2> steeringBehavior;
 
-    /** Clamped linear output from steering behavior */
+    /**
+     * Clamped linear output from steering behavior
+     */
     protected Vector2 clampedLinear;
 
     /**

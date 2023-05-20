@@ -6,7 +6,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -310,7 +309,7 @@ public class LevelContainer {
     }
 
     /**
-     * @param enemy           enemy to append to enemy list
+     * @param enemy enemy to append to enemy list
      * @return enemy added
      */
     public Enemy addEnemy(Enemy enemy) {
@@ -392,14 +391,14 @@ public class LevelContainer {
      */
     public Arrow addArrow(float x, float y, Archer archer) {
         Arrow arrow = new Arrow(x, y, archer);
-        arrow.initialize(directory, enemiesJson.get("archer").get("arrow"), this );
+        arrow.initialize(directory, enemiesJson.get("archer").get("arrow"), this);
         addDrawables(arrow);
         arrow.activatePhysics(world);
         return arrow;
 
     }
 
-    public void removeArrow(Arrow arrow){
+    public void removeArrow(Arrow arrow) {
         drawables.removeValue(arrow, true);
         arrow.setActive(false);
     }

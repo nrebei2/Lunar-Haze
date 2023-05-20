@@ -1,7 +1,6 @@
 package infinityx.lunarhaze.screens;
 
 import box2dLight.PointLight;
-import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
@@ -143,7 +142,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * Eraser tool
      */
     class Eraser extends Selected {
-        /** Width and height of eraser */
+        /**
+         * Width and height of eraser
+         */
         public float size = 1;
 
         public Erase eraseAction = new Erase();
@@ -420,7 +421,9 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     }
 
 
-    /** The action of erasing using the tool (over a lifetime of dragging once) */
+    /**
+     * The action of erasing using the tool (over a lifetime of dragging once)
+     */
     class Erase extends Action {
         public Array<RemoveObject> removedObjects = new Array<>();
 
@@ -506,7 +509,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * Tint for textures for overlapping
      */
     public static final Color OVERLAPPED_COLOR = Color.RED.cpy().mul(1, 1, 1, 0.8f);
-
 
 
     /**
@@ -627,10 +629,16 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
         // Add all objects in json
         for (JsonValue object : objects) {
-            TextureRegion textureRegion = directory.getEntry(
-                    object.get("textures").getString(
-                            object.get("texture").getString("name")
-                    ), TextureRegion.class);
+            TextureRegion textureRegion;
+            if (object.name.equalsIgnoreCase("lamp")) {
+                textureRegion = directory.getEntry(
+                        object.get("textures").get("static").getString("name"), FilmStrip.class);
+            } else {
+                textureRegion = directory.getEntry(
+                        object.get("textures").getString(
+                                object.get("texture").getString("name")
+                        ), TextureRegion.class);
+            }
             objectSelections.add(
                     new SceneButton(
                             textureRegion, object.name
@@ -876,7 +884,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                     }
                     break;
                 case ERASE:
-                    for (RemoveObject removal: ((Erase) lastAction).removedObjects) {
+                    for (RemoveObject removal : ((Erase) lastAction).removedObjects) {
                         GameObject removedObj = removal.gameObject;
                         switch (removedObj.getType()) {
                             case ENEMY:
@@ -947,7 +955,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                     }
                     break;
                 case ERASE:
-                    for (RemoveObject removal: ((Erase) lastUndoneAction).removedObjects) {
+                    for (RemoveObject removal : ((Erase) lastUndoneAction).removedObjects) {
                         GameObject removedObj = removal.gameObject;
                         switch (removedObj.getType()) {
                             case ENEMY:
@@ -1225,7 +1233,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         }
         // ... or with mouse
         if (Gdx.input.isButtonPressed(Input.Buttons.MIDDLE)) {
-            level.translateView(Gdx.input.getDeltaX() * 7.5f/canvas.getZoom(), -Gdx.input.getDeltaY() * 7.5f/canvas.getZoom() * 3 / 4);
+            level.translateView(Gdx.input.getDeltaX() * 7.5f / canvas.getZoom(), -Gdx.input.getDeltaY() * 7.5f / canvas.getZoom() * 3 / 4);
         }
 
     }

@@ -1,7 +1,6 @@
 package infinityx.lunarhaze.controllers;
 
 import box2dLight.PointLight;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.fsm.StateMachine;
 import com.badlogic.gdx.audio.Sound;
@@ -187,12 +186,13 @@ public class PlayerController {
     }
 
 
-
-    public Sound getHeavyAttackSound(){
+    public Sound getHeavyAttackSound() {
         return attack_heavy_sound;
     }
 
-    public GameSetting getSetting() {return setting;}
+    public GameSetting getSetting() {
+        return setting;
+    }
 
 
     /**
@@ -228,10 +228,9 @@ public class PlayerController {
         player.update(delta);
 
         if (setting.isSoundEnabled()) {
-            if (!player.isAttacked() && inputController.didDash()&& attackHandler.isDashing) {
+            if (!player.isAttacked() && inputController.didDash() && attackHandler.isDashing) {
                 dash_sound.play(setting.getSoundVolume());
-            } else
-            if (getStateMachine().isInState(PlayerState.WALK) && !isWalkGrassPlaying) {
+            } else if (getStateMachine().isInState(PlayerState.WALK) && !isWalkGrassPlaying) {
                 long soundId = walk_sound.loop();
                 walk_sound.setLooping(soundId, true);
                 walk_sound.play(setting.getSoundVolume());

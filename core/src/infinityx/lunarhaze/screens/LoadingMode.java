@@ -22,7 +22,6 @@ package infinityx.lunarhaze.screens;
  * Updated asset version, 2/6/2021
  */
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
