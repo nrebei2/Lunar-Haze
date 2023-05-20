@@ -269,7 +269,7 @@ public enum EnemyState implements State<EnemyController> {
                         Vector2 dir = entity.target.getPosition().sub(entity.getEnemy().getPosition());
                         entity.getEnemy().setOrientation(AngleUtils.vectorToAngle(dir));
                         entity.getEnemy().setSteeringBehavior(entity.battleSB);
-                        entity.getEnemy().setMaxLinearSpeed(0.8f);
+                        entity.getEnemy().setMaxLinearSpeed(1f);
                     }
 
                 }
