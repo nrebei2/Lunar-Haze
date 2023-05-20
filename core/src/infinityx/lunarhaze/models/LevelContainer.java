@@ -576,6 +576,11 @@ public class LevelContainer {
                 }
             }
         }
+        if (object.leaves != null) {
+            for (Leaf leaf : object.leaves) {
+                leaf.setDestroyed(true);
+            }
+        }
         object.setActive(false);
     }
 
@@ -675,7 +680,9 @@ public class LevelContainer {
         //  depth as the z-position so OpenGL's depth buffer can do all the work
         drawables.sort(drawComp);
         for (Drawable d : drawables) {
-            d.draw(canvas);
+            // Even more early clipping
+            if (editor || d.getPos().dst(player.getPos()) < 15)
+                d.draw(canvas);
         }
 
         // The scene objects rendered before the player (behind) should not become transparent

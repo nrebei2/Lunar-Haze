@@ -123,7 +123,7 @@
       "lockout": 0.3,
       "hitbox": {
         "range": 0.8,
-        "width": 1.5,
+        "width": 0.7,
         "bullet": true,
         "sensor": true
       }

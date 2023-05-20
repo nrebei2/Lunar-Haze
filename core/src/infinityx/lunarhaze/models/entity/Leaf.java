@@ -1,18 +1,23 @@
-package infinityx.lunarhaze.models;
+package infinityx.lunarhaze.models.entity;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import infinityx.lunarhaze.graphics.Animation;
+import infinityx.lunarhaze.graphics.FilmStrip;
 import infinityx.lunarhaze.graphics.GameCanvas;
+import infinityx.lunarhaze.models.Dust;
+import infinityx.lunarhaze.models.GameObject;
 import infinityx.util.Drawable;
 
-/**
- * Instance is a single dust particle.
- * Many attributes must be set, including position, (linear/angular) velocity.
- */
-public class Dust implements Drawable {
+public class Leaf implements Drawable {
+
+    // Max in a scene ever
+    public static int MAX = 100;
+
     /**
      * The particle position in world coordinates
      */
@@ -24,32 +29,13 @@ public class Dust implements Drawable {
     private final Vector3 velocity;
 
     /**
-     * The current rotation of texture, affected by rps
+     * Track the current state.
      */
-    private float textureRot;
-
-    /**
-     * Rotations per second
-     */
-    private float rps;
-
-    /**
-     * Track the current state of this dust particle.
-     */
-    public enum DustState {
-        APPEARING, DECAYING
+    public enum State {
+        APPEARING, ALIVE, DECAYING
     }
 
-    private DustState state;
-
-    /**
-     * What should the particle do after it finished decaying.
-     */
-    private enum Condition {
-        RESET, CONTINUE, DESTROY
-    }
-
-    private Condition condition;
+    private State state;
 
 
     /**
@@ -81,17 +67,12 @@ public class Dust implements Drawable {
     /**
      * May be null, texture drawn on canvas
      */
-    private Texture texture;
+    private Animation filmStrip;
 
     /**
      * How much the texture of this object should be scaled when drawn
      */
     private float textureScale;
-
-    /**
-     * Whether the object should be reset at next timestep.
-     */
-    private boolean reset = false;
 
     /**
      * Scale of specific dust particle (on top of texture scale)
@@ -103,10 +84,8 @@ public class Dust implements Drawable {
      */
     private boolean destroyed;
 
-    /**
-     * Whether this dust particle is used for UI
-     */
-    public boolean forUI;
+    /** Whether this should be updating */
+    public boolean active;
 
     /**
      * Returns the position of this particle.
@@ -117,8 +96,8 @@ public class Dust implements Drawable {
      * @return the position of this particle
      */
     public Vector3 getPosition() {
-        return position;
-    }
+                               return position;
+                                               }
 
     /**
      * Returns the x-coordinate of the particle position.
@@ -126,8 +105,8 @@ public class Dust implements Drawable {
      * @return the x-coordinate of the particle position
      */
     public float getX() {
-        return position.x;
-    }
+                      return position.x;
+                                        }
 
     /**
      * Sets the x-coordinate of the particle position.
@@ -135,8 +114,8 @@ public class Dust implements Drawable {
      * @param x the x-coordinate of the particle position
      */
     public void setX(float x) {
-        position.x = x;
-    }
+                            position.x = x;
+                                           }
 
     /**
      * Returns the y-coordinate of the particle position.
@@ -144,8 +123,8 @@ public class Dust implements Drawable {
      * @return the y-coordinate of the particle position
      */
     public float getY() {
-        return position.y;
-    }
+                      return position.y;
+                                        }
 
     /**
      * Returns the z-coordinate of the particle position.
@@ -153,8 +132,8 @@ public class Dust implements Drawable {
      * @return the z-coordinate of the particle position
      */
     public float getZ() {
-        return position.z;
-    }
+                      return position.z;
+                                        }
 
     /**
      * Sets the y-coordinate of the particle position.
@@ -162,8 +141,8 @@ public class Dust implements Drawable {
      * @param y the y-coordinate of the particle position
      */
     public void setY(float y) {
-        position.y = y;
-    }
+                            position.y = y;
+                                           }
 
     /**
      * Sets the z-coordinate of the particle position.
@@ -171,54 +150,31 @@ public class Dust implements Drawable {
      * @param z the z-coordinate of the particle position
      */
     public void setZ(float z) {
-        position.z = z;
-    }
-
-    /**
-     * Sets the angle (radians) of velocity for this particle.
-     *
-     * @param angle the angle of this particle (radians)
-     * @param speed the speed
-     */
-    public void setVelocity(float angle, float speed) {
-        velocity.set(
-                (float) (speed * Math.cos(angle)),
-                (float) (speed * Math.sin(angle)),
-                speed * MathUtils.random(-0.7f, 0.7f)
-        );
-    }
+                            position.z = z;
+                                           }
 
     /**
      * Set the velocity of this particle
      */
     public Vector3 setVelocity(float x, float y, float z) {
-        return velocity.set(x, y, z);
-    }
+                                                        return velocity.set(x, y, z);
+                                                                                     }
 
-    /**
-     * Sets the rotations per second of this particle
-     */
-    public void setRPS(float rps) {
-        this.rps = rps;
-    }
-
-    public void setTexture(Texture texture) {
-        this.texture = texture;
-    }
+    public void setTexture(Animation texture) { this.filmStrip = texture; }
 
     /**
      * sets texture scale for drawing
      */
     public void setTextureScale(float scale) {
-        this.textureScale = scale;
-    }
+                                           this.textureScale = scale;
+                                                                     }
 
     /**
      * Set scale which further scales this dust particle for drawing
      */
     public void setScale(float scale) {
-        this.scale = scale;
-    }
+                                    this.scale = scale;
+                                                       }
 
     /**
      * Set time range for fading in/out
@@ -231,41 +187,13 @@ public class Dust implements Drawable {
         fadeMax = max;
     }
 
-    Vector2 pos = new Vector2();
-    @Override
-    public Vector2 getPos() {
-        return pos.set(getPosition().x, getPosition().y + getPosition().z * 3 / 4);
-    }
-
-    /**
-     * Once called this particle will begin decaying (disappearing) then become reset.
-     */
-    public void beginReset() {
-        this.condition = Condition.RESET;
-    }
-
     /**
      * Once called this particle will begin decaying (disappearing) then become destroyed.
      */
     public void beginDestruction() {
-        condition = Condition.DESTROY;
-        state = DustState.DECAYING;
+        state = State.DECAYING;
         elapsed = 0;
         fadeTime = MathUtils.random(fadeMin / 3, fadeMax / 3);
-    }
-
-    /**
-     * The dust particle is in the process of being destroyed.
-     */
-    public boolean inDestruction() {
-        return this.condition == Condition.DESTROY;
-    }
-
-    /**
-     * Returns true if this object should be reset.
-     */
-    public boolean shouldReset() {
-        return reset;
     }
 
     /**
@@ -273,17 +201,18 @@ public class Dust implements Drawable {
      * <p>
      * Many attributes of this particle should be set; use the appropriate setters.
      */
-    public Dust() {
+    public Leaf() {
         position = new Vector3();
         velocity = new Vector3();
         reset();
     }
 
+
     /**
      * Update attributes of this dust particle
      */
     public void update(float delta) {
-        if (isDestroyed()) return;
+        if (isDestroyed() || !active) return;
 
         elapsed += delta;
         switch (state) {
@@ -292,8 +221,8 @@ public class Dust implements Drawable {
                 float inProg = Math.min(1f, elapsed / fadeTime);
                 alpha = EAS_FN.apply(inProg);
                 if (inProg == 1f) {
-                    state = DustState.DECAYING;
-                    this.fadeTime = MathUtils.random(fadeMin, fadeMax);
+                    state = State.ALIVE;
+                    this.fadeTime = MathUtils.random(fadeMin, fadeMax) * 5;
                     elapsed = 0;
                 }
                 break;
@@ -302,39 +231,39 @@ public class Dust implements Drawable {
                 float outProg = Math.min(1f, elapsed / fadeTime);
                 alpha = EAS_FN.apply(1 - outProg);
                 if (outProg == 1f) {
-                    switch (condition) {
-                        case RESET:
-                            reset = true;
-                            break;
-                        case DESTROY:
-                            setDestroyed(true);
-                            break;
-                        case CONTINUE:
-                            this.state = DustState.APPEARING;
-                            this.elapsed = 0;
-                            this.fadeTime = MathUtils.random(fadeMin, fadeMax);
-                            break;
-                    }
+                    setDestroyed(true);
+                    active = false;
                 }
                 break;
         }
         position.add(velocity.x * delta, velocity.y * delta, velocity.z * delta);
-        textureRot += rps * delta;
+        if (position.z < 0) {
+            position.z = velocity.x = velocity.y = velocity.z = 0;
+            if (state != State.DECAYING) {
+                elapsed = 0;
+                state = State.DECAYING;
+            }
+        }
     }
 
     /**
      * Resets the object for reuse.
      */
     public void reset() {
-        this.state = DustState.APPEARING;
-        this.condition = Condition.CONTINUE;
-        this.reset = false;
+        this.state = State.APPEARING;
         setDestroyed(false);
-        this.textureRot = 0;
         this.alpha = 0;
         this.elapsed = 0;
         this.scale = 1;
+        this.active = false;
         this.fadeTime = MathUtils.random(fadeMin, fadeMax);
+    }
+
+    Vector2 pos = new Vector2();
+
+    @Override
+    public Vector2 getPos() {
+        return pos.set(getPosition().x, getPosition().y + getPosition().z * 3 / 4);
     }
 
     /**
@@ -344,8 +273,8 @@ public class Dust implements Drawable {
      */
     @Override
     public float getDepth() {
-        return getY();
-    }
+                          return getY();
+                                        }
 
     /**
      * Draws this object to the given canvas
@@ -354,15 +283,10 @@ public class Dust implements Drawable {
      */
     @Override
     public void draw(GameCanvas canvas) {
-        if (forUI) {
-            canvas.draw(texture, alpha, texture.getWidth() / 2, texture.getHeight() / 2,
-                    getPosition().x, getPosition().y + getPosition().z * 3 / 4, textureRot,
-                    textureScale * scale, textureScale * scale);
-        } else {
-            canvas.draw(texture, alpha, texture.getWidth() / 2, texture.getHeight() / 2,
-                    canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y + getPosition().z * 3 / 4), textureRot,
-                    textureScale * scale, textureScale * scale);
-        }
+        FilmStrip cur = filmStrip.getKeyFrame(state == State.DECAYING ? 0 : Gdx.graphics.getDeltaTime());
+        canvas.draw(cur, alpha, cur.getRegionWidth() / 2, cur.getRegionHeight() / 2,
+                canvas.WorldToScreenX(getPosition().x), canvas.WorldToScreenY(getPosition().y + getPosition().z), 0,
+                textureScale * scale, textureScale * scale);
     }
 
     /**
@@ -372,11 +296,11 @@ public class Dust implements Drawable {
      */
     @Override
     public boolean isDestroyed() {
-        return destroyed;
-    }
+                               return destroyed;
+                                                }
 
     @Override
     public void setDestroyed(boolean destroyed) {
-        this.destroyed = destroyed;
-    }
+                                              this.destroyed = destroyed;
+                                                                         }
 }

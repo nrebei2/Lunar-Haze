@@ -1536,17 +1536,22 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
             return false;
         }
 
+        int boardX = board.worldToBoardX(mouseWorld.x);
+        int boardY = board.worldToBoardY(mouseWorld.y);
+
         switch (selected.getType()) {
             case EXIST_OBJECT:
-                ((ExistingObject) selected).object.setPosition(mouseWorld.x, mouseWorld.y);
+                if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
+                    mouseBoard.set(boardX, boardY);
+                    ((ExistingObject) selected).object.setPosition(mouseBoard);
+                } else {
+                    ((ExistingObject) selected).object.setPosition(mouseWorld);
+                }
                 break;
             case EXIST_ENEMY:
                 ((ExistingEnemy) selected).enemy.setPosition(mouseWorld.x, mouseWorld.y);
                 break;
             case TILE:
-                int boardX = board.worldToBoardX(mouseWorld.x);
-                int boardY = board.worldToBoardY(mouseWorld.y);
-
                 if (!mouseBoard.epsilonEquals(boardX, boardY) || !board.hasPreview()) {
                     // mouse is on different tile now
                     mouseBoard.set(boardX, boardY);
@@ -2246,7 +2251,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
                 ImGui.text("Escape");
                 ImGui.tableNextColumn();
                 ImGui.text("Stop selecting item");
-
 
                 ImGui.tableNextColumn();
                 ImGui.text("Q");

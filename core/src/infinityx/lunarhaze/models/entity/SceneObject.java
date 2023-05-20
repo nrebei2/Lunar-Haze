@@ -1,10 +1,13 @@
 package infinityx.lunarhaze.models.entity;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
+import infinityx.lunarhaze.graphics.Animation;
+import infinityx.lunarhaze.graphics.FilmStrip;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.models.GameObject;
 import infinityx.lunarhaze.models.LevelContainer;
@@ -41,6 +44,14 @@ public class SceneObject extends GameObject implements Drawable {
      */
     private boolean dirty;
 
+    public Leaf[] leaves;
+
+    private LevelContainer container;
+
+    private float emitTimer = 0;
+    private static final float MIN_EMIT_DELAY = 1f;
+    private static final float MAX_EMIT_DELAY = 1.5f;
+
     /**
      * Initialize a scene object.
      */
@@ -49,6 +60,7 @@ public class SceneObject extends GameObject implements Drawable {
         this.type = type;
         this.flipped = false;
         this.seeThru = false;
+        this.emitTimer = MathUtils.random(MIN_EMIT_DELAY, MAX_EMIT_DELAY);
     }
 
     /**
@@ -82,8 +94,49 @@ public class SceneObject extends GameObject implements Drawable {
     @Override
     public void initialize(AssetDirectory directory, JsonValue json, LevelContainer container) {
         super.initialize(directory, json, container);
-        if (json != null && json.has("overlook")) {
-            seeThru = json.getBoolean("overlook");
+        this.container = container;
+        if (json != null) {
+            if (json.has("overlook")) {
+                seeThru = json.getBoolean("overlook");
+            }
+            if (json.has("leaves")) {
+                int count = Math.min(Leaf.MAX, 5);
+                if (count == 0) return;
+                leaves = new Leaf[count];
+                for (int i = 0; i < count; i++) {
+                    Leaf leaf = new Leaf();
+                    leaves[i] = leaf;
+                    Animation animation = new Animation();
+                    animation.addAnimation("main", directory.getEntry(json.getString("leaves"), FilmStrip.class), 0.12f);
+                    animation.setCurrentAnimation("main");
+                    leaf.setTexture(animation);
+                    leaf.setDestroyed(true);
+                    leaf.setTextureScale(1);
+                    Leaf.MAX--;
+                }
+            }
+        }
+    }
+
+    public void emitLeaf(float deltaTime) {
+        emitTimer -= deltaTime;
+        if (emitTimer <= 0) {
+            for (Leaf leaf : leaves) {
+                if (!leaf.active && leaf.isDestroyed()) {
+                    leaf.reset();
+                    leaf.active = true;
+                    leaf.setX(getX() + getBoundingRadius() * 4 * (2 * MathUtils.random() - 1));
+                    leaf.setY(getY());
+                    leaf.setZ(MathUtils.random(2, 5));
+                    leaf.setVelocity(MathUtils.random(0.1f, 0.2f), MathUtils.random(-0.3f, -0.2f), MathUtils.random(-1.25f, -0.75f));
+                    leaf.setScale(MathUtils.random(0.5f, 1));
+                    leaf.setFadeRange(0.5f, 1f);
+                    container.addDrawables(leaf);
+                    // Reset timer with a new random delay
+                    emitTimer = MathUtils.random(MIN_EMIT_DELAY, MAX_EMIT_DELAY);
+                    break;
+                }
+            }
         }
     }
 
@@ -129,8 +182,17 @@ public class SceneObject extends GameObject implements Drawable {
 
     @Override
     public void draw(GameCanvas canvas) {
+        // looks kinda ass
         if (!getSceneObjectType().equalsIgnoreCase("fencey"))
             drawShadow(canvas);
+
+        // updating in draw, idgaf
+        if (leaves != null) {
+            for (Leaf leaf: leaves) {
+                leaf.update(Gdx.graphics.getDeltaTime());
+            }
+            emitLeaf(Gdx.graphics.getDeltaTime());
+        }
 
         Vector2 pos = getPosition();
         filmstrip = animation.getKeyFrame(Gdx.graphics.getDeltaTime());

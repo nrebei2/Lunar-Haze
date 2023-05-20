@@ -91,6 +91,11 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
         this(0, 0);
     }
 
+    @Override
+    public Vector2 getPos() {
+        return getPosition();
+    }
+
     /**
      * Creates a new game object with degenerate collider settings.
      * <p>
