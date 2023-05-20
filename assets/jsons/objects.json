@@ -148,7 +148,8 @@
         "width": 0.7,
         "height": 0.5
       }
-    }
+    },
+    "overlook":true
   },
   "stone4": {
     "textures": {
@@ -165,7 +166,8 @@
         "width": 0.5,
         "height": 0.3
       }
-    }
+    },
+    "overlook":true
   },
   "stone5": {
     "textures": {
@@ -182,7 +184,8 @@
         "width": 0.5,
         "height": 0.3
       }
-    }
+    },
+    "overlook":true
   },
   "fence1": {
     "textures": {

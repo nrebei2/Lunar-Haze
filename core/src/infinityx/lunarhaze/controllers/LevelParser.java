@@ -294,6 +294,12 @@ public class LevelParser {
         int phaseLength = settings.getInt("phaseLength");
         levelContainer.getSettings().setPhaseLength(phaseLength);
         levelContainer.getSettings().setTransition(transitionTime);
+        levelContainer.getSettings().shadowScale.set(
+                settings.has("shadow-scale") ? settings.getFloat("shadow-scale") : 0.5f
+        );
+        levelContainer.getSettings().shadowShear.set(
+                settings.has("shadow-shear") ? settings.getFloat("shadow-shear") : 0.5f
+        );
 
         JsonValue enemySpawnerSettings = settings.get("enemy-spawner");
 

@@ -27,6 +27,9 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
  */
 public class GameCanvas {
 
+    /** Scale and shearing constants for object shadows */
+    public float shadowScale, shadowShear = 0.5f;
+
     /**
      * Enumeration to track which pass we are in
      */
