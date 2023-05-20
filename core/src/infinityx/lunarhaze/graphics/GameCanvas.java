@@ -868,6 +868,37 @@ public class GameCanvas {
     }
 
     /**
+     * Draws the tinted texture with the given transformations
+     * <p>
+     * The texture colors will be multiplied by the given color.  This will turn
+     * any white into the given color.  Other colors will be similarly affected.
+     * <p>
+     * The transformations are BEFORE after the global transform (@see begin(Affine2)).
+     * As a result, the specified texture origin will be applied to all transforms
+     * (both the local and global).
+     * <p>
+     * The local transformations in this method are applied in the following order:
+     * scaling, then rotation, then translation (e.g. placement at (sx,sy)).
+     *
+     * @param image The texture to draw
+     * @param alpha The alpha tint
+     * @param ox    The x-coordinate of texture origin (in pixels)
+     * @param oy    The y-coordinate of texture origin (in pixels)
+     * @param x     The x-coordinate of the texture origin (on screen)
+     * @param y     The y-coordinate of the texture origin (on screen)
+     * @param angle The rotation angle (in degrees) about the origin.
+     * @param sx    The x-axis scaling factor
+     * @param sy    The y-axis scaling factor
+     */
+    public void draw(TextureRegion image, float alpha, float ox, float oy,
+                     float x, float y, float angle, float sx, float sy) {
+        // Call the master drawing method (more efficient that base method)
+        holder.setRegion(image);
+        alphaCache.a = alpha;
+        draw(holder, alphaCache, ox, oy, x, y, angle, sx, sy);
+    }
+
+    /**
      * Draws the texture at the given position.
      * Unless otherwise transformed by the global transform (@see begin(Affine2)),
      * the texture will be unscaled.  The bottom left of the texture will be positioned
