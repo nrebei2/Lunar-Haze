@@ -160,8 +160,8 @@
       ],
       "scale": 0.4
     },
-    "particle": {
-      "effect": "particles/enemy_hit.p",
+    "particle_hit": {
+      "effect": "particles/player_hit.p",
       "imagesDir": "particles"
     }
   },
@@ -292,8 +292,8 @@
         "sensor": true
       }
     },
-    "particle": {
-      "effect": "particles/enemy_hit.p",
+    "particle_hit": {
+      "effect": "particles/player_hit.p",
       "imagesDir": "particles"
     }
   }

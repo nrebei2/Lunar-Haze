@@ -142,8 +142,8 @@ public abstract class AttackingGameObject extends GameObject {
         lockout = attack.getFloat("lockout");
 
         // Particle effect
-        if(json.get("particle") != null) {
-            JsonValue particle = json.get("particle");
+        if(json.get("particle_hit") != null) {
+            JsonValue particle = json.get("particle_hit");
             ParticleEffect dummyParticleEffect = new ParticleEffect();
             dummyParticleEffect.load(Gdx.files.internal(particle.getString("effect")), Gdx.files.internal(particle.getString("imagesDir")));
             particlePool = new ParticleEffectPool(dummyParticleEffect, 4, 8);

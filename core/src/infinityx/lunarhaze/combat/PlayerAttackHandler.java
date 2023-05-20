@@ -160,6 +160,7 @@ public class PlayerAttackHandler extends MeleeHandler {
     private void initiateDash(GameplayController.Phase phase) {
         if (!isDashing) {
             isDashing = true;
+            ((Werewolf) entity).isDashing = true;
             dashDirection.set(
                     InputController.getInstance().getHorizontal(),
                     InputController.getInstance().getVertical()
@@ -186,6 +187,7 @@ public class PlayerAttackHandler extends MeleeHandler {
     private void endDash() {
         dashCooldownCounter = 0f;
         isDashing = false;
+        ((Werewolf) entity).isDashing = false;
         ((Werewolf) entity).setTargetStealth(((Werewolf) entity).getTargetStealth() - 0.2f);
     }
 
