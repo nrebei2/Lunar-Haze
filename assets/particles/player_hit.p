@@ -2,16 +2,16 @@ Untitled
 - Delay -
 active: false
 - Duration - 
-lowMin: 300.0
-lowMax: 300.0
+lowMin: 400.0
+lowMax: 400.0
 - Count - 
 min: 0
-max: 35
+max: 70
 - Emission - 
 lowMin: 0.0
 lowMax: 0.0
-highMin: 50.0
-highMax: 50.0
+highMin: 100.0
+highMax: 100.0
 relative: false
 scalingCount: 1
 scaling0: 1.0
@@ -20,8 +20,8 @@ timeline0: 0.0
 - Life - 
 lowMin: 0.0
 lowMax: 0.0
-highMin: 700.0
-highMax: 1200.0
+highMin: 400.0
+highMax: 500.0
 relative: false
 scalingCount: 3
 scaling0: 1.0
@@ -40,12 +40,14 @@ active: false
 - Y Offset - 
 active: false
 - Spawn Shape - 
-shape: square
+shape: ellipse
+edges: false
+side: both
 - Spawn Width - 
 lowMin: 0.0
 lowMax: 0.0
-highMin: 3.0
-highMax: 3.0
+highMin: 30.0
+highMax: 30.0
 relative: false
 scalingCount: 1
 scaling0: 1.0
@@ -54,18 +56,18 @@ timeline0: 0.0
 - Spawn Height - 
 lowMin: 0.0
 lowMax: 0.0
-highMin: 3.0
-highMax: 3.0
+highMin: 70.0
+highMax: 70.0
 relative: false
 scalingCount: 1
 scaling0: 1.0
 timelineCount: 1
 timeline0: 0.0
 - X Scale - 
-lowMin: 0.0
-lowMax: 0.0
-highMin: 18.0
-highMax: 18.0
+lowMin: 6.0
+lowMax: 6.0
+highMin: 20.0
+highMax: 20.0
 relative: false
 scalingCount: 1
 scaling0: 1.0
@@ -77,7 +79,7 @@ active: false
 active: true
 lowMin: 0.0
 lowMax: 0.0
-highMin: 100.0
+highMin: 150.0
 highMax: 300.0
 relative: false
 scalingCount: 1
@@ -91,28 +93,33 @@ lowMax: 360.0
 highMin: 0.0
 highMax: 360.0
 relative: false
-scalingCount: 3
+scalingCount: 1
 scaling0: 1.0
-scaling1: 0.0
-scaling2: 0.0
-timelineCount: 3
+timelineCount: 1
 timeline0: 0.0
-timeline1: 0.5
-timeline2: 1.0
 - Rotation - 
 active: false
 - Wind - 
-active: false
+active: true
+lowMin: 0.0
+lowMax: 0.0
+highMin: 0.0
+highMax: 0.0
+relative: false
+scalingCount: 1
+scaling0: 1.0
+timelineCount: 1
+timeline0: 0.0
 - Gravity - 
 active: false
 - Tint - 
 colorsCount: 6
-colors0: 1.0
-colors1: 1.0
-colors2: 1.0
-colors3: 0.30980393
-colors4: 0.20784314
-colors5: 0.63529414
+colors0: 0.6666667
+colors1: 0.6901961
+colors2: 0.74509805
+colors3: 0.0
+colors4: 0.0
+colors5: 0.0
 timelineCount: 2
 timeline0: 0.0
 timeline1: 1.0
