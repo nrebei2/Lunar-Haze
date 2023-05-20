@@ -86,6 +86,22 @@ public class AttackHitbox extends GameObject {
     }
 
     /**
+     * @return The current range (width) of this hitbox
+     */
+    public float getHitboxWidth() {
+        return getShapeInformation("body").width;
+    }
+
+    /**
+     * Updates the range of this hitbox. The entire hitbox will be scaled, thus the width will be updated as well.
+     *
+     * @param width new range in world length
+     */
+    public void setHitboxWidth(float width) {
+        setScale(scale * width / getHitboxWidth());
+    }
+
+    /**
      * Draws the hitbox outline in red using {@link GameCanvas#drawPhysics(PolygonShape, Color, float, float, float, float, float)}
      *
      * @param canvas canvas to draw on

@@ -5,9 +5,9 @@
         "name": "werewolf.attack1-l",
         "durations": [
           0.0001,
-          0.1,
-          0.1,
-          0.2
+          0.2,
+          0.2,
+          0.3
         ]
       },
       "attack2-l": {
@@ -23,9 +23,9 @@
         "name": "werewolf.attack1-r",
         "durations": [
           0.0001,
-          0.1,
-          0.1,
-          0.2
+          0.2,
+          0.2,
+          0.3
         ]
       },
       "attack2-r": {
@@ -41,60 +41,60 @@
         "name": "werewolf.attack1-b",
         "durations": [
           0.0001,
-          0.1,
-          0.2
+          0.2,
+          0.3
         ]
       },
       "attack2-b": {
         "name": "werewolf.attack2-b",
         "durations": [
           0.0001,
-          0.1,
-          0.2
+          0.2,
+          0.3
         ]
       },
       "attack1-f": {
         "name": "werewolf.attack1-f",
         "durations": [
           0.0001,
-          0.1,
-          0.2
+          0.2,
+          0.3
         ]
       },
       "attack2-f": {
         "name": "werewolf.attack2-f",
         "durations": [
           0.0001,
-          0.1,
-          0.2
+          0.2,
+          0.3
         ]
       },
       "heavyattack-l": {
         "name": "werewolf.heavyattack-l",
         "durations": [
-          0.12,
-          0.6
+          0.2,
+          0.8
         ]
       },
       "heavyattack-r": {
         "name": "werewolf.heavyattack-r",
         "durations": [
-          0.12,
-          0.6
+          0.2,
+          0.8
         ]
       },
       "heavyattack-f": {
         "name": "werewolf.heavyattack-f",
         "durations": [
-          0.12,
-          0.6
+          0.2,
+          0.8
         ]
       },
       "heavyattack-b": {
         "name": "werewolf.heavyattack-b",
         "durations": [
-          0.12,
-          0.6
+          0.2,
+          0.8
         ]
       },
       "attacked-l": "werewolf.attacked-l",
@@ -258,11 +258,11 @@
       "knockback": 0.8,
       "damage": 1.0,
       "cooldown": 0.08,
-      "length": 0.5,
-      "immunity": 0.5,
+      "length": 0.7,
+      "immunity": 0.7,
       "lockout": 0.5,
       "hitbox": {
-        "range": 1.6,
+        "range": 1,
         "width": 1.5,
         "textures": {
           "hitbox": {

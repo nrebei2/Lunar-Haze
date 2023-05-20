@@ -121,12 +121,16 @@ public class PlayerAttackHandler extends MeleeHandler {
 
     public void initiateHeavyAttack() {
         Werewolf player = (Werewolf) entity;
+        player.setLinearVelocity(Vector2.Zero);
         player.attackDamage *= 1.75f;
         player.attackKnockback *= 1.75f;
         player.getAttackHitbox().setHitboxRange(player.getAttackHitbox().getHitboxRange() * 1.25f);
+        player.getAttackHitbox().setHitboxWidth(player.getAttackHitbox().getHitboxWidth() * 1.25f);
+
         player.getAttackHitbox().setTexture("hitbox_heavy");
         heavyAttacking = true;
         player.isHeavyAttacking = true;
+        player.attackLength *= 1.5f;
 
         initiateAttack();
     }
@@ -139,7 +143,9 @@ public class PlayerAttackHandler extends MeleeHandler {
             // Reset damage and knockback to their original values
             player.attackDamage /= 1.75f;
             player.attackKnockback /= 1.75f;
-            player.getAttackHitbox().setHitboxRange(player.getAttackHitbox().getHitboxRange() / 1.25f);
+            player.attackLength /= 1.5f;
+            player.getAttackHitbox().setHitboxRange(player.getAttackHitbox().getHitboxRange() /1.25f);
+            player.getAttackHitbox().setHitboxWidth(player.getAttackHitbox().getHitboxWidth() / 1.25f);
             player.getAttackHitbox().setTexture("hitbox");
             player.isHeavyAttacking = false;
 
