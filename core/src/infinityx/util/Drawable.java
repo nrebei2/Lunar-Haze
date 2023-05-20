@@ -1,5 +1,6 @@
 package infinityx.util;
 
+import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.graphics.GameCanvas;
 
 
@@ -28,6 +29,8 @@ public interface Drawable {
      * @return true if this object is destroyed
      */
     boolean isDestroyed();
+
+    Vector2 getPos();
 
     /**
      * Sets this object as destroyed or not.

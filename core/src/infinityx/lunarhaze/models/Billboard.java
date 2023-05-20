@@ -3,6 +3,7 @@ package infinityx.lunarhaze.models;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
@@ -45,11 +46,14 @@ public class Billboard implements Drawable {
 
     public String name;
 
+    private Vector2 pos;
+
     public Billboard(Vector3 position, float scale) {
         this.position = position;
         this.scale = scale;
         this.tint = new Color(Color.WHITE);
         this.animation = new Animation();
+        this.pos = new Vector2();
     }
 
     public void initialize(AssetDirectory directory, JsonValue json) {
@@ -111,6 +115,10 @@ public class Billboard implements Drawable {
     @Override
     public float getDepth() {
         return position.y;
+    }
+
+    public Vector2 getPos() {
+        return pos.set(getPosition().x, getPosition().y + getPosition().z);
     }
 
     @Override

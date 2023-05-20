@@ -358,7 +358,6 @@ public enum EnemyState implements State<EnemyController> {
     LOCKED_OUT() {
         @Override
         public void enter(EnemyController entity) {
-            System.out.println("locked out");
             entity.getEnemy().setSteeringBehavior(null);
         }
 

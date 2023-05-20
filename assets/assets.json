@@ -395,6 +395,50 @@
         }
       }
     },
+    "leaf1": {
+      "file":   "images/objects/leaf1.png",
+      "wrap":   false,
+      "sprites": {
+        "strip" : {
+          "size" : 15,
+          "rows" : 1,
+          "cols" : 15
+        }
+      }
+    },
+    "leaf2": {
+      "file":   "images/objects/leaf2.png",
+      "wrap":   false,
+      "sprites": {
+        "strip" : {
+          "size" : 15,
+          "rows" : 1,
+          "cols" : 15
+        }
+      }
+    },
+    "leaf3": {
+      "file":   "images/objects/leaf3.png",
+      "wrap":   false,
+      "sprites": {
+        "strip" : {
+          "size" : 15,
+          "rows" : 1,
+          "cols" : 15
+        }
+      }
+    },
+    "leaf4": {
+      "file":   "images/objects/leaf4.png",
+      "wrap":   false,
+      "sprites": {
+        "strip" : {
+          "size" : 15,
+          "rows" : 1,
+          "cols" : 15
+        }
+      }
+    },
 
     "dust": "images/dust.png",
     "werewolf": {

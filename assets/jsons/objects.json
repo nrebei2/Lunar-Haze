@@ -413,7 +413,8 @@
         "type": "circle",
         "radius": 0.25
       }
-    }
+    },
+    "leaves": "leaf1.strip"
   },
   "tree6": {
     "textures": {
@@ -429,7 +430,8 @@
         "type": "circle",
         "radius": 0.275
       }
-    }
+    },
+    "leaves": "leaf3.strip"
   },
   "tree7": {
     "textures": {
@@ -445,7 +447,8 @@
         "type": "circle",
         "radius": 0.45
       }
-    }
+    },
+    "leaves": "leaf2.strip"
   },
   "tree8": {
     "textures": {
@@ -477,7 +480,8 @@
         "type": "circle",
         "radius": 0.45
       }
-    }
+    },
+    "leaves": "leaf3.strip"
   },
   "tree10": {
     "textures": {
@@ -493,7 +497,8 @@
         "type": "circle",
         "radius": 0.23
       }
-    }
+    },
+    "leaves": "leaf4.strip"
   },
   "tree11": {
     "textures": {
@@ -509,7 +514,8 @@
         "type": "circle",
         "radius": 0.35
       }
-    }
+    },
+    "leaves": "leaf2.strip"
   },
 
   "tallgrass-1": {
