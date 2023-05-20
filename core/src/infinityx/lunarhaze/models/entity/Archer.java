@@ -25,6 +25,8 @@ public class Archer extends Enemy {
 
         float range = json.get("attack").get("range").asFloat();
         setAttackRange(range);
+
+        updateStrafeDistance();
     }
 
     @Override
@@ -49,11 +51,4 @@ public class Archer extends Enemy {
 //        arrow = new Arrow(this.getX(), this.getY(), this);
     }
 
-//    public Arrow getArrow(){
-//        return arrow;
-//    }
-//
-//    public void setArrow(Arrow arrow){
-//        this.arrow = arrow;
-//    }
 }

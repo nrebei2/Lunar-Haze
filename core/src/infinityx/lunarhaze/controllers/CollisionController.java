@@ -63,12 +63,18 @@ public class CollisionController implements ContactListener {
                     case WEREWOLF:
                         System.out.println("ProcessCollision between ARROW and WEREWOLF");
                         handleCollision(((Arrow) o1).getArcher(), (Werewolf) o2);
+                        ((Arrow)o1).setLinearVelocity(Vector2.Zero);
                         break;
-                    case HITBOX:
-                        handleCollision(
-                                ((AttackHitbox) o2).getAttacker(),
-                                (AttackingGameObject) o1
-                        );
+//                    case HITBOX:
+//                        handleCollision(
+//                                ((AttackHitbox) o2).getAttacker(),
+//                                (AttackingGameObject) o1
+//                        );
+//                        break;
+                    case SCENE:
+                        if (!((SceneObject)o2).isSeeThru()){
+                            ((Arrow)o1).setLinearVelocity(Vector2.Zero);
+                        }
                         break;
                     default:
                         break;

@@ -2,9 +2,10 @@
 "0": {
 	"settings": {
 		"transition": 4,
-		"phaseLength": 200,
+		"phaseLength": 0,
 		"enemy-spawner": {
-			"count": 0,
+			"villager-count": 0,
+			"archer-count": 0,
 			"add-tick": [ 0.0, 0.0 ],
 			"delay": 0.0,
 			"spawn-locations": []
@@ -18,13 +19,15 @@
 	},
 	"tiles": {
 		"layout": [
-			[ 0, 0, 0 ],
-			[ 0, 0, 0 ],
-			[ 0, 0, 0 ]
+			[ 2, 2, 2, 2, 2 ],
+			[ 2, 2, 2, 2, 2 ],
+			[ 2, 2, 2, 2, 2 ],
+			[ 2, 2, 2, 2, 2 ],
+			[ 2, 2, 2, 2, 2 ]
 		],
 		"moonlight": {
 			"positions": [
-				[ 2, 0 ]
+				[ 0, 3 ]
 			],
 			"lighting": {
 				"color": [ 1.0, 1.0, 1.0, 0.20000000298023224 ],
@@ -35,16 +38,32 @@
 		}
 	},
 	"scene": {
-		"player": [ 0.8213081359863281, 2.598281145095825 ],
-		"billboards": [
+		"player": [ 0.7752346992492676, 0.6850001215934753 ],
+		"billboards": [],
+		"enemies": [
 			{
-				"type": "attack",
-				"scale": 0.4099999964237213,
-				"position": [ 3.071000099182129, -0.984000027179718, 5.650000095367432 ]
+				"type": "Archer",
+				"scale": 1.0,
+				"position": [ 2.9210939407348633, 3.2562496662139893 ],
+				"patrol": [
+					[ 2.9210939407348633, 3.2562496662139893 ]
+				]
 			}
 		],
-		"enemies": [],
-		"objects": []
+		"objects": [
+			{
+				"type": "lamp",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 3.7375001907348633, 4.139688014984131 ]
+			},
+			{
+				"type": "lamp",
+				"scale": 1.0,
+				"flip": false,
+				"position": [ 3.8612499237060547, 0.42718759179115295 ]
+			}
+		]
 	}
 },
 "1": {
@@ -9376,7 +9395,8 @@
 		"transition": 4,
 		"phaseLength": 0,
 		"enemy-spawner": {
-			"count": 0,
+			"villager-count": 0,
+			"archer-count": 0,
 			"add-tick": [ 0.0, 0.0 ],
 			"delay": 0.0,
 			"spawn-locations": []
@@ -9410,13 +9430,14 @@
 	},
 	"scene": {
 		"player": [ 0.7752346992492676, 0.6850001215934753 ],
+		"billboards": [],
 		"enemies": [
 			{
-				"type": "Villager",
+				"type": "Archer",
 				"scale": 1.0,
-				"position": [ 2.9099221229553223, 3.1187503337860107 ],
+				"position": [ 2.9210939407348633, 3.2562496662139893 ],
 				"patrol": [
-					[ 2.0, 3.0 ]
+					[ 2.9210939407348633, 3.2562496662139893 ]
 				]
 			}
 		],

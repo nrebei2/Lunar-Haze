@@ -339,7 +339,7 @@ public class EnemyController {
                 if (!getAttackHandler().canStartNewAttack()) {
                     Vector2 evade_dir = enemy.getPosition().sub(target.getPosition());
                     for (int i = 0; i < map.getResolution(); i++) {
-                        map.interestMap[i] = 1 / evade_dir.len() * Math.max(0, map.dirFromSlot(i).dot(evade_dir.nor()));
+                        map.interestMap[i] = (1 / evade_dir.len()) * Math.max(0, map.dirFromSlot(i).dot(evade_dir.nor()));
                     }
                 }
 

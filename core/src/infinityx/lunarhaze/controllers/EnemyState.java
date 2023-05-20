@@ -174,8 +174,6 @@ public enum EnemyState implements State<EnemyController> {
             entity.updatePath();
             entity.getEnemy().setSteeringBehavior(entity.followPathAvoid);
 
-            //TODO fix the first part of the and statement, this breaks if enemy attack aand switches to battle. Make
-            //each enemy is added in only once
             if (entity.getEnemy().isInBattle()) {
                 MessageManager.getInstance().dispatchMessage(TacticalManager.ADD, entity);
             }
@@ -232,6 +230,7 @@ public enum EnemyState implements State<EnemyController> {
                         entity.time = 0;
                     }
                 } else {
+                    System.out.println("is in battle");
                     //go to battle mode
                     // Always face towards target
                     entity.getEnemy().setIndependentFacing(true);

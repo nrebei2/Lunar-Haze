@@ -391,12 +391,18 @@ public class LevelContainer {
      */
     public Arrow addArrow(float x, float y, Archer archer){
         Arrow arrow = new Arrow(x, y, archer);
-        arrow.initialize(directory, enemiesJson.get("arrow"), this );
+        arrow.initialize(directory, enemiesJson.get("archer").get("arrow"), this );
         addDrawables(arrow);
         arrow.activatePhysics(world);
         return arrow;
 
     }
+
+    public void removeArrow(Arrow arrow){
+        drawables.removeValue(arrow, true);
+        arrow.setActive(false);
+    }
+
 
     public Array<EnemyController> getActiveControllers() {
         return activeControllers;

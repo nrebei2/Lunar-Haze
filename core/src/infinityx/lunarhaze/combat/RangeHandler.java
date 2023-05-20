@@ -26,6 +26,8 @@ public class RangeHandler extends AttackHandler{
 
     private LevelContainer container;
 
+    private float arrowFlyTime = 0;
+
 
     /**
      * @param archer the archer this class is controlling
@@ -61,6 +63,17 @@ public class RangeHandler extends AttackHandler{
     @Override
     protected void endAttack() {
         super.endAttack();
+    }
+
+    @Override
+    public void update(float delta) {
+        super.update(delta);
+        arrowFlyTime += delta;
+        // IMPORTANT: fly time has to be lower than archer attack cool down due to initialization
+        if (arrowFlyTime >= 2f || (arrow != null && arrow.getLinearVelocity().epsilonEquals(Vector2.Zero))){
+            container.removeArrow(arrow);
+            arrowFlyTime = 0f;
+        }
     }
 
     public float getAngleFacing(){
