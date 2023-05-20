@@ -395,7 +395,6 @@ public class LevelContainer {
         addDrawables(arrow);
         arrow.activatePhysics(world);
         return arrow;
-
     }
 
     public void removeArrow(Arrow arrow) {

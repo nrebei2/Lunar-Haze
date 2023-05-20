@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.ParticleEffectPool;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.combat.AttackHitbox;
@@ -86,7 +87,7 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
     /**
      * Whether the player is in tall grass
      */
-    public SceneObject inTallGrass;
+    public Array<SceneObject> inTallGrass;
 
     public boolean isHeavyAttacking;
 
@@ -185,6 +186,7 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
         werewolfInfo = new WerewolfInfo();
         isHeavyAttacking = false;
         isDashing = false;
+        inTallGrass = new Array<>();
     }
 
     /**
@@ -227,7 +229,7 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
      * @return The radius of the werewolf's noise in world length
      */
     public float getNoiseRadius() {
-        return Interpolation.linear.apply(0.72f, 3.7f, inTallGrass != null ? 0 : stealth);
+        return Interpolation.linear.apply(0.72f, 3.7f, inTallGrass.size != 0 ? 0 : stealth);
     }
 
     /**

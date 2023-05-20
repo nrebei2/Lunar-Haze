@@ -221,7 +221,7 @@ public class CollisionController implements ContactListener {
     private void handleCollision(SceneObject obj, Werewolf player) {
         if (obj.isSensor()) {
             // For now, we can assume obj is tall grass
-            player.inTallGrass = obj;
+            player.inTallGrass.add(obj);
         }
     }
 
@@ -280,8 +280,7 @@ public class CollisionController implements ContactListener {
     private void endCollision(SceneObject obj, Werewolf player) {
         if (obj.isSensor()) {
             // For now, we can assume obj is tall grass
-            if (obj == player.inTallGrass)
-                player.inTallGrass = null;
+                player.inTallGrass.removeValue(obj, true);
         }
     }
 
