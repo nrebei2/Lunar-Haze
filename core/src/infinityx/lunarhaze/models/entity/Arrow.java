@@ -25,7 +25,7 @@ public class Arrow extends GameObject {
      * Initialize an arrow
      */
     public Arrow(float x, float y, Archer archer) {
-        super();
+        super(x, y);
         this.archer = archer;
         setLoop(true);
     }

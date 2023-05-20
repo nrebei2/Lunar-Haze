@@ -247,7 +247,7 @@
       "lockout": 0.3
     },
     "arrow": {
-      "bodytype": "dynamic",
+      "bodytype": "kinematic",
       "density": 1.0,
       "friction": 0.0,
       "restitution": 0.0,

@@ -41,7 +41,6 @@ public class RangeHandler extends AttackHandler{
 
     @Override
     public void initiateAttack() {
-        System.out.println("archers initate attack");
         super.initiateAttack();
 
         arrow = container.addArrow(entity.getX(), entity.getY(), (Archer) entity);
@@ -68,11 +67,15 @@ public class RangeHandler extends AttackHandler{
     @Override
     public void update(float delta) {
         super.update(delta);
-        arrowFlyTime += delta;
+
+//        arrowFlyTime += delta;
         // IMPORTANT: fly time has to be lower than archer attack cool down due to initialization
-        if (arrowFlyTime >= 2f || (arrow != null && arrow.getLinearVelocity().epsilonEquals(Vector2.Zero))){
+//
+        if ((arrow != null && arrow.getLinearVelocity().epsilonEquals(Vector2.Zero))){
+            System.out.println(arrowFlyTime >= 2f);
             container.removeArrow(arrow);
-            arrowFlyTime = 0f;
+            arrow = null;
+//            arrowFlyTime = 0f;
         }
     }
 

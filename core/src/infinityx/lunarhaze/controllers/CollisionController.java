@@ -70,9 +70,8 @@ public class CollisionController implements ContactListener {
             case ARROW:
                 switch (o2.getType()) {
                     case WEREWOLF:
-                        System.out.println("ProcessCollision between ARROW and WEREWOLF");
-                        handleCollision(((Arrow) o1).getArcher(), (Werewolf) o2);
-                        ((Arrow)o1).setLinearVelocity(Vector2.Zero);
+                        handleArrow(((Arrow) o1), (Werewolf) o2);
+                        o1.setLinearVelocity(Vector2.Zero);
                         break;
 //                    case HITBOX:
 //                        handleCollision(
@@ -82,7 +81,7 @@ public class CollisionController implements ContactListener {
 //                        break;
                     case SCENE:
                         if (!((SceneObject)o2).isSeeThru()){
-                            ((Arrow)o1).setLinearVelocity(Vector2.Zero);
+                            o1.setLinearVelocity(Vector2.Zero);
                         }
                         break;
                     default:
@@ -105,6 +104,11 @@ public class CollisionController implements ContactListener {
                                 (SceneObject) o2,
                                 (Werewolf) o1
                         );
+                        break;
+                    case ARROW:
+                        handleArrow(((Arrow) o2), (Werewolf) o1);
+                        o2.setLinearVelocity(Vector2.Zero);
+                        break;
                     default:
                         break;
                 }
@@ -130,10 +134,37 @@ public class CollisionController implements ContactListener {
                                 (SceneObject) o1,
                                 (Werewolf) o2
                         );
+                        break;
+                    case ARROW:
+                        if (!((SceneObject)o1).isSeeThru()){
+                            o2.setLinearVelocity(Vector2.Zero);
+                        }
+                        break;
+                    default:
+                        break;
                 }
 
             default:
                 break;
+        }
+    }
+
+    private void handleArrow(Arrow arrow, AttackingGameObject attacked) {
+        boolean immune = attacked.isImmune();
+        if (!immune){
+            Vector2 direction = attacked.getPosition().sub(arrow.getArcher().getPosition()).nor();
+            attacked.getBody().applyLinearImpulse(direction.scl(arrow.getArcher().attackKnockback), attacked.getBody().getWorldCenter(), true);
+
+            attacked.hp -= arrow.getArcher().attackDamage;
+            if (attacked.hp < 0) attacked.hp = 0;
+
+            CameraShake.shake(arrow.getArcher().attackKnockback * 5f, 0.3f);
+            if (attacked.getType() == GameObject.ObjectType.ENEMY) {
+                if(setting.isSoundEnabled()){
+                    enemy_attacked.play(setting.getMusicVolume());
+                }
+            }
+            attacked.setAttacked();
         }
     }
 
