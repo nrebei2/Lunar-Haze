@@ -267,7 +267,6 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
                 if (stealth_playing) {
                     stealth_background.stop();
                     stealth_playing = false;
-                    System.out.println("stealth_playing set to false");
                 } else if (battle_playing) {
                     battle_background.stop();
                     stealth_playing = false;

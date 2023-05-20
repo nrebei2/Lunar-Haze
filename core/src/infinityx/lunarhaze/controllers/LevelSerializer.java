@@ -360,7 +360,6 @@ public class LevelSerializer {
 
         // Write back to levels.json
         FileHandle outputFile = Gdx.files.local("save-data/levels.json");
-        System.out.println(outputFile.file().getAbsolutePath());
         try {
             outputFile.writeString(levels.prettyPrint(JsonWriter.OutputType.json, 10), false);
         } catch (Exception e) {

@@ -66,7 +66,6 @@ public class RangeHandler extends AttackHandler {
         super.update(delta);
 
         if ((arrow != null && arrow.getLinearVelocity().epsilonEquals(Vector2.Zero))) {
-            System.out.println(arrowFlyTime >= 2f);
             container.removeArrow(arrow);
             arrow = null;
         }

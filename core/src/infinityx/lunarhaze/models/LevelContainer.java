@@ -698,26 +698,26 @@ public class LevelContainer {
         canvas.end();
 
         // ------------------------ DEBUG --------------------------
-        if (InputController.getInstance().didDebug()) {
-            debugPressed = !debugPressed;
-        }
-        if (debugPressed) {
-            if (player.isAttacking) {
-                canvas.begin(GameCanvas.DrawPass.SHAPE, view.x, view.y);
-                player.attackHitbox.drawHitbox(canvas);
-                canvas.end();
-            }
-
-            canvas.begin(GameCanvas.DrawPass.SHAPE, view.x, view.y);
-            for (EnemyController e : getActiveControllers()) {
-                e.drawGizmo(canvas);
-                e.drawDetection(canvas);
-                e.getEnemy().drawSteeringOutput(canvas);
-            }
-            if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT))
-                pathfinder.map.drawMap(canvas);
-            canvas.end();
-        }
+        //if (InputController.getInstance().didDebug()) {
+        //    debugPressed = !debugPressed;
+        //}
+        //if (debugPressed) {
+        //    if (player.isAttacking) {
+        //        canvas.begin(GameCanvas.DrawPass.SHAPE, view.x, view.y);
+        //        player.attackHitbox.drawHitbox(canvas);
+        //        canvas.end();
+        //    }
+        //
+        //    canvas.begin(GameCanvas.DrawPass.SHAPE, view.x, view.y);
+        //    for (EnemyController e : getActiveControllers()) {
+        //        e.drawGizmo(canvas);
+        //        e.drawDetection(canvas);
+        //        e.getEnemy().drawSteeringOutput(canvas);
+        //    }
+        //    if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT))
+        //        pathfinder.map.drawMap(canvas);
+        //    canvas.end();
+        //}
     }
 
     /**

@@ -75,7 +75,6 @@ public class PlayerAttackHandler extends MeleeHandler {
             if (windingUpHeavyAttack) {
                 heavyAttackWindupTimer += delta;
                 if (heavyAttackWindupTimer >= HEAVY_ATTACK_WINDUP_TIME) {
-                    System.out.println("Starting heavy attack");
                     initiateHeavyAttack();
                     windingUpHeavyAttack = false;
                 }

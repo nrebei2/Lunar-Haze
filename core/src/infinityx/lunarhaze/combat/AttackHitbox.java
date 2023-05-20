@@ -143,9 +143,6 @@ public class AttackHitbox extends GameObject {
 
             offsetX += offset.x;
             offsetY += offset.y;
-
-            System.out.println(offset.x);
-            System.out.println(offset.y);
             switch (((Werewolf) attacker).direction){
                 case LEFT:
                     //offsetX -= 1;

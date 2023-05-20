@@ -37,10 +37,7 @@ public enum EnemyState implements State<EnemyController> {
         @Override
         public void enter(EnemyController entity) {
             entity.getEnemy().setFilmstripPrefix("attacked");
-
-//            if (entity.getSetting().isSoundEnabled()) {
-//                entity.getAttackedSound().play(entity.getSetting().getSoundVolume());
-//            }
+            entity.getEnemy().setSteeringBehavior(null);
         }
 
         @Override
