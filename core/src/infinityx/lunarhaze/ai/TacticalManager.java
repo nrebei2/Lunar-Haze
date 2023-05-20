@@ -69,7 +69,7 @@ public class TacticalManager implements Telegraph {
             //if behind enemy go attack
             if (control.isBehind(control.getEnemy(), target) && control.getAttackHandler().canStartNewAttack()) {
                 MessageManager.getInstance().dispatchMessage(null, enemy, ATTACK);
-            } else if (control.getAttackHandler().canStartNewAttack() && rand.nextFloat() <= 0.2f) {
+            } else if (control.getAttackHandler().canStartNewAttack() && rand.nextFloat() <= 0.3f) {
                 //attacking from front
                 MessageManager.getInstance().dispatchMessage(null, enemy, ATTACK);
             } else {
