@@ -1,9 +1,12 @@
 package infinityx.lunarhaze.models.entity;
 
 import box2dLight.PointLight;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
+import com.badlogic.gdx.graphics.g2d.ParticleEffectPool;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
@@ -74,6 +77,8 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
 
     public boolean isWindingUp;
 
+    public boolean isDashing;
+
     /**
      * Whether the player is in tall grass
      */
@@ -82,6 +87,10 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
     public boolean isHeavyAttacking;
 
     public AttackHitbox attackHitbox;
+
+    public ParticleEffectPool dashEffectPool;
+
+    private ParticleEffect dashParticle;
 
     /**
      * Required information to switch to werewolf
@@ -171,6 +180,7 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
         direction = Direction.RIGHT;
         werewolfInfo = new WerewolfInfo();
         isHeavyAttacking = false;
+        isDashing = false;
     }
 
     /**
@@ -270,6 +280,15 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
         int[] texOrigin = texInfo.get("origin").asIntArray();
         werewolfInfo.texOrigin = new Vector2(texOrigin[0], texOrigin[1]);
         werewolfInfo.textureScale = texInfo.getFloat("scale");
+
+        // Create particles
+        // Particle effect
+        if(json.get("particle_dash") != null) {
+            JsonValue particle = json.get("particle_dash");
+            ParticleEffect dummyParticleEffect = new ParticleEffect();
+            dummyParticleEffect.load(Gdx.files.internal(particle.getString("effect")), Gdx.files.internal(particle.getString("imagesDir")));
+            dashEffectPool = new ParticleEffectPool(dummyParticleEffect, 4, 8);
+        }
     }
 
     @Override
@@ -299,6 +318,10 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
             heavyLockoutTime -= delta;
             if (heavyLockoutTime <= 0)
                 heavyLockedOut = false;
+        }
+
+        if(isDashing && dashParticle != null) {
+            dashParticle.update(delta);
         }
 
         // get the current velocity of the player's Box2D body

@@ -129,6 +129,8 @@ public class GameplayController {
 
     private GameSetting setting;
 
+    private int totalMoonlight;
+
     /**
      * Creates a new GameplayController with no active elements.
      */
@@ -189,6 +191,16 @@ public class GameplayController {
         win_sound = levelContainer.getDirectory().getEntry("level-passed", Sound.class);
         fail_sound = levelContainer.getDirectory().getEntry("level-fail", Sound.class);
         tacticalManager = new TacticalManager(container);
+
+        totalMoonlight = levelContainer.getTotalMoonlight();
+    }
+
+    public int getTotalMoonlight(){
+        return totalMoonlight;
+    }
+
+    public void setTotalMoonlight(int totalMoonlight){
+        this.totalMoonlight = totalMoonlight;
     }
 
     /**
@@ -230,6 +242,7 @@ public class GameplayController {
                 case TRANSITION:
                     switchPhase(delta);
                     container.setEnemyDamage(0.5f);
+                    setTotalMoonlight(playerController.getPlayer().getMoonlightCollected());
                     break;
                 case ALLOCATE:
                     if (playerController.getAllocateReady()) {

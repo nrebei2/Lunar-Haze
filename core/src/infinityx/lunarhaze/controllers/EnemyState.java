@@ -151,7 +151,9 @@ public enum EnemyState implements State<EnemyController> {
         @Override
         public void update(EnemyController entity) {
             // Handle state transitions
-            if (!entity.getEnemy().isAttacking()) {
+            if(entity.getEnemy().isLockedOut()) {
+                entity.getStateMachine().changeState(LOCKED_OUT);
+            } else if (!entity.getEnemy().isAttacking()) {
                 entity.getStateMachine().changeState(ALERT);
             }
         }
@@ -173,7 +175,9 @@ public enum EnemyState implements State<EnemyController> {
             entity.targetPos.set(entity.getTarget().getPosition());
             entity.updatePath();
             entity.getEnemy().setSteeringBehavior(entity.followPathAvoid);
-            
+
+            //TODO fix the first part of the and statement, this breaks if enemy attack aand switches to battle. Make
+            //each enemy is added in only once
             if (entity.getEnemy().isInBattle()) {
                 MessageManager.getInstance().dispatchMessage(TacticalManager.ADD, entity);
             }
@@ -181,47 +185,32 @@ public enum EnemyState implements State<EnemyController> {
 
         @Override
         public void update(EnemyController entity) {
-            if (!entity.getEnemy().isActive()){
-                MessageManager.getInstance().dispatchMessage(TacticalManager.REMOVE, entity);
-            }
-
-            switch (entity.getDetection()) {
-                case NONE:
-                    entity.targetPos.set(entity.target.getPosition());
-                    entity.getStateMachine().changeState(INDICATOR);
-                    break;
-            }
-
-
-            Vector2 enemyToTarget = entity.target.getPosition().sub(entity.getEnemy().getPosition());
-            float targetDst = enemyToTarget.len();
-            entity.getEnemy().getFlashlight().setDirection(enemyToTarget.angleDeg());
-
-            //if in stealth just walk towards target and attack if close enough
-            if (!entity.getEnemy().isInBattle()) {
-                if (targetDst <= entity.getEnemy().getAttackRange() && entity.getAttackHandler().canStartNewAttack()) {
-                    entity.getStateMachine().changeState(ATTACK);
-                    return;
-                }
-                entity.getEnemy().setIndependentFacing(false);
-                entity.targetPos.set(entity.getTarget().getPosition());
-                entity.getEnemy().setSteeringBehavior(entity.followPathAvoid);
-                // Update path every 0.1 seconds
-                if (entity.time >= 0.1) {
-                    entity.updatePath();
-                    entity.time = 0;
-                }
+            if(entity.getEnemy().isLockedOut()) {
+                entity.getStateMachine().changeState(LOCKED_OUT);
             } else {
-                if (targetDst <= entity.getEnemy().getAttackRange() && entity.getAttackHandler().canStartNewAttack()) {
-                    entity.getStateMachine().changeState(ATTACK);
-                    return;
+                if (!entity.getEnemy().isActive()) {
+                    MessageManager.getInstance().dispatchMessage(TacticalManager.REMOVE, entity);
                 }
-                entity.rayCache.set(entity.getEnemy().getPosition(), entity.getTarget().getPosition());
 
-                entity.pathCollision.findCollision(entity.collCache, entity.rayCache);
-                // use Astar to target if there is obstacle in the way or farther than strafe distance from target
-                if (entity.raycast.hit || targetDst > entity.getEnemy().getStrafeDistance()) {
-                    entity.getEnemy().setMaxLinearSpeed(1.11f);
+                switch (entity.getDetection()) {
+                    case NONE:
+                        entity.targetPos.set(entity.target.getPosition());
+                        entity.getStateMachine().changeState(INDICATOR);
+                        break;
+                }
+
+
+                Vector2 enemyToTarget = entity.target.getPosition().sub(entity.getEnemy().getPosition());
+                float targetDst = enemyToTarget.len();
+                entity.getEnemy().getFlashlight().setDirection(enemyToTarget.angleDeg());
+
+                //if in stealth just walk towards target and attack if close enough
+                if (!entity.getEnemy().isInBattle()) {
+                    if (targetDst <= entity.getEnemy().getAttackRange() && entity.getAttackHandler().canStartNewAttack()) {
+                        entity.getStateMachine().changeState(ATTACK);
+                        return;
+                    }
+                    entity.getEnemy().setIndependentFacing(false);
                     entity.targetPos.set(entity.getTarget().getPosition());
                     entity.getEnemy().setSteeringBehavior(entity.followPathAvoid);
                     // Update path every 0.1 seconds
@@ -230,13 +219,33 @@ public enum EnemyState implements State<EnemyController> {
                         entity.time = 0;
                     }
                 } else {
-                    //go to battle mode
-                    // Always face towards target
-                    entity.getEnemy().setIndependentFacing(true);
-                    Vector2 dir = entity.target.getPosition().sub(entity.getEnemy().getPosition());
-                    entity.getEnemy().setOrientation(AngleUtils.vectorToAngle(dir));
-                    entity.getEnemy().setSteeringBehavior(entity.battleSB);
-                    entity.getEnemy().setMaxLinearSpeed(0.8f);
+                    if (targetDst <= entity.getEnemy().getAttackRange() && entity.getAttackHandler().canStartNewAttack()) {
+                        entity.getStateMachine().changeState(ATTACK);
+                        return;
+                    }
+                    entity.rayCache.set(entity.getEnemy().getPosition(), entity.getTarget().getPosition());
+
+                    entity.pathCollision.findCollision(entity.collCache, entity.rayCache);
+                    // use Astar to target if there is obstacle in the way or farther than strafe distance from target
+                    if (entity.raycast.hit || targetDst > entity.getEnemy().getStrafeDistance()) {
+                        entity.getEnemy().setMaxLinearSpeed(1.11f);
+                        entity.targetPos.set(entity.getTarget().getPosition());
+                        entity.getEnemy().setSteeringBehavior(entity.followPathAvoid);
+                        // Update path every 0.1 seconds
+                        if (entity.time >= 0.1) {
+                            entity.updatePath();
+                            entity.time = 0;
+                        }
+                    } else {
+                        //go to battle mode
+                        // Always face towards target
+                        entity.getEnemy().setIndependentFacing(true);
+                        Vector2 dir = entity.target.getPosition().sub(entity.getEnemy().getPosition());
+                        entity.getEnemy().setOrientation(AngleUtils.vectorToAngle(dir));
+                        entity.getEnemy().setSteeringBehavior(entity.battleSB);
+                        entity.getEnemy().setMaxLinearSpeed(0.8f);
+                    }
+
                 }
             }
 
@@ -338,6 +347,30 @@ public enum EnemyState implements State<EnemyController> {
             } else {
                 entity.getStateMachine().changeState(PATROL);
             }
+        }
+    },
+
+    LOCKED_OUT() {
+        @Override
+        public void enter(EnemyController entity) {
+            System.out.println("locked out");
+            entity.getEnemy().setSteeringBehavior(null);
+        }
+
+        @Override
+        public void update(EnemyController entity) {
+            // Transition to ALERT state when not locked out
+            if (!entity.getEnemy().isLockedOut()) {
+                entity.getStateMachine().changeState(ALERT);
+            }
+        }
+
+        @Override
+        public void exit(EnemyController entity) {}
+
+        @Override
+        public boolean onMessage(EnemyController control, Telegram telegram) {
+            return false;
         }
     };
 

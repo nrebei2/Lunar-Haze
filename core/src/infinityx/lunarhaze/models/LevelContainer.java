@@ -282,7 +282,7 @@ public class LevelContainer {
     /**
      * @return the total amount of collectable moonlight on the board at initialization
      */
-    public float getTotalMoonlight() {
+    public int getTotalMoonlight() {
         return totalMoonlight;
     }
 
