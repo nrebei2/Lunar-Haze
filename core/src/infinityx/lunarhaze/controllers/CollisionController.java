@@ -176,8 +176,11 @@ public class CollisionController implements ContactListener {
      * @param attacked The entity that was attacked
      */
     private void handleCollision(AttackingGameObject attacker, AttackingGameObject attacked) {
+        System.out.println("handlecollision");
         if (attacker == attacked) return;
         boolean immune = attacked.isImmune();
+        System.out.println("immune" + immune);
+
         if (!immune) {
             // Immunity frames for being attacked and when attacking
             attacker.setImmune();
@@ -264,6 +267,7 @@ public class CollisionController implements ContactListener {
                                 (SceneObject) o1,
                                 (Werewolf) o2
                         );
+                        break;
                 }
 
             default:

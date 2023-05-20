@@ -122,7 +122,7 @@
       "immunity": 0.2,
       "lockout": 0.3,
       "hitbox": {
-        "range": 0.85,
+        "range": 0.75,
         "width": 1,
         "bullet": true,
         "sensor": true
