@@ -389,7 +389,7 @@ public class LevelContainer {
     /**
      * Adds an arrow to the level
      */
-    public Arrow addArrow(float x, float y, Archer archer){
+    public Arrow addArrow(float x, float y, Archer archer) {
         Arrow arrow = new Arrow(x, y, archer);
         arrow.initialize(directory, enemiesJson.get("archer").get("arrow"), this );
         addDrawables(arrow);
@@ -657,6 +657,9 @@ public class LevelContainer {
     public void drawLevel(float delta, GameCanvas canvas) {
         totalTime += delta;
         garbageCollect();
+
+        canvas.shadowScale = getSettings().getShadowScale();
+        canvas.shadowShear = getSettings().getShadowShear();
 
         //Camera shake logic
         if (CameraShake.timeLeft() > 0) {

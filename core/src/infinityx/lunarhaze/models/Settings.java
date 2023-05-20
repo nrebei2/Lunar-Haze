@@ -15,6 +15,8 @@ public class Settings {
     public ImInt archerCount = new ImInt(0);
     public ImFloat spawnRateMin = new ImFloat(0);
     public ImFloat spawnRateMax = new ImFloat(0);
+    public ImFloat shadowShear = new ImFloat(0.5f);
+    public ImFloat shadowScale = new ImFloat(0.5f);
     public ImInt delay = new ImInt(0);
     public ImInt transition = new ImInt(4);
 
@@ -22,6 +24,14 @@ public class Settings {
      * List of locations enemies can spawn during battle phase
      */
     private Array<Vector2> spawnLocations = new Array<>();
+
+    public float getShadowShear() {
+        return shadowShear.get();
+    }
+
+    public float getShadowScale() {
+        return shadowScale.get();
+    }
 
     /**
      * Returns the phase length in seconds for the stealth phase.

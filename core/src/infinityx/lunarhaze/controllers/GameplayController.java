@@ -171,7 +171,7 @@ public class GameplayController {
         this.gameState = GameState.PLAY;
         this.phase = Phase.STEALTH;
         this.container = levelContainer;
-        this.collisionController = new CollisionController(levelContainer.getWorld());
+        this.collisionController = new CollisionController(levelContainer.getWorld(),setting, levelContainer.getDirectory());
 
         lightingController = new LightingController(levelContainer);
 
@@ -213,6 +213,9 @@ public class GameplayController {
                         phase = Phase.TRANSITION;
                         lightingController.dispose();
                         player.switchToWolf();
+                        // Less shadows
+                        container.getSettings().shadowShear.set(container.getSettings().getShadowShear() / 2);
+                        container.getSettings().shadowScale.set(container.getSettings().getShadowScale() / 2);
                     }
                     break;
                 case BATTLE:

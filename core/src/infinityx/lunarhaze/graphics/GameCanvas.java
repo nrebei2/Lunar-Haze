@@ -7,10 +7,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Affine2;
@@ -26,6 +23,9 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
  * and shader rendering using {@link ShaderRenderer}.
  */
 public class GameCanvas {
+
+    /** Scale and shearing constants for object shadows */
+    public float shadowScale, shadowShear = 0.5f;
 
     /**
      * Enumeration to track which pass we are in
@@ -1340,6 +1340,10 @@ public class GameCanvas {
         local.shear(shx, shy);
         local.scale(sx, sy);
         local.translate(-ox, -oy);
+    }
+
+    public PolygonSpriteBatch getSpriteBatch() {
+        return spriteBatch;
     }
 
 }

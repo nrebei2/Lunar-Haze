@@ -2578,6 +2578,19 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
 
         ImGui.spacing();
 
+        ImGui.text("Shadow Configuration:");
+
+        if (ImGui.isItemHovered()) {
+            ImGui.beginTooltip();
+            ImGui.text("Change the shear and scale (along y) of the shadows respectively");
+            ImGui.endTooltip();
+        }
+
+        ImGui.dragFloat("##Shear", level.getSettings().shadowShear.getData(), 0.005f, -5, 5);
+        ImGui.dragFloat("##Scale", level.getSettings().shadowScale.getData(), 0.005f, 0, 3);
+
+        ImGui.spacing();
+
         ImGui.text("Length of Stealth Phase (seconds):");
         if (ImGui.inputInt("##phaseLength", level.getSettings().phaseLength)) {
             level.getSettings().phaseLength.set(Math.max(0, level.getSettings().phaseLength.get()));
