@@ -50,9 +50,7 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
         WEREWOLF,
         SCENE,
         HITBOX,
-        ARCHER,
-        ARROW,
-        VILLAGER
+        ARROW
     }
 
     // Attributes for all game objects
@@ -123,6 +121,11 @@ public abstract class GameObject extends MultiShapeObstacle implements Drawable 
             setTexture("ERROR");
             setOrigin(tex.getWidth() / 2, 0);
             textureScale = 1;
+            // So you can select in editor
+            addBox(
+                    "body", 1, 0.5f,
+                    new Vector2(), 0
+            );
             return;
         }
         // Box2D body info
