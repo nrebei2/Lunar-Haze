@@ -210,7 +210,7 @@ public class PlayerController {
         dash_sound = levelContainer.getDirectory().getEntry("dash", Sound.class);
         walk_sound = levelContainer.getDirectory().getEntry("walking-on-soil", Sound.class);
         stateMachine = new DefaultStateMachine<>(this, PlayerState.IDLE);
-        attackHandler = new PlayerAttackHandler(player, player.getAttackHitbox());
+        attackHandler = new PlayerAttackHandler(player, player.getAttackHitbox(), dash_sound);
         allocateReady = false;
         isWalkGrassPlaying = false;
         isDashPlaying = false;
@@ -228,7 +228,7 @@ public class PlayerController {
         player.update(delta);
 
         if (setting.isSoundEnabled()) {
-            if (!player.isAttacked() && inputController.didDash() && attackHandler.isDashing) {
+            if (!player.isAttacked() && inputController.justDash() && attackHandler.isDashing) {
                 dash_sound.play(setting.getSoundVolume());
             } else if (getStateMachine().isInState(PlayerState.WALK) && !isWalkGrassPlaying) {
                 long soundId = walk_sound.loop();

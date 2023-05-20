@@ -219,11 +219,11 @@ public class InputController {
     }
 
     /**
-     * Returns true if the run button was pressed
+     * Returns true if the dash button was just pressed
      *
-     * @return true if the run button was pressed.
+     * @return true if the dash button was just pressed.
      */
-    public boolean didDash() {
+    public boolean justDash() {
         return dashPressed;
     }
 
@@ -285,6 +285,7 @@ public class InputController {
         heavyAttackPressed = Gdx.input.isKeyJustPressed(HEAVY_ATTACK);
         collectPressed = Gdx.input.isKeyPressed(COLLECT);
         usePressed = Gdx.input.isKeyPressed(USE);
+        dashPressed = false;
         dashPressed = Gdx.input.isKeyPressed(DASH);
         resetPressed = Gdx.input.isKeyPressed(RESET);
         exitPressed = Gdx.input.isKeyPressed(EXIT);

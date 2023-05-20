@@ -1,5 +1,7 @@
 package infinityx.lunarhaze.combat;
 
+import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.backends.lwjgl3.audio.Mp3;
 import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.controllers.GameplayController;
 import infinityx.lunarhaze.controllers.InputController;
@@ -16,6 +18,7 @@ public class PlayerAttackHandler extends MeleeHandler {
      */
     private static final float DASH_TIME = 0.05f;
     private static final float MAX_IMPULSE = 1.2f;
+    private final Sound dashSound;
     private float dashTimer;
     private Vector2 dashDirection;
     public boolean isDashing;
@@ -35,12 +38,13 @@ public class PlayerAttackHandler extends MeleeHandler {
     /**
      * Creates a specialized attack system for the given player
      */
-    public PlayerAttackHandler(Werewolf player, AttackHitbox hitbox) {
+    public PlayerAttackHandler(Werewolf player, AttackHitbox hitbox, Sound dashSound) {
         super(player, hitbox);
         dashDirection = new Vector2();
         isDashing = false;
         dashCooldownCounter = DASH_COOLDOWN_STEALTH;
         heavyAttacking = false;
+        this.dashSound = dashSound;
         windingUpHeavyAttack = false;
         heavyAttackWindupTimer = 0;
         useRightHand = false;
@@ -99,7 +103,7 @@ public class PlayerAttackHandler extends MeleeHandler {
             dashCooldownCounter += delta;
         }
         // Initiate dash based on input
-        if (InputController.getInstance().didDash() && !player.isAttacking() && dashCooldownCounter >= dashCD) {
+        if (InputController.getInstance().justDash() && !player.isAttacking() && dashCooldownCounter >= dashCD && !player.getLinearVelocity().isZero(0.05f)) {
             initiateDash(phase);
         }
 
@@ -158,6 +162,7 @@ public class PlayerAttackHandler extends MeleeHandler {
      */
     private void initiateDash(GameplayController.Phase phase) {
         if (!isDashing) {
+            dashSound.play();
             isDashing = true;
             ((Werewolf) entity).isDashing = true;
             dashDirection.set(
