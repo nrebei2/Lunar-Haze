@@ -279,7 +279,8 @@
           "height": 0.1
         }
       },
-      "bullet": true
+      "bullet": true,
+      "sensor": true
     },
     "particle_hit": {
       "effect": "particles/enemy_hit.p",

@@ -89,7 +89,7 @@ public class TacticalManager implements Telegraph {
             if (control != entity && (entity.getEnemy().getPosition()).dst(control.getEnemy().getPosition()) <= 7f
                     && entity.communicationCollision.hitObject == control.getEnemy() && !control.getEnemy().isAttacking()) {
 //                System.out.println("alerting");
-//                entity.getEnemy().setAlerting(true);
+                entity.getEnemy().setAlerting(true);
                 StateMachine<EnemyController, EnemyState> machine = control.getStateMachine();
                 machine.changeState(EnemyState.ALERT);
 
