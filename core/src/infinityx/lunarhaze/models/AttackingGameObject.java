@@ -263,7 +263,7 @@ public abstract class AttackingGameObject extends GameObject {
     @Override
     public void draw(GameCanvas canvas) {
         if(particleEffect != null) {
-            particleEffect.setPosition(canvas.WorldToScreenX(getX()), canvas.WorldToScreenY(getY()));
+            particleEffect.setPosition(canvas.WorldToScreenX(getX()), canvas.WorldToScreenY(getY()) + 0.75f);
             particleEffect.draw(canvas.getSpriteBatch());
         }
         super.draw(canvas);
