@@ -166,7 +166,7 @@ public class SceneObject extends GameObject implements Drawable {
 
         canvas.draw(filmstrip, canvas.SHADE, flipped ? filmstrip.getRegionWidth() - origin.x : origin.x, origin.y,
                 canvas.WorldToScreenX(pos.x), canvas.WorldToScreenY(pos.y), 0.0f,
-                textureScale * scale, textureScale * scale * 0.5f, 0.5f, 0, flipped);
+                textureScale * scale, textureScale * scale * canvas.shadowScale, canvas.shadowShear, 0, flipped);
 
     }
 }

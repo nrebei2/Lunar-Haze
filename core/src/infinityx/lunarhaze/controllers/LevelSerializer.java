@@ -51,6 +51,8 @@ public class LevelSerializer {
      * {
      * "transition": int,
      * "phaseLength": int,
+     * "shadow-shear": float,
+     * "shadow-scale": float,
      * "enemy-spawner": {
      * "count": int,
      * "add-tick": [float, float],
@@ -63,6 +65,8 @@ public class LevelSerializer {
         JsonValue settings = new JsonValue(JsonValue.ValueType.object);
         settings.addChild("transition", new JsonValue(4));
         settings.addChild("phaseLength", new JsonValue(level.getSettings().getPhaseLength()));
+        settings.addChild("shadow-shear", new JsonValue(level.getSettings().getShadowShear()));
+        settings.addChild("shadow-scale", new JsonValue(level.getSettings().getShadowScale()));
 
         JsonValue enemySpawner = new JsonValue(JsonValue.ValueType.object);
         enemySpawner.addChild("villager-count", new JsonValue(level.getSettings().getVillagerCount()));
