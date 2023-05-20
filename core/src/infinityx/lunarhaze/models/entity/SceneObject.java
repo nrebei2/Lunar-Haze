@@ -48,6 +48,9 @@ public class SceneObject extends GameObject implements Drawable {
         this.seeThru = false;
     }
 
+    /**
+     * Set whenever the position of this object changes
+     */
     public void setDirty() {
         this.dirty = true;
     }

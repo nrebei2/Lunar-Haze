@@ -83,7 +83,8 @@ public class LevelParser {
                 directory,
                 directory.getEntry("enemies", JsonValue.class),
                 directory.getEntry("objects", JsonValue.class),
-                directory.getEntry("player", JsonValue.class)
+                directory.getEntry("player", JsonValue.class),
+                directory.getEntry("boards", JsonValue.class)
         );
 
         this.tileSheet = directory.getEntry("tile.sheet", FilmStrip.class);
@@ -233,7 +234,7 @@ public class LevelParser {
                 );
                 point.setColor(color[0], color[1], color[2], color[3]);
                 point.setSoft(light.getBoolean("soft"));
-                point.setXray(true);
+                point.setStaticLight(true);
                 board.setSpotlight(x, y, point);
                 board.setLit(x, y, false);
             }
