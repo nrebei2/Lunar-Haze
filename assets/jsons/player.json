@@ -203,7 +203,7 @@
       "attacked-l": "lycan.attacked-l",
       "attacked-r": "lycan.attacked-r",
       "attacked-f": "lycan.attacked-r",
-      "attacked-b": "lycan.idle-r",
+      "attacked-b": "lycan.attacked-r",
       "collect": "lycan.collect",
       "walk-l": {
         "name": "lycan.walk-l",

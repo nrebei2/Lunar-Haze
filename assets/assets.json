@@ -850,6 +850,8 @@
         }
       }
     },
+    "villager.attacked-l": "images/villager/villager_attacked_left.png",
+    "villager.attacked-r": "images/villager/villager_attacked_right.png",
     "villager.idle-f": "images/villager/idle-f.png",
     "villager.idle-b": "images/villager/idle-b.png",
     "villager.idle-l": "images/villager/idle-f.png",
@@ -943,6 +945,8 @@
         }
       }
     },
+    "archer.attacked-l": "images/archer/archer_attacked_left.png",
+    "archer.attacked-r": "images/archer/archer_attacked_right.png",
     "archer.idle-f": "images/archer/Archer_Idle_Down.png",
     "archer.idle-b": "images/archer/Archer_Idle_Up.png",
     "archer.idle-l": "images/archer/Archer_Idle_Down.png",

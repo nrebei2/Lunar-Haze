@@ -85,6 +85,10 @@
           0.2
         ]
       },
+      "attacked-l": "villager.attacked-l",
+      "attacked-r": "villager.attacked-r",
+      "attacked-f": "villager.attacked-r",
+      "attacked-b": "villager.attacked-r",
       "idle-l": "villager.idle-l",
       "idle-r": "villager.idle-r",
       "idle-f": "villager.idle-f",
@@ -211,6 +215,10 @@
           0.2
         ]
       },
+      "attacked-l": "archer.attacked-l",
+      "attacked-r": "archer.attacked-r",
+      "attacked-f": "archer.attacked-r",
+      "attacked-b": "archer.attacked-r",
       "idle-l": "archer.idle-l",
       "idle-r": "archer.idle-r",
       "idle-f": "archer.idle-f",
