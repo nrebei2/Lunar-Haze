@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Affine2;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
@@ -971,7 +972,7 @@ public class GameCanvas {
      * @param oy     The y-coordinate of texture origin (in pixels)
      * @param x      The x-coordinate of the texture origin (on screen)
      * @param y      The y-coordinate of the texture origin (on screen)
-     * @param angle  The rotation angle (in degrees) about the origin.
+     * @param angle  The rotation angle (in radians) about the origin.
      * @param sx     The x-axis scaling factor
      * @param sy     The y-axis scaling factor
      * @return Whether the texture was drawn or not

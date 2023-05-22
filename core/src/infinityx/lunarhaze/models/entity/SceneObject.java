@@ -44,10 +44,9 @@ public class SceneObject extends GameObject implements Drawable {
      */
     private boolean dirty;
 
+    /// Only used if leaves are specified in json
     public Leaf[] leaves;
-
     private LevelContainer container;
-
     private float emitTimer = 0;
     private static final float MIN_EMIT_DELAY = 1f;
     private static final float MAX_EMIT_DELAY = 1.5f;

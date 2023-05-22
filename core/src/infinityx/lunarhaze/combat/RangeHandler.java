@@ -1,5 +1,6 @@
 package infinityx.lunarhaze.combat;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import infinityx.lunarhaze.models.LevelContainer;
 import infinityx.lunarhaze.models.entity.Archer;
@@ -8,23 +9,13 @@ import infinityx.lunarhaze.models.entity.Werewolf;
 
 public class RangeHandler extends AttackHandler {
 
-//    private final float TIME_TO_TRAVEL = 0.8f;
-
     private final float ARROW_SPEED = 5f;
-
-    /**
-     * arrow attached to entity
-     */
-    private Arrow arrow;
 
     private Werewolf target;
 
     private float angleFacing;
 
     private LevelContainer container;
-
-    private float arrowFlyTime = 0;
-
 
     /**
      * @param archer the archer this class is controlling
@@ -40,20 +31,15 @@ public class RangeHandler extends AttackHandler {
     public void initiateAttack() {
         super.initiateAttack();
 
-        arrow = container.addArrow(entity.getX(), entity.getY(), (Archer) entity);
+        Arrow arrow = container.addArrow(entity.getX(), entity.getY(), (Archer) entity);
         Vector2 dir = target.getPosition().sub(entity.getPosition()).nor();
         arrow.setLinearVelocity(dir.scl(ARROW_SPEED));
-        angleFacing = (float) Math.atan2(target.getY() - entity.getY(), target.getX() - entity.getX());
-        arrow.setAngle(angleFacing + (float) Math.PI);
-        arrow.setInitialAngle(angleFacing + (float) Math.PI);
+        arrow.setAngle(target.vectorToAngle(dir));
     }
 
     @Override
     public void processAttack(float delta) {
         super.processAttack(delta);
-        if (arrow != null) {
-            arrow.update(delta);
-        }
     }
 
     @Override
@@ -64,11 +50,6 @@ public class RangeHandler extends AttackHandler {
     @Override
     public void update(float delta) {
         super.update(delta);
-
-        if ((arrow != null && arrow.getLinearVelocity().epsilonEquals(Vector2.Zero))) {
-            container.removeArrow(arrow);
-            arrow = null;
-        }
     }
 
 }

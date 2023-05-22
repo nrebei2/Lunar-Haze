@@ -318,7 +318,7 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
      */
     public void update(float delta) {
         super.update(delta);
-        canMove = canMove && !heavyLockedOut && !isCollecting;
+        canMove = canMove && !heavyLockedOut && !isCollecting && !isDashing;
 
         if (heavyLockedOut) {
             heavyLockoutTime -= delta;
@@ -362,6 +362,10 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
             // set the updated velocity to the player's Box2D body
             body.setLinearVelocity(velocity);
         }
+    }
+
+    public Direction getDirection() {
+        return direction;
     }
 
     @Override

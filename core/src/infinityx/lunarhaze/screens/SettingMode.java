@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Texture;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.GDXRoot;
 import infinityx.lunarhaze.controllers.InputController;
+import infinityx.lunarhaze.controllers.MusicController;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.util.ScreenObservable;
 
@@ -163,11 +164,6 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
     private Texture music_off;
     private Texture sound_on;
     private Texture sound_off;
-
-    /**
-     * Lobby and pause background music
-     */
-    private Music lobby_background;
 
     /**
      * Whether or not this player mode is still active
@@ -329,7 +325,6 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
         backButton = directory.getEntry("back", Texture.class);
         star_empty = directory.getEntry("star-empty", Texture.class);
         star_filled = directory.getEntry("star-filled", Texture.class);
-        lobby_background = directory.getEntry("lobbyBackground", Music.class);
     }
 
     private void draw() {
@@ -405,13 +400,6 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
      * Update the status of this menu.
      */
     private void update(float delta) {
-        lobby_background.setVolume(setting.getMusicVolume());
-        if (setting.isMusicEnabled()) {
-            lobby_background.setLooping(true);
-            lobby_background.play();
-        } else {
-            lobby_background.stop();
-        }
         sound_choice = (setting_choice_sound ? sound_s : sound_u);
         control_choice = (setting_choice_sound ? control_u : control_s);
         music_on = (setting.isMusicEnabled() ? on_s : on_u);
@@ -448,10 +436,8 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
             update(delta);
             draw();
             if ((isReady() || inputController.didExit()) && observer != null) {
-//                lobby_background.stop();
                 if (game.getPreviousScreen() == "pause") {
                     observer.exitScreen(this, GO_PAUSE);
-                    lobby_background.stop();
                 }
                 if (game.getPreviousScreen() == "menu") {
                     observer.exitScreen(this, GO_MENU);
@@ -459,6 +445,7 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
             }
             if (isStarReady() != 0 && observer != null) {
                 setting.setMusicVolume(((float) isStarReady()) / 10.0f);
+                MusicController.getInstance().setVolume(((float) isStarReady()) / 10.0f);
                 for (int i = 1; i <= 10; i++) {
                     pressStarState[i] = 0;
                 }
@@ -471,10 +458,12 @@ public class SettingMode extends ScreenObservable implements Screen, InputProces
             }
             if (isMusicOnReady() && observer != null) {
                 setting.setMusicEnabled(true);
+                MusicController.getInstance().setMusicEnabled(true);
                 pressMusicOnState = 0;
             }
             if (isMusicOffReady() && observer != null) {
                 setting.setMusicEnabled(false);
+                MusicController.getInstance().setMusicEnabled(false);
                 pressMusicOffState = 0;
             }
             if (isSoundOnReady() && observer != null) {

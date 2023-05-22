@@ -19,13 +19,15 @@ public class PlayerAttackHandler extends MeleeHandler {
      * Dash variables
      */
     private static final float DASH_TIME = 0.05f;
-    private static final float MAX_IMPULSE = 1.2f;
     private final Sound dashSound;
     private float dashTimer;
     private Vector2 dashDirection;
     public boolean isDashing;
     public static float DASH_COOLDOWN_BATTLE = 4.0f;
-    public static float DASH_COOLDOWN_STEALTH = 8.75f;
+    public static float DASH_COOLDOWN_STEALTH = 1f;
+
+    public static float DASH_IMPULSE_BATTLE = 3f;
+    public static float DASH_IMPULSE_STEALTH = 4f;
 
     public static final float DASH_REDUCE_AMOUNT = 0.5f;
     private float dashCooldownCounter;
@@ -178,22 +180,16 @@ public class PlayerAttackHandler extends MeleeHandler {
             dashDirection.set(
                     InputController.getInstance().getHorizontal(),
                     InputController.getInstance().getVertical()
-            ).nor();
-            if (phase == GameplayController.Phase.STEALTH) {
-                dashDirection.scl(1.5f);
-            }
+            ).nor().scl(phase == GameplayController.Phase.STEALTH ? DASH_IMPULSE_STEALTH : DASH_IMPULSE_BATTLE);
             dashTimer = 0f;
             entity.setImmune();
             entity.setLockedOut();
             ((Werewolf) entity).setTargetStealth(((Werewolf) entity).getTargetStealth() + 0.2f);
+            entity.getBody().applyLinearImpulse(dashDirection.x, dashDirection.y, entity.getX(), entity.getY(), true);
         }
     }
 
     private void processDash(Vector2 direction, float delta) {
-        float t = dashTimer / DASH_TIME;
-        // Cubic ease-in-out interpolation
-        float impulse = (float) (MAX_IMPULSE * (t < 0.5 ? 4*t*t*t : 1 - pow(-2*t + 2, 3) / 2));
-        entity.getBody().applyLinearImpulse(direction.x * impulse, direction.y * impulse, entity.getX(), entity.getY(), true);
         dashTimer += delta;
         if (dashTimer >= DASH_TIME) {
             endDash();

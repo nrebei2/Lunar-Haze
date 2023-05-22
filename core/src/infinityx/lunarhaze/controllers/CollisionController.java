@@ -1,6 +1,7 @@
 package infinityx.lunarhaze.controllers;
 
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import infinityx.assets.AssetDirectory;
@@ -14,6 +15,8 @@ import infinityx.lunarhaze.models.entity.SceneObject;
 import infinityx.lunarhaze.models.entity.Werewolf;
 import infinityx.lunarhaze.screens.GameSetting;
 
+import java.util.Arrays;
+
 /**
  * Controller to handle Box2D body interactions.
  * </summary>
@@ -22,12 +25,14 @@ public class CollisionController implements ContactListener {
     private GameSetting setting;
     private AssetDirectory directory;
     private Sound enemy_attacked;
+    private World world;
 
     /**
      * @param world World to register this contact listener to
      */
     public CollisionController(World world, GameSetting setting, AssetDirectory directory) {
         world.setContactListener(this);
+        this.world = world;
         this.setting = setting;
         this.directory = directory;
         enemy_attacked = directory.getEntry("enemy-get-hit", Sound.class);
@@ -42,7 +47,7 @@ public class CollisionController implements ContactListener {
         GameObject obj1 = (GameObject) body1.getUserData();
         GameObject obj2 = (GameObject) body2.getUserData();
 
-        processCollision(obj1, obj2);
+        processCollision(obj1, obj2, contact);
     }
 
     /**
@@ -51,7 +56,7 @@ public class CollisionController implements ContactListener {
      * @param o1 First object
      * @param o2 Second object
      */
-    private void processCollision(GameObject o1, GameObject o2) {
+    private void processCollision(GameObject o1, GameObject o2, Contact contact) {
         switch (o1.getType()) {
             case ENEMY:
                 switch (o2.getType()) {
@@ -72,18 +77,9 @@ public class CollisionController implements ContactListener {
                 switch (o2.getType()) {
                     case WEREWOLF:
                         handleArrow(((Arrow) o1), (Werewolf) o2);
-                        o1.setLinearVelocity(Vector2.Zero);
                         break;
-//                    case HITBOX:
-//                        handleCollision(
-//                                ((AttackHitbox) o2).getAttacker(),
-//                                (AttackingGameObject) o1
-//                        );
-//                        break;
                     case SCENE:
-                        if (!((SceneObject) o2).isSeeThru()) {
-                            o1.setLinearVelocity(Vector2.Zero);
-                        }
+                        handleCollision((Arrow) o1, (SceneObject) o2, contact);
                         break;
                     default:
                         break;
@@ -108,7 +104,6 @@ public class CollisionController implements ContactListener {
                         break;
                     case ARROW:
                         handleArrow(((Arrow) o2), (Werewolf) o1);
-                        o2.setLinearVelocity(Vector2.Zero);
                         break;
                     default:
                         break;
@@ -137,9 +132,7 @@ public class CollisionController implements ContactListener {
                         );
                         break;
                     case ARROW:
-                        if (!((SceneObject) o1).isSeeThru()) {
-                            o2.setLinearVelocity(Vector2.Zero);
-                        }
+                        handleCollision((Arrow) o2, (SceneObject) o1, contact);
                         break;
                     default:
                         break;
@@ -150,7 +143,13 @@ public class CollisionController implements ContactListener {
         }
     }
 
-    private void handleArrow(Arrow arrow, AttackingGameObject attacked) {
+    private void handleCollision(Arrow o1, SceneObject o2, Contact contact) {
+        if (!(o2.isSensor() || o2.isSeeThru())) {
+            o1.beginDestruction();
+        }
+    }
+
+    private void handleArrow(Arrow arrow, Werewolf attacked) {
         boolean immune = attacked.isImmune();
         if (!immune) {
             Vector2 direction = attacked.getPosition().sub(arrow.getArcher().getPosition()).nor();
@@ -166,6 +165,7 @@ public class CollisionController implements ContactListener {
                 }
             }
             attacked.setAttacked();
+            arrow.beginDestruction(attacked);
         }
     }
 

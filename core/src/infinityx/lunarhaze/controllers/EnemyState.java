@@ -81,7 +81,7 @@ public enum EnemyState implements State<EnemyController> {
             float rotation = ArithmeticUtils.wrapAngleAroundZero(orientation - entity.getEnemy().getOrientation());
 
             // Mimic face steering behavior
-            entity.getEnemy().setAngularVelocity(rotation < 0 ? -1.6f : 1.6f);
+            entity.getEnemy().setAngularVelocity(rotation < 0 ? -2.3f : 2.3f);
 
             float rotationSize = rotation < 0f ? -rotation : rotation;
             if (rotationSize <= MathUtils.degreesToRadians * 10) {

@@ -238,7 +238,6 @@ public class LoadingMode extends ScreenObservable implements Screen {
         loading_text = internal.getEntry("loadtext", Texture.class);
         game_title = internal.getEntry("title", Texture.class);
 
-        lobby_background = internal.getEntry("lobbyBackground", Music.class);
 
         // No progress so far.
         progress = 0;
