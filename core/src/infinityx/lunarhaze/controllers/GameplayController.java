@@ -208,8 +208,6 @@ public class GameplayController {
 
         // FSM for state and phase
         if (gameState == GameState.PLAY) {
-            // Process the player only when the game is in play
-            playerController.update(delta, phase, lightingController);
             switch (phase) {
                 case STEALTH:
                     lightingController.update(delta);
@@ -253,10 +251,10 @@ public class GameplayController {
                     fail_sound.play(volume);
                 }
             }
-        }
-        // Enemies should still update even when game is outside play
-        if (!(phase == Phase.TRANSITION || phase == Phase.ALLOCATE)) {
-            resolveEnemies(delta);
+            if (!(phase == Phase.TRANSITION || phase == Phase.ALLOCATE)) {
+                playerController.update(delta, phase, lightingController);
+                resolveEnemies(delta);
+            }
         }
     }
 

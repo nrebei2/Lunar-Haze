@@ -91,6 +91,7 @@ public class FollowPath<P extends PathParam> extends SteeringBehavior<Vector2> {
 
     @Override
     protected SteeringAcceleration<Vector2> calculateRealSteering(SteeringAcceleration<Vector2> steering) {
+        if (path == null) return steering.setZero();
 
         // Predictive or non-predictive behavior?
         Vector2 location = (predictionTime == 0) ?

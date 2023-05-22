@@ -163,6 +163,13 @@ public class Animation {
     }
 
     /**
+     * @return Current active frame for the current animation
+     */
+    public int getCurFrame() {
+        return currentAnimation.filmStrip.getFrame();
+    }
+
+    /**
      * Sets the frame durations array for the specified Animation.
      *
      * @param name           The name of the Animation.

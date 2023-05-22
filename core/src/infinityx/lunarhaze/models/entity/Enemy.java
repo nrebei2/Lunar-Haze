@@ -163,6 +163,11 @@ public abstract class Enemy extends SteeringGameObject implements Pool.Poolable 
     @Override
     public void reset() {
         hp = maxHp;
+        isAttacking = isAttacked = false;
+        canMove = true;
+        isImmune = false;
+        lockedOut = false;
+
         detection = Detection.NONE;
         tint.set(Color.WHITE);
         setScale(1);

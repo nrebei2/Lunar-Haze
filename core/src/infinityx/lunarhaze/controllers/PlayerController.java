@@ -104,7 +104,7 @@ public class PlayerController {
     /**
      * Sound for player walking on grass
      */
-    private Sound walk_sound;
+    public Sound walk_sound;
 
     /**
      * Handles attacking logic
@@ -115,16 +115,6 @@ public class PlayerController {
      * Indicate whether player has done with allocating moonlight
      */
     private Boolean allocateReady;
-
-    /**
-     * Whether the walk_grass sound is playing
-     */
-    private boolean isWalkGrassPlaying;
-
-    /**
-     * Whether the dash_sound sound is playing
-     */
-    private boolean isDashPlaying;
 
     private GameSetting setting;
 
@@ -212,8 +202,6 @@ public class PlayerController {
         stateMachine = new DefaultStateMachine<>(this, PlayerState.IDLE);
         attackHandler = new PlayerAttackHandler(player, player.getAttackHitbox(), dash_sound);
         allocateReady = false;
-        isWalkGrassPlaying = false;
-        isDashPlaying = false;
         this.setting = setting;
     }
 
@@ -230,15 +218,6 @@ public class PlayerController {
         if (setting.isSoundEnabled()) {
             if (!player.isAttacked() && inputController.justDash() && attackHandler.isDashing) {
                 dash_sound.play(setting.getSoundVolume());
-            } else if (getStateMachine().isInState(PlayerState.WALK) && !isWalkGrassPlaying) {
-                long soundId = walk_sound.loop();
-                walk_sound.setLooping(soundId, true);
-                walk_sound.play(setting.getSoundVolume());
-                isWalkGrassPlaying = true;
-            }
-            if (!getStateMachine().isInState(PlayerState.WALK)) {
-                walk_sound.stop();
-                isWalkGrassPlaying = false;
             }
         }
     }
