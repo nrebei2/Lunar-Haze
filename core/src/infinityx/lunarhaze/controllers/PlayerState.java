@@ -101,16 +101,16 @@ public enum PlayerState implements State<PlayerController> {
                 if (direction == Direction.DOWN) {
                     // special case
                     if (frame == 0 || frame == 4) {
-                        entity.walk_sound.play();
+                        entity.walk_sound.play(entity.getSetting().getSoundVolume());
                     }
                 } else {
                     if (frame == 2 || frame == 5) {
-                        entity.walk_sound.play();
+                        entity.walk_sound.play(entity.getSetting().getSoundVolume());
                     }
                 }
             } else {
                 if (frame == 0 || frame == 2) {
-                        entity.walk_sound.play();
+                        entity.walk_sound.play(entity.getSetting().getSoundVolume());
                 }
             }
         }
