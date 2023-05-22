@@ -249,8 +249,8 @@ public class Board {
             }
         } else {
             // Draw any out of bounds tiles close to player
-            for (int i = worldToBoardX(pos.x) - 13; i < worldToBoardX(pos.x) + 13; i++) {
-                for (int j = worldToBoardY(pos.y) - 13; j < worldToBoardY(pos.y) + 13; j++) {
+            for (int i = worldToBoardX(pos.x) - 11; i < worldToBoardX(pos.x) + 11; i++) {
+                for (int j = worldToBoardY(pos.y) - 11; j < worldToBoardY(pos.y) + 11; j++) {
                     if (!inBounds(i, j)) {
                         drawTile(i, j, canvas, pos, false);
                     }
@@ -273,7 +273,7 @@ public class Board {
         }
 
         // Fast clipping test
-        if (!editor && pos.dst(boardCenterToWorldX(x), boardCenterToWorldY(y)) > 10) {
+        if (!editor && pos.dst(boardCenterToWorldX(x), boardCenterToWorldY(y)) > 11) {
             return;
         }
 

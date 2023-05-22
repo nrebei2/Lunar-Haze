@@ -648,10 +648,12 @@ public class UIRender {
             int remaining = gameplayController.getRemainingEnemies();
             stat = "   " + remaining;
         }
+        String levelText = "Level " + level.getLevel();
         canvas.drawText(text, UIFont_small, canvas.getWidth() / 2 - UIFont_small.getAscent() * text.length() * 1.8f, canvas.getHeight() - HEALTH_STROKE_HEIGHT * 0.7f);
         canvas.drawText(stat, UIFont_small,
                 canvas.getWidth() / 2 - UIFont_small.getAscent() * 7,
                 canvas.getHeight() - HEALTH_STROKE_HEIGHT * 2 + UIFont_small.getCapHeight() * 2.5f);
+        canvas.drawText(levelText, UIFont_small, canvas.getWidth() / 2 - UIFont_small.getAscent() * levelText.length() * 1.6f, canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.9f);
         canvas.draw(title_left, Color.WHITE, canvas.getWidth() / 2 - COUNTER_WIDTH - UIFont_small.getAscent() * 10,
                 canvas.getHeight() - HEALTH_STROKE_HEIGHT * 1.6f,
                 COUNTER_WIDTH, UIFont_small.getCapHeight());

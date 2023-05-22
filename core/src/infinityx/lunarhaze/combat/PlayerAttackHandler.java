@@ -23,8 +23,8 @@ public class PlayerAttackHandler extends MeleeHandler {
     private float dashTimer;
     private Vector2 dashDirection;
     public boolean isDashing;
-    public static float DASH_COOLDOWN_BATTLE = 4.0f;
-    public static float DASH_COOLDOWN_STEALTH = 1f;
+    public static float DASH_COOLDOWN_BATTLE = 4f;
+    public static float DASH_COOLDOWN_STEALTH = 8f;
 
     public static float DASH_IMPULSE_BATTLE = 3f;
     public static float DASH_IMPULSE_STEALTH = 4f;

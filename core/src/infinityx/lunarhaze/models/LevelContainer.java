@@ -194,6 +194,9 @@ public class LevelContainer {
     private final ShaderProgram lightShader;
     private float totalTime;
 
+    /** Level number */
+    private int level;
+
     /**
      * Initialize attributes
      */
@@ -783,6 +786,14 @@ public class LevelContainer {
 
         //System.out.println(aStarMap);
         pathfinder = new AStarPathFinding(aStarMap);
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+    public int getLevel() {
+        return level;
     }
 }
 

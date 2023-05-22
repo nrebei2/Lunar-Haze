@@ -1,28 +1,16 @@
-# Lunar-Haze
-## Game Control Lists:
-| Action            | Key        |
-|-------------------|------------| 
-| Move              | Arrow Keys |
-| Collect Moonlight | Space      |
-| Dash              | Left Shift |
-| Light Attack      | Z          |
-| Heavy Attack      | X          |
-| Pause             | ESC        |
+<img src="Poster.jpg"
+     width="900"
+     height=auto />
 
-## Rules for the game:
+## Features
+One of the unique highlights of Lunar Haze is its fully customizable level editor.
+Thanks to ImGui Java bindings provided by SpaiR/imgui-java, the editor has a robust GUI for level creation.
 
-Stealth Phase:
-- Move around to collect moonlight
-- You can not attack enemies in this phase
-- Try to be hide from enemies to keep your health
+<img src="editor-to-game.png"
+     width="1500"
+     height=auto />
 
-End of Stealth Phase:
-- Choose the power you want to increase by using the moonlight you collected in the previous phase
+To play Lunar Haze, head over to the Releases page. We provide an executable for Windows and an application for macOS. Just download the suitable version for your operating system, install it, and you're good to go.
 
-Battle Phase:
-- Kill all the enemies to win the game
-
-Good luck!
-
-
+If you would like to build from source, the source code comes with the gradle build system.
 

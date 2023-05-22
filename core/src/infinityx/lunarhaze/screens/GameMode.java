@@ -255,6 +255,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
             Gdx.app.exit();
         }
         levelContainer = ps.loadLevel(directory, levelData);
+        levelContainer.setLevel(level);
         gameplayController.start(levelContainer);
         MusicController.getInstance().playStealth();
     }
