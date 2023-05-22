@@ -172,7 +172,6 @@ public class PlayerAttackHandler extends MeleeHandler {
      */
     private void initiateDash(GameplayController.Phase phase) {
         if (!isDashing) {
-            dashSound.play();
             isDashing = true;
             ((Werewolf) entity).isDashing = true;
             dashDirection.set(

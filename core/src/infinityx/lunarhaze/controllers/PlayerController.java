@@ -233,6 +233,7 @@ public class PlayerController {
             } else if (getStateMachine().isInState(PlayerState.WALK) && !isWalkGrassPlaying) {
                 long soundId = walk_sound.loop();
                 walk_sound.setLooping(soundId, true);
+                walk_sound.setVolume(soundId, setting.getSoundVolume());
                 walk_sound.play(setting.getSoundVolume());
                 isWalkGrassPlaying = true;
             }
