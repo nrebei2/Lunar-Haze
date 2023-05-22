@@ -98,19 +98,19 @@ public enum PlayerState implements State<PlayerController> {
             frame = entity.player.animation.getCurFrame();
             // match sound with frames
             if (entity.player.isWerewolf()) {
-                if (frame == 2 || frame == 5) {
-                    entity.walk_sound.play();
-                }
-            } else {
                 if (direction == Direction.DOWN) {
                     // special case
                     if (frame == 0 || frame == 4) {
                         entity.walk_sound.play();
                     }
                 } else {
-                    if (frame == 0 || frame == 2) {
+                    if (frame == 2 || frame == 5) {
                         entity.walk_sound.play();
                     }
+                }
+            } else {
+                if (frame == 0 || frame == 2) {
+                        entity.walk_sound.play();
                 }
             }
         }
