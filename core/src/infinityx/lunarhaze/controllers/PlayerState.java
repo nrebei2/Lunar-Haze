@@ -62,11 +62,15 @@ public enum PlayerState implements State<PlayerController> {
          */
         Direction direction;
 
+        /** Cache of previous frame, used to match step with animation */
+        int frame;
+
         @Override
         public void enter(PlayerController entity) {
             direction = entity.player.direction;
             setTexture(entity, "walk");
             entity.player.setTargetStealth(entity.player.getTargetStealth() + PlayerController.WALK_STEALTH);
+            frame = -1;
         }
 
         @Override
@@ -84,9 +88,31 @@ public enum PlayerState implements State<PlayerController> {
 
 
             // Animations
-            if (entity.player.direction == direction) return;
-            setTexture(entity, "walk");
-            direction = entity.player.direction;
+            if (entity.player.direction != direction) {
+                setTexture(entity, "walk");
+                direction = entity.player.direction;
+            }
+
+            // Walk sound
+            if (!entity.getSetting().isSoundEnabled() || frame == entity.player.animation.getCurFrame()) return;
+            frame = entity.player.animation.getCurFrame();
+            // match sound with frames
+            if (entity.player.isWerewolf()) {
+                if (direction == Direction.DOWN) {
+                    // special case
+                    if (frame == 0 || frame == 4) {
+                        entity.walk_sound.play();
+                    }
+                } else {
+                    if (frame == 2 || frame == 5) {
+                        entity.walk_sound.play();
+                    }
+                }
+            } else {
+                if (frame == 0 || frame == 2) {
+                        entity.walk_sound.play();
+                }
+            }
         }
 
         @Override

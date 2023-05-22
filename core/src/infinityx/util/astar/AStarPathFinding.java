@@ -110,6 +110,10 @@ public class AStarPathFinding {
             }
         }
 
+        if (sourceNode == null || targetNode == null) {
+            return null;
+        }
+
         connectionPath.clear();
         pathfinder.searchNodePath(sourceNode, targetNode, heuristic, connectionPath);
 

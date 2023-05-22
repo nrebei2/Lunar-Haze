@@ -13,6 +13,7 @@ import infinityx.lunarhaze.controllers.GameplayController.GameState;
 import infinityx.lunarhaze.controllers.GameplayController.Phase;
 import infinityx.lunarhaze.controllers.InputController;
 import infinityx.lunarhaze.controllers.LevelParser;
+import infinityx.lunarhaze.controllers.MusicController;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.graphics.UIRender;
 import infinityx.lunarhaze.models.Dust;
@@ -101,36 +102,6 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
     private Texture victory;
 
     /**
-     * Lobby and pause background music
-     */
-    private Music lobby_background;
-
-    /**
-     * Stealth background music
-     */
-    private Music stealth_background;
-
-    /**
-     * Battle background music
-     */
-    private Music battle_background;
-
-    /**
-     * Whether lobby background is set
-     */
-    private boolean lobby_playing = false;
-
-    /**
-     * Whether stealth background is set
-     */
-    private boolean stealth_playing = false;
-
-    /**
-     * Whether battle background is set
-     */
-    private boolean battle_playing = false;
-
-    /**
      * Reference to drawing context to display graphics (VIEW CLASS)
      */
     private GameCanvas canvas;
@@ -167,15 +138,7 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
      */
     private JsonValue dustInfo;
 
-    /**
-     * dustPool[p] holds the dust pool at tile p. Tile p should have collectable moonlight on it.
-     */
     private Dust[][] dustList;
-
-    /**
-     * How many dust particles can be on a tile at once
-     */
-    public static final int POOL_CAPACITY = 20;
 
     public GameMode(GameCanvas canvas, GameSetting setting) {
         this.canvas = canvas;
@@ -224,15 +187,9 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
         UIFont_small = directory.getEntry("libre-small", BitmapFont.class);
         pauseButton = directory.getEntry("pause-button", Texture.class);
         uiRender = new UIRender(UIFont_large, UIFont_small, directory);
-        stealth_background = directory.getEntry("stealthBackground", Music.class);
-        battle_background = directory.getEntry("battleBackground", Music.class);
-        lobby_background = directory.getEntry("lobbyBackground", Music.class);
         filter = directory.getEntry("filter", Texture.class);
         victory = directory.getEntry("victory", Texture.class);
         defeat = directory.getEntry("defeat", Texture.class);
-        stealth_background.setVolume(setting.getMusicVolume());
-        lobby_background.setVolume(setting.getMusicVolume());
-        battle_background.setVolume(setting.getMusicVolume());
     }
 
     /**
@@ -242,83 +199,6 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
      */
     public boolean isPauseReady() {
         return pressPauseState == 2;
-    }
-
-    public void updateMusic(float delta) {
-        // TODO: move this out
-        switch (gameplayController.getState()) {
-            case OVER:
-                if (!setting.isMusicEnabled()) {
-                    lobby_background.stop();
-                    lobby_playing = false;
-                } else {
-                    lobby_background.play();
-                    lobby_playing = true;
-                }
-            case WIN:
-                if (!setting.isMusicEnabled()) {
-                    lobby_background.stop();
-                    lobby_playing = false;
-                } else {
-                    lobby_background.play();
-                    lobby_playing = true;
-                }
-            case PAUSED:
-                if (stealth_playing) {
-                    stealth_background.stop();
-                    stealth_playing = false;
-                } else if (battle_playing) {
-                    battle_background.stop();
-                    stealth_playing = false;
-                }
-                if (!setting.isMusicEnabled()) {
-                    lobby_background.stop();
-                } else {
-                    if (!lobby_playing) {
-                        lobby_background.setLooping(true);
-                        lobby_background.play();
-                        lobby_playing = true;
-                    }
-                }
-                break;
-            case PLAY:
-                if (lobby_playing) {
-                    lobby_background.stop();
-                    lobby_playing = false;
-                }
-                switch (gameplayController.getPhase()) {
-                    case STEALTH:
-                    case TRANSITION:
-                    case ALLOCATE:
-                        battle_playing = false;
-                        if (!setting.isMusicEnabled()) {
-                            stealth_background.stop();
-                            stealth_playing = false;
-                        } else {
-                            if (!stealth_playing) {
-                                stealth_background.setLooping(true);
-                                stealth_background.play();
-                                stealth_playing = true;
-                            }
-                        }
-                    case BATTLE:
-                        stealth_background.stop();
-                        stealth_playing = false;
-                        if (!setting.isMusicEnabled()) {
-                            battle_background.stop();
-                            battle_playing = false;
-                        } else {
-                            if (!battle_playing) {
-                                battle_background.setLooping(true);
-                                battle_background.play();
-                                battle_playing = true;
-                            }
-                        }
-                }
-                break;
-            default:
-                break;
-        }
     }
 
     /**
@@ -333,11 +213,6 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
     public void update(float delta) {
         // Process the game input
         inputController.readKeyboard();
-        updateMusic(delta);
-        float volume = setting.getMusicVolume();
-        lobby_background.setVolume(volume);
-        stealth_background.setVolume(volume);
-        battle_background.setVolume(volume);
         switch (gameplayController.getState()) {
             case OVER:
             case WIN:
@@ -380,7 +255,9 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
             Gdx.app.exit();
         }
         levelContainer = ps.loadLevel(directory, levelData);
+        levelContainer.setLevel(level);
         gameplayController.start(levelContainer);
+        MusicController.getInstance().playStealth();
     }
 
     /**
@@ -452,8 +329,6 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
      */
     public void show() {
         pressPauseState = 0;
-        stealth_playing = false;
-        battle_playing = false;
         Gdx.input.setInputProcessor(this);
         dustList = new Dust[20][20];
         dustInfo = directory.getEntry("dust", JsonValue.class);
@@ -492,14 +367,10 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
         update(delta);
         draw(delta);
         if (isPauseReady() && observer != null) {
-            stealth_background.pause();
-            battle_background.pause();
             observer.exitScreen(this, GO_PAUSE);
         }
 
         if (inputController.didExit() && observer != null) {
-            stealth_background.pause();
-            battle_background.pause();
             observer.exitScreen(this, GO_PAUSE);
         }
 
@@ -523,8 +394,6 @@ public class GameMode extends ScreenObservable implements Screen, InputProcessor
         gameplayController = null;
         //physicsController = null;
         canvas = null;
-        stealth_background.dispose();
-        battle_background.dispose();
     }
 
     /**

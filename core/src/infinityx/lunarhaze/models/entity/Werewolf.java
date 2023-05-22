@@ -97,6 +97,9 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
 
     private ParticleEffect dashParticle;
 
+    /** Whether lycan has transitioned into a werewolf  */
+    private boolean isWerewolf;
+
     /**
      * Required information to switch to werewolf
      */
@@ -187,6 +190,11 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
         isHeavyAttacking = false;
         isDashing = false;
         inTallGrass = new Array<>();
+        isWerewolf = false;
+    }
+
+    public boolean isWerewolf() {
+        return isWerewolf;
     }
 
     /**
@@ -198,6 +206,7 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
         setTexture("idle-r");
         textureScale = werewolfInfo.textureScale;
         walkSpeed = 2.2f;
+        isWerewolf = true;
     }
 
     /**
@@ -318,7 +327,7 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
      */
     public void update(float delta) {
         super.update(delta);
-        canMove = canMove && !heavyLockedOut && !isCollecting;
+        canMove = canMove && !heavyLockedOut && !isCollecting && !isDashing;
 
         if (heavyLockedOut) {
             heavyLockoutTime -= delta;
@@ -362,6 +371,10 @@ public class Werewolf extends AttackingGameObject implements Location<Vector2> {
             // set the updated velocity to the player's Box2D body
             body.setLinearVelocity(velocity);
         }
+    }
+
+    public Direction getDirection() {
+        return direction;
     }
 
     @Override

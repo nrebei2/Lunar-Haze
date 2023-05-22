@@ -45,7 +45,6 @@ public class GameplayController {
     public enum GameState {
         PLAY,
         OVER,
-        PAUSED,
         WIN
     }
 
@@ -143,10 +142,6 @@ public class GameplayController {
         return gameState;
     }
 
-    public void setState(GameState s) {
-        gameState = s;
-    }
-
     /**
      * @return the current phase of the game
      */
@@ -213,17 +208,17 @@ public class GameplayController {
 
         // FSM for state and phase
         if (gameState == GameState.PLAY) {
-            // Process the player only when the game is in play
-            playerController.update(delta, phase, lightingController);
             switch (phase) {
                 case STEALTH:
                     lightingController.update(delta);
                     phaseTimer -= delta;
                     if (container.getBoard().getRemainingMoonlight() == 0 || phaseTimer <= 0) {
+                        // Stealth -> Transition
                         phase = Phase.TRANSITION;
+
                         lightingController.dispose();
                         player.switchToWolf();
-                        // Less shadows
+                        // Lessen shadows
                         container.getSettings().shadowShear.set(container.getSettings().getShadowShear() / 2);
                         container.getSettings().shadowScale.set(container.getSettings().getShadowScale() / 2);
                     }
@@ -244,7 +239,9 @@ public class GameplayController {
                     break;
                 case ALLOCATE:
                     if (playerController.getAllocateReady()) {
+                        // Allocate -> Battle
                         phase = BATTLE;
+                        MusicController.getInstance().playBattle();
                     }
                     break;
             }
@@ -254,10 +251,10 @@ public class GameplayController {
                     fail_sound.play(volume);
                 }
             }
-        }
-        // Enemies should still update even when game is outside play
-        if (!(phase == Phase.TRANSITION || phase == Phase.ALLOCATE)) {
-            resolveEnemies(delta);
+            if (!(phase == Phase.TRANSITION || phase == Phase.ALLOCATE)) {
+                playerController.update(delta, phase, lightingController);
+                resolveEnemies(delta);
+            }
         }
     }
 
@@ -289,6 +286,9 @@ public class GameplayController {
         updateAmbientLight(delta);
         if (ambientLightTransitionTimer >= container.getSettings().getTransition()) {
             phase = player.getMoonlightCollected() == 0 ? BATTLE : Phase.ALLOCATE;
+            if (phase == BATTLE) {
+                MusicController.getInstance().playBattle();
+            }
             for (Enemy enemy : enemies) {
                 enemy.setInBattle(true);
             }

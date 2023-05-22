@@ -27,6 +27,7 @@ import imgui.type.ImBoolean;
 import imgui.type.ImInt;
 import infinityx.assets.AssetDirectory;
 import infinityx.lunarhaze.controllers.LevelParser;
+import infinityx.lunarhaze.controllers.MusicController;
 import infinityx.lunarhaze.graphics.FilmStrip;
 import infinityx.lunarhaze.graphics.GameCanvas;
 import infinityx.lunarhaze.graphics.ImGuiImplGLES2;
@@ -103,11 +104,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
      * Background texture for the editor
      */
     private Texture background;
-
-    /**
-     * Background music
-     */
-    private Music music;
 
     abstract static class Selected {
         /**
@@ -675,7 +671,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         }
 
         this.background = directory.getEntry("bkg_allocate", Texture.class);
-        this.music = directory.getEntry("editorBackground", Music.class);
     }
 
     /**
@@ -1387,8 +1382,7 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
         doneActions = new Array<>();
         undoneActions = new Array<>();
 
-        music.setLooping(true);
-        music.play();
+        MusicController.getInstance().playEditor();
     }
 
     /**
@@ -1421,7 +1415,6 @@ public class EditorMode extends ScreenObservable implements Screen, InputProcess
     public void hide() {
         // Reset zoom
         canvas.resize();
-        music.stop();
     }
 
     /**

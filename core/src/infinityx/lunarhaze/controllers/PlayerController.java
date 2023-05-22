@@ -104,7 +104,7 @@ public class PlayerController {
     /**
      * Sound for player walking on grass
      */
-    private Sound walk_sound;
+    public Sound walk_sound;
 
     /**
      * Handles attacking logic
@@ -212,8 +212,6 @@ public class PlayerController {
         stateMachine = new DefaultStateMachine<>(this, PlayerState.IDLE);
         attackHandler = new PlayerAttackHandler(player, player.getAttackHitbox(), dash_sound);
         allocateReady = false;
-        isWalkGrassPlaying = false;
-        isDashPlaying = false;
         this.setting = setting;
     }
 
@@ -290,7 +288,7 @@ public class PlayerController {
      * @param lightingController lighting controller to update moonlight particles
      */
     public void resolveMoonlight(LightingController lightingController) {
-        if (player.isCollecting) return;
+        if (player.isCollecting || player.isAttacked()) return;
         boolean isOn = false;
 
         // Check if player is within range of a lamp

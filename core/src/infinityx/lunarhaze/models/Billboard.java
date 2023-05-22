@@ -51,7 +51,7 @@ public class Billboard implements Drawable {
     public Billboard(Vector3 position, float scale) {
         this.position = position;
         this.scale = scale;
-        this.tint = new Color(Color.WHITE);
+        this.tint = new Color(1, 1, 1, 0.86f);
         this.animation = new Animation();
         this.pos = new Vector2();
     }

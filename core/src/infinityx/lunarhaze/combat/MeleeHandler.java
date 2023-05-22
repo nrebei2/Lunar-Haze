@@ -1,5 +1,6 @@
 package infinityx.lunarhaze.combat;
 
+import com.badlogic.gdx.Gdx;
 import infinityx.lunarhaze.models.AttackingGameObject;
 
 /**
@@ -25,6 +26,7 @@ public class MeleeHandler extends AttackHandler {
         super.initiateAttack();
         hitbox.animation.reset();
         hitbox.setActive(true);
+        hitbox.updateHitboxPosition();
     }
 
     @Override
